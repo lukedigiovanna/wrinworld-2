@@ -8,7 +8,7 @@ import { PhysicalCollider, Particle } from "./components";
 import settings from "./settings";
 import { Tile, tileCodex, TileIndex } from "./tiles";
 
-const CHUNK_SIZE = 16;
+const CHUNK_SIZE = 8;
 const TILES_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE;
 const MAX_NUM_CHUNKS = 1024; // number of chunks along width and height of the world
 const WORLD_SIZE = CHUNK_SIZE * MAX_NUM_CHUNKS;
@@ -152,14 +152,22 @@ class Game {
     private generateLevelOne() {
         const width = 64;
         const height = 96;
-        const marginTrail = 16;
+        const marginTrail = 24;
+        const marginSidesRocks = 32;
         const left = -width / 2, right = width / 2 - 1;
         const bottom = 0, top = height + marginTrail * 2;
         const start = new Vector(0, bottom);
         const end = new Vector(0, top);
-        const N = 8;
-        
+        const N = 10;
 
+        // 1. Set Grass Background
+        for (let x = left; x <= right; x++) {
+            for (let y = bottom; y < top; y++) {
+                this.setTile(new Vector(x, y), TileIndex.GRASS);
+            }
+        }
+        
+        // 2. Fill a path from the bottom to top of the world
         const pathPoints = [];
         pathPoints.push(start);
         pathPoints.push(Vector.add(start, new Vector(0, marginTrail)))
@@ -172,11 +180,7 @@ class Game {
         }
         pathPoints.push(Vector.subtract(end, new Vector(0, marginTrail)));
         pathPoints.push(end);
-        for (let x = left; x <= right; x++) {
-            for (let y = bottom; y < top; y++) {
-                this.setTile(new Vector(x, y), TileIndex.GRASS);
-            }
-        }
+
         const curve = new CatmullRomParametricCurve(pathPoints);
         for (let t = bottom; t < height; t+=0.1) {
             const p = t / height;
@@ -185,7 +189,53 @@ class Game {
             for (let d = -1; d <= 1; d++) {
                 this.setTile(Vector.add(position, Vector.scaled(normal, d)), TileIndex.PATH);
             }
-            console.log(t, position);
+        }
+
+        // 3. Put rock wall in trail margined areas.
+        for (let x = left; x <= right; x++) {
+            if (Math.abs(x) <= 4) {
+                continue;
+            }
+            for (let y = 0; y < marginTrail - 4; y++) {
+                this.setTile(new Vector(x, y), TileIndex.ROCKS);
+                this.setTile(new Vector(x, top - y), TileIndex.ROCKS);
+            }
+        }
+
+        // 4. Put rock wall in side margins
+        for (let y = bottom; y <= top; y++) {
+            for (let x = 0; x <= marginSidesRocks; x++) {
+                this.setTile(new Vector(left - 1 - x, y), TileIndex.ROCKS);
+                this.setTile(new Vector(right + 1 + x, y), TileIndex.ROCKS);
+            }
+        }
+
+        // 5. Surround region with rock wall.
+
+        // 6. Place trees
+        for (let i = 0; i < width * height / 4; i++) {
+            const position = new Vector(
+                MathUtils.randomInt(left, right),
+                MathUtils.randomInt(bottom, top)
+            );
+            const tile = this.getTile(position); 
+            if (!tile.canGrowPlants) {
+                continue;
+            }
+            const tree = new GameObject();
+            if (Math.random() < 0.9) {
+                tree.scale.scale(3);
+                tree.renderer = spriteRenderer("tree");
+            }
+            else {
+                tree.scale.setComponents(2, 3);
+                tree.renderer = spriteRenderer("evergreen");
+            }
+            const collider = tree.addComponent(PhysicalCollider);
+            collider.data?.boxOffset.setComponents(0, -1.2);
+            collider.data?.boxSize.setComponents(0.5, 0.6);
+            tree.position.setComponents(position.x + 0.5, position.y + 1.5);
+            this.addGameObject(tree);
         }
     }
 

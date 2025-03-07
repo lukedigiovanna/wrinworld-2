@@ -28,7 +28,7 @@ class Camera {
             if (diff.magnitude > 0.025)
                 this.position.add(diff);
         }
-        // this.position.set(this.target);
+        this.position.set(this.target);
 
         if (input.isKeyDown("Equal")) {
             this.height *= 0.95;
