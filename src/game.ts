@@ -1,4 +1,4 @@
-import { BulletFactory, GameObject, PlayerFactory, AnimalFactory } from "./gameObjects";
+import { BulletFactory, GameObject, PlayerFactory, AnimalFactory, PortalFactory } from "./gameObjects";
 import { Vector, MathUtils, PerlinNoise, CatmullRomParametricCurve } from "./utils";
 import input from "./input";
 import { Camera } from "./camera";
@@ -129,7 +129,31 @@ class Game {
             }
         }
 
-        // 6. Place trees
+        // 6. Place portals
+        for (let i = 0; i < 20; i++) {
+            let position;
+            let validSpawn;
+            do {
+                position = new Vector(
+                    MathUtils.randomInt(left, right) + 0.5,
+                    MathUtils.randomInt(bottom, top) + 0.5
+                );
+                validSpawn = true;
+                const R = 2;
+                for (let xo = -R; xo <= R; xo++) {
+                    for (let yo = -R; yo <= R; yo++) {
+                        if (!this.getTile(Vector.add(position, new Vector(xo, yo))).canSpawnPortal) {
+                            validSpawn = false;
+                            break;
+                        }
+                    }
+                    if (!validSpawn) break;
+                }
+            } while (!validSpawn);
+            this.addGameObject(PortalFactory(position));
+        }
+
+        // 7. Place trees
         for (let i = 0; i < width * height / 4; i++) {
             const position = new Vector(
                 MathUtils.randomInt(left, right),
@@ -281,6 +305,13 @@ class Game {
             }
         }
 
+        
+
+        [...this.activeObjects].sort((a: GameObject, b: GameObject) => (b.position.y - b.scale.y / 2) - (a.position.y - a.scale.y / 2))
+            .forEach((gameObject: GameObject) => {
+                gameObject.render(this.camera);
+            });
+
         this.particles.forEach((particle: Particle) => {
             const pos = particle.position.copy();
             if (particle.useRelativePosition && particle.gameObject) {
@@ -295,11 +326,6 @@ class Game {
                 particle.rotation
             );
         });
-
-        [...this.activeObjects].sort((a: GameObject, b: GameObject) => (b.position.y - b.scale.y / 2) - (a.position.y - a.scale.y / 2))
-            .forEach((gameObject: GameObject) => {
-                gameObject.render(this.camera);
-            });
         
         if (settings.showChunks) {
             this.camera.setStrokeColor("lime");

@@ -45,7 +45,6 @@ const mainLoop = () => {
 }
 
 window.onload = async () => {
-    
     await Promise.all([
         loadImage("grass", "assets/images/grass.png"),
         loadImage("water", "assets/images/water.png"),
@@ -56,16 +55,21 @@ window.onload = async () => {
 
         loadImage("peach", "assets/images/peach.png"),
         loadImage("peach_water", "assets/images/peach_water.png"),
+        loadImage("chicken", "assets/images/chicken.png"),
+        loadImage("portal", "assets/images/portal.png"),
+
         loadImage("tree", "assets/images/tree.png"),
         loadImage("evergreen", "assets/images/evergreen.png"),
         loadImage("rose", "assets/images/rose.png"),
         loadImage("tallgrass", "assets/images/tallgrass.png"),
+        
         loadImage("fireball", "assets/images/fireball.webp"),
-        loadImage("chicken", "assets/images/chicken.png"),
         loadImage("kfc", "assets/images/kfc.png"),
+        
         loadImage("feather", "assets/images/feather.png"),
         loadImage("spark", "assets/images/spark.png"),
         loadImage("smoke", "assets/images/smoke.webp"),
+        loadImage("portal_particle", "assets/images/portal_particle.png")
     ]);
 
     canvas = document.getElementById('game-canvas') as HTMLCanvasElement;    

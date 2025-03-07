@@ -1,6 +1,7 @@
 interface Tile {
     spriteID: string | undefined;
     canGrowPlants: boolean;
+    canSpawnPortal: boolean;
     wall: boolean;
 }
 
@@ -16,26 +17,31 @@ const tileCodex: Tile[] = [
     {
         spriteID: undefined,
         canGrowPlants: false,
+        canSpawnPortal: false,
         wall: false,
     },
     {
         spriteID: "grass",
         canGrowPlants: true,
+        canSpawnPortal: true,
         wall: false,
     },
     {
         spriteID: "water",
         canGrowPlants: false,
+        canSpawnPortal: false,
         wall: false,
     },
     {
         spriteID: "rocks",
         canGrowPlants: false,
+        canSpawnPortal: false,
         wall: true,
     },
     {
         spriteID: "path",
         canGrowPlants: false,
+        canSpawnPortal: true,
         wall: false
     }
 ];

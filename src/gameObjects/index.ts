@@ -173,3 +173,4 @@ export { GameObject, GameObjectFactory };
 export * from "./Bullet";
 export * from "./Player";
 export * from "./Animal";
+export * from "./Portal";
