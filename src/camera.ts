@@ -20,15 +20,15 @@ class Camera {
     }
 
     public update(dt: number) {
-        // const diff = Vector.subtract(this.target, this.position);
-        // const threshold = this.height / 16;
-        // if (diff.magnitude > threshold) {
-        //     diff.subtract(Vector.scaled(Vector.normalized(diff), threshold));
-        //     diff.scale(dt * 3);
-        //     if (diff.magnitude > 0.025)
-        //         this.position.add(diff);
-        // }
-        this.position.set(this.target);
+        const diff = Vector.subtract(this.target, this.position);
+        const threshold = this.height / 12;
+        if (diff.magnitude > threshold) {
+            diff.subtract(Vector.scaled(Vector.normalized(diff), threshold));
+            diff.scale(dt * 3);
+            if (diff.magnitude > 0.025)
+                this.position.add(diff);
+        }
+        // this.position.set(this.target);
 
         if (input.isKeyDown("Equal")) {
             this.height *= 0.95;
@@ -54,7 +54,7 @@ class Camera {
 
     // clears the camera view
     public clear() {
-        const scale = 32;
+        const scale = 64;
         this.alignedPosition.setComponents(
             Math.round(this.position.x * scale) / scale, 
             Math.round(this.position.y * scale) / scale

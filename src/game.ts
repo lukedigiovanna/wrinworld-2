@@ -6,7 +6,7 @@ import { getImage } from "./imageLoader";
 import { rectangleRenderer, spriteRenderer } from "./renderers";
 import { PhysicalCollider, Particle } from "./components";
 import settings from "./settings";
-import { Tile, tileCodex } from "./tiles";
+import { Tile, tileCodex, TileIndex } from "./tiles";
 
 const CHUNK_SIZE = 16;
 const TILES_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE;
@@ -28,7 +28,7 @@ const getChunkWorldPosition = (chunkIndex: number) => {
 
 interface Chunk {
     objects: GameObject[];
-    tiles: number[];
+    tiles: TileIndex[];
 }
 
 class Game {
@@ -51,89 +51,104 @@ class Game {
         this.camera.target = this.player.position;
     }
 
-    private generateChunk(chunkIndex: number): void {
-        const pos = getChunkWorldPosition(chunkIndex);
+    // private generateChunk(chunkIndex: number): void {
+    //     const pos = getChunkWorldPosition(chunkIndex);
 
+    //     const tiles: number[] = [];
+    //     for (let i = 0; i < TILES_PER_CHUNK; i++) {
+    //         const noise = this.noise.get(
+    //             (pos.x + 1000 + Math.floor(i / CHUNK_SIZE)) * 0.1, 
+    //             (pos.y + 1000 +  (i % CHUNK_SIZE)) * 0.1
+    //         );
+    //         let index;
+    //         if (noise < 0.4) {
+    //             index = 0;
+    //         }
+    //         else if (noise < 0.425) {
+    //             index = 2;
+    //         }
+    //         else if (noise < 0.6) {
+    //             index = 0;
+    //         }
+    //         else {
+    //             index = 1;
+    //         }
+    //         tiles.push(index);
+    //     }
+
+    //     for (let i = 0; i < 20; i++) {
+    //         const x = MathUtils.randomInt(0, CHUNK_SIZE - 1);
+    //         const y = MathUtils.randomInt(0, CHUNK_SIZE - 1);
+    //         const tilePositionIndex = x * CHUNK_SIZE + y;
+    //         const tileIndex = tiles[tilePositionIndex];
+    //         const tile = tileCodex[tileIndex];
+    //         if (!tile.canGrowPlants) {
+    //             continue;
+    //         }
+    //         const tree = new GameObject();
+    //         if (Math.random() < 0.9) {
+    //             tree.scale.scale(3);
+    //             tree.renderer = spriteRenderer("tree");
+    //         }
+    //         else {
+    //             tree.scale.setComponents(2, 3);
+    //             tree.renderer = spriteRenderer("evergreen");
+    //         }
+    //         const collider = tree.addComponent(PhysicalCollider);
+    //         collider.data?.boxOffset.setComponents(0, -1.2);
+    //         collider.data?.boxSize.setComponents(0.5, 0.6);
+    //         tree.position.setComponents(x + pos.x + 0.5, y + pos.y + 1.5);
+    //         this.addGameObject(tree);
+    //     }
+    //     if (Math.random() < 0.0) {
+    //         const center = new Vector(MathUtils.random(pos.x, pos.x + CHUNK_SIZE), MathUtils.random(pos.y, pos.y + CHUNK_SIZE));
+    //         for (let j = 0; j < 20; j++) {
+    //             const diff = new Vector(MathUtils.random(-3, 3), MathUtils.random(-3, 3));
+    //             diff.add(center);
+    //             const flower = new GameObject();
+    //             flower.position.set(diff);
+    //             const footX = Math.floor(flower.position.x - pos.x);
+    //             const footY = Math.floor(flower.position.y - pos.y);
+    //             const tilePositionIndex = footX * CHUNK_SIZE + footY;
+    //             if (tilePositionIndex < 0 || tilePositionIndex >= TILES_PER_CHUNK) {
+    //                 continue;
+    //             }
+    //             const tileIndex = tiles[tilePositionIndex];
+    //             const tile = tileCodex[tileIndex];
+    //             if (!tile.canGrowPlants) {
+    //                 continue;
+    //             }
+    //             flower.renderer = spriteRenderer("rose");
+    //             this.addGameObject(flower);
+    //         }
+    //     }
+    //     if (Math.random() < 0.0) {
+    //         for (let i = 0; i < 15; i++) {
+    //             this.addGameObject(
+    //                 AnimalFactory(
+    //                     new Vector(MathUtils.random(pos.x, pos.x + CHUNK_SIZE), MathUtils.random(pos.y, pos.y + CHUNK_SIZE)), 
+    //                     "chicken"
+    //                 )
+    //             )
+    //         }
+    //     }
+        
+    //     this.chunks.set(chunkIndex, { objects: [], tiles });
+    // }
+
+    private generateChunk(chunkIndex: number): void {
         const tiles: number[] = [];
         for (let i = 0; i < TILES_PER_CHUNK; i++) {
-            const noise = this.noise.get(
-                (pos.x + 1000 + Math.floor(i / CHUNK_SIZE)) * 0.1, 
-                (pos.y + 1000 +  (i % CHUNK_SIZE)) * 0.1
-            );
-            let index;
-            if (noise < 0.4) {
-                index = 0;
-            }
-            else if (noise < 0.425) {
-                index = 2;
-            }
-            else if (noise < 0.6) {
-                index = 0;
-            }
-            else {
-                index = 1;
-            }
-            tiles.push(index);
+            tiles.push(TileIndex.AIR);
         }
+        this.chunks.set(chunkIndex, {
+            tiles,
+            objects: []
+        });
+    }
 
-        for (let i = 0; i < 20; i++) {
-            const x = MathUtils.randomInt(0, CHUNK_SIZE - 1);
-            const y = MathUtils.randomInt(0, CHUNK_SIZE - 1);
-            const tilePositionIndex = x * CHUNK_SIZE + y;
-            const tileIndex = tiles[tilePositionIndex];
-            const tile = tileCodex[tileIndex];
-            if (!tile.canGrowPlants) {
-                continue;
-            }
-            const tree = new GameObject();
-            if (Math.random() < 0.9) {
-                tree.scale.scale(3);
-                tree.renderer = spriteRenderer("tree");
-            }
-            else {
-                tree.scale.setComponents(2, 3);
-                tree.renderer = spriteRenderer("evergreen");
-            }
-            const collider = tree.addComponent(PhysicalCollider);
-            collider.data?.boxOffset.setComponents(0, -1.2);
-            collider.data?.boxSize.setComponents(0.5, 0.6);
-            tree.position.setComponents(x + pos.x + 0.5, y + pos.y + 1.5);
-            this.addGameObject(tree);
-        }
-        if (Math.random() < 0.0) {
-            const center = new Vector(MathUtils.random(pos.x, pos.x + CHUNK_SIZE), MathUtils.random(pos.y, pos.y + CHUNK_SIZE));
-            for (let j = 0; j < 20; j++) {
-                const diff = new Vector(MathUtils.random(-3, 3), MathUtils.random(-3, 3));
-                diff.add(center);
-                const flower = new GameObject();
-                flower.position.set(diff);
-                const footX = Math.floor(flower.position.x - pos.x);
-                const footY = Math.floor(flower.position.y - pos.y);
-                const tilePositionIndex = footX * CHUNK_SIZE + footY;
-                if (tilePositionIndex < 0 || tilePositionIndex >= TILES_PER_CHUNK) {
-                    continue;
-                }
-                const tileIndex = tiles[tilePositionIndex];
-                const tile = tileCodex[tileIndex];
-                if (!tile.canGrowPlants) {
-                    continue;
-                }
-                flower.renderer = spriteRenderer("rose");
-                this.addGameObject(flower);
-            }
-        }
-        if (Math.random() < 0.0) {
-            for (let i = 0; i < 15; i++) {
-                this.addGameObject(
-                    AnimalFactory(
-                        new Vector(MathUtils.random(pos.x, pos.x + CHUNK_SIZE), MathUtils.random(pos.y, pos.y + CHUNK_SIZE)), 
-                        "chicken"
-                    )
-                )
-            }
-        }
-        
-        this.chunks.set(chunkIndex, { objects: [], tiles });
+    private generateLevelOne() {
+
     }
 
     public get time() {
@@ -159,9 +174,9 @@ class Game {
                 throw Error("Cannot add undefined object to game");
             }
             // determine chunk index based on position
+            obj.start();
             const ci = obj.chunkIndex;
             this.addToChunk(obj, ci);
-            obj.start();
             this._totalObjects++;
         }
 
@@ -170,16 +185,16 @@ class Game {
             if (!obj) {
                 throw Error("Cannot remove undefined object from game");
             }
-            const ci = obj.lastFrameChunkIndex;
-            const chunk = this.chunks.get(ci);
-            if (chunk) {
-                const objInd = chunk.objects.indexOf(obj);
-                if (objInd < 0) {
-                    throw Error("object to remove was not found in its respective chunk");
-                }
-                chunk.objects.splice(objInd, 1);
-                this._totalObjects--;
+            const chunk = this.chunks.get(obj.storedInChunkIndex);
+            if (!chunk) {
+                throw Error("Object was supposedly stored in a non-loaded chunk");
             }
+            const objInd = chunk.objects.indexOf(obj);
+            if (objInd < 0) {
+                throw Error("object to remove was not found in its respective chunk");
+            }
+            chunk.objects.splice(objInd, 1);
+            this._totalObjects--;
         }
 
         const cameraChunkIndex = getChunkIndex(this.camera.position);
@@ -215,7 +230,9 @@ class Game {
                 for (let i = 0; i < TILES_PER_CHUNK; i++) {
                     const tileIndex = chunk.tiles[i];
                     const tile = tileCodex[tileIndex];
-                    this.camera.drawImage(getImage(tile.spriteID), chunkPos.x + Math.floor(i / CHUNK_SIZE) + 0.5, chunkPos.y + i % CHUNK_SIZE + 0.5, 1, 1);
+                    if (tile.spriteID) {
+                        this.camera.drawImage(getImage(tile.spriteID), chunkPos.x + Math.floor(i / CHUNK_SIZE) + 0.5, chunkPos.y + i % CHUNK_SIZE + 0.5, 1, 1);
+                    }
                 }
             }
         }
@@ -245,9 +262,12 @@ class Game {
             const chunkPos = getChunkWorldPosition(getChunkIndex(this.camera.position));
             for (let xo = -RENDER_DISTANCE; xo <= RENDER_DISTANCE; xo++) {
                 for (let yo = -RENDER_DISTANCE; yo <= RENDER_DISTANCE; yo++) {
-                    this.camera.strokeRect(chunkPos.x + xo * CHUNK_SIZE + CHUNK_SIZE / 2, chunkPos.y + yo * CHUNK_SIZE + CHUNK_SIZE / 2, CHUNK_SIZE, CHUNK_SIZE);
-                    this.camera.setFillColor("red");
-                    this.camera.fillRect(chunkPos.x + xo * CHUNK_SIZE, chunkPos.y + yo * CHUNK_SIZE, 0.5, 0.5);
+                    const chunkIndex = getChunkIndex(new Vector(chunkPos.x + xo * CHUNK_SIZE, chunkPos.y + yo * CHUNK_SIZE));
+                    if (this.chunks.has(chunkIndex)) {
+                        this.camera.strokeRect(chunkPos.x + xo * CHUNK_SIZE + CHUNK_SIZE / 2, chunkPos.y + yo * CHUNK_SIZE + CHUNK_SIZE / 2, CHUNK_SIZE, CHUNK_SIZE);
+                        this.camera.setFillColor("red");
+                        this.camera.fillRect(chunkPos.x + xo * CHUNK_SIZE, chunkPos.y + yo * CHUNK_SIZE, 0.5, 0.5);
+                    }
                 }
             }
         }
@@ -305,6 +325,7 @@ class Game {
             this.generateChunk(chunkIndex);
         };
         this.chunks.get(chunkIndex)?.objects.push(obj);
+        obj.storedInChunkIndex = chunkIndex;
     }
 
     public changeChunk(obj: GameObject, lastChunk: number) {
@@ -340,29 +361,54 @@ class Game {
         this.particles.push(particle);
     }
 
-    // Get the tile object from the tilemap stored at the given world position
-    // will generate the chunk there if necessary.
-    public getTile(position: Vector) {
+    private getTileCoordinate(position: Vector): { chunkIndex: number, tilePositionIndex: number } {
         const chunkIndex = getChunkIndex(position);
-        let chunk = this.chunks.get(chunkIndex);
-        if (!chunk) {
-            this.generateChunk(chunkIndex);
-            chunk = this.chunks.get(chunkIndex);
-        }
-        if (!chunk) {
-            throw Error("Something went wrong... chunk probably did not generate correctly.");
-        }
-        // Get the position as an offset into the chunk
         const chunkPosition = getChunkWorldPosition(chunkIndex);
         const offset = Vector.subtract(position, chunkPosition);
         const offsetX = Math.floor(offset.x);
         const offsetY = Math.floor(offset.y);
         const tilePositionIndex = offsetX * CHUNK_SIZE + offsetY;
+        if (tilePositionIndex < 0) {
+            console.error(`
+                Bug report:
+                position: ${position}
+                chunkIndex: ${chunkIndex}
+                offset: ${offset}
+                offsetX: ${offsetX}
+                offsetY: ${offsetY}
+                tilePositionIndex: ${tilePositionIndex}
+            `)
+            throw Error("Some bug occurred");
+        }
+        return {
+            chunkIndex,
+            tilePositionIndex
+        };
+    }
+
+    // Set the tile at the integer tile coordinates to the given tileIndex.
+    // will generate the chunk there if it is not generated already.
+    public setTile(position: Vector, tileIndex: TileIndex) {
+        const { chunkIndex, tilePositionIndex } = this.getTileCoordinate(position);
+        if (!this.chunks.has(chunkIndex)) {
+            this.generateChunk(chunkIndex);
+        }
+        const chunk = this.chunks.get(chunkIndex);
+        if (!chunk) throw Error("something went wrong");
+        chunk.tiles[tilePositionIndex] = tileIndex;
+    }
+
+    // Get the tile object from the tilemap stored at the given world position
+    // will generate the chunk there if necessary.
+    public getTile(position: Vector) {
+        const { chunkIndex, tilePositionIndex } = this.getTileCoordinate(position);
+        if (!this.chunks.has(chunkIndex)) {
+            this.generateChunk(chunkIndex);
+        }
+        const chunk = this.chunks.get(chunkIndex);
+        if (!chunk) throw Error("something went wrong");
         const tileIndex = chunk.tiles[tilePositionIndex];
         const tile = tileCodex[tileIndex];
-        if (!tile) {
-            console.log(offsetX, offsetY, chunkPosition, tilePositionIndex, tileIndex, tile);
-        }
         return tile;
     }
 }

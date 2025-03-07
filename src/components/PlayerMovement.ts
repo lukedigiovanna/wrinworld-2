@@ -2,6 +2,7 @@ import { ComponentFactory } from "./index";
 import { GameObject } from "../gameObjects";
 import input from "../input";
 import { Vector } from "../utils";
+import { TileIndex } from "../tiles";
 
 const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
@@ -42,6 +43,19 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
             // console.log(gameObject.position);
             data.physics.data.velocity.set(movement);
 
+            let R = 3;
+            for (let xo = -R; xo <= R; xo++) {
+                for (let yo = -R; yo <= R; yo++) {
+                    let ti;
+                    if (Math.abs(xo) == R || Math.abs(yo) == R) {
+                        ti = TileIndex.ROCKS;
+                    }
+                    else {
+                        ti = TileIndex.GRASS;
+                    }
+                    gameObject.game.setTile(Vector.add(gameObject.position, new Vector(xo, yo)), ti);
+                }
+            }
             const tile = gameObject.game.getTile(gameObject.position);
             if (tile.spriteID === "water") {
                 gameObject.renderer!.data.spriteID = "peach_water";

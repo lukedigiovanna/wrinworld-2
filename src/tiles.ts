@@ -1,10 +1,22 @@
 interface Tile {
-    spriteID: string;
+    spriteID: string | undefined;
     canGrowPlants: boolean;
     wall: boolean;
 }
 
+enum TileIndex {
+    AIR,
+    GRASS,
+    WATER,
+    ROCKS
+}
+
 const tileCodex: Tile[] = [
+    {
+        spriteID: undefined,
+        canGrowPlants: false,
+        wall: false,
+    },
     {
         spriteID: "grass",
         canGrowPlants: true,
@@ -23,4 +35,4 @@ const tileCodex: Tile[] = [
 ];
 
 export type { Tile };
-export { tileCodex };
+export { tileCodex, TileIndex };

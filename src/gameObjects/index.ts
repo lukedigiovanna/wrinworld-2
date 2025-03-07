@@ -23,7 +23,7 @@ class GameObject {
 
     private _game: Game | undefined;
 
-    private _lastFrameChunkIndex = -1;
+    public storedInChunkIndex = -1;
 
     private started: boolean = false;
 
@@ -52,10 +52,6 @@ class GameObject {
     public get chunkIndex() {
         // transform position into chunk index
         return getChunkIndex(this.position);
-    }
-
-    public get lastFrameChunkIndex() {
-        return this.chunkIndex;
     }
 
     public onHitboxCollisionEnter(collision: GameObject) {
@@ -142,14 +138,12 @@ class GameObject {
         }
 
         const currentCI = this.chunkIndex;
-        if (currentCI !== this._lastFrameChunkIndex) {
-            this.game.changeChunk(this, this._lastFrameChunkIndex); // change our chunk from where we were to where we are.
+        if (currentCI !== this.storedInChunkIndex) {
+            this.game.changeChunk(this, this.storedInChunkIndex); // change our chunk from where we were to where we are.
         }
-        this._lastFrameChunkIndex = currentCI;
     } 
 
     public start() {
-        this._lastFrameChunkIndex = this.chunkIndex;
         this.components.forEach((component: Component) => {
             if (component.start) {
                 component.start();
