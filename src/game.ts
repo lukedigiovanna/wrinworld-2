@@ -366,14 +366,14 @@ class Game {
         const chunkPosition = getChunkWorldPosition(chunkIndex);
         const offset = Vector.subtract(position, chunkPosition);
         const offsetX = Math.floor(offset.x);
-        const offsetY = Math.floor(offset.y);
+        const offsetY = Math.max(0, Math.floor(offset.y));
         const tilePositionIndex = offsetX * CHUNK_SIZE + offsetY;
         if (tilePositionIndex < 0) {
             console.error(`
                 Bug report:
-                position: ${position}
+                position: ${position.x}, ${position.y}
                 chunkIndex: ${chunkIndex}
-                offset: ${offset}
+                offset: ${offset.x}, ${offset.y}
                 offsetX: ${offsetX}
                 offsetY: ${offsetY}
                 tilePositionIndex: ${tilePositionIndex}
