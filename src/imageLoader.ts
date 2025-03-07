@@ -20,4 +20,8 @@ const getImage = (id: string): HTMLImageElement => {
     return img;
 }
 
-export { loadImage, getImage };
+const imageExists = (id: string): boolean => {
+  return images.has(id);
+}
+
+export { loadImage, getImage, imageExists };

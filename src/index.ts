@@ -23,6 +23,8 @@ const mainLoop = () => {
     lastTime = nowTime;
     
     accumulator += dt;
+    // Don't allow accumulator to exceed a second of elapsed time -- too much of a jump
+    accumulator = Math.min(1, accumulator);
     while (accumulator >= gameTickPeriod) {
         game.preUpdate();
         game.update(gameTickPeriod);
@@ -45,10 +47,13 @@ const mainLoop = () => {
 window.onload = async () => {
     
     await Promise.all([
-        loadImage("grass", "assets/images/poop.webp"),
+        loadImage("grass", "assets/images/grass.png"),
         loadImage("water", "assets/images/water.png"),
         loadImage("rocks", "assets/images/rocks.png"),
         loadImage("path", "assets/images/path.png"),
+
+        loadImage("edge_merge_path_grass", "assets/images/edge_merge_path_grass.png"),
+
         loadImage("peach", "assets/images/peach.png"),
         loadImage("peach_water", "assets/images/peach_water.png"),
         loadImage("tree", "assets/images/tree.png"),

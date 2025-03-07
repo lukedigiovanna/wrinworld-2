@@ -220,6 +220,37 @@ class Game {
         for (const chunk of listOfChunks) this.activeObjects.push(...chunk.objects);
     }
 
+    // Performs game-level updates such as updating game objects and managing
+    // particles.
+    public update(dt: number) {
+        this._gameTime += dt;
+
+        if (input.mousePressed) {
+            const bullet = BulletFactory(this.player.position, this.camera.screenToWorldPosition(input.mousePosition));
+            this.addGameObject(bullet);
+        }
+
+        this.activeObjects.forEach((object: GameObject) => {
+            object.update(dt);
+        });
+
+        for (let i = 0; i < this.particles.length; i++) {
+            const particle = this.particles[i];
+            if (this.time - particle.birthTime >= particle.lifetime) {
+                this.particles.splice(i, 1);
+                i--;
+            }
+            else {
+                particle.position.add(Vector.scaled(particle.velocity, dt));
+                particle.rotation += particle.angularVelocity;
+                if (particle.update)
+                    particle.update(particle, dt);
+            }
+        }
+
+        this.camera.update(dt);
+    }
+
     public draw() {
         this.camera.setFillColor("black");
         this.camera.clear();
@@ -236,7 +267,15 @@ class Game {
                     const tileIndex = chunk.tiles[i];
                     const tile = tileCodex[tileIndex];
                     if (tile.spriteID) {
-                        this.camera.drawImage(getImage(tile.spriteID), chunkPos.x + Math.floor(i / CHUNK_SIZE) + 0.5, chunkPos.y + i % CHUNK_SIZE + 0.5, 1, 1);
+                        let spriteID = tile.spriteID;
+                        const tilePosition = new Vector(chunkPos.x + Math.floor(i / CHUNK_SIZE) + 0.5, chunkPos.y + i % CHUNK_SIZE + 0.5);
+                        // if (tileIndex === TileIndex.PATH) {
+                        //     const rightTile = this.getTileIndex(Vector.add(tilePosition, Vector.right()));
+                        //     if (rightTile === TileIndex.GRASS) {
+                        //         spriteID = "edge_merge_path_grass";
+                        //     }
+                        // }
+                        this.camera.drawImage(getImage(spriteID), tilePosition.x, tilePosition.y, 1, 1, 0);
                     }
                 }
             }
@@ -280,37 +319,6 @@ class Game {
             this.camera.setFillColor("orange");
             this.camera.fillEllipse(this.camera.position.x, this.camera.position.y, 0.5, 0.5);
         }
-    }
-
-    // Performs game-level updates such as updating game objects and managing
-    // particles.
-    public update(dt: number) {
-        this._gameTime += dt;
-
-        if (input.mousePressed) {
-            const bullet = BulletFactory(this.player.position, this.camera.screenToWorldPosition(input.mousePosition));
-            this.addGameObject(bullet);
-        }
-
-        this.activeObjects.forEach((object: GameObject) => {
-            object.update(dt);
-        });
-
-        for (let i = 0; i < this.particles.length; i++) {
-            const particle = this.particles[i];
-            if (this.time - particle.birthTime >= particle.lifetime) {
-                this.particles.splice(i, 1);
-                i--;
-            }
-            else {
-                particle.position.add(Vector.scaled(particle.velocity, dt));
-                particle.rotation += particle.angularVelocity;
-                if (particle.update)
-                    particle.update(particle, dt);
-            }
-        }
-
-        this.camera.update(dt);
     }
 
     public addGameObject(obj: GameObject) {
@@ -403,18 +411,21 @@ class Game {
         chunk.tiles[tilePositionIndex] = tileIndex;
     }
 
-    // Get the tile object from the tilemap stored at the given world position
-    // will generate the chunk there if necessary.
-    public getTile(position: Vector) {
+    public getTileIndex(position: Vector): TileIndex {
         const { chunkIndex, tilePositionIndex } = this.getTileCoordinate(position);
         if (!this.chunks.has(chunkIndex)) {
             this.generateChunk(chunkIndex);
         }
         const chunk = this.chunks.get(chunkIndex);
         if (!chunk) throw Error("something went wrong");
-        const tileIndex = chunk.tiles[tilePositionIndex];
-        const tile = tileCodex[tileIndex];
-        return tile;
+        return chunk.tiles[tilePositionIndex];
+    }
+
+    // Get the tile object from the tilemap stored at the given world position
+    // will generate the chunk there if necessary.
+    public getTile(position: Vector): Tile {
+        const tileIndex = this.getTileIndex(position);
+        return tileCodex[tileIndex];
     }
 }
 

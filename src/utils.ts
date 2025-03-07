@@ -11,6 +11,22 @@ class Vector {
         return new Vector(0, 0);
     }
 
+    public static right() {
+        return new Vector(1, 0);
+    }
+
+    public static left() {
+        return new Vector(-1, 0);
+    }
+
+    public static up() {
+        return new Vector(0, 1);
+    }
+
+    public static down() {
+        return new Vector(0, -1);
+    }
+
     public set(other: Vector): void {
         this.x = other.x;
         this.y = other.y;
