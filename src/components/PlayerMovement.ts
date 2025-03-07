@@ -45,6 +45,7 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
             const tile = gameObject.game.getTile(gameObject.position);
             if (tile.spriteID === "water") {
                 gameObject.renderer!.data.spriteID = "peach_water";
+                gameObject.renderer!.data.offset = new Vector(0, Math.sin(gameObject.age * 6) * 0.04);
                 data.speed = data.waterSpeed;
             }
             else {
