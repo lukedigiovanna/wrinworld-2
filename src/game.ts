@@ -1,5 +1,5 @@
 import { BulletFactory, GameObject, PlayerFactory, AnimalFactory } from "./gameObjects";
-import { Vector, MathUtils, PerlinNoise } from "./utils";
+import { Vector, MathUtils, PerlinNoise, ParametricCurve } from "./utils";
 import input from "./input";
 import { Camera } from "./camera";
 import { getImage } from "./imageLoader";
@@ -12,7 +12,7 @@ const CHUNK_SIZE = 16;
 const TILES_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE;
 const MAX_NUM_CHUNKS = 1024; // number of chunks along width and height of the world
 const WORLD_SIZE = CHUNK_SIZE * MAX_NUM_CHUNKS;
-const RENDER_DISTANCE = 2;
+const RENDER_DISTANCE = 3;
 
 const getChunkIndex = (position: Vector) => {
     const c = Vector.add(position, new Vector(WORLD_SIZE / 2, WORLD_SIZE / 2));
@@ -46,9 +46,11 @@ class Game {
 
     constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
         this.camera = new Camera(canvas, ctx);
-        this.player = PlayerFactory(Vector.zero());
+        this.player = PlayerFactory(new Vector(0, 0));
         this.addGameObject(this.player);
         this.camera.target = this.player.position;
+
+        this.generateLevelOne();
     }
 
     // private generateChunk(chunkIndex: number): void {
@@ -148,7 +150,42 @@ class Game {
     }
 
     private generateLevelOne() {
+        const width = 64;
+        const height = 96;
+        const marginTrail = 16;
+        const left = -width / 2, right = width / 2 - 1;
+        const bottom = 0, top = height + marginTrail * 2;
+        const start = new Vector(0, bottom);
+        const end = new Vector(0, top);
+        const N = 8;
+        
 
+        const pathPoints = [];
+        pathPoints.push(start);
+        pathPoints.push(Vector.add(start, new Vector(0, marginTrail)))
+        for (let i = 0; i < N; i++) {
+            const ps = i / N;
+            const pt = (i + 1) / N;
+            const x = MathUtils.randomInt(left + 4, right - 4);
+            const y = marginTrail + MathUtils.randomInt(ps * height, pt * height);
+            pathPoints.push(new Vector(x, y));
+        }
+        pathPoints.push(Vector.subtract(end, new Vector(0, marginTrail)));
+        pathPoints.push(end);
+        for (let x = left; x <= right; x++) {
+            for (let y = bottom; y < top; y++) {
+                this.setTile(new Vector(x, y), TileIndex.GRASS);
+            }
+        }
+        const curve = new ParametricCurve(pathPoints, height);
+        for (let t = bottom; t < height; t+=0.1) {
+            const position = curve.getPosition(t);
+            const normal = curve.getNormal(t);
+            for (let d = -1; d <= 1; d++) {
+                this.setTile(Vector.add(position, Vector.scaled(normal, d)), TileIndex.PATH);
+            }
+            console.log(t, position);
+        }
     }
 
     public get time() {
@@ -365,7 +402,7 @@ class Game {
         const chunkIndex = getChunkIndex(position);
         const chunkPosition = getChunkWorldPosition(chunkIndex);
         const offset = Vector.subtract(position, chunkPosition);
-        const offsetX = Math.floor(offset.x);
+        const offsetX = Math.max(0, Math.floor(offset.x));
         const offsetY = Math.max(0, Math.floor(offset.y));
         const tilePositionIndex = offsetX * CHUNK_SIZE + offsetY;
         if (tilePositionIndex < 0) {

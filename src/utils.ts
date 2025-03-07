@@ -209,4 +209,37 @@ class PerlinNoise {
     }
 }
 
-export { Vector, MathUtils, PerlinNoise };
+class ParametricCurve {
+    private points: Vector[];
+    private upperRange: number;
+
+    constructor(points: Vector[], upperRange: number = 1) {
+        this.points = points;
+        this.upperRange = upperRange;
+    }
+
+    getPosition(t: number): Vector {
+        const p = MathUtils.clamp(t / this.upperRange, 0, 1);
+        const i = Math.floor(p * (this.points.length - 1));
+        const startPoint = this.points[i];
+        const nextPoint = this.points[Math.min(i + 1, this.points.length - 1)];
+        // simple: interpolate between the points
+        const R = 1 / this.points.length;
+        const localP = (p % R) / R;
+        return Vector.add(startPoint, Vector.scaled(Vector.subtract(nextPoint, startPoint), localP));
+    }
+
+    getNormal(t: number): Vector {
+        const p = MathUtils.clamp(t / this.upperRange, 0, 1);
+        const i = Math.floor(p * (this.points.length - 1));
+        const startPoint = this.points[i];
+        const nextPoint = this.points[Math.min(i + 1, this.points.length - 1)];
+        // const R = 1 / this.points.length;
+        // const localP = (p % R) / R;
+        const tangent = Vector.normalized(Vector.subtract(nextPoint, startPoint));   
+        const normal = new Vector(-tangent.y, tangent.x);
+        return normal;
+    }
+}
+
+export { Vector, MathUtils, PerlinNoise, ParametricCurve };

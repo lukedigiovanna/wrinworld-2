@@ -8,7 +8,8 @@ enum TileIndex {
     AIR,
     GRASS,
     WATER,
-    ROCKS
+    ROCKS,
+    PATH
 }
 
 const tileCodex: Tile[] = [
@@ -31,6 +32,11 @@ const tileCodex: Tile[] = [
         spriteID: "rocks",
         canGrowPlants: false,
         wall: true,
+    },
+    {
+        spriteID: "path",
+        canGrowPlants: false,
+        wall: false
     }
 ];
 

@@ -12,9 +12,9 @@ const settings: Settings = {
     showFPS: true,
     showPhysicalColliders: false,
     showHitboxes: false,
-    showObjectCenters: true,
+    showObjectCenters: false,
     showRotationPoint: false,
-    showChunks: true,
+    showChunks: false,
     showCameraPosition: true
 }
 
