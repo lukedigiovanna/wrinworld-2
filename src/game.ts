@@ -1,5 +1,5 @@
 import { BulletFactory, GameObject, PlayerFactory, AnimalFactory } from "./gameObjects";
-import { Vector, MathUtils, PerlinNoise, ParametricCurve } from "./utils";
+import { Vector, MathUtils, PerlinNoise, CatmullRomParametricCurve } from "./utils";
 import input from "./input";
 import { Camera } from "./camera";
 import { getImage } from "./imageLoader";
@@ -177,10 +177,11 @@ class Game {
                 this.setTile(new Vector(x, y), TileIndex.GRASS);
             }
         }
-        const curve = new ParametricCurve(pathPoints, height);
+        const curve = new CatmullRomParametricCurve(pathPoints);
         for (let t = bottom; t < height; t+=0.1) {
-            const position = curve.getPosition(t);
-            const normal = curve.getNormal(t);
+            const p = t / height;
+            const position = curve.getPosition(p);
+            const normal = curve.getNormal(p);
             for (let d = -1; d <= 1; d++) {
                 this.setTile(Vector.add(position, Vector.scaled(normal, d)), TileIndex.PATH);
             }
