@@ -383,6 +383,9 @@ class Game {
         const tilePositionIndex = offsetX * CHUNK_SIZE + offsetY;
         const tileIndex = chunk.tiles[tilePositionIndex];
         const tile = tileCodex[tileIndex];
+        if (!tile) {
+            console.log(tilePositionIndex, tileIndex, tile);
+        }
         return tile;
     }
 }

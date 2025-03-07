@@ -20,13 +20,14 @@ class Camera {
     }
 
     public update(dt: number) {
-        const diff = Vector.subtract(this.target, this.position);
-        if (diff.magnitude > this.height / 8) {
-            diff.subtract(Vector.scaled(Vector.normalized(diff), this.height / 8));
-            diff.scale(dt * 3);
-            if (diff.magnitude > 0.025)
-                this.position.add(diff);
-        }
+        // const diff = Vector.subtract(this.target, this.position);
+        // if (diff.magnitude > this.height / 8) {
+        //     diff.subtract(Vector.scaled(Vector.normalized(diff), this.height / 8));
+        //     diff.scale(dt * 3);
+        //     if (diff.magnitude > 0.025)
+        //         this.position.add(diff);
+        // }
+        this.position.set(this.target);
 
         if (input.isKeyDown("Equal")) {
             this.height *= 0.95;

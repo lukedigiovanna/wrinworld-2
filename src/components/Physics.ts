@@ -12,7 +12,7 @@ const Physics: ComponentFactory = (gameObject: GameObject) => {
                 gameObject.position.add(Vector.scaled(velocity, dt));
                 const collider = gameObject.getComponent("physical-collider");
                 if (collider) {
-                    const [l, r, t, b] = [
+                    let [l, r, t, b] = [
                         gameObject.position.x + collider.data?.boxOffset.x - collider.data?.boxSize.x / 2,
                         gameObject.position.x + collider.data?.boxOffset.x + collider.data?.boxSize.x / 2,
                         gameObject.position.y + collider.data?.boxOffset.y + collider.data?.boxSize.y / 2,
@@ -47,7 +47,37 @@ const Physics: ComponentFactory = (gameObject: GameObject) => {
                             }
                         }
                     });
-                    
+                    const corners = [new Vector(l, t), new Vector(r, t), new Vector(l, b), new Vector(r, b)];
+                    for (const corner of corners) {
+                        const tile = gameObject.game.getTile(corner);
+                        if (tile.wall) {
+                            // correct the collision
+                            const [ol, or, ot, ob] = [
+                                Math.floor(corner.x),
+                                Math.floor(corner.x) + 1,
+                                Math.floor(corner.y) + 1,
+                                Math.floor(corner.y)
+                            ];
+                            // choose the smallest overlap:
+                            const choices: [number, Vector][] = [
+                                [r - ol, new Vector(-(r - ol), 0)],
+                                [or - l, new Vector(or - l, 0)],
+                                [ot - b, new Vector(0, ot - b)],
+                                [t - ob, new Vector(0, -(t - ob))]
+                            ];
+                            let smallest = 0;
+                            for (let i = 1; i < 4; i++) {
+                                if (choices[i][0] < choices[smallest][0]) {
+                                    smallest = i;
+                                }
+                            }
+                            gameObject.position.add(choices[smallest][1]);
+                            l = gameObject.position.x + collider.data?.boxOffset.x - collider.data?.boxSize.x / 2;
+                            r = gameObject.position.x + collider.data?.boxOffset.x + collider.data?.boxSize.x / 2;
+                            t = gameObject.position.y + collider.data?.boxOffset.y + collider.data?.boxSize.y / 2;
+                            b = gameObject.position.y + collider.data?.boxOffset.y - collider.data?.boxSize.y / 2;
+                        }
+                    }    
                 }
             }
         },
