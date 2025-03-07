@@ -11,6 +11,8 @@ class Camera {
 
     public target: Vector = Vector.zero();
 
+    public verticalBoundary: [number, number] = [-99999, 99999];
+
     constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
         this.canvas = canvas;
         this.ctx = ctx;
@@ -29,6 +31,7 @@ class Camera {
                 this.position.add(diff);
         }
         this.position.set(this.target);
+        this.position.y = MathUtils.clamp(this.position.y, this.verticalBoundary[0], this.verticalBoundary[1]);
 
         if (input.isKeyDown("Equal")) {
             this.height *= 0.95;

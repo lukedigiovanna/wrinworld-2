@@ -46,11 +46,12 @@ class Game {
 
     constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
         this.camera = new Camera(canvas, ctx);
-        this.player = PlayerFactory(new Vector(0, 0));
+        this.player = PlayerFactory(new Vector(0, 16));
         this.addGameObject(this.player);
         this.camera.target = this.player.position;
 
         this.generateLevelOne();
+        this.camera.verticalBoundary = [16, 24 + 8 + 96];
     }
 
     private generateChunk(chunkIndex: number): void {

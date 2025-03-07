@@ -6,6 +6,9 @@ import { Vector } from "./utils";
 let lastTime = new Date().getTime();
 let game: Game | undefined = undefined;
 let fpsAverage = 0;
+let accumulator = 0;
+const gameTickRate = 60;
+const gameTickPeriod = 1 / gameTickRate;
 const fpsSamples = 5;
 let canvas: HTMLCanvasElement | undefined;
 let ctx: CanvasRenderingContext2D | null = null;
@@ -19,9 +22,14 @@ const mainLoop = () => {
     fpsAverage = (fpsAverage * (fpsSamples - 1) + (1.0 / dt)) / fpsSamples;
     lastTime = nowTime;
     
-    game.preUpdate();
+    accumulator += dt;
+    while (accumulator >= gameTickPeriod) {
+        game.preUpdate();
+        game.update(gameTickPeriod);
+        accumulator -= gameTickPeriod;
+    }
+
     game.draw();
-    game.update(dt);
 
     if (settings.showFPS) {
         ctx.fillStyle = "red";
