@@ -16,7 +16,7 @@ const BulletFactory: GameObjectFactory = (position: Vector, target: Vector) => {
         return {
             id: "bullet",
             onHitboxCollisionEnter(collision) {
-                if (collision.tag === "animal") {
+                if (collision.tag === "animal" || collision.tag === "portal") {
                     const health = collision.getComponent("health");
                     if (health) {
                         health.data.hp -= 3;

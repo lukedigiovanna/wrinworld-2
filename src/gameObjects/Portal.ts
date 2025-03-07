@@ -2,7 +2,7 @@ import { spriteRenderer } from "../renderers";
 import { Item } from "../items";
 import { GameObjectFactory, GameObject } from "./index";
 import { Vector, MathUtils } from "../utils";
-import { Hitbox, ParticleEmitter } from "../components";
+import { Hitbox, ParticleEmitter, Health } from "../components";
 
 const PortalFactory: GameObjectFactory = (position: Vector) => {
     const portal = new GameObject();
@@ -28,7 +28,9 @@ const PortalFactory: GameObjectFactory = (position: Vector) => {
                 gameObject.rotation = gameObject.age * 3;
             },
         }
-    })
+    });
+    portal.addComponent(Health);
+    portal.tag = "portal";
     return portal;
 }
 

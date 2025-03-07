@@ -15,7 +15,7 @@ const settings: Settings = {
     showObjectCenters: false,
     showRotationPoint: false,
     showChunks: false,
-    showCameraPosition: true
+    showCameraPosition: false,
 }
 
 export default settings;
