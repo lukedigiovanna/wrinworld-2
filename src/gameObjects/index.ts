@@ -24,6 +24,8 @@ class GameObject {
 
     private _lastFrameChunkIndex = -1;
 
+    private started: boolean = false;
+
     constructor() {
         this.position = Vector.zero();
         this.scale = new Vector(1, 1);
@@ -101,6 +103,9 @@ class GameObject {
     }
 
     public addComponent(componentFactory: ComponentFactory): Component {
+        if (this.started) {
+            throw Error("Cannot add component after GameObject has already started");
+        }
         const newComponent = componentFactory(this);
         this.components.push(newComponent);
         return newComponent;
@@ -140,7 +145,8 @@ class GameObject {
             if (component.start) {
                 component.start();
             }
-        })
+        });
+        this.started = true;
     }
 
     public destroy() {

@@ -5,6 +5,7 @@ type Settings = {
     showObjectCenters: boolean;
     showRotationPoint: boolean;
     showChunks: boolean;
+    showCameraPosition: boolean;
 }
 
 const settings: Settings = {
@@ -14,6 +15,7 @@ const settings: Settings = {
     showObjectCenters: false,
     showRotationPoint: false,
     showChunks: false,
+    showCameraPosition: false
 }
 
 export default settings;

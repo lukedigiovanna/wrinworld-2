@@ -51,7 +51,6 @@ class Input {
     public isKeyDown(code: string): boolean {
         return !!this._keyDownMap.get(code);
     }
-
 }
 
 const input = new Input();

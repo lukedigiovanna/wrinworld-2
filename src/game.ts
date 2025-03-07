@@ -3,14 +3,15 @@ import { Vector, MathUtils, PerlinNoise } from "./utils";
 import input from "./input";
 import { Camera } from "./camera";
 import { getImage } from "./imageLoader";
-import { spriteRenderer } from "./renderers";
+import { rectangleRenderer, spriteRenderer } from "./renderers";
 import { PhysicalCollider, Particle } from "./components";
 import settings from "./settings";
 
-const CHUNK_SIZE = 8;
+const CHUNK_SIZE = 16;
+const TILES_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE;
 const MAX_NUM_CHUNKS = 1024; // number of chunks along width and height of the world
 const WORLD_SIZE = CHUNK_SIZE * MAX_NUM_CHUNKS;
-const RENDER_DISTANCE = 3;
+const RENDER_DISTANCE = 2;
 
 const getChunkIndex = (position: Vector) => {
     const c = Vector.add(position, new Vector(WORLD_SIZE / 2, WORLD_SIZE / 2));
@@ -26,11 +27,23 @@ const getChunkWorldPosition = (chunkIndex: number) => {
 
 interface Tile {
     spriteID: string;
+    canGrowPlants: boolean;
 }
+
+const tileCodex: Tile[] = [
+    {
+        spriteID: "grass",
+        canGrowPlants: true
+    },
+    {
+        spriteID: "water",
+        canGrowPlants: false
+    }
+];
 
 interface Chunk {
     objects: GameObject[];
-    tiles: Tile[];
+    tiles: number[];
 }
 
 class Game {
@@ -50,22 +63,32 @@ class Game {
         this.camera = new Camera(canvas, ctx);
         this.player = PlayerFactory(Vector.zero());
         this.addGameObject(this.player);
-
-        for (let i = 0; i < 1; i+=0.1) {
-
-            for (let j = 0; j < 1; j += 0.1){ 
-                console.log(this.noise.get(i, j))
-            }
-        }
-
         this.camera.target = this.player.position;
     }
 
     private generateChunk(chunkIndex: number): void {
         const pos = getChunkWorldPosition(chunkIndex);
-        for (let i = 0; i < 5; i++) {
+
+        const tiles: number[] = [];
+        for (let i = 0; i < TILES_PER_CHUNK; i++) {
+            const noise = this.noise.get(
+                (pos.x + 1000 + Math.floor(i / CHUNK_SIZE)) * 0.1, 
+                (pos.y + 1000 +  (i % CHUNK_SIZE)) * 0.1
+            );
+            tiles.push(noise < 0.6 ? 0 : 1);
+        }
+
+        for (let i = 0; i < 20; i++) {
+            const x = MathUtils.randomInt(0, CHUNK_SIZE - 1);
+            const y = MathUtils.randomInt(0, CHUNK_SIZE - 1);
+            const tilePositionIndex = x * CHUNK_SIZE + y;
+            const tileIndex = tiles[tilePositionIndex];
+            const tile = tileCodex[tileIndex];
+            console.log(tilePositionIndex, tileIndex, tile);
+            if (!tile.canGrowPlants) {
+                continue;
+            }
             const tree = new GameObject();
-            tree.position.setComponents(MathUtils.randomInt(pos.x, pos.x + CHUNK_SIZE), MathUtils.randomInt(pos.y, pos.y + CHUNK_SIZE));
             if (Math.random() < 0.9) {
                 tree.scale.scale(3);
                 tree.renderer = spriteRenderer("tree");
@@ -77,20 +100,32 @@ class Game {
             const collider = tree.addComponent(PhysicalCollider);
             collider.data?.boxOffset.setComponents(0, -1.2);
             collider.data?.boxSize.setComponents(0.5, 0.6);
+            tree.position.setComponents(x + pos.x + 0.5, y + pos.y + 1.5);
             this.addGameObject(tree);
         }
-        if (Math.random() < 0.1) {
+        if (Math.random() < 0.0) {
             const center = new Vector(MathUtils.random(pos.x, pos.x + CHUNK_SIZE), MathUtils.random(pos.y, pos.y + CHUNK_SIZE));
             for (let j = 0; j < 20; j++) {
                 const diff = new Vector(MathUtils.random(-3, 3), MathUtils.random(-3, 3));
                 diff.add(center);
                 const flower = new GameObject();
                 flower.position.set(diff);
+                const footX = Math.floor(flower.position.x - pos.x);
+                const footY = Math.floor(flower.position.y - pos.y);
+                const tilePositionIndex = footX * CHUNK_SIZE + footY;
+                if (tilePositionIndex < 0 || tilePositionIndex >= TILES_PER_CHUNK) {
+                    continue;
+                }
+                const tileIndex = tiles[tilePositionIndex];
+                const tile = tileCodex[tileIndex];
+                if (!tile.canGrowPlants) {
+                    continue;
+                }
                 flower.renderer = spriteRenderer("rose");
                 this.addGameObject(flower);
             }
         }
-        if (Math.random() < 0.2) {
+        if (Math.random() < 0.0) {
             for (let i = 0; i < 15; i++) {
                 this.addGameObject(
                     AnimalFactory(
@@ -100,16 +135,7 @@ class Game {
                 )
             }
         }
-        const tiles: Tile[] = [];
-        for (let i = 0; i < CHUNK_SIZE * CHUNK_SIZE; i++) {
-            const noise = this.noise.get(
-                (pos.x + 1000 + Math.floor(i / CHUNK_SIZE)) * 0.1, 
-                (pos.y + 1000 +  (i % CHUNK_SIZE)) * 0.1
-            );
-            tiles.push({
-                spriteID: (noise < 0.6 ? "grass" : "water")
-            });
-        }
+        
         this.chunks.set(chunkIndex, { objects: [], tiles });
     }
 
@@ -127,6 +153,8 @@ class Game {
 
     private activeObjects: GameObject[] = [];
 
+    // Performs any boilerplate updates to the game such as removing dead objects
+    // adding new objects, updating active chunks, and generating new chunks.
     public preUpdate() {
         while (this.objectQueue.length > 0) {
             const obj = this.objectQueue.pop();
@@ -187,8 +215,9 @@ class Game {
                 const chunk = this.chunks.get(chunkIndex);
                 const chunkPos = getChunkWorldPosition(chunkIndex);
                 if (!chunk) continue;
-                for (let i = 0; i < CHUNK_SIZE * CHUNK_SIZE; i++) {
-                    const tile = chunk.tiles[i];
+                for (let i = 0; i < TILES_PER_CHUNK; i++) {
+                    const tileIndex = chunk.tiles[i];
+                    const tile = tileCodex[tileIndex];
                     this.camera.drawImage(getImage(tile.spriteID), chunkPos.x + Math.floor(i / CHUNK_SIZE) + 0.5, chunkPos.y + i % CHUNK_SIZE + 0.5, 1, 1);
                 }
             }
@@ -220,11 +249,19 @@ class Game {
             for (let xo = -RENDER_DISTANCE; xo <= RENDER_DISTANCE; xo++) {
                 for (let yo = -RENDER_DISTANCE; yo <= RENDER_DISTANCE; yo++) {
                     this.camera.strokeRect(chunkPos.x + xo * CHUNK_SIZE + CHUNK_SIZE / 2, chunkPos.y + yo * CHUNK_SIZE + CHUNK_SIZE / 2, CHUNK_SIZE, CHUNK_SIZE);
+                    this.camera.setFillColor("red");
+                    this.camera.fillRect(chunkPos.x + xo * CHUNK_SIZE, chunkPos.y + yo * CHUNK_SIZE, 0.5, 0.5);
                 }
             }
         }
+        if (settings.showCameraPosition) {
+            this.camera.setFillColor("orange");
+            this.camera.fillEllipse(this.camera.position.x, this.camera.position.y, 0.5, 0.5);
+        }
     }
 
+    // Performs game-level updates such as updating game objects and managing
+    // particles.
     public update(dt: number) {
         this._gameTime += dt;
 
