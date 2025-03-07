@@ -39,6 +39,7 @@ window.onload = async () => {
     await Promise.all([
         loadImage("grass", "assets/images/poop.webp"),
         loadImage("water", "assets/images/water.png"),
+        loadImage("rocks", "assets/images/rocks.png"),
         loadImage("peach", "assets/images/peach.png"),
         loadImage("peach_water", "assets/images/peach_water.png"),
         loadImage("tree", "assets/images/tree.png"),

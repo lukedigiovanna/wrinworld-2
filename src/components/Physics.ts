@@ -47,6 +47,7 @@ const Physics: ComponentFactory = (gameObject: GameObject) => {
                             }
                         }
                     });
+                    
                 }
             }
         },

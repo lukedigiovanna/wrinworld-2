@@ -28,16 +28,24 @@ const getChunkWorldPosition = (chunkIndex: number) => {
 interface Tile {
     spriteID: string;
     canGrowPlants: boolean;
+    wall: boolean;
 }
 
 const tileCodex: Tile[] = [
     {
         spriteID: "grass",
-        canGrowPlants: true
+        canGrowPlants: true,
+        wall: false,
     },
     {
         spriteID: "water",
-        canGrowPlants: false
+        canGrowPlants: false,
+        wall: false,
+    },
+    {
+        spriteID: "rocks",
+        canGrowPlants: false,
+        wall: true,
     }
 ];
 
@@ -75,7 +83,20 @@ class Game {
                 (pos.x + 1000 + Math.floor(i / CHUNK_SIZE)) * 0.1, 
                 (pos.y + 1000 +  (i % CHUNK_SIZE)) * 0.1
             );
-            tiles.push(noise < 0.6 ? 0 : 1);
+            let index;
+            if (noise < 0.4) {
+                index = 0;
+            }
+            else if (noise < 0.425) {
+                index = 2;
+            }
+            else if (noise < 0.6) {
+                index = 0;
+            }
+            else {
+                index = 1;
+            }
+            tiles.push(index);
         }
 
         for (let i = 0; i < 20; i++) {

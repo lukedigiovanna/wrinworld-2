@@ -102,6 +102,7 @@ class Camera {
         this.ctx.scale(Math.sign(w), 1);
         const sw = this.worldWidthToScreenWidth(w);
         this.ctx.drawImage(img, (Math.sign(w) - 1) * 0.5 * sw, 0, sw, this.worldHeightToScreenHeight(h));
+        // this.ctx.drawImage(img, 0, 0, img.width, img.height / 2,  (Math.sign(w) - 1) * 0.5 * sw, 0, sw, this.worldHeightToScreenHeight(h) / 2)
         // this.ctx.drawImage(img, 0, 0, sw, this.worldHeightToScreenHeight(h));
         this.ctx.setTransform(1, 0, 0, 1, 0, 0);
     }
