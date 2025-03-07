@@ -84,7 +84,6 @@ class Game {
             const tilePositionIndex = x * CHUNK_SIZE + y;
             const tileIndex = tiles[tilePositionIndex];
             const tile = tileCodex[tileIndex];
-            console.log(tilePositionIndex, tileIndex, tile);
             if (!tile.canGrowPlants) {
                 continue;
             }
@@ -341,6 +340,29 @@ class Game {
 
     public addParticle(particle: Particle) {
         this.particles.push(particle);
+    }
+
+    // Get the tile object from the tilemap stored at the given world position
+    // will generate the chunk there if necessary.
+    public getTile(position: Vector) {
+        const chunkIndex = getChunkIndex(position);
+        let chunk = this.chunks.get(chunkIndex);
+        if (!chunk) {
+            this.generateChunk(chunkIndex);
+            chunk = this.chunks.get(chunkIndex);
+        }
+        if (!chunk) {
+            throw Error("Something went wrong... chunk probably did not generate correctly.");
+        }
+        // Get the position as an offset into the chunk
+        const chunkPosition = getChunkWorldPosition(chunkIndex);
+        const offset = Vector.subtract(position, chunkPosition);
+        const offsetX = Math.floor(offset.x);
+        const offsetY = Math.floor(offset.y);
+        const tilePositionIndex = offsetX * CHUNK_SIZE + offsetY;
+        const tileIndex = chunk.tiles[tilePositionIndex];
+        const tile = tileCodex[tileIndex];
+        return tile;
     }
 }
 

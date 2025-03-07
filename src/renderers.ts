@@ -30,7 +30,7 @@ const spriteRenderer: (id: string) => Renderer = (id: string) => {
         render(camera: Camera, gameObject: GameObject) {
             const pos = Vector.add(gameObject.position, data.offset);
             const collider = gameObject.getComponent("physical-collider");
-            if (collider) {
+            if (collider && collider.data.castShadow) {
                 camera.setFillColor(`rgba(32,32,32,0.25)`);
                 camera.fillEllipse(pos.x + collider.data.boxOffset.x, pos.y + collider.data.boxOffset.y - 0.1, collider.data.boxSize.x, collider.data.boxSize.y);
             }

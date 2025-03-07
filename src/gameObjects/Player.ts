@@ -5,7 +5,7 @@ import { spriteRenderer } from "../renderers";
 
 const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const player = new GameObject();
-    player.scale.scale(2);
+    player.scale.setComponents(1.333, 2);
     player.position = position.copy();
     player.addComponent(Physics);
     player.addComponent(PlayerMovement);
@@ -14,7 +14,8 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const collider = player.addComponent(PhysicalCollider);
     collider.data?.boxOffset.setComponents(0, -0.8);
     collider.data?.boxSize.setComponents(1, 0.5);
-    player.renderer = spriteRenderer("peach");
+    collider.data.castShadow = false;
+    player.renderer = spriteRenderer("peach_water");
 
     player.tag = "player";
     return player;

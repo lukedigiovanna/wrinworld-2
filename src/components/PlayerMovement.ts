@@ -6,12 +6,16 @@ import { Vector } from "../utils";
 const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
         speed: 5,
-        physics: undefined
+        regularSpeed: 5,
+        waterSpeed: 2,
+        physics: undefined,
+        collider: undefined,
     }
     return {
         id: "playerMovement",
         start() {
             data.physics = gameObject.getComponent("physics");
+            data.collider = gameObject.getComponent("physical-collider");
         },
         update(dt: number) {
             const movement = Vector.zero();
@@ -37,6 +41,16 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
             }
             // console.log(gameObject.position);
             data.physics.data.velocity.set(movement);
+
+            const tile = gameObject.game.getTile(gameObject.position);
+            if (tile.spriteID === "water") {
+                gameObject.renderer!.data.spriteID = "peach_water";
+                data.speed = data.waterSpeed;
+            }
+            else {
+                data.speed = data.regularSpeed;
+                gameObject.renderer!.data.spriteID = "peach";
+            }
         },
         data
     }

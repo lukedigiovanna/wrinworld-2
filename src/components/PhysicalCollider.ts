@@ -6,6 +6,7 @@ import settings from "../settings";
 const PhysicalCollider: ComponentFactory = (gameObject: GameObject) => {
     const boxOffset = Vector.zero();
     const boxSize = gameObject.scale.copy();
+    const castShadow = true;
     return {
         id: "physical-collider",
         start() {},
@@ -21,7 +22,8 @@ const PhysicalCollider: ComponentFactory = (gameObject: GameObject) => {
         },
         data: {
             boxOffset,
-            boxSize
+            boxSize,
+            castShadow
         }
     }
 }

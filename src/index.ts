@@ -40,6 +40,7 @@ window.onload = async () => {
         loadImage("grass", "assets/images/poop.webp"),
         loadImage("water", "assets/images/water.png"),
         loadImage("peach", "assets/images/peach.png"),
+        loadImage("peach_water", "assets/images/peach_water.png"),
         loadImage("tree", "assets/images/tree.png"),
         loadImage("evergreen", "assets/images/evergreen.png"),
         loadImage("rose", "assets/images/rose.png"),
