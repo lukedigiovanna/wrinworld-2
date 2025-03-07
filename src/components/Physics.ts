@@ -19,9 +19,17 @@ const Physics: ComponentFactory = (gameObject: GameObject) => {
                         gameObject.position.y + collider.data?.boxOffset.y - collider.data?.boxSize.y / 2,
                     ];
                     gameObject.getAdjacentObjects().forEach((obj: GameObject) => {
-                        if (gameObject === obj) return;
+                        if (gameObject === obj) {
+                            return;
+                        }
                         const other = obj.getComponent("physical-collider");
                         if (other) {
+                            if (collider.data?.ignoreCollisionWith.has(obj.tag)) {
+                                return;
+                            }
+                            if (other.data?.ignoreCollisionWith.has(gameObject.tag)) {
+                                return;
+                            }
                             // check for collision
                             const [ol, or, ot, ob] = [
                                 obj.position.x + other.data?.boxOffset.x - other.data?.boxSize.x / 2,
@@ -44,6 +52,11 @@ const Physics: ComponentFactory = (gameObject: GameObject) => {
                                     }
                                 }
                                 gameObject.position.add(choices[smallest][1]);
+                                l = gameObject.position.x + collider.data?.boxOffset.x - collider.data?.boxSize.x / 2;
+                                r = gameObject.position.x + collider.data?.boxOffset.x + collider.data?.boxSize.x / 2;
+                                t = gameObject.position.y + collider.data?.boxOffset.y + collider.data?.boxSize.y / 2;
+                                b = gameObject.position.y + collider.data?.boxOffset.y - collider.data?.boxSize.y / 2;
+                                gameObject.onPhysicalCollision(obj, false);
                             }
                         }
                     });
@@ -76,6 +89,7 @@ const Physics: ComponentFactory = (gameObject: GameObject) => {
                             r = gameObject.position.x + collider.data?.boxOffset.x + collider.data?.boxSize.x / 2;
                             t = gameObject.position.y + collider.data?.boxOffset.y + collider.data?.boxSize.y / 2;
                             b = gameObject.position.y + collider.data?.boxOffset.y - collider.data?.boxSize.y / 2;
+                            gameObject.onPhysicalCollision(tile, true);
                         }
                     }    
                 }

@@ -21,8 +21,9 @@ class Camera {
 
     public update(dt: number) {
         // const diff = Vector.subtract(this.target, this.position);
-        // if (diff.magnitude > this.height / 8) {
-        //     diff.subtract(Vector.scaled(Vector.normalized(diff), this.height / 8));
+        // const threshold = this.height / 16;
+        // if (diff.magnitude > threshold) {
+        //     diff.subtract(Vector.scaled(Vector.normalized(diff), threshold));
         //     diff.scale(dt * 3);
         //     if (diff.magnitude > 0.025)
         //         this.position.add(diff);

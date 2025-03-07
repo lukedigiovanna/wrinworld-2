@@ -1,6 +1,6 @@
 import { GameObject, GameObjectFactory } from "./index";
 import { Vector, MathUtils } from "../utils";
-import { Hitbox, Physics, ParticleEmitter } from "../components";
+import { Hitbox, Physics, ParticleEmitter, PhysicalCollider } from "../components";
 import { spriteRenderer } from "../renderers";
 
 const BulletFactory: GameObjectFactory = (position: Vector, target: Vector) => {
@@ -11,10 +11,6 @@ const BulletFactory: GameObjectFactory = (position: Vector, target: Vector) => {
     bullet.lifespan = 3;
 
     bullet.renderer = spriteRenderer("fireball");
-    
-    const hitbox = bullet.addComponent(Hitbox);
-    hitbox.data.boxOffset.setComponents(0.25, 0);
-    hitbox.data.boxSize.setComponents(0.5, 0.5);
 
     bullet.addComponent((gameObject: GameObject) => {
         return {
@@ -29,6 +25,11 @@ const BulletFactory: GameObjectFactory = (position: Vector, target: Vector) => {
                     for (let i = 0; i < 25; i++) particles?.data.emit();
                     gameObject.destroy();
                 }
+            },
+            onPhysicalCollision(collision, isTile) {
+                const particles = gameObject.getComponent("particle-emitter-explosion");
+                for (let i = 0; i < 25; i++) particles?.data.emit();
+                gameObject.destroy();
             },
         }
     });
@@ -53,6 +54,13 @@ const BulletFactory: GameObjectFactory = (position: Vector, target: Vector) => {
     }, "explosion"));
     const physics = bullet.addComponent(Physics);
     physics.data.velocity.set(Vector.scaled(Vector.normalized(Vector.subtract(target, position)), 15));
+    const hitbox = bullet.addComponent(Hitbox);
+    hitbox.data.boxOffset.setComponents(0.25, 0);
+    hitbox.data.boxSize.setComponents(0.5, 0.5);
+    const collider = bullet.addComponent(PhysicalCollider);
+    collider.data?.ignoreCollisionWith.add("player");
+    collider.data.boxOffset.setComponents(0.25, 0);
+    collider.data.boxSize.setComponents(0.5, 0.5);
     bullet.rotation = physics.data.velocity.angle;
 
     bullet.tag = "bullet";

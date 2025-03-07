@@ -6,6 +6,7 @@ import { getImage } from "./imageLoader";
 import { rectangleRenderer, spriteRenderer } from "./renderers";
 import { PhysicalCollider, Particle } from "./components";
 import settings from "./settings";
+import { Tile, tileCodex } from "./tiles";
 
 const CHUNK_SIZE = 16;
 const TILES_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE;
@@ -24,30 +25,6 @@ const getChunkWorldPosition = (chunkIndex: number) => {
     const y = (chunkIndex % MAX_NUM_CHUNKS) * CHUNK_SIZE - WORLD_SIZE / 2;
     return new Vector(x, y);
 }
-
-interface Tile {
-    spriteID: string;
-    canGrowPlants: boolean;
-    wall: boolean;
-}
-
-const tileCodex: Tile[] = [
-    {
-        spriteID: "grass",
-        canGrowPlants: true,
-        wall: false,
-    },
-    {
-        spriteID: "water",
-        canGrowPlants: false,
-        wall: false,
-    },
-    {
-        spriteID: "rocks",
-        canGrowPlants: false,
-        wall: true,
-    }
-];
 
 interface Chunk {
     objects: GameObject[];
@@ -384,7 +361,7 @@ class Game {
         const tileIndex = chunk.tiles[tilePositionIndex];
         const tile = tileCodex[tileIndex];
         if (!tile) {
-            console.log(tilePositionIndex, tileIndex, tile);
+            console.log(offsetX, offsetY, chunkPosition, tilePositionIndex, tileIndex, tile);
         }
         return tile;
     }

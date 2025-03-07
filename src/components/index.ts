@@ -1,5 +1,6 @@
 import { GameObject } from "../gameObjects";
 import { Camera } from "../camera";
+import { Tile } from "tiles";
 
 type ComponentID = "physics" | string;
 
@@ -10,6 +11,7 @@ type Component = {
     destroy?: () => void;
     onHitboxCollisionEnter?: (collision: GameObject) => void;
     onHitboxCollisionExit?: (collision: GameObject) => void;
+    onPhysicalCollision?: (collision: GameObject | Tile, isTile: boolean) => void;
     render?: (camera: Camera) => void; // extraneous rendering logic
     debugRender?: (camera: Camera) => void;
     data?: any;

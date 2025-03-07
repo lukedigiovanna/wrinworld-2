@@ -4,6 +4,7 @@ import { Vector } from "../utils";
 import { Renderer } from "../renderers";
 import { Game, getChunkIndex } from "../game";
 import settings from "../settings";
+import { Tile } from "tiles";
 
 class GameObject {
     public position: Vector;
@@ -69,6 +70,14 @@ class GameObject {
         this.components.forEach((component: Component) => {
             if (component.onHitboxCollisionExit) {
                 component.onHitboxCollisionExit(collision);
+            }
+        });
+    }
+
+    public onPhysicalCollision(collision: GameObject | Tile, isTile: boolean) {
+        this.components.forEach((component: Component) => {
+            if (component.onPhysicalCollision) {
+                component.onPhysicalCollision(collision, isTile);
             }
         });
     }

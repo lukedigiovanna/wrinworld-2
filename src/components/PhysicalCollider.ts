@@ -23,7 +23,8 @@ const PhysicalCollider: ComponentFactory = (gameObject: GameObject) => {
         data: {
             boxOffset,
             boxSize,
-            castShadow
+            castShadow,
+            ignoreCollisionWith: new Set()
         }
     }
 }
