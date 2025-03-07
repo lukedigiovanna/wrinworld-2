@@ -1,12 +1,74 @@
-const canvas = document.getElementById("game-canvas") as HTMLCanvasElement;
-const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+import settings from "./settings";
+import { Game } from "./game";
+import { loadImage } from "./imageLoader";
+import { Vector } from "./utils";
 
-window.onresize = () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+let lastTime = new Date().getTime();
+let game: Game | undefined = undefined;
+let fpsAverage = 0;
+const fpsSamples = 5;
+let canvas: HTMLCanvasElement | undefined;
+let ctx: CanvasRenderingContext2D | null = null;
+
+const mainLoop = () => {
+    if (!game || !canvas || !ctx) {
+        throw Error("Cannot run main loop without initialized game");
+    }
+    const nowTime = new Date().getTime();
+    const dt = (nowTime - lastTime) / 1000;
+    fpsAverage = (fpsAverage * (fpsSamples - 1) + (1.0 / dt)) / fpsSamples;
+    lastTime = nowTime;
+    
+    game.preUpdate();
+    game.draw();
+    game.update(dt);
+
+    if (settings.showFPS) {
+        ctx.fillStyle = "red";
+        ctx.font = "bold 20px sans-serif";
+        ctx.fillText(`FPS: ${Math.round(fpsAverage)}`, 10, 25);
+        ctx.fillText(`OBJS: ${game.totalObjects}`, 10, 50);
+        ctx.fillText(`ACTIVE: ${game.totalActiveObjects}`, 10, 75);
+    }
+
+    window.requestAnimationFrame(mainLoop);
 }
 
-setInterval(() => {
-    context.fillStyle = "blue";
-    context.fillRect(0, 0, canvas.width, canvas.height);
-}, 50);
+window.onload = async () => {
+    
+    await Promise.all([
+        loadImage("grass", "assets/images/poop.webp"),
+        loadImage("water", "assets/images/water.png"),
+        loadImage("peach", "assets/images/peach.png"),
+        loadImage("tree", "assets/images/tree.png"),
+        loadImage("evergreen", "assets/images/evergreen.png"),
+        loadImage("rose", "assets/images/rose.png"),
+        loadImage("tallgrass", "assets/images/tallgrass.png"),
+        loadImage("fireball", "assets/images/fireball.webp"),
+        loadImage("chicken", "assets/images/chicken.png"),
+        loadImage("kfc", "assets/images/kfc.png"),
+        loadImage("feather", "assets/images/feather.png"),
+        loadImage("spark", "assets/images/spark.png"),
+        loadImage("smoke", "assets/images/smoke.webp"),
+    ]);
+
+    canvas = document.getElementById('game-canvas') as HTMLCanvasElement;    
+    ctx = canvas.getContext('2d');
+
+    if (!ctx) {
+        throw Error("Fatal: failed to get context");
+    }
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    window.onresize = () => {
+        if (!canvas) return;
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+
+    game = new Game(canvas, ctx);
+
+    window.requestAnimationFrame(mainLoop);
+}

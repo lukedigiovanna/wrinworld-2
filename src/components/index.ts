@@ -1,0 +1,28 @@
+import { GameObject } from "../gameObjects";
+import { Camera } from "../camera";
+
+type ComponentID = "physics" | string;
+
+type Component = {
+    id: ComponentID,
+    start?: () => void;
+    update?: (dt: number) => void;
+    destroy?: () => void;
+    onHitboxCollisionEnter?: (collision: GameObject) => void;
+    onHitboxCollisionExit?: (collision: GameObject) => void;
+    render?: (camera: Camera) => void; // extraneous rendering logic
+    debugRender?: (camera: Camera) => void;
+    data?: any;
+}
+
+type ComponentFactory = (gameObject: GameObject) => Component;
+
+export { Component, ComponentFactory, ComponentID};
+export * from "./Physics";
+export * from "./PlayerMovement";
+export * from "./PhysicalCollider";
+export * from "./Hitbox";
+export * from "./AnimalAI";
+export * from "./Health";
+export * from "./ItemDropper";
+export * from "./ParticleEmitter";

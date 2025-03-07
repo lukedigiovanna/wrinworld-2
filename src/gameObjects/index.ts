@@ -1,0 +1,166 @@
+import { Camera } from "../camera";
+import { Component, ComponentFactory, ComponentID } from "../components/index";
+import { Vector } from "../utils";
+import { Renderer } from "../renderers";
+import { Game, getChunkIndex } from "../game";
+import settings from "../settings";
+
+class GameObject {
+    public position: Vector;
+    public scale: Vector;
+    public rotation: number = 0;
+    public rotationPointOffset: Vector;
+
+    public lifespan: number | undefined = undefined;
+
+    public tag: string = "object"; // default tag is just 'object'
+
+    private _birthTime: number = 0;
+    
+    private components: Component[] = [];
+    public renderer: Renderer | undefined = undefined;
+
+    private _game: Game | undefined;
+
+    private _lastFrameChunkIndex = -1;
+
+    constructor() {
+        this.position = Vector.zero();
+        this.scale = new Vector(1, 1);
+        this.rotationPointOffset = Vector.zero();
+    }
+
+    public get game(): Game {
+        if (!this._game) {
+            throw Error("Cannot acquire the game field of an object not in a game!");
+        }
+        return this._game;
+    }
+
+    public set game(t: Game) {
+        this._game = t;
+        this._birthTime = this._game.time;
+    }
+
+    public get age() {
+        return this._game?.time as number - this._birthTime;
+    }
+
+    public get chunkIndex() {
+        // transform position into chunk index
+        return getChunkIndex(this.position);
+    }
+
+    public get lastFrameChunkIndex() {
+        return this.chunkIndex;
+    }
+
+    public onHitboxCollisionEnter(collision: GameObject) {
+        this.components.forEach((component: Component) => {
+            if (component.onHitboxCollisionEnter) {
+                component.onHitboxCollisionEnter(collision);
+            }
+        });
+    }
+
+    public onHitboxCollisionExit(collision: GameObject) {
+        this.components.forEach((component: Component) => {
+            if (component.onHitboxCollisionExit) {
+                component.onHitboxCollisionExit(collision);
+            }
+        });
+    }
+
+    public render(camera: Camera) {
+        if (this.renderer) {
+            this.renderer.render(camera, this);
+        }
+        
+        this.components.forEach((component: Component) => {
+            if (component.render) {
+                component.render(camera);
+            }
+            if (component.debugRender) {
+                component.debugRender(camera);
+            }
+        });
+
+        if (settings.showObjectCenters) {
+            camera.setFillColor("black");
+            camera.fillEllipse(this.position.x, this.position.y, 0.2, 0.2);
+            camera.setFillColor("magenta");
+            camera.fillEllipse(this.position.x, this.position.y, 0.15, 0.15);
+        }
+        if (settings.showRotationPoint) {
+            const point = Vector.add(this.position, this.rotationPointOffset);
+            camera.setFillColor("black");
+            camera.fillEllipse(point.x, point.y, 0.2, 0.2);
+            camera.setFillColor("yellow");
+            camera.fillEllipse(point.x, point.y, 0.15, 0.15);
+        }
+    }
+
+    public addComponent(componentFactory: ComponentFactory): Component {
+        const newComponent = componentFactory(this);
+        this.components.push(newComponent);
+        return newComponent;
+    }
+
+    public getComponent(componentID: ComponentID): Component | undefined {
+        for (let i = 0; i < this.components.length; i++) {
+            if (componentID === this.components[i].id) {
+                return this.components[i];
+            }
+        }
+        return undefined;
+    }
+
+    public update(dt: number) {
+        // check if we changed chunk indexes
+        this.components.forEach((component: Component) => {
+            if (component.update) {
+                component.update(dt);
+            }
+        });
+        
+        if (this.lifespan && this.age >= this.lifespan) {
+            this.destroy();
+        }
+
+        const currentCI = this.chunkIndex;
+        if (currentCI !== this._lastFrameChunkIndex) {
+            this.game.changeChunk(this, this._lastFrameChunkIndex); // change our chunk from where we were to where we are.
+        }
+        this._lastFrameChunkIndex = currentCI;
+    } 
+
+    public start() {
+        this._lastFrameChunkIndex = this.chunkIndex;
+        this.components.forEach((component: Component) => {
+            if (component.start) {
+                component.start();
+            }
+        })
+    }
+
+    public destroy() {
+        this.game.deleteGameObject(this);
+        this.components.forEach(component => {
+            if (component.destroy)
+                component.destroy();
+        });
+        this.components = [];
+    }
+
+    // gets all objects within a 1 chunk radius of this object
+    public getAdjacentObjects() {
+        return this.game.getAdjacentObjects(this.position);
+    }
+}
+
+type GameObjectFactory = (...args: any[]) => GameObject;
+
+export { GameObject, GameObjectFactory };
+export * from "./Bullet";
+export * from "./Player";
+export * from "./Animal";
