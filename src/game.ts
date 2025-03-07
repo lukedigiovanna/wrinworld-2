@@ -53,91 +53,6 @@ class Game {
         this.generateLevelOne();
     }
 
-    // private generateChunk(chunkIndex: number): void {
-    //     const pos = getChunkWorldPosition(chunkIndex);
-
-    //     const tiles: number[] = [];
-    //     for (let i = 0; i < TILES_PER_CHUNK; i++) {
-    //         const noise = this.noise.get(
-    //             (pos.x + 1000 + Math.floor(i / CHUNK_SIZE)) * 0.1, 
-    //             (pos.y + 1000 +  (i % CHUNK_SIZE)) * 0.1
-    //         );
-    //         let index;
-    //         if (noise < 0.4) {
-    //             index = 0;
-    //         }
-    //         else if (noise < 0.425) {
-    //             index = 2;
-    //         }
-    //         else if (noise < 0.6) {
-    //             index = 0;
-    //         }
-    //         else {
-    //             index = 1;
-    //         }
-    //         tiles.push(index);
-    //     }
-
-    //     for (let i = 0; i < 20; i++) {
-    //         const x = MathUtils.randomInt(0, CHUNK_SIZE - 1);
-    //         const y = MathUtils.randomInt(0, CHUNK_SIZE - 1);
-    //         const tilePositionIndex = x * CHUNK_SIZE + y;
-    //         const tileIndex = tiles[tilePositionIndex];
-    //         const tile = tileCodex[tileIndex];
-    //         if (!tile.canGrowPlants) {
-    //             continue;
-    //         }
-    //         const tree = new GameObject();
-    //         if (Math.random() < 0.9) {
-    //             tree.scale.scale(3);
-    //             tree.renderer = spriteRenderer("tree");
-    //         }
-    //         else {
-    //             tree.scale.setComponents(2, 3);
-    //             tree.renderer = spriteRenderer("evergreen");
-    //         }
-    //         const collider = tree.addComponent(PhysicalCollider);
-    //         collider.data?.boxOffset.setComponents(0, -1.2);
-    //         collider.data?.boxSize.setComponents(0.5, 0.6);
-    //         tree.position.setComponents(x + pos.x + 0.5, y + pos.y + 1.5);
-    //         this.addGameObject(tree);
-    //     }
-    //     if (Math.random() < 0.0) {
-    //         const center = new Vector(MathUtils.random(pos.x, pos.x + CHUNK_SIZE), MathUtils.random(pos.y, pos.y + CHUNK_SIZE));
-    //         for (let j = 0; j < 20; j++) {
-    //             const diff = new Vector(MathUtils.random(-3, 3), MathUtils.random(-3, 3));
-    //             diff.add(center);
-    //             const flower = new GameObject();
-    //             flower.position.set(diff);
-    //             const footX = Math.floor(flower.position.x - pos.x);
-    //             const footY = Math.floor(flower.position.y - pos.y);
-    //             const tilePositionIndex = footX * CHUNK_SIZE + footY;
-    //             if (tilePositionIndex < 0 || tilePositionIndex >= TILES_PER_CHUNK) {
-    //                 continue;
-    //             }
-    //             const tileIndex = tiles[tilePositionIndex];
-    //             const tile = tileCodex[tileIndex];
-    //             if (!tile.canGrowPlants) {
-    //                 continue;
-    //             }
-    //             flower.renderer = spriteRenderer("rose");
-    //             this.addGameObject(flower);
-    //         }
-    //     }
-    //     if (Math.random() < 0.0) {
-    //         for (let i = 0; i < 15; i++) {
-    //             this.addGameObject(
-    //                 AnimalFactory(
-    //                     new Vector(MathUtils.random(pos.x, pos.x + CHUNK_SIZE), MathUtils.random(pos.y, pos.y + CHUNK_SIZE)), 
-    //                     "chicken"
-    //                 )
-    //             )
-    //         }
-    //     }
-        
-    //     this.chunks.set(chunkIndex, { objects: [], tiles });
-    // }
-
     private generateChunk(chunkIndex: number): void {
         const tiles: number[] = [];
         for (let i = 0; i < TILES_PER_CHUNK; i++) {
@@ -174,7 +89,7 @@ class Game {
         for (let i = 0; i < N; i++) {
             const ps = i / N;
             const pt = (i + 1) / N;
-            const x = MathUtils.randomInt(left + 4, right - 4);
+            const x = MathUtils.randomInt(left + 6, right - 6);
             const y = marginTrail + MathUtils.randomInt(ps * height, pt * height);
             pathPoints.push(new Vector(x, y));
         }
@@ -193,10 +108,12 @@ class Game {
 
         // 3. Put rock wall in trail margined areas.
         for (let x = left; x <= right; x++) {
-            if (Math.abs(x) <= 4) {
-                continue;
-            }
-            for (let y = 0; y < marginTrail - 4; y++) {
+            const offset = this.noise.get(x / 8, 0.342) * 4;
+            for (let y = 0; y < marginTrail - 4 + offset; y++) {
+                const xoff = this.noise.get(0.632, y / 8) * 4;
+                if (Math.abs(x) + xoff <= 7) {
+                    continue;
+                }
                 this.setTile(new Vector(x, y), TileIndex.ROCKS);
                 this.setTile(new Vector(x, top - y), TileIndex.ROCKS);
             }
@@ -204,13 +121,12 @@ class Game {
 
         // 4. Put rock wall in side margins
         for (let y = bottom; y <= top; y++) {
-            for (let x = 0; x <= marginSidesRocks; x++) {
+            const offset = this.noise.get(0.342, y / 4) * 12 - 12;
+            for (let x = offset; x <= marginSidesRocks; x++) {
                 this.setTile(new Vector(left - 1 - x, y), TileIndex.ROCKS);
                 this.setTile(new Vector(right + 1 + x, y), TileIndex.ROCKS);
             }
         }
-
-        // 5. Surround region with rock wall.
 
         // 6. Place trees
         for (let i = 0; i < width * height / 4; i++) {
