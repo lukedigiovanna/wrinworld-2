@@ -10,8 +10,8 @@ type Settings = {
 
 const settings: Settings = {
     showFPS: true,
-    showPhysicalColliders: true,
-    showHitboxes: true,
+    showPhysicalColliders: false,
+    showHitboxes: false,
     showObjectCenters: false,
     showRotationPoint: false,
     showChunks: false,

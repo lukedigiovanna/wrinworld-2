@@ -44,6 +44,8 @@ class Game {
 
     private noise = new PerlinNoise(MathUtils.randomInt(1000, 100000));
 
+    private paused: boolean = false;
+
     constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
         this.camera = new Camera(canvas, ctx);
         this._player = PlayerFactory(new Vector(0, 16));
@@ -260,6 +262,17 @@ class Game {
     // Performs game-level updates such as updating game objects and managing
     // particles.
     public update(dt: number) {
+        if (this.paused) {
+            if (input.isKeyPressed("Escape")) {
+                this.unpause();
+            }
+            return;
+        }
+
+        if (input.isKeyPressed("Escape")) {
+            this.pause();
+        }
+
         this._gameTime += dt;
 
         if (input.mousePressed) {
@@ -495,6 +508,19 @@ class Game {
 
     public get player() {
         return this._player;
+    }
+
+    // Pauses the game
+    public pause() {
+        console.log("[paused]");
+        this.paused = true;
+        $("#pause-screen").css("opacity", "100%");
+    }
+    
+    public unpause() {
+        console.log("[unpaused]");
+        this.paused = false;
+        $("#pause-screen").css("opacity", "0%");
     }
 }
 

@@ -8,6 +8,7 @@ class Input {
     private _mousePressed = false; // turns true when mouse pressed, false when the event is queried.
     private _mousePosition = Vector.zero();
     private _keyDownMap = new Map<string, boolean>(); 
+    private _keyPressedMap = new Map<string, boolean>();
 
     constructor() {
         // initialize listeners
@@ -27,10 +28,12 @@ class Input {
         }
 
         window.onkeydown = (ev: KeyboardEvent) => {
-            this._keyDownMap.set(ev.code, true);            
+            this._keyDownMap.set(ev.code, true);
+            this._keyPressedMap.set(ev.code, true);         
         }
         window.onkeyup = (ev: KeyboardEvent) => {
             this._keyDownMap.set(ev.code, false);
+            this._keyPressedMap.set(ev.code, false);         
         }
     }
 
@@ -50,6 +53,12 @@ class Input {
 
     public isKeyDown(code: string): boolean {
         return !!this._keyDownMap.get(code);
+    }
+
+    public isKeyPressed(code: string): boolean {
+        const returnValue = !!this._keyPressedMap.get(code);
+        this._keyPressedMap.set(code, false);
+        return returnValue;
     }
 }
 

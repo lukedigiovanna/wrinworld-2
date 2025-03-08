@@ -4,9 +4,12 @@ import { ComponentFactory } from "./index";
 import settings from "../settings";
 
 const PhysicalCollider: ComponentFactory = (gameObject: GameObject) => {
-    const boxOffset = Vector.zero();
-    const boxSize = gameObject.scale.copy();
-    const castShadow = true;
+    const data = {
+        boxOffset: Vector.zero(),
+        boxSize: gameObject.scale.copy(),
+        castShadow: true,
+        ignoreCollisionWith: new Set()
+    };
     return {
         id: "physical-collider",
         start() {},
@@ -17,15 +20,10 @@ const PhysicalCollider: ComponentFactory = (gameObject: GameObject) => {
             if (settings.showPhysicalColliders) {
                 camera.setStrokeColor("red");
                 camera.setLineWidth(3);
-                camera.strokeRect(gameObject.position.x + this.data.boxOffset.x, gameObject.position.y + this.data.boxOffset.y, boxSize.x, boxSize.y);
+                camera.strokeRect(gameObject.position.x + data.boxOffset.x, gameObject.position.y + data.boxOffset.y, data.boxSize.x, data.boxSize.y);
             }
         },
-        data: {
-            boxOffset,
-            boxSize,
-            castShadow,
-            ignoreCollisionWith: new Set()
-        }
+        data
     }
 }
 
