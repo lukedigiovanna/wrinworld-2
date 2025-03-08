@@ -109,7 +109,18 @@ class Game {
             }
         }
 
-        // 3. Put rock wall in trail margined areas.
+        // 3. Add ponds
+        for (let x = left; x <= right; x++) {
+            for (let y = marginTrail; y <= height + marginTrail; y++) {
+                if (this.noise.get(x / 16.32 + 1000, y / 16.543 + 1000) > 0.6) {
+                    if (!this.isTileInArea(new Vector(x, y), 2, TileIndex.PATH)) {
+                        this.setTile(new Vector(x, y), TileIndex.WATER);
+                    }
+                }
+            }
+        }
+
+        // 4. Put rock wall in trail margined areas.
         for (let x = left; x <= right; x++) {
             const offset = this.noise.get(x / 8, 0.342) * 4;
             for (let y = 0; y < marginTrail - 4 + offset; y++) {
@@ -122,7 +133,7 @@ class Game {
             }
         }
 
-        // 4. Put rock wall in side margins
+        // 5. Put rock wall in side margins
         for (let y = bottom; y <= top; y++) {
             const offset = this.noise.get(0.342, y / 4) * 12 - 12;
             for (let x = offset; x <= marginSidesRocks; x++) {
@@ -135,24 +146,12 @@ class Game {
         const portalPositions = [];
         for (let i = 0; i < 10; i++) {
             let position;
-            let validSpawn;
             do {
                 position = new Vector(
                     MathUtils.randomInt(left, right) + 0.5,
                     MathUtils.randomInt(bottom, top) + 0.5
                 );
-                validSpawn = true;
-                const R = 2;
-                for (let xo = -R; xo <= R; xo++) {
-                    for (let yo = -R; yo <= R; yo++) {
-                        if (!this.getTile(Vector.add(position, new Vector(xo, yo))).canSpawnPortal) {
-                            validSpawn = false;
-                            break;
-                        }
-                    }
-                    if (!validSpawn) break;
-                }
-            } while (!validSpawn);
+            } while (this.isTileWithPropertyInArea(position, 2, "canSpawnPortal", false));
             this.addGameObject(PortalFactory(position));
             portalPositions.push(position);
         }
@@ -466,6 +465,32 @@ class Game {
     public getTile(position: Vector): Tile {
         const tileIndex = this.getTileIndex(position);
         return tileCodex[tileIndex];
+    }
+
+    // Returns true if any tile in the given radius around the given position is
+    // the given tileIndex.
+    public isTileInArea(position: Vector, radius: number, tileIndex: TileIndex): boolean {
+        for (let xo = -radius; xo <= radius; xo++) {
+            for (let yo = -radius; yo <= radius; yo++) {
+                if (this.getTileIndex(Vector.add(position, new Vector(xo, yo))) === tileIndex) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // Returns true if any tile in the given radius around the given position 
+    // has the given property-value pair.
+    public isTileWithPropertyInArea(position: Vector, radius: number, property: keyof Tile, value: any): boolean {
+        for (let xo = -radius; xo <= radius; xo++) {
+            for (let yo = -radius; yo <= radius; yo++) {
+                if (this.getTile(Vector.add(position, new Vector(xo, yo)))[property] === value) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public get player() {
