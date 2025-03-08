@@ -68,6 +68,7 @@ window.onload = async () => {
         
         loadImage("fireball", "assets/images/fireball.webp"),
         loadImage("kfc", "assets/images/kfc.png"),
+        loadImage("zombie_brains", "assets/images/zombie_brains.png"),
         
         loadImage("feather", "assets/images/feather.png"),
         loadImage("spark", "assets/images/spark.png"),

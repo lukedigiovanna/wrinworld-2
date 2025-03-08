@@ -2,7 +2,6 @@ import { GameObject, GameObjectFactory } from "./index";
 import { Vector, MathUtils } from "../utils";
 import { Hitbox, Physics, AnimalAI, PhysicalCollider, Health, ItemDropper, ParticleEmitter, Particle } from "../components";
 import { spriteRenderer } from "../renderers";
-import { getItem } from "../items";
 
 const particleFall = (particle: Particle, dt: number) => {
     const age = particle.gameObject?.age as number - particle.birthTime;
@@ -21,7 +20,7 @@ const AnimalFactory: GameObjectFactory = (position: Vector, spriteID: string) =>
     const collider = animal.addComponent(PhysicalCollider);
     animal.addComponent(Hitbox);
     animal.addComponent(AnimalAI);
-    animal.addComponent(ItemDropper(getItem("kfc")));
+    // animal.addComponent(ItemDropper());
     animal.addComponent(ParticleEmitter({
         rate: () => 0, 
         spriteID: () => "feather", 

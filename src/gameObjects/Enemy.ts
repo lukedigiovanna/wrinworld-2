@@ -1,8 +1,9 @@
 import { GameObject, GameObjectFactory } from "./";
 import { spriteRenderer } from "../renderers";
 import { Vector } from "../utils";
-import { Health, Hitbox, ComponentFactory, ZombieAI, Physics, PhysicalCollider } from "../components";
+import { Health, Hitbox, ComponentFactory, ZombieAI, Physics, PhysicalCollider, ItemDropper } from "../components";
 import { TileIndex } from "../tiles";
+import { ItemDropChance, ItemIndex } from "../items";
 
 enum EnemyIndex {
     ZOMBIE
@@ -15,6 +16,7 @@ interface Enemy {
     physicalColliderOffset: Vector;
     physicalColliderSize: Vector;
     hp: number;
+    drops: ItemDropChance[];
     ai: ComponentFactory;
 }
 
@@ -26,6 +28,9 @@ const enemyCodex: Enemy[] = [
         physicalColliderOffset: new Vector(0, -1),
         physicalColliderSize: new Vector(0.8, 0.3),
         hp: 20,
+        drops: [
+            {chance: 0.25, itemIndex: ItemIndex.ZOMBIE_BRAINS}
+        ],
         ai: ZombieAI,
     }
 ]
@@ -43,6 +48,7 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
     health.data.hp = enemyType.hp;
     enemy.addComponent(Hitbox);
     enemy.addComponent(Physics);
+    enemy.addComponent(ItemDropper(enemyType.drops));
     enemy.addComponent(enemyType.ai);
     const collider = enemy.addComponent(PhysicalCollider);
     collider.data.boxOffset = enemyType.physicalColliderOffset.copy();

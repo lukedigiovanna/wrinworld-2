@@ -2,24 +2,28 @@
 
 interface Item {
     iconSpriteID: string;
-};
+    stacks: boolean;
+}
 
-const items = new Map<string, Item>();
+enum ItemIndex {
+    ZOMBIE_BRAINS
+}
 
-items.set("kfc", {
-    iconSpriteID: "kfc"
-});
-
-const getItem: (itemID: string) => Item = (itemID: string) => {
-    const item = items.get(itemID);
-    if (!item) {
-        throw Error("No item found with id " + itemID);
+const itemsCodex: Item[] = [
+    {
+        iconSpriteID: "zombie_brains",
+        stacks: true
     }
-    return item;
+];
+
+interface ItemDropChance {
+    chance: number; // 0 to 1
+    itemIndex: ItemIndex;
 }
 
 class Inventory {
 
 };
 
-export { getItem, Item };
+export { itemsCodex, ItemIndex };
+export type { Item, ItemDropChance };

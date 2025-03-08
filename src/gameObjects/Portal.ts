@@ -33,7 +33,7 @@ const PortalFactory: GameObjectFactory = (position: Vector) => {
     portal.addComponent((gameObject: GameObject) => {
         const data = {
             timer: 0,
-            rate: 0.2
+            rate: 0.05
         }
         return {
             id: "portal-spawner",
