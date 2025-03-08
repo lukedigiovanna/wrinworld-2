@@ -3,6 +3,7 @@ import { Item } from "../items";
 import { GameObjectFactory, GameObject } from "./index";
 import { Vector } from "../utils";
 import { Hitbox } from "../components";
+import { getSound } from "../soundLoader";
 
 const ItemDropFactory: GameObjectFactory = (item: Item, position: Vector) => {
     const itemDrop = new GameObject();
@@ -25,6 +26,7 @@ const ItemDropFactory: GameObjectFactory = (item: Item, position: Vector) => {
                     const inventoryManager = collision.getComponent("inventory-manager");
                     if (inventoryManager?.data.inventory.addItem(item)) {
                         gameObject.destroy();
+                        getSound("item_pickup").play();
                     }
                 }
             },

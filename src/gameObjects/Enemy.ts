@@ -29,7 +29,9 @@ const enemyCodex: Enemy[] = [
         physicalColliderSize: new Vector(0.8, 0.3),
         hp: 20,
         drops: [
-            {chance: 1, itemIndex: ItemIndex.ZOMBIE_BRAINS}
+            {chance: 0.2, itemIndex: ItemIndex.ZOMBIE_BRAINS},
+            {chance: 0.8, itemIndex: ItemIndex.ZOMBIE_FLESH},
+            {chance: 0.8, itemIndex: ItemIndex.ZOMBIE_FLESH},
         ],
         ai: ZombieAI,
     }

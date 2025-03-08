@@ -2,6 +2,7 @@ import { GameObjectFactory, GameObject } from "./index";
 import { Vector } from "../utils";
 import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager, Health } from "../components";
 import { spriteRenderer } from "../renderers";
+import { ItemIndex, itemsCodex } from "../items";
 
 const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const player = new GameObject();
@@ -19,7 +20,8 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const health = player.addComponent(Health);
     health.data.showHealthBar = false;
 
-    player.addComponent(InventoryManager);
+    const inventoryManager = player.addComponent(InventoryManager);
+    inventoryManager.data.inventory.addItem(itemsCodex[ItemIndex.STONE_SWORD]);
 
     player.renderer = spriteRenderer("peach_water");
 

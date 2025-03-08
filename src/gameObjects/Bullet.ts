@@ -19,7 +19,7 @@ const BulletFactory: GameObjectFactory = (position: Vector, target: Vector) => {
                 if (collision.tag === "animal" || collision.tag === "portal" || collision.tag ===  "enemy") {
                     const health = collision.getComponent("health");
                     if (health) {
-                        health.data.hp -= 3;
+                        health.data.hp -= 20;
                     }
                     const particles = gameObject.getComponent("particle-emitter-explosion");
                     for (let i = 0; i < 25; i++) particles?.data.emit();

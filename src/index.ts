@@ -1,7 +1,7 @@
 import settings from "./settings";
 import { Game } from "./game";
 import { loadImage } from "./imageLoader";
-import { Vector } from "./utils";
+import { loadSound } from "./soundLoader";
 
 let lastTime = new Date().getTime();
 let game: Game | undefined = undefined;
@@ -45,6 +45,7 @@ const mainLoop = () => {
 }
 
 window.onload = async () => {
+    console.log("[LOADING ASSETS...]");
     await Promise.all([
         loadImage("grass", "assets/images/grass.png"),
         loadImage("water", "assets/images/water.png"),
@@ -67,9 +68,12 @@ window.onload = async () => {
         loadImage("tallgrass", "assets/images/tallgrass.png"),
         
         loadImage("fireball", "assets/images/fireball.webp"),
+
         loadImage("kfc", "assets/images/kfc.png"),
         loadImage("zombie_brains", "assets/images/zombie_brains.png"),
-        
+        loadImage("zombie_flesh", "assets/images/zombie_flesh.png"),
+        loadImage("stone_sword_icon", "assets/images/stone_sword_icon.png"),
+
         loadImage("feather", "assets/images/feather.png"),
         loadImage("spark", "assets/images/spark.png"),
         loadImage("smoke", "assets/images/smoke.webp"),
@@ -77,7 +81,11 @@ window.onload = async () => {
     
         loadImage("hotbar_slot", "assets/images/hotbar_slot.png"),
         loadImage("hotbar_slot_selected", "assets/images/hotbar_slot_selected.png"),
+        
+        // -- SOUNDS --
+        loadSound("item_pickup", "assets/sounds/item_pickup.wav", 5)
     ]);
+    console.log("[FINISHED LOADING ASSETS...]");
 
     canvas = document.getElementById('game-canvas') as HTMLCanvasElement;    
     ctx = canvas.getContext('2d');

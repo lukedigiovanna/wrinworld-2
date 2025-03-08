@@ -3,7 +3,9 @@
 import { getImage } from "./imageLoader";
 
 enum ItemIndex {
-    ZOMBIE_BRAINS
+    STONE_SWORD,
+    ZOMBIE_BRAINS,
+    ZOMBIE_FLESH,
 }
 
 interface Item {
@@ -14,9 +16,19 @@ interface Item {
 
 const itemsCodex: Item[] = [
     {
+        itemIndex: ItemIndex.STONE_SWORD,
+        iconSpriteID: "stone_sword_icon",
+        maxStack: 1
+    },
+    {
         itemIndex: ItemIndex.ZOMBIE_BRAINS,
         iconSpriteID: "zombie_brains",
         maxStack: 16
+    },
+    {
+        itemIndex: ItemIndex.ZOMBIE_FLESH,
+        iconSpriteID: "zombie_flesh",
+        maxStack: 64
     }
 ];
 
