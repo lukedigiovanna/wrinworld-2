@@ -73,7 +73,10 @@ window.onload = async () => {
         loadImage("feather", "assets/images/feather.png"),
         loadImage("spark", "assets/images/spark.png"),
         loadImage("smoke", "assets/images/smoke.webp"),
-        loadImage("portal_particle", "assets/images/portal_particle.png")
+        loadImage("portal_particle", "assets/images/portal_particle.png"),
+    
+        loadImage("hotbar_slot", "assets/images/hotbar_slot.png"),
+        loadImage("hotbar_slot_selected", "assets/images/hotbar_slot_selected.png"),
     ]);
 
     canvas = document.getElementById('game-canvas') as HTMLCanvasElement;    

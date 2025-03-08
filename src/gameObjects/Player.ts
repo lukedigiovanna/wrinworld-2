@@ -16,7 +16,8 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
     collider.data?.boxSize.setComponents(1, 0.5);
     collider.data.castShadow = false;
 
-    player.addComponent(Health);
+    const health = player.addComponent(Health);
+    health.data.showHealthBar = false;
 
     player.renderer = spriteRenderer("peach_water");
 

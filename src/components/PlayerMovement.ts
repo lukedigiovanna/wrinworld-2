@@ -49,11 +49,13 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
             if (tileIndex === TileIndex.WATER) {
                 gameObject.renderer!.data.spriteID = "peach_water";
                 gameObject.renderer!.data.offset = new Vector(0, Math.sin(gameObject.age * 6) * 0.04);
+                data.collider.data.castShadow = false;
                 data.speed = data.waterSpeed;
             }
             else {
                 data.speed = data.regularSpeed;
                 gameObject.renderer!.data.spriteID = "peach";
+                data.collider.data.castShadow = true;
             }
         },
         data

@@ -1,3 +1,25 @@
+@font-face {
+    font-family: "Enchanted Land";
+    src:
+      local("Enchanted Land"),
+      url("assets/fonts/Enchanted\ Land.otf") format("opentype")
+}
+
+@font-face {
+    font-family: "Heavitas";
+    src:
+      local("Heavitas"),
+      url("assets/fonts/Heavitas.ttf") format("truetype")
+}
+
+.primary-font {
+    font-family: "Enchanted Land";
+}
+
+.secondary-font {
+    font-family: "Heavitas";
+}
+
 #game-canvas {
     position: absolute;
     left: 0;
@@ -64,13 +86,15 @@
 
 .hotbar-slot .count {
     position: absolute;
-    right: 12%;
+    right: 15%;
     bottom: 8%;
     text-align: right;
     font-weight: bold;
     color: #111;
-    font-size: 18px;
-    font-family: sans-serif;
+    font-size: 22px;
+    font-family: "Heavitas";
+    -webkit-text-stroke: 0.1px white;
+    text-stroke: 0.1px white;
 }
 
 #pause-screen {
@@ -95,6 +119,8 @@
 }
 
 #pause-screen h1 {
-    font-family: sans-serif;
-    font-size: 52px;
+    font-size: 152px;
+    -webkit-text-stroke: 1px #111;
+    text-stroke: 1px #111;
+
 }
