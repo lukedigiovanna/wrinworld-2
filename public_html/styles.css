@@ -17,15 +17,64 @@
     height: 100vh;
 }
 
-#pause-screen {
+.ui > div { 
     position: absolute;
-    display: block;
-    opacity: 0%;
     user-select: none;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
+}
+
+#hotbar {
+    position: absolute;
+    display: flex;
+    gap: 5px;
+    bottom: 50px;
+    width: 100%;
+    height: 100px;
+    align-items: center;
+    justify-content: center;
+}
+
+.hotbar-slot {
+    position: relative;
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+}
+
+.hotbar-slot img {
+    image-rendering: pixelated;
+}
+
+.hotbar-slot .slot-icon {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.hotbar-slot .item {
+    position: absolute;
+    width: 70%;
+    height: 70%;
+    left: 15%;
+    top: 15%;
+}
+
+.hotbar-slot .count {
+    position: absolute;
+    right: 12%;
+    bottom: 8%;
+    text-align: right;
+    font-weight: bold;
+    color: #111;
+    font-size: 18px;
+    font-family: sans-serif;
+}
+
+#pause-screen {
+    opacity: 0%;
     transition: all 0.2s ease-in-out;
 }
 
