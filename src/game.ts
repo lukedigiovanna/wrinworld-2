@@ -1,4 +1,4 @@
-import { BulletFactory, GameObject, PlayerFactory, AnimalFactory, PortalFactory } from "./gameObjects";
+import { BulletFactory, GameObject, PlayerFactory, AnimalFactory, PortalFactory, EnemyFactory, EnemyIndex } from "./gameObjects";
 import { Vector, MathUtils, PerlinNoise, CatmullRomParametricCurve } from "./utils";
 import input from "./input";
 import { Camera } from "./camera";
@@ -38,7 +38,7 @@ class Game {
     private _totalObjects = 0;
     private chunks = new Map<number, Chunk>();
     private camera: Camera;
-    private player: GameObject;
+    private _player: GameObject;
     private _gameTime: number = 0;
     private particles: Particle[] = [];
 
@@ -46,9 +46,11 @@ class Game {
 
     constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
         this.camera = new Camera(canvas, ctx);
-        this.player = PlayerFactory(new Vector(0, 16));
-        this.addGameObject(this.player);
-        this.camera.target = this.player.position;
+        this._player = PlayerFactory(new Vector(0, 16));
+        this.addGameObject(this._player);
+        this.camera.target = this._player.position;
+
+        this.addGameObject(EnemyFactory(new Vector(0, 24), EnemyIndex.ZOMBIE));
 
         this.generateLevelOne();
         this.camera.verticalBoundary = [16, 24 + 8 + 96];
@@ -130,7 +132,8 @@ class Game {
         }
 
         // 6. Place portals
-        for (let i = 0; i < 20; i++) {
+        const portalPositions = [];
+        for (let i = 0; i < 10; i++) {
             let position;
             let validSpawn;
             do {
@@ -151,6 +154,7 @@ class Game {
                 }
             } while (!validSpawn);
             this.addGameObject(PortalFactory(position));
+            portalPositions.push(position);
         }
 
         // 7. Place trees
@@ -159,6 +163,16 @@ class Game {
                 MathUtils.randomInt(left, right),
                 MathUtils.randomInt(bottom, top)
             );
+            let tooCloseToPortal = false;
+            for (let j = 0; j < portalPositions.length; j++) {
+                if (Vector.subtract(portalPositions[j], position).magnitude < 3) {
+                    tooCloseToPortal = true;
+                    break;
+                }
+            }
+            if (tooCloseToPortal) {
+                continue;
+            }
             const tile = this.getTile(position); 
             if (!tile.canGrowPlants) {
                 continue;
@@ -250,7 +264,7 @@ class Game {
         this._gameTime += dt;
 
         if (input.mousePressed) {
-            const bullet = BulletFactory(this.player.position, this.camera.screenToWorldPosition(input.mousePosition));
+            const bullet = BulletFactory(this._player.position, this.camera.screenToWorldPosition(input.mousePosition));
             this.addGameObject(bullet);
         }
 
@@ -452,6 +466,10 @@ class Game {
     public getTile(position: Vector): Tile {
         const tileIndex = this.getTileIndex(position);
         return tileCodex[tileIndex];
+    }
+
+    public get player() {
+        return this._player;
     }
 }
 

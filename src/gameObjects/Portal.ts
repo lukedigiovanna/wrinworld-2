@@ -3,6 +3,7 @@ import { Item } from "../items";
 import { GameObjectFactory, GameObject } from "./index";
 import { Vector, MathUtils } from "../utils";
 import { Hitbox, ParticleEmitter, Health } from "../components";
+import { EnemyFactory, EnemyIndex } from "./Enemy";
 
 const PortalFactory: GameObjectFactory = (position: Vector) => {
     const portal = new GameObject();
@@ -29,6 +30,23 @@ const PortalFactory: GameObjectFactory = (position: Vector) => {
             },
         }
     });
+    portal.addComponent((gameObject: GameObject) => {
+        const data = {
+            timer: 0,
+            rate: 0.2
+        }
+        return {
+            id: "portal-spawner",
+            update(dt) {
+                data.timer += dt;
+                if (data.timer > 1 / data.rate) {
+                    data.timer -= 1 / data.rate;
+                    gameObject.game.addGameObject(EnemyFactory(gameObject.position, EnemyIndex.ZOMBIE));
+                }
+            },
+            data
+        }
+    })
     portal.addComponent(Health);
     portal.tag = "portal";
     return portal;

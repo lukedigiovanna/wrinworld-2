@@ -28,3 +28,4 @@ export * from "./AnimalAI";
 export * from "./Health";
 export * from "./ItemDropper";
 export * from "./ParticleEmitter";
+export * from "./EnemyAI";
