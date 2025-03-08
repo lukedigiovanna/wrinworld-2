@@ -122,9 +122,9 @@ class Game {
 
         // 4. Put rock wall in trail margined areas.
         for (let x = left; x <= right; x++) {
-            const offset = this.noise.get(x / 8, 0.342) * 4;
+            const offset = this.noise.get(x / 8 + 1000, 1000.342) * 4;
             for (let y = 0; y < marginTrail - 4 + offset; y++) {
-                const xoff = this.noise.get(0.632, y / 8) * 4;
+                const xoff = this.noise.get(1000.632, y / 8 + 1000) * 4;
                 if (Math.abs(x) + xoff <= 7) {
                     continue;
                 }

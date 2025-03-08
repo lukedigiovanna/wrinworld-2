@@ -1,8 +1,11 @@
+import { TileIndex } from "../tiles";
 import { Vector } from "../utils";
 import { ComponentFactory } from "./index";
 
 const ZombieAI: ComponentFactory = (gameObject) => {
     const data: any = {
+        speed: 1,
+        waterSpeed: 0.5,
         target: undefined,
         physics: undefined
     };
@@ -11,11 +14,15 @@ const ZombieAI: ComponentFactory = (gameObject) => {
         start() {
             data.target = gameObject.game.player.position;
             data.physics = gameObject.getComponent("physics");
-            console.log(data.target, data.physics);
         },
         update(dt) {
             const direction = Vector.subtract(data.target, gameObject.position);
-            direction.normalize();
+            let speed = data.speed;
+            if (gameObject.game.getTileIndex(gameObject.position) === TileIndex.WATER) {
+                speed = data.waterSpeed;
+            }
+            direction.normalize()
+            direction.scale(speed);
             data.physics.data.velocity.set(direction);
             if (direction.x < 0) {
                 gameObject.scale.x = Math.abs(gameObject.scale.x) * -1;
