@@ -3,6 +3,7 @@ import { GameObject } from "../gameObjects";
 import input from "../input";
 import { Vector } from "../utils";
 import { TileIndex } from "../tiles";
+import { Inventory } from "../items";
 
 const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
@@ -11,12 +12,14 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
         waterSpeed: 2,
         physics: undefined,
         collider: undefined,
+        inventory: new Inventory()
     }
     return {
-        id: "playerMovement",
+        id: "player-movement",
         start() {
             data.physics = gameObject.getComponent("physics");
             data.collider = gameObject.getComponent("physical-collider");
+            data.inventory.updateUI();
         },
         update(dt: number) {
             const movement = Vector.zero();

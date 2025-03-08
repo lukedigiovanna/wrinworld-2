@@ -22,7 +22,10 @@ const ItemDropFactory: GameObjectFactory = (item: Item, position: Vector) => {
             id: "item-pickup",
             onHitboxCollisionEnter(collision) {
                 if (collision.tag === "player") {
-                    gameObject.destroy();
+                    const inventoryManager = collision.getComponent("inventory-manager");
+                    if (inventoryManager?.data.inventory.addItem(item)) {
+                        gameObject.destroy();
+                    }
                 }
             },
         }

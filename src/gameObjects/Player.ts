@@ -1,6 +1,6 @@
 import { GameObjectFactory, GameObject } from "./index";
 import { Vector } from "../utils";
-import { Physics, PlayerMovement, PhysicalCollider, Hitbox, ParticleEmitter, ParticleEmitterData, Health } from "../components";
+import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager, Health } from "../components";
 import { spriteRenderer } from "../renderers";
 
 const PlayerFactory: GameObjectFactory = (position: Vector) => {
@@ -18,6 +18,8 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
 
     const health = player.addComponent(Health);
     health.data.showHealthBar = false;
+
+    player.addComponent(InventoryManager);
 
     player.renderer = spriteRenderer("peach_water");
 
