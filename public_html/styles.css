@@ -98,21 +98,24 @@
     text-stroke: 0.1px white;
 }
 
-#inventory-container {
-    display: flex;
-    justify-content: center;
+#inventory-screen {
+    display: none;
 }
 
 #inventory {
     position: absolute;
     display: flex;
-    flex-wrap: wrap;
-    width: calc((80px + 5px) * 9);
-    gap: 5px;
-    top: 200px;
-    height: 500px;
+    flex-direction: column;
+    width: 100%;
+    gap: 3px;
+    top: 30%;
     align-items: center;
     justify-content: center;
+}
+
+.inventory-row {
+    display: flex;
+    gap: 3px;
 }
 
 #pause-screen {
@@ -138,7 +141,6 @@
 
 #pause-screen h1 {
     font-size: 152px;
-    -webkit-text-stroke: 1px #111;
+    -webkit-text-stroke: 2.5px #111;
     text-stroke: 1px #111;
-
 }

@@ -50,9 +50,11 @@ const INVENTORY_SLOT_HTML = `
 </div>
 `
 
+const INVENTORY_ROW_HTML = `<div class="inventory-row"> </div>`;
+
 class Inventory {
     // Includes all the free space to place arbitrary items
-    private size: number = 27;
+    private size: number = 36;
     // The hotbar is the first N elements of the slots array.
     private _hotbarSize: number = 9;
     private slots: (InventorySlot | null)[];
@@ -61,17 +63,39 @@ class Inventory {
     private _selectedSlot: number = 0;
 
     constructor() {
-        this.slots = [];
+        this.slots = Array.from({ length: this.size }, () => null);
 
+        // Create the inventory UI
         this.inventorySlotDivs = [];
         $("#inventory").empty();
-        for (let i = 0; i < this.size; i++) {
+
+        const hotbarRow = $(INVENTORY_ROW_HTML); 
+        for (let i = 0; i < this._hotbarSize; i++) {
             const inventorySlot = $(INVENTORY_SLOT_HTML);
-            $("#inventory").append(inventorySlot);
-            this.inventorySlotDivs.push(inventorySlot);
-            
-            this.slots.push(null);
+            hotbarRow!.append(inventorySlot);
+            this.inventorySlotDivs.push(inventorySlot);   
         }
+        hotbarRow.css("marginTop", "20px");
+        // Add the hotbar row after the regular inventory
+        
+        let currentRow;
+        for (let i = this._hotbarSize; i < this.size; i++) {
+            if (i % 9 === 0) {
+                if (currentRow) {
+                    $("#inventory").append(currentRow);
+                }
+                currentRow = $(INVENTORY_ROW_HTML);
+            }
+            const inventorySlot = $(INVENTORY_SLOT_HTML);
+            currentRow!.append(inventorySlot);
+            this.inventorySlotDivs.push(inventorySlot);   
+        }
+        if (currentRow) {
+            $("#inventory").append(currentRow);
+        }
+        $("#inventory").append(hotbarRow);
+
+        // Create the regular hotbar UI
         this.hotbarSlotDivs = [];
         $("#hotbar").empty();
         for (let i = 0; i < this._hotbarSize; i++) {
@@ -132,19 +156,27 @@ class Inventory {
         this.hotbarSlotDivs[this._selectedSlot].find(".slot-icon").attr("src", getImage("hotbar_slot_selected").src);
     }
 
+    private setSlotUI(slot: InventorySlot | null, slotDiv: JQuery<HTMLElement>) {
+        if (slot === null) {
+            slotDiv.find(".item").css("display", "none");
+            slotDiv.find(".count").text("");
+        }
+        else {
+            slotDiv.find(".item").css("display", "block");
+            slotDiv.find(".item").attr("src", getImage(slot.item.iconSpriteID).src);
+            slotDiv.find(".count").text(slot.count);
+        }
+    }
+
     public updateUI() {
-        for (let i = 0; i < this._hotbarSize; i++) {        
-            let slotDiv = this.hotbarSlotDivs[i];
-            let slot = this.slots[i];
-            if (slot === null) {
-                slotDiv.find(".item").css("display", "none");
-                slotDiv.find(".count").text("");
-            }
-            else {
-                slotDiv.find(".item").css("display", "block");
-                slotDiv.find(".item").attr("src", getImage(slot.item.iconSpriteID).src);
-                slotDiv.find(".count").text(slot.count);
-            }
+        // Update the inventory UI
+        for (let i = 0; i < this.size; i++) {
+            this.setSlotUI(this.slots[i], this.inventorySlotDivs[i]);
+        }
+
+        // Update the hotbar UI
+        for (let i = 0; i < this._hotbarSize; i++) {
+            this.setSlotUI(this.slots[i], this.hotbarSlotDivs[i]);
         }
     }
 
