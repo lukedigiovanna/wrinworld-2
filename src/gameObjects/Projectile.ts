@@ -3,6 +3,21 @@ import { Vector, MathUtils } from "../utils";
 import { Hitbox, Physics, ParticleEmitter, PhysicalCollider } from "../components";
 import { spriteRenderer } from "../renderers";
 
+interface ProjectileProperties {
+    // 0 to 1 - how good the projectile is at tracking the target. 0 is no homing, 1 is perfect homing
+    homingSkill: number;
+    // How many distinct mobs this projectile can hit
+    maxHits: number;
+    // The sprite this projectile should represent as (invisible if undefined)
+    spriteID?: string;
+    // Amount of HP to deal upon hit
+    damage: number;
+    // Any logic that should happen upon collision
+    onCollision?: () => void;
+    // How much knockback force to apply
+    knockback: number;
+}
+
 const ProjectileFactory: GameObjectFactory = (owner: GameObject, position: Vector, target: Vector) => {
     const projectile = new GameObject();
     projectile.position = position.copy();
@@ -13,16 +28,31 @@ const ProjectileFactory: GameObjectFactory = (owner: GameObject, position: Vecto
     projectile.renderer = spriteRenderer("fireball");
 
     projectile.addComponent((gameObject: GameObject) => {
-        const data = {
-            owner
+        const data: any = {
+            owner,
+            physics: undefined,
         };
         return {
             id: "projectile",
+            start() {
+                data.physics = gameObject.getComponent("physics");
+            },
             onHitboxCollisionEnter(collision) {
                 if (collision.tag === "animal" || collision.tag === "portal" || collision.tag ===  "enemy") {
                     const health = collision.getComponent("health");
                     if (health) {
-                        health.data.hp -= 20;
+                        health.data.hp -= 5;
+                    }
+                    const physics = collision.getComponent("physics");
+                    if (physics) {
+                        physics.data.impulse.add(
+                            Vector.scaled(
+                                Vector.normalized(
+                                    data.physics.data.velocity
+                                ), 
+                                2
+                            )
+                        );
                     }
                     const particles = gameObject.getComponent("particle-emitter-explosion");
                     for (let i = 0; i < 25; i++) particles?.data.emit();

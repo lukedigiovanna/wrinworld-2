@@ -4,14 +4,16 @@ import { ComponentFactory } from "./index";
 
 const Physics: ComponentFactory = (gameObject: GameObject) => {
     const data = {
-        velocity: Vector.zero()
+        velocity: Vector.zero(),
+        impulse: Vector.zero(),
     }
     return {
         id: "physics",
         start() {},
         update(dt) {
-            if (!data.velocity.isZero()) {
-                gameObject.position.add(Vector.scaled(data.velocity, dt));
+            const netVelocity = Vector.add(data.velocity, data.impulse);
+            if (!netVelocity.isZero()) {
+                gameObject.position.add(Vector.scaled(netVelocity, dt));
                 const collider = gameObject.getComponent("physical-collider");
                 if (collider) {
                     let [l, r, t, b] = [
@@ -97,6 +99,7 @@ const Physics: ComponentFactory = (gameObject: GameObject) => {
                     }    
                 }
             }
+            data.impulse.scale(Math.exp(-dt * 2));
         },
         data
     }

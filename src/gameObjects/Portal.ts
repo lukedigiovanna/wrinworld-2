@@ -41,7 +41,14 @@ const PortalFactory: GameObjectFactory = (position: Vector) => {
                 data.timer += dt;
                 if (data.timer > 1 / data.rate) {
                     data.timer -= 1 / data.rate;
-                    gameObject.game.addGameObject(EnemyFactory(gameObject.position, EnemyIndex.ZOMBIE));
+                    const enemy = EnemyFactory(
+                        gameObject.position, EnemyIndex.ZOMBIE
+                    );
+                    const physics = enemy.getComponent("physics");
+                    if (physics) {
+                        physics.data.impulse.add(MathUtils.randomVector(7));
+                    }
+                    gameObject.game.addGameObject(enemy);
                 }
             },
             data
