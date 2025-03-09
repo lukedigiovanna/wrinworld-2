@@ -159,39 +159,42 @@ class Game {
         }
 
         // 7. Place trees
-        for (let i = 0; i < width * height / 4; i++) {
-            const position = new Vector(
-                MathUtils.randomInt(left, right),
-                MathUtils.randomInt(bottom, top)
-            );
-            let tooCloseToPortal = false;
-            for (let j = 0; j < portalPositions.length; j++) {
-                if (Vector.subtract(portalPositions[j], position).magnitude < 3) {
-                    tooCloseToPortal = true;
-                    break;
+        const TREE_RATE = 0.3;
+        for (let x = left; x <= right; x++) {
+            for (let y = bottom; y <= top; y++) {
+                if (Math.random() > TREE_RATE) {
+                    continue;
                 }
+                const position = new Vector(x, y);
+                let tooCloseToPortal = false;
+                for (let j = 0; j < portalPositions.length; j++) {
+                    if (Vector.subtract(portalPositions[j], position).magnitude < 3) {
+                        tooCloseToPortal = true;
+                        break;
+                    }
+                }
+                if (tooCloseToPortal) {
+                    continue;
+                }
+                const tile = this.getTile(position); 
+                if (!tile.canGrowPlants) {
+                    continue;
+                }
+                const tree = new GameObject();
+                if (Math.random() < 0.9) {
+                    tree.scale.scale(3);
+                    tree.renderer = spriteRenderer("tree");
+                }
+                else {
+                    tree.scale.setComponents(2, 3);
+                    tree.renderer = spriteRenderer("evergreen");
+                }
+                const collider = tree.addComponent(PhysicalCollider);
+                collider.data?.boxOffset.setComponents(0, -1.2);
+                collider.data?.boxSize.setComponents(0.5, 0.6);
+                tree.position.setComponents(position.x + 0.5, position.y + 1.5);
+                this.addGameObject(tree);
             }
-            if (tooCloseToPortal) {
-                continue;
-            }
-            const tile = this.getTile(position); 
-            if (!tile.canGrowPlants) {
-                continue;
-            }
-            const tree = new GameObject();
-            if (Math.random() < 0.9) {
-                tree.scale.scale(3);
-                tree.renderer = spriteRenderer("tree");
-            }
-            else {
-                tree.scale.setComponents(2, 3);
-                tree.renderer = spriteRenderer("evergreen");
-            }
-            const collider = tree.addComponent(PhysicalCollider);
-            collider.data?.boxOffset.setComponents(0, -1.2);
-            collider.data?.boxSize.setComponents(0.5, 0.6);
-            tree.position.setComponents(position.x + 0.5, position.y + 1.5);
-            this.addGameObject(tree);
         }
     }
 
