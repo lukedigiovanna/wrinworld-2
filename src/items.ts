@@ -1,6 +1,8 @@
 // registry of all the items in the game and logic for their usage
 
+import { BulletFactory, GameObject } from "./gameObjects";
 import { getImage } from "./imageLoader";
+import input from "./input";
 
 enum ItemIndex {
     STONE_SWORD,
@@ -8,22 +10,35 @@ enum ItemIndex {
     ZOMBIE_FLESH,
 }
 
+// Return true if using the item should consume it.
+type UseItemFunction = (player: GameObject) => boolean;
+
 interface Item {
     itemIndex: ItemIndex;
     iconSpriteID: string;
     maxStack: number;
+    use?: UseItemFunction;
 }
 
 const itemsCodex: Item[] = [
     {
         itemIndex: ItemIndex.STONE_SWORD,
         iconSpriteID: "stone_sword_icon",
-        maxStack: 1
+        maxStack: 1,
+        use(player) {
+            const bullet = BulletFactory(player.position, player.game.camera.screenToWorldPosition(input.mousePosition));
+            player.game.addGameObject(bullet);
+            return false;
+        }
     },
     {
         itemIndex: ItemIndex.ZOMBIE_BRAINS,
         iconSpriteID: "zombie_brains",
-        maxStack: 16
+        maxStack: 16,
+        use(player) {
+            console.log("[brraaaiiinnnss]");
+            return true;
+        }
     },
     {
         itemIndex: ItemIndex.ZOMBIE_FLESH,
@@ -104,12 +119,6 @@ class Inventory {
             this.hotbarSlotDivs.push(hotbarSlot);
         }
         this.setSelectedHotbarSlot(this._selectedSlot);
-
-        for (let i = 0; i < 18; i++) {
-            for (let j = 0; j < i + 1; j++) {
-                this.addItem(itemsCodex[ItemIndex.ZOMBIE_FLESH]);
-            }
-        }
     }
 
     // Returns true if the item was successfully added to the inventory
@@ -186,6 +195,24 @@ class Inventory {
 
     public get hotbarSize() {
         return this._hotbarSize;
+    }
+
+    public useSelectedItem(player: GameObject) {
+        const slot = this.slots[this._selectedSlot];
+        const item = slot?.item;
+        if (!item) {
+            return;
+        }
+        if (item.use) {
+            const consume = item.use(player);
+            if (consume) {
+                slot.count--;
+                if (slot.count === 0) {
+                    this.slots[this._selectedSlot] = null;
+                }
+                this.updateUI();
+            }
+        }
     }
 };
 

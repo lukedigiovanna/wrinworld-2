@@ -37,7 +37,7 @@ class Game {
     private objectDeleteQueue: GameObject[] = [];
     private _totalObjects = 0;
     private chunks = new Map<number, Chunk>();
-    private camera: Camera;
+    private _camera: Camera;
     private _player: GameObject;
     private _gameTime: number = 0;
     private particles: Particle[] = [];
@@ -47,15 +47,15 @@ class Game {
     private paused: boolean = false;
 
     constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
-        this.camera = new Camera(canvas, ctx);
+        this._camera = new Camera(canvas, ctx);
         this._player = PlayerFactory(new Vector(0, 16));
         this.addGameObject(this._player);
-        this.camera.target = this._player.position;
+        this._camera.target = this._player.position;
 
         this.addGameObject(EnemyFactory(new Vector(0, 24), EnemyIndex.ZOMBIE));
 
         this.generateLevelOne();
-        this.camera.verticalBoundary = [16, 24 + 8 + 96];
+        this._camera.verticalBoundary = [16, 24 + 8 + 96];
     }
 
     private generateChunk(chunkIndex: number): void {
@@ -244,7 +244,7 @@ class Game {
             this._totalObjects--;
         }
 
-        const cameraChunkIndex = getChunkIndex(this.camera.position);
+        const cameraChunkIndex = getChunkIndex(this._camera.position);
         // get all objects in the (n x n) chunk grid centered around the camera
         const listOfChunks = [];
         for (let i = -RENDER_DISTANCE; i <= RENDER_DISTANCE; i++) {
@@ -278,11 +278,6 @@ class Game {
 
         this._gameTime += dt;
 
-        if (input.mousePressed) {
-            const bullet = BulletFactory(this._player.position, this.camera.screenToWorldPosition(input.mousePosition));
-            this.addGameObject(bullet);
-        }
-
         this.activeObjects.forEach((object: GameObject) => {
             object.update(dt);
         });
@@ -301,14 +296,14 @@ class Game {
             }
         }
 
-        this.camera.update(dt);
+        this._camera.update(dt);
     }
 
     public draw() {
-        this.camera.setFillColor("black");
-        this.camera.clear();
+        this._camera.setFillColor("black");
+        this._camera.clear();
 
-        const cameraCI = getChunkIndex(this.camera.position);
+        const cameraCI = getChunkIndex(this._camera.position);
 
         for (let xo = -RENDER_DISTANCE; xo <= RENDER_DISTANCE; xo++) {
             for (let yo = -RENDER_DISTANCE; yo <= RENDER_DISTANCE; yo++) {
@@ -328,7 +323,7 @@ class Game {
                         //         spriteID = "edge_merge_path_grass";
                         //     }
                         // }
-                        this.camera.drawImage(getImage(spriteID), tilePosition.x, tilePosition.y, 1, 1, 0);
+                        this._camera.drawImage(getImage(spriteID), tilePosition.x, tilePosition.y, 1, 1, 0);
                     }
                 }
             }
@@ -338,7 +333,7 @@ class Game {
 
         [...this.activeObjects].sort((a: GameObject, b: GameObject) => (b.position.y - b.scale.y / 2) - (a.position.y - a.scale.y / 2))
             .forEach((gameObject: GameObject) => {
-                gameObject.render(this.camera);
+                gameObject.render(this._camera);
             });
 
         this.particles.forEach((particle: Particle) => {
@@ -346,7 +341,7 @@ class Game {
             if (particle.useRelativePosition && particle.gameObject) {
                 pos.add(particle.gameObject.position);
             }
-            this.camera.drawImage(
+            this._camera.drawImage(
                 getImage(particle.spriteID), 
                 pos.x,
                 pos.y,
@@ -357,22 +352,22 @@ class Game {
         });
         
         if (settings.showChunks) {
-            this.camera.setStrokeColor("lime");
-            const chunkPos = getChunkWorldPosition(getChunkIndex(this.camera.position));
+            this._camera.setStrokeColor("lime");
+            const chunkPos = getChunkWorldPosition(getChunkIndex(this._camera.position));
             for (let xo = -RENDER_DISTANCE; xo <= RENDER_DISTANCE; xo++) {
                 for (let yo = -RENDER_DISTANCE; yo <= RENDER_DISTANCE; yo++) {
                     const chunkIndex = getChunkIndex(new Vector(chunkPos.x + xo * CHUNK_SIZE, chunkPos.y + yo * CHUNK_SIZE));
                     if (this.chunks.has(chunkIndex)) {
-                        this.camera.strokeRect(chunkPos.x + xo * CHUNK_SIZE + CHUNK_SIZE / 2, chunkPos.y + yo * CHUNK_SIZE + CHUNK_SIZE / 2, CHUNK_SIZE, CHUNK_SIZE);
-                        this.camera.setFillColor("red");
-                        this.camera.fillRect(chunkPos.x + xo * CHUNK_SIZE, chunkPos.y + yo * CHUNK_SIZE, 0.5, 0.5);
+                        this._camera.strokeRect(chunkPos.x + xo * CHUNK_SIZE + CHUNK_SIZE / 2, chunkPos.y + yo * CHUNK_SIZE + CHUNK_SIZE / 2, CHUNK_SIZE, CHUNK_SIZE);
+                        this._camera.setFillColor("red");
+                        this._camera.fillRect(chunkPos.x + xo * CHUNK_SIZE, chunkPos.y + yo * CHUNK_SIZE, 0.5, 0.5);
                     }
                 }
             }
         }
         if (settings.showCameraPosition) {
-            this.camera.setFillColor("orange");
-            this.camera.fillEllipse(this.camera.position.x, this.camera.position.y, 0.5, 0.5);
+            this._camera.setFillColor("orange");
+            this._camera.fillEllipse(this._camera.position.x, this._camera.position.y, 0.5, 0.5);
         }
     }
 
@@ -511,6 +506,10 @@ class Game {
 
     public get player() {
         return this._player;
+    }
+
+    public get camera() {
+        return this._camera;
     }
 
     // Pauses the game

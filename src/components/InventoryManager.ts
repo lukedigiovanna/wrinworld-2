@@ -70,6 +70,10 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
                 }
                 data.inventoryDisplayed = !data.inventoryDisplayed;
             }
+            
+            if (input.mousePressed) {
+                data.inventory.useSelectedItem(gameObject);
+            }
         },
         data
     }
