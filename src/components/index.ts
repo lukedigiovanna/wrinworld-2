@@ -30,3 +30,4 @@ export * from "./ItemDropper";
 export * from "./ParticleEmitter";
 export * from "./EnemyAI";
 export * from "./InventoryManager";
+export * from "./WeaponManager";

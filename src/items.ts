@@ -1,23 +1,27 @@
 // registry of all the items in the game and logic for their usage
 
-import { BulletFactory, GameObject } from "./gameObjects";
-import { getImage } from "./imageLoader";
+// NOTE: items are exclusively used by the player
+
 import input from "./input";
+import { GameObject } from "./gameObjects";
+import { WeaponIndex } from "./weapons";
 
 enum ItemIndex {
-    STONE_SWORD,
+    BROAD_SWORD,
     ZOMBIE_BRAINS,
     ZOMBIE_FLESH,
 }
 
 // Return true if using the item should consume it.
 type UseItemFunction = (player: GameObject) => boolean;
+type EquipItemFunction = (player: GameObject) => void;
 
 interface Item {
     itemIndex: ItemIndex;
     iconSpriteID: string;
     maxStack: number;
     use?: UseItemFunction;
+    equip?: EquipItemFunction;
 }
 
 interface ItemDropChance {
@@ -25,21 +29,36 @@ interface ItemDropChance {
     itemIndex: ItemIndex;
 }
 
+function fireWeapon(player: GameObject, weapon: WeaponIndex) {
+    const weaponManager = player.getComponent("weapon-manager");
+    weaponManager?.data.fire(
+        weapon,
+        player.game.camera.screenToWorldPosition(input.mousePosition) // target
+    );
+}
+
+function equipWeapon(player: GameObject, weapon: WeaponIndex) {
+    const weaponManager = player.getComponent("weapon-manager");
+    weaponManager?.data.equip(weapon);
+}
+
 const itemsCodex: Item[] = [
     {
-        itemIndex: ItemIndex.STONE_SWORD,
-        iconSpriteID: "stone_sword_icon",
+        itemIndex: ItemIndex.BROAD_SWORD,
+        iconSpriteID: "broad_sword_icon",
         maxStack: 1,
         use(player) {
-            const bullet = BulletFactory(player.position, player.game.camera.screenToWorldPosition(input.mousePosition));
-            player.game.addGameObject(bullet);
+            fireWeapon(player, WeaponIndex.BROAD_SWORD);
             return false;
+        },
+        equip(player) {
+            equipWeapon(player, WeaponIndex.BROAD_SWORD);
         }
     },
     {
         itemIndex: ItemIndex.ZOMBIE_BRAINS,
         iconSpriteID: "zombie_brains",
-        maxStack: 16,
+        maxStack: 99,
         use(player) {
             console.log("[brraaaiiinnnss]");
             return true;
@@ -48,7 +67,7 @@ const itemsCodex: Item[] = [
     {
         itemIndex: ItemIndex.ZOMBIE_FLESH,
         iconSpriteID: "zombie_flesh",
-        maxStack: 64
+        maxStack: 999
     }
 ];
 

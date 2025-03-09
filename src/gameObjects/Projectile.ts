@@ -3,18 +3,21 @@ import { Vector, MathUtils } from "../utils";
 import { Hitbox, Physics, ParticleEmitter, PhysicalCollider } from "../components";
 import { spriteRenderer } from "../renderers";
 
-const BulletFactory: GameObjectFactory = (position: Vector, target: Vector) => {
-    const bullet = new GameObject();
-    bullet.position = position.copy();
-    bullet.scale.setComponents(1, 0.6);
+const ProjectileFactory: GameObjectFactory = (owner: GameObject, position: Vector, target: Vector) => {
+    const projectile = new GameObject();
+    projectile.position = position.copy();
+    projectile.scale.setComponents(1, 0.6);
 
-    bullet.lifespan = 3;
+    projectile.lifespan = 3;
 
-    bullet.renderer = spriteRenderer("fireball");
+    projectile.renderer = spriteRenderer("fireball");
 
-    bullet.addComponent((gameObject: GameObject) => {
+    projectile.addComponent((gameObject: GameObject) => {
+        const data = {
+            owner
+        };
         return {
-            id: "bullet",
+            id: "projectile",
             onHitboxCollisionEnter(collision) {
                 if (collision.tag === "animal" || collision.tag === "portal" || collision.tag ===  "enemy") {
                     const health = collision.getComponent("health");
@@ -37,10 +40,11 @@ const BulletFactory: GameObjectFactory = (position: Vector, target: Vector) => {
                 for (let i = 0; i < 25; i++) particles?.data.emit();
                 gameObject.destroy();
             },
+            data
         }
     });
 
-    bullet.addComponent(ParticleEmitter({
+    projectile.addComponent(ParticleEmitter({
         spriteID: () => "spark",
         rate: () => 25,
         size: () => new Vector(0.7, 0.7),
@@ -49,7 +53,8 @@ const BulletFactory: GameObjectFactory = (position: Vector, target: Vector) => {
         angularVelocity: () => MathUtils.random(-4, 4),
         lifetime: () => MathUtils.random(0.1, 0.5)
     }, "sparks"));
-    bullet.addComponent(ParticleEmitter({
+
+    projectile.addComponent(ParticleEmitter({
         spriteID: () => MathUtils.randomChoice(["smoke", "spark"]),
         rate: () => 0,
         size: () => new Vector(0.5, 0.5),
@@ -58,20 +63,31 @@ const BulletFactory: GameObjectFactory = (position: Vector, target: Vector) => {
         lifetime: () => MathUtils.random(0.4, 0.8),
         spawnBoxSize: () => Vector.zero()
     }, "explosion"));
-    const physics = bullet.addComponent(Physics);
-    physics.data.velocity.set(Vector.scaled(Vector.normalized(Vector.subtract(target, position)), 15));
-    const hitbox = bullet.addComponent(Hitbox);
+    
+    const physics = projectile.addComponent(Physics);
+    physics.data.velocity.set(
+        Vector.scaled(
+            Vector.normalized(
+                Vector.subtract(target, position)
+            ),
+            15
+        )
+    );
+
+    const hitbox = projectile.addComponent(Hitbox);
     hitbox.data.boxOffset.setComponents(0.25, 0);
     hitbox.data.boxSize.setComponents(0.25, 0.25);
-    const collider = bullet.addComponent(PhysicalCollider);
+    
+    const collider = projectile.addComponent(PhysicalCollider);
     collider.data?.ignoreCollisionWith.add("player");
     collider.data.boxOffset.setComponents(0.25, 0);
     collider.data.boxSize.setComponents(0.5, 0.5);
-    bullet.rotation = physics.data.velocity.angle;
+    
+    projectile.rotation = physics.data.velocity.angle;
 
-    bullet.tag = "bullet";
+    projectile.tag = "projectile";
 
-    return bullet;
+    return projectile;
 }
 
-export { BulletFactory };
+export { ProjectileFactory };

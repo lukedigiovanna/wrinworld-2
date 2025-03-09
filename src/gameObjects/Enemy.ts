@@ -1,7 +1,7 @@
 import { GameObject, GameObjectFactory } from "./";
 import { spriteRenderer } from "../renderers";
 import { Vector } from "../utils";
-import { Health, Hitbox, Physics, PhysicalCollider, ItemDropper } from "../components";
+import { Health, Hitbox, Physics, PhysicalCollider, ItemDropper, WeaponManager } from "../components";
 import { TileIndex } from "../tiles";
 import { enemyCodex, EnemyIndex } from "../enemies";
 
@@ -20,6 +20,7 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
     enemy.addComponent(Physics);
     enemy.addComponent(ItemDropper(enemyType.drops));
     enemy.addComponent(enemyType.ai);
+    enemy.addComponent(WeaponManager);
     const collider = enemy.addComponent(PhysicalCollider);
     collider.data.boxOffset = enemyType.physicalColliderOffset.copy();
     collider.data.boxSize = enemyType.physicalColliderSize.copy();

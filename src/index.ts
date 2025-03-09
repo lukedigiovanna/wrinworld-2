@@ -72,7 +72,7 @@ window.onload = async () => {
         loadImage("kfc", "assets/images/kfc.png"),
         loadImage("zombie_brains", "assets/images/zombie_brains.png"),
         loadImage("zombie_flesh", "assets/images/zombie_flesh.png"),
-        loadImage("stone_sword_icon", "assets/images/stone_sword_icon.png"),
+        loadImage("broad_sword_icon", "assets/images/broad_sword_icon.png"),
 
         loadImage("feather", "assets/images/feather.png"),
         loadImage("spark", "assets/images/spark.png"),

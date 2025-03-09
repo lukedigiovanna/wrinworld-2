@@ -1,12 +1,13 @@
 import { ComponentFactory } from "./index";
 import { GameObject } from "../gameObjects";
 import input from "../input";
-import { Inventory, Item } from "../items";
+import { Item } from "../items";
+import { Inventory } from "../inventory";
 import { getImage } from "../imageLoader";
 
 const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
-        inventory: new Inventory(),
+        inventory: new Inventory(gameObject),
         inventoryDisplayed: false
     }
     return {
@@ -73,7 +74,7 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
             }
             
             if (input.mousePressed) {
-                data.inventory.useSelectedItem(gameObject);
+                data.inventory.useSelectedItem();
             }
         },
         render(camera) {

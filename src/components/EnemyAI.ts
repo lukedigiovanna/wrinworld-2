@@ -1,3 +1,4 @@
+import { WeaponIndex } from "../weapons";
 import { TileIndex } from "../tiles";
 import { Vector } from "../utils";
 import { ComponentFactory } from "./index";
@@ -7,13 +8,15 @@ const ZombieAI: ComponentFactory = (gameObject) => {
         speed: 1,
         waterSpeed: 0.5,
         target: undefined,
-        physics: undefined
+        physics: undefined,
+        weaponManager: undefined,
     };
     return {
         id: "zombie-ai",
         start() {
             data.target = gameObject.game.player.position;
             data.physics = gameObject.getComponent("physics");
+            data.weaponManager = gameObject.getComponent("weapon-manager");
         },
         update(dt) {
             const direction = Vector.subtract(data.target, gameObject.position);
@@ -29,6 +32,10 @@ const ZombieAI: ComponentFactory = (gameObject) => {
             }
             else if (direction.x > 0) {
                 gameObject.scale.x = Math.abs(gameObject.scale.x);
+            }
+
+            if (Vector.subtract(gameObject.position, data.target).magnitude < 1) {
+                data.weaponManager.data.fire(WeaponIndex.ZOMBIE_ATTACK, data.target);
             }
         },
         data

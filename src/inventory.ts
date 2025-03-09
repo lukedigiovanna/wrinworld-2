@@ -1,4 +1,4 @@
-import { Item } from "./items";
+import { Item, ItemIndex, itemsCodex } from "./items";
 import { getImage } from "./imageLoader";
 import { GameObject } from "./gameObjects";
 
@@ -26,8 +26,11 @@ class Inventory {
     private inventorySlotDivs: JQuery<HTMLElement>[];
     private hotbarSlotDivs: JQuery<HTMLElement>[];
     private _selectedSlot: number = 0;
+    private player: GameObject;
 
-    constructor() {
+    constructor(player: GameObject) {
+        this.player = player;
+
         this.slots = Array.from({ length: this.size }, () => null);
 
         // Create the inventory UI
@@ -110,9 +113,19 @@ class Inventory {
         if (index < 0 || index >= this._hotbarSize) {
             throw Error("Index out of bounds: " + index);
         }
+        if (index === this._selectedSlot) {
+            return;
+        }
         this.hotbarSlotDivs[this._selectedSlot].find(".slot-icon").attr("src", getImage("hotbar_slot").src);
         this._selectedSlot = index;
         this.hotbarSlotDivs[this._selectedSlot].find(".slot-icon").attr("src", getImage("hotbar_slot_selected").src);
+        
+        const slot = this.slots[this._selectedSlot];
+        if (slot) {
+            if (slot.item.equip) {
+                slot.item.equip(this.player);
+            }
+        }
     }
 
     private setSlotUI(slot: InventorySlot | null, slotDiv: JQuery<HTMLElement>) {
@@ -152,14 +165,14 @@ class Inventory {
         return slot ? slot.item : null;
     }
 
-    public useSelectedItem(player: GameObject) {
+    public useSelectedItem() {
         const slot = this.slots[this._selectedSlot];
         const item = slot?.item;
         if (!item) {
             return;
         }
         if (item.use) {
-            const consume = item.use(player);
+            const consume = item.use(this.player);
             if (consume) {
                 slot.count--;
                 if (slot.count === 0) {
