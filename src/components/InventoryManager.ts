@@ -5,7 +5,8 @@ import { Inventory } from "../items";
 
 const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
-        inventory: new Inventory()
+        inventory: new Inventory(),
+        inventoryDisplayed: false
     }
     return {
         id: "inventory-manager",
@@ -55,6 +56,19 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
             }
             if (input.isKeyPressed("Digit9")) {
                 data.inventory.setSelectedHotbarSlot(8);
+            }
+
+            if (input.isKeyPressed("KeyE")) {
+                // Toggle inventory display
+                if (data.inventoryDisplayed) {
+                    $("#hotbar-screen").show();
+                    $("#inventory-screen").hide();
+                }
+                else {
+                    $("#hotbar-screen").hide();
+                    $("#inventory-screen").show();
+                }
+                data.inventoryDisplayed = !data.inventoryDisplayed;
             }
         },
         data

@@ -26,6 +26,7 @@ class GameObject {
     public storedInChunkIndex = -1;
 
     private started: boolean = false;
+    private destroyed: boolean = false;
 
     constructor() {
         this.position = Vector.zero();
@@ -153,6 +154,10 @@ class GameObject {
     }
 
     public destroy() {
+        if (this.destroyed) {
+            return;
+        }
+        this.destroyed = true;
         this.game.deleteGameObject(this);
         this.components.forEach(component => {
             if (component.destroy)

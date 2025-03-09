@@ -27,6 +27,12 @@ const BulletFactory: GameObjectFactory = (position: Vector, target: Vector) => {
                 }
             },
             onPhysicalCollision(collision, isTile) {
+                if (!isTile) {
+                    collision = collision as GameObject;
+                    if (collision.tag ===  "enemy") {
+                        return;
+                    }
+                }
                 const particles = gameObject.getComponent("particle-emitter-explosion");
                 for (let i = 0; i < 25; i++) particles?.data.emit();
                 gameObject.destroy();
@@ -56,7 +62,7 @@ const BulletFactory: GameObjectFactory = (position: Vector, target: Vector) => {
     physics.data.velocity.set(Vector.scaled(Vector.normalized(Vector.subtract(target, position)), 15));
     const hitbox = bullet.addComponent(Hitbox);
     hitbox.data.boxOffset.setComponents(0.25, 0);
-    hitbox.data.boxSize.setComponents(0.5, 0.5);
+    hitbox.data.boxSize.setComponents(0.25, 0.25);
     const collider = bullet.addComponent(PhysicalCollider);
     collider.data?.ignoreCollisionWith.add("player");
     collider.data.boxOffset.setComponents(0.25, 0);

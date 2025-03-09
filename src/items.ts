@@ -42,22 +42,50 @@ interface InventorySlot {
     count: number;
 }
 
+const INVENTORY_SLOT_HTML = `
+<div class="inventory-slot">
+    <img class="slot-icon" src="assets/images/hotbar_slot.png" />
+    <img class="item" />
+    <span class="count"></span>
+</div>
+`
+
 class Inventory {
     // Includes all the free space to place arbitrary items
     private size: number = 27;
     // The hotbar is the first N elements of the slots array.
     private _hotbarSize: number = 9;
     private slots: (InventorySlot | null)[];
-    private hotbarSlotDivs: HTMLElement[];
+    private inventorySlotDivs: JQuery<HTMLElement>[];
+    private hotbarSlotDivs: JQuery<HTMLElement>[];
     private _selectedSlot: number = 0;
 
     constructor() {
         this.slots = [];
+
+        this.inventorySlotDivs = [];
+        $("#inventory").empty();
         for (let i = 0; i < this.size; i++) {
+            const inventorySlot = $(INVENTORY_SLOT_HTML);
+            $("#inventory").append(inventorySlot);
+            this.inventorySlotDivs.push(inventorySlot);
+            
             this.slots.push(null);
         }
-        this.hotbarSlotDivs = $(".hotbar-slot").toArray();
+        this.hotbarSlotDivs = [];
+        $("#hotbar").empty();
+        for (let i = 0; i < this._hotbarSize; i++) {
+            const hotbarSlot = $(INVENTORY_SLOT_HTML);
+            $("#hotbar").append(hotbarSlot);
+            this.hotbarSlotDivs.push(hotbarSlot);
+        }
         this.setSelectedHotbarSlot(this._selectedSlot);
+
+        for (let i = 0; i < 18; i++) {
+            for (let j = 0; j < i + 1; j++) {
+                this.addItem(itemsCodex[ItemIndex.ZOMBIE_FLESH]);
+            }
+        }
     }
 
     // Returns true if the item was successfully added to the inventory
@@ -99,14 +127,14 @@ class Inventory {
         if (index < 0 || index >= this._hotbarSize) {
             throw Error("Index out of bounds: " + index);
         }
-        $(this.hotbarSlotDivs[this._selectedSlot]).find(".slot-icon").attr("src", getImage("hotbar_slot").src);
+        this.hotbarSlotDivs[this._selectedSlot].find(".slot-icon").attr("src", getImage("hotbar_slot").src);
         this._selectedSlot = index;
-        $(this.hotbarSlotDivs[this._selectedSlot]).find(".slot-icon").attr("src", getImage("hotbar_slot_selected").src);
+        this.hotbarSlotDivs[this._selectedSlot].find(".slot-icon").attr("src", getImage("hotbar_slot_selected").src);
     }
 
     public updateUI() {
         for (let i = 0; i < this._hotbarSize; i++) {        
-            let slotDiv = $(this.hotbarSlotDivs[i]);
+            let slotDiv = this.hotbarSlotDivs[i];
             let slot = this.slots[i];
             if (slot === null) {
                 slotDiv.find(".item").css("display", "none");
