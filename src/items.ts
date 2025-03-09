@@ -197,6 +197,11 @@ class Inventory {
         return this._hotbarSize;
     }
 
+    public getSelectedItem(): Item | null {
+        const slot = this.slots[this._selectedSlot];
+        return slot ? slot.item : null;
+    }
+
     public useSelectedItem(player: GameObject) {
         const slot = this.slots[this._selectedSlot];
         const item = slot?.item;

@@ -1,7 +1,8 @@
 import { ComponentFactory } from "./index";
 import { GameObject } from "../gameObjects";
 import input from "../input";
-import { Inventory } from "../items";
+import { Inventory, Item } from "../items";
+import { getImage } from "../imageLoader";
 
 const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
@@ -73,6 +74,14 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
             
             if (input.mousePressed) {
                 data.inventory.useSelectedItem(gameObject);
+            }
+        },
+        render(camera) {
+            const selected = data.inventory.getSelectedItem() as Item;
+            if (selected) {
+                let sign = Math.sign(gameObject.scale.x)
+                const offset = 0.5;
+                camera.drawImage(getImage(selected.iconSpriteID), gameObject.position.x + offset * sign, gameObject.position.y, 0.9 * sign, 0.9);
             }
         },
         data
