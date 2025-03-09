@@ -176,6 +176,7 @@ type GameObjectFactory = (...args: any[]) => GameObject;
 
 export { GameObject, GameObjectFactory };
 export * from "./Projectile";
+export * from "./MeleeAttack";
 export * from "./Player";
 export * from "./Animal";
 export * from "./Portal";

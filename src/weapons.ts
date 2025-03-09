@@ -1,5 +1,5 @@
 import { Vector } from "./utils";
-import { ProjectileFactory, GameObject } from "./gameObjects";
+import { ProjectileFactory, GameObject, MeleeAttackFactory } from "./gameObjects";
 
 // NOTE: players AND enemies can fire weapons!
 
@@ -23,7 +23,9 @@ const fireProjectile = (gameObject: GameObject, target: Vector) => {
 }
 
 const fireMelee = (gameObject: GameObject, target: Vector, strength: number) => {
-    console.log("Fire melee");
+    gameObject.game.addGameObject(
+        MeleeAttackFactory(gameObject, gameObject.position, target)
+    );
 }
 
 const weaponsCodex: Weapon[] = [
@@ -31,14 +33,14 @@ const weaponsCodex: Weapon[] = [
         weaponIndex: WeaponIndex.BROAD_SWORD,
         cooldown: 1,
         fire(gameObject, target) {
-            fireProjectile(gameObject, target);
+            fireMelee(gameObject, target, 1);
         }
     },
     {
         weaponIndex: WeaponIndex.ZOMBIE_ATTACK,
         cooldown: 1,
         fire(gameObject, target) {
-            fireMelee(gameObject, target, 5);
+            // fireMelee(gameObject, target, 5);
         }
     }
 ];
