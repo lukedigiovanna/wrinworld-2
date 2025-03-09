@@ -2,6 +2,8 @@ import { Vector } from "./utils";
 
 // utils for knowing when mouse events and key events occur
 
+type ScrollCallback = (deltaY: number) => void;
+
 // to be used as singleton
 class Input {
     private _mouseDown = false; // true as long as mouse is pressed
@@ -9,6 +11,8 @@ class Input {
     private _mousePosition = Vector.zero();
     private _keyDownMap = new Map<string, boolean>(); 
     private _keyPressedMap = new Map<string, boolean>();
+
+    private scrollListeners: ScrollCallback[] = [];
 
     constructor() {
         // initialize listeners
@@ -35,6 +39,11 @@ class Input {
             this._keyDownMap.set(ev.code, false);
             this._keyPressedMap.set(ev.code, false);         
         }
+        window.onwheel = (ev: WheelEvent) => {
+            this.scrollListeners.forEach(callback => {
+                callback(ev.deltaY);
+            });
+        }
     }
 
     public get mouseDown() {
@@ -59,6 +68,15 @@ class Input {
         const returnValue = !!this._keyPressedMap.get(code);
         this._keyPressedMap.set(code, false);
         return returnValue;
+    }
+
+    public registerScrollCallback(callback: ScrollCallback) {
+        this.scrollListeners.push(callback);
+    }
+
+    public removeScrollCallback(callback: ScrollCallback) {
+        this.scrollListeners.splice(
+            this.scrollListeners.indexOf(callback), 1);
     }
 }
 

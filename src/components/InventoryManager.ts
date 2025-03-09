@@ -11,6 +11,22 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
         id: "inventory-manager",
         start() {
             data.inventory.updateUI();
+            input.registerScrollCallback((deltaY: number) => {
+                const currIndex = data.inventory.selectedHotbarIndex;
+                let newIndex;
+                if (deltaY < 0) {
+                    newIndex = (currIndex + 1) % data.inventory.hotbarSize; 
+                }
+                else {
+                    if (currIndex === 0) {
+                        newIndex = data.inventory.hotbarSize - 1;
+                    }
+                    else {
+                        newIndex = currIndex - 1;
+                    }
+                }
+                data.inventory.setSelectedHotbarSlot(newIndex);
+            });
         },
         update(dt: number) {
             if (input.isKeyPressed("Digit1")) {

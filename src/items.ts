@@ -46,10 +46,10 @@ class Inventory {
     // Includes all the free space to place arbitrary items
     private size: number = 27;
     // The hotbar is the first N elements of the slots array.
-    private hotbarSize: number = 9;
+    private _hotbarSize: number = 9;
     private slots: (InventorySlot | null)[];
     private hotbarSlotDivs: HTMLElement[];
-    private selectedSlot: number = 0;
+    private _selectedSlot: number = 0;
 
     constructor() {
         this.slots = [];
@@ -57,7 +57,7 @@ class Inventory {
             this.slots.push(null);
         }
         this.hotbarSlotDivs = $(".hotbar-slot").toArray();
-        this.setSelectedHotbarSlot(this.selectedSlot);
+        this.setSelectedHotbarSlot(this._selectedSlot);
     }
 
     // Returns true if the item was successfully added to the inventory
@@ -96,13 +96,16 @@ class Inventory {
     }
 
     public setSelectedHotbarSlot(index: number) {
-        $(this.hotbarSlotDivs[this.selectedSlot]).find(".slot-icon").attr("src", getImage("hotbar_slot").src);
-        this.selectedSlot = index;
-        $(this.hotbarSlotDivs[this.selectedSlot]).find(".slot-icon").attr("src", getImage("hotbar_slot_selected").src);
+        if (index < 0 || index >= this._hotbarSize) {
+            throw Error("Index out of bounds: " + index);
+        }
+        $(this.hotbarSlotDivs[this._selectedSlot]).find(".slot-icon").attr("src", getImage("hotbar_slot").src);
+        this._selectedSlot = index;
+        $(this.hotbarSlotDivs[this._selectedSlot]).find(".slot-icon").attr("src", getImage("hotbar_slot_selected").src);
     }
 
     public updateUI() {
-        for (let i = 0; i < this.hotbarSize; i++) {        
+        for (let i = 0; i < this._hotbarSize; i++) {        
             let slotDiv = $(this.hotbarSlotDivs[i]);
             let slot = this.slots[i];
             if (slot === null) {
@@ -115,6 +118,14 @@ class Inventory {
                 slotDiv.find(".count").text(slot.count);
             }
         }
+    }
+
+    public get selectedHotbarIndex() {
+        return this._selectedSlot;
+    }
+
+    public get hotbarSize() {
+        return this._hotbarSize;
     }
 };
 
