@@ -37,15 +37,21 @@ class Inventory {
         this.inventorySlotDivs = [];
         $("#inventory").empty();
 
+        const addInventorySlot = (row: JQuery<HTMLElement>, index: number) => {
+            const inventorySlot = $(INVENTORY_SLOT_HTML);
+            row!.append(inventorySlot);
+            inventorySlot.on("mouseenter", () => {
+                console.log("Mouse entered", index);
+            });
+            this.inventorySlotDivs.push(inventorySlot);
+        }
+
         const hotbarRow = $(INVENTORY_ROW_HTML); 
         for (let i = 0; i < this._hotbarSize; i++) {
-            const inventorySlot = $(INVENTORY_SLOT_HTML);
-            hotbarRow!.append(inventorySlot);
-            this.inventorySlotDivs.push(inventorySlot);   
+            addInventorySlot(hotbarRow, i);
         }
         hotbarRow.css("marginTop", "20px");
         // Add the hotbar row after the regular inventory
-        
         let currentRow;
         for (let i = this._hotbarSize; i < this.size; i++) {
             if (i % 9 === 0) {
@@ -54,9 +60,7 @@ class Inventory {
                 }
                 currentRow = $(INVENTORY_ROW_HTML);
             }
-            const inventorySlot = $(INVENTORY_SLOT_HTML);
-            currentRow!.append(inventorySlot);
-            this.inventorySlotDivs.push(inventorySlot);   
+            addInventorySlot(currentRow as JQuery<HTMLElement>, i);
         }
         if (currentRow) {
             $("#inventory").append(currentRow);

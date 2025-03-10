@@ -1,4 +1,4 @@
-import { BulletFactory, GameObject, PlayerFactory, AnimalFactory, PortalFactory, EnemyFactory, EnemyIndex } from "./gameObjects";
+import { GameObject, PlayerFactory, PortalFactory, EnemyFactory, EnemyIndex } from "./gameObjects";
 import { Vector, MathUtils, PerlinNoise, CatmullRomParametricCurve } from "./utils";
 import input from "./input";
 import { Camera } from "./camera";
@@ -517,12 +517,14 @@ class Game {
         console.log("[paused]");
         this.paused = true;
         $("#pause-screen").css("opacity", "100%");
+        $("#pause-screen").css("visibility", "visible");
     }
     
     public unpause() {
         console.log("[unpaused]");
         this.paused = false;
         $("#pause-screen").css("opacity", "0%");
+        $("#pause-screen").css("visibility",  "hidden");
     }
 }
 

@@ -55,7 +55,7 @@ const weaponsCodex: Weapon[] = [
     },
     {
         weaponIndex: WeaponIndex.BOW,
-        cooldown: 1,
+        cooldown: 0.1,
         fire(gameObject, target) {
             fireProjectile(projectilesCodex[ProjectileIndex.ARROW], gameObject, target);
         }
