@@ -1,5 +1,6 @@
 import { Vector } from "./utils";
 import { ProjectileFactory, GameObject, MeleeAttackFactory } from "./gameObjects";
+import { Projectile, projectilesCodex, ProjectileIndex } from "./projectiles";
 
 // NOTE: players AND enemies can fire weapons!
 
@@ -13,12 +14,13 @@ interface Weapon {
 
 enum WeaponIndex {
     BROAD_SWORD,
-    ZOMBIE_ATTACK
+    ZOMBIE_ATTACK,
+    SHURIKEN,
 }
 
-const fireProjectile = (gameObject: GameObject, target: Vector) => {
+const fireProjectile = (projectile: Projectile, gameObject: GameObject, target: Vector) => {
     gameObject.game.addGameObject(
-        ProjectileFactory(gameObject, gameObject.position, target)
+        ProjectileFactory(projectile, gameObject, gameObject.position, target)
     );
 }
 
@@ -41,6 +43,13 @@ const weaponsCodex: Weapon[] = [
         cooldown: 1,
         fire(gameObject, target) {
             // fireMelee(gameObject, target, 5);
+        }
+    },
+    {
+        weaponIndex: WeaponIndex.SHURIKEN,
+        cooldown: 0,
+        fire(gameObject, target) {
+            fireProjectile(projectilesCodex[ProjectileIndex.SHURIKEN], gameObject, target);
         }
     }
 ];

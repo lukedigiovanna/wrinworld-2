@@ -5,10 +5,13 @@ import { Vector } from "../utils";
 import { Hitbox } from "../components";
 import { getSound } from "../soundLoader";
 
+const ITEM_LIFESPAN = 180;
+
 const ItemDropFactory: GameObjectFactory = (item: Item, position: Vector) => {
     const itemDrop = new GameObject();
     itemDrop.renderer = spriteRenderer(item.iconSpriteID);
     itemDrop.position.set(position);
+    itemDrop.lifespan = ITEM_LIFESPAN;
     itemDrop.addComponent(Hitbox)
     itemDrop.addComponent((gameObject: GameObject) => {
         return {

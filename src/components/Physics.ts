@@ -6,11 +6,13 @@ const Physics: ComponentFactory = (gameObject: GameObject) => {
     const data = {
         velocity: Vector.zero(),
         impulse: Vector.zero(),
+        angularVelocity: 0,
     }
     return {
         id: "physics",
         start() {},
         update(dt) {
+            gameObject.rotation += data.angularVelocity * dt;
             const netVelocity = Vector.add(data.velocity, data.impulse);
             if (!netVelocity.isZero()) {
                 gameObject.position.add(Vector.scaled(netVelocity, dt));

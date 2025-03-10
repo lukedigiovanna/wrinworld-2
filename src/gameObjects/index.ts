@@ -181,3 +181,4 @@ export * from "./Player";
 export * from "./Animal";
 export * from "./Portal";
 export * from "./Enemy";
+export * from "./ItemDrop";

@@ -73,6 +73,7 @@ window.onload = async () => {
         loadImage("zombie_brains", "assets/images/zombie_brains.png"),
         loadImage("zombie_flesh", "assets/images/zombie_flesh.png"),
         loadImage("broad_sword_icon", "assets/images/broad_sword_icon.png"),
+        loadImage("shuriken", "assets/images/shuriken.png"),
 
         loadImage("feather", "assets/images/feather.png"),
         loadImage("spark", "assets/images/spark.png"),
@@ -82,6 +83,8 @@ window.onload = async () => {
         loadImage("hotbar_slot", "assets/images/hotbar_slot.png"),
         loadImage("hotbar_slot_selected", "assets/images/hotbar_slot_selected.png"),
         
+        loadImage("square",  "assets/images/square.png"),
+
         // -- SOUNDS --
         loadSound("item_pickup", "assets/sounds/item_pickup.wav", 5)
     ]);

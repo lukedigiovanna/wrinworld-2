@@ -25,7 +25,7 @@ class Inventory {
     private slots: (InventorySlot | null)[];
     private inventorySlotDivs: JQuery<HTMLElement>[];
     private hotbarSlotDivs: JQuery<HTMLElement>[];
-    private _selectedSlot: number = 0;
+    private _selectedSlot: number = -1;
     private player: GameObject;
 
     constructor(player: GameObject) {
@@ -71,7 +71,8 @@ class Inventory {
             $("#hotbar").append(hotbarSlot);
             this.hotbarSlotDivs.push(hotbarSlot);
         }
-        this.setSelectedHotbarSlot(this._selectedSlot);
+
+        this.setSelectedHotbarSlot(0);
     }
 
     // Returns true if the item was successfully added to the inventory
@@ -109,6 +110,10 @@ class Inventory {
         }
     }
 
+    public addItemIndex(itemIndex: ItemIndex) {
+        this.addItem(itemsCodex[itemIndex]);
+    }
+
     public setSelectedHotbarSlot(index: number) {
         if (index < 0 || index >= this._hotbarSize) {
             throw Error("Index out of bounds: " + index);
@@ -116,7 +121,9 @@ class Inventory {
         if (index === this._selectedSlot) {
             return;
         }
-        this.hotbarSlotDivs[this._selectedSlot].find(".slot-icon").attr("src", getImage("hotbar_slot").src);
+        if (this._selectedSlot !== -1) {
+            this.hotbarSlotDivs[this._selectedSlot].find(".slot-icon").attr("src", getImage("hotbar_slot").src);
+        }
         this._selectedSlot = index;
         this.hotbarSlotDivs[this._selectedSlot].find(".slot-icon").attr("src", getImage("hotbar_slot_selected").src);
         

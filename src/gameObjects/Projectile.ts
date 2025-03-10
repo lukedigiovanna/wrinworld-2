@@ -2,30 +2,21 @@ import { GameObject, GameObjectFactory } from "./index";
 import { Vector, MathUtils } from "../utils";
 import { Hitbox, Physics, ParticleEmitter, PhysicalCollider } from "../components";
 import { spriteRenderer } from "../renderers";
+import { Projectile } from "../projectiles";
+import { getImage } from "../imageLoader";
 
-interface ProjectileProperties {
-    // 0 to 1 - how good the projectile is at tracking the target. 0 is no homing, 1 is perfect homing
-    homingSkill: number;
-    // How many distinct mobs this projectile can hit
-    maxHits: number;
-    // The sprite this projectile should represent as (invisible if undefined)
-    spriteID?: string;
-    // Amount of HP to deal upon hit
-    damage: number;
-    // Any logic that should happen upon collision
-    onCollision?: () => void;
-    // How much knockback force to apply
-    knockback: number;
-}
-
-const ProjectileFactory: GameObjectFactory = (owner: GameObject, position: Vector, target: Vector) => {
+const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: GameObject, position: Vector, target: Vector) => {
     const projectile = new GameObject();
     projectile.position = position.copy();
-    projectile.scale.setComponents(1, 0.6);
+    
+    const sprite = getImage(properties.spriteID);
+    projectile.scale.setComponents(
+        properties.size, sprite.height / sprite.width * properties.size
+    );
+    
+    projectile.lifespan = properties.lifespan;
 
-    projectile.lifespan = 3;
-
-    projectile.renderer = spriteRenderer("fireball");
+    projectile.renderer = spriteRenderer(properties.spriteID);
 
     projectile.addComponent((gameObject: GameObject) => {
         const data: any = {
@@ -41,7 +32,7 @@ const ProjectileFactory: GameObjectFactory = (owner: GameObject, position: Vecto
                 if (collision.tag === "animal" || collision.tag === "portal" || collision.tag ===  "enemy") {
                     const health = collision.getComponent("health");
                     if (health) {
-                        health.data.hp -= 5;
+                        health.data.hp -= properties.damage;
                     }
                     const physics = collision.getComponent("physics");
                     if (physics) {
@@ -50,12 +41,15 @@ const ProjectileFactory: GameObjectFactory = (owner: GameObject, position: Vecto
                                 Vector.normalized(
                                     data.physics.data.velocity
                                 ), 
-                                2
+                                properties.knockback
                             )
                         );
                     }
                     const particles = gameObject.getComponent("particle-emitter-explosion");
                     for (let i = 0; i < 25; i++) particles?.data.emit();
+                    if (properties.onDestroy) {
+                        properties.onDestroy(gameObject);
+                    }
                     gameObject.destroy();
                 }
             },
@@ -68,6 +62,9 @@ const ProjectileFactory: GameObjectFactory = (owner: GameObject, position: Vecto
                 }
                 const particles = gameObject.getComponent("particle-emitter-explosion");
                 for (let i = 0; i < 25; i++) particles?.data.emit();
+                if (properties.onDestroy) {
+                    properties.onDestroy(gameObject);
+                }
                 gameObject.destroy();
             },
             data
@@ -100,19 +97,28 @@ const ProjectileFactory: GameObjectFactory = (owner: GameObject, position: Vecto
             Vector.normalized(
                 Vector.subtract(target, position)
             ),
-            15
+            properties.speed
         )
     );
 
     const hitbox = projectile.addComponent(Hitbox);
-    hitbox.data.boxOffset.setComponents(0.25, 0);
-    hitbox.data.boxSize.setComponents(0.25, 0.25);
+    if (properties.hitboxOffset) {
+        hitbox.data.boxOffset.set(properties.hitboxOffset);
+    }
+    if (properties.hitboxSize) {
+        hitbox.data.boxSize.set(properties.hitboxSize);
+    }
     
     const collider = projectile.addComponent(PhysicalCollider);
     collider.data?.ignoreCollisionWith.add("player");
-    collider.data.boxOffset.setComponents(0.25, 0);
-    collider.data.boxSize.setComponents(0.5, 0.5);
+    if (properties.colliderOffset) {
+        collider.data.boxOffset.set(properties.colliderOffset);
+    }
+    if (properties.colliderSize) {
+        collider.data.boxSize.set(properties.colliderSize);
+    }
     
+    physics.data.angularVelocity = properties.angularVelocity;
     projectile.rotation = physics.data.velocity.angle;
 
     projectile.tag = "projectile";

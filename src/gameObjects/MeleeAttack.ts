@@ -26,7 +26,7 @@ const MeleeAttackFactory: GameObjectFactory = (owner: GameObject, position: Vect
 
     meleeAttack.lifespan = 0.1;
 
-    meleeAttack.renderer = spriteRenderer("kfc");
+    meleeAttack.renderer = spriteRenderer("square");
 
     meleeAttack.addComponent((gameObject: GameObject) => {
         const data: any = {

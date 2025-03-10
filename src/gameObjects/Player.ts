@@ -22,7 +22,11 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
     health.data.showHealthBar = false;
 
     const inventoryManager = player.addComponent(InventoryManager);
-    inventoryManager.data.inventory.addItem(itemsCodex[ItemIndex.BROAD_SWORD]);
+    inventoryManager.data.inventory.addItemIndex(ItemIndex.BROAD_SWORD);
+    for (let i = 0; i < 40; i++) {
+        inventoryManager.data.inventory.addItemIndex(ItemIndex.SHURIKEN);
+    }
+        
 
     player.addComponent(WeaponManager);
 

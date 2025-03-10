@@ -10,6 +10,7 @@ enum ItemIndex {
     BROAD_SWORD,
     ZOMBIE_BRAINS,
     ZOMBIE_FLESH,
+    SHURIKEN,
 }
 
 // Return true if using the item should consume it.
@@ -68,6 +69,15 @@ const itemsCodex: Item[] = [
         itemIndex: ItemIndex.ZOMBIE_FLESH,
         iconSpriteID: "zombie_flesh",
         maxStack: 999
+    },
+    {
+        itemIndex: ItemIndex.SHURIKEN,
+        iconSpriteID: "shuriken",
+        maxStack: 20,
+        use(player) {
+            fireWeapon(player, WeaponIndex.SHURIKEN);
+            return true;
+        }
     }
 ];
 
