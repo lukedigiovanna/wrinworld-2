@@ -45,8 +45,8 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
                             )
                         );
                     }
-                    const particles = gameObject.getComponent("particle-emitter-explosion");
-                    for (let i = 0; i < 25; i++) particles?.data.emit();
+                    // const particles = gameObject.getComponent("particle-emitter-explosion");
+                    // for (let i = 0; i < 25; i++) particles?.data.emit();
                     if (properties.onDestroy) {
                         properties.onDestroy(gameObject);
                     }
@@ -60,8 +60,8 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
                         return;
                     }
                 }
-                const particles = gameObject.getComponent("particle-emitter-explosion");
-                for (let i = 0; i < 25; i++) particles?.data.emit();
+                // const particles = gameObject.getComponent("particle-emitter-explosion");
+                // for (let i = 0; i < 25; i++) particles?.data.emit();
                 if (properties.onDestroy) {
                     properties.onDestroy(gameObject);
                 }
@@ -71,25 +71,25 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
         }
     });
 
-    projectile.addComponent(ParticleEmitter({
-        spriteID: () => "spark",
-        rate: () => 25,
-        size: () => new Vector(0.7, 0.7),
-        rotation: () => MathUtils.random(0, Math.PI * 2),
-        velocity: () => MathUtils.randomVector(MathUtils.random(0.5, 1.2)),
-        angularVelocity: () => MathUtils.random(-4, 4),
-        lifetime: () => MathUtils.random(0.1, 0.5)
-    }, "sparks"));
+    // projectile.addComponent(ParticleEmitter({
+    //     spriteID: () => "spark",
+    //     rate: () => 25,
+    //     size: () => new Vector(0.7, 0.7),
+    //     rotation: () => MathUtils.random(0, Math.PI * 2),
+    //     velocity: () => MathUtils.randomVector(MathUtils.random(0.5, 1.2)),
+    //     angularVelocity: () => MathUtils.random(-4, 4),
+    //     lifetime: () => MathUtils.random(0.1, 0.5)
+    // }, "sparks"));
 
-    projectile.addComponent(ParticleEmitter({
-        spriteID: () => MathUtils.randomChoice(["smoke", "spark"]),
-        rate: () => 0,
-        size: () => new Vector(0.5, 0.5),
-        rotation: () => MathUtils.random(0, 2 * Math.PI),
-        velocity: () => MathUtils.randomVector(MathUtils.random(0.2, 2.0)),
-        lifetime: () => MathUtils.random(0.4, 0.8),
-        spawnBoxSize: () => Vector.zero()
-    }, "explosion"));
+    // projectile.addComponent(ParticleEmitter({
+    //     spriteID: () => MathUtils.randomChoice(["smoke", "spark"]),
+    //     rate: () => 0,
+    //     size: () => new Vector(0.5, 0.5),
+    //     rotation: () => MathUtils.random(0, 2 * Math.PI),
+    //     velocity: () => MathUtils.randomVector(MathUtils.random(0.2, 2.0)),
+    //     lifetime: () => MathUtils.random(0.4, 0.8),
+    //     spawnBoxSize: () => Vector.zero()
+    // }, "explosion"));
     
     const physics = projectile.addComponent(Physics);
     physics.data.velocity.set(

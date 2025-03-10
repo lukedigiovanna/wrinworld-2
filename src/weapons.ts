@@ -16,6 +16,7 @@ enum WeaponIndex {
     BROAD_SWORD,
     ZOMBIE_ATTACK,
     SHURIKEN,
+    BOW,
 }
 
 const fireProjectile = (projectile: Projectile, gameObject: GameObject, target: Vector) => {
@@ -50,6 +51,13 @@ const weaponsCodex: Weapon[] = [
         cooldown: 0,
         fire(gameObject, target) {
             fireProjectile(projectilesCodex[ProjectileIndex.SHURIKEN], gameObject, target);
+        }
+    },
+    {
+        weaponIndex: WeaponIndex.BOW,
+        cooldown: 1,
+        fire(gameObject, target) {
+            fireProjectile(projectilesCodex[ProjectileIndex.ARROW], gameObject, target);
         }
     }
 ];

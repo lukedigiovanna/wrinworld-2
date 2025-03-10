@@ -23,14 +23,14 @@ class Camera {
 
     public update(dt: number) {
         const diff = Vector.subtract(this.target, this.position);
-        const threshold = this.height / 12;
+        const threshold = this.height / 4;
         if (diff.magnitude > threshold) {
             diff.subtract(Vector.scaled(Vector.normalized(diff), threshold));
             diff.scale(dt * 3);
             if (diff.magnitude > 0.025)
                 this.position.add(diff);
         }
-        this.position.set(this.target);
+        // this.position.set(this.target);
         this.position.y = MathUtils.clamp(this.position.y, this.verticalBoundary[0], this.verticalBoundary[1]);
 
         if (input.isKeyDown("Equal")) {

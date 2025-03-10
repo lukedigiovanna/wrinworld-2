@@ -5,7 +5,8 @@ import { ItemIndex, itemsCodex } from "./items";
 
 enum ProjectileIndex {
     FIREBALL,
-    SHURIKEN
+    SHURIKEN,
+    ARROW,
 }
 
 interface Projectile {
@@ -73,6 +74,23 @@ const projectilesCodex: Projectile[] = [
                 ItemDropFactory(itemsCodex[ItemIndex.SHURIKEN], gameObject.position)
             );
         },
+    },
+    {
+        homingSkill: 0,
+        maxHits: 1,
+        spriteID: "arrow",
+        damage: 10,
+        knockback: 3,
+        lifespan: 4,
+        size: 1,
+        speed: 16,
+        angularVelocity: 0,
+        colliderSize: new Vector(0.25, 0.25),
+        onDestroy(gameObject) {
+            gameObject.game.addGameObject(
+                ItemDropFactory(itemsCodex[ItemIndex.ARROW], gameObject.position)
+            );
+        }
     }
 ];
 

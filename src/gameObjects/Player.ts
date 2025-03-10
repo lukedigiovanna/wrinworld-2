@@ -23,10 +23,13 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
 
     const inventoryManager = player.addComponent(InventoryManager);
     inventoryManager.data.inventory.addItemIndex(ItemIndex.BROAD_SWORD);
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 20; i++) {
         inventoryManager.data.inventory.addItemIndex(ItemIndex.SHURIKEN);
     }
-        
+    inventoryManager.data.inventory.addItemIndex(ItemIndex.BOW);
+    for (let i = 0; i < 120; i++) {
+        inventoryManager.data.inventory.addItemIndex(ItemIndex.ARROW);
+    }
 
     player.addComponent(WeaponManager);
 

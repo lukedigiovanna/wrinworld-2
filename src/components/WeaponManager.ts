@@ -12,7 +12,9 @@ const WeaponManager: ComponentFactory = (gameObject: GameObject) => {
             if (timeSinceLastFired >= weapon.cooldown) {
                 weapon.fire(gameObject, target);
                 data.timeLastFired = gameObject.game.time;
+                return true;
             }
+            return false;
         },
         equip: (weaponIndex: WeaponIndex) => {
             data.timeLastFired = gameObject.game.time;

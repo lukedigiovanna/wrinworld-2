@@ -172,6 +172,28 @@ class Inventory {
         return slot ? slot.item : null;
     }
 
+    // Returns the first index containing an item with the given index.
+    // returns -1 if there is no such match.
+    public indexOf(itemIndex: ItemIndex): number {
+        for (let i = 0; i < this.slots.length; i++) {
+            if (this.slots[i] && this.slots[i]?.item.itemIndex === itemIndex) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private decreaseItemCount(slotIndex: number) {
+        if (this.slots[slotIndex] === null) {
+            return;
+        }
+        this.slots[slotIndex].count--;
+        if (this.slots[slotIndex].count === 0) {
+            this.slots[slotIndex] = null;
+        }
+        this.updateUI();
+    }
+
     public useSelectedItem() {
         const slot = this.slots[this._selectedSlot];
         const item = slot?.item;
@@ -179,13 +201,21 @@ class Inventory {
             return;
         }
         if (item.use) {
-            const consume = item.use(this.player);
-            if (consume) {
-                slot.count--;
-                if (slot.count === 0) {
-                    this.slots[this._selectedSlot] = null;
+            let useIndex = -1;
+            if (item.usesItem) {
+                useIndex = this.indexOf(item.usesItem);
+                if (useIndex < 0) {
+                    return;
                 }
-                this.updateUI();
+            }
+            const success = item.use(this.player);
+            if (success) {
+                if (useIndex > -1) {
+                    this.decreaseItemCount(useIndex);
+                }
+                if (item.consumable) {
+                    this.decreaseItemCount(this._selectedSlot);
+                }
             }
         }
     }

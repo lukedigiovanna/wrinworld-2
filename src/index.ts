@@ -68,12 +68,15 @@ window.onload = async () => {
         loadImage("tallgrass", "assets/images/tallgrass.png"),
         
         loadImage("fireball", "assets/images/fireball.webp"),
+        loadImage("arrow", "assets/images/arrow.png"),
 
         loadImage("kfc", "assets/images/kfc.png"),
         loadImage("zombie_brains", "assets/images/zombie_brains.png"),
         loadImage("zombie_flesh", "assets/images/zombie_flesh.png"),
         loadImage("broad_sword_icon", "assets/images/broad_sword_icon.png"),
         loadImage("shuriken", "assets/images/shuriken.png"),
+        loadImage("bow", "assets/images/bow.png"),
+        loadImage("arrow-icon", "assets/images/arrow-icon.png"),
 
         loadImage("feather", "assets/images/feather.png"),
         loadImage("spark", "assets/images/spark.png"),

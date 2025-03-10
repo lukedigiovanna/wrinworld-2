@@ -11,9 +11,11 @@ enum ItemIndex {
     ZOMBIE_BRAINS,
     ZOMBIE_FLESH,
     SHURIKEN,
+    BOW,
+    ARROW,
 }
 
-// Return true if using the item should consume it.
+// Return true if successfully used.
 type UseItemFunction = (player: GameObject) => boolean;
 type EquipItemFunction = (player: GameObject) => void;
 
@@ -21,6 +23,9 @@ interface Item {
     itemIndex: ItemIndex;
     iconSpriteID: string;
     maxStack: number;
+    consumable: boolean;
+    // ex. Bow uses Arrow type
+    usesItem?: ItemIndex;
     use?: UseItemFunction;
     equip?: EquipItemFunction;
 }
@@ -32,7 +37,7 @@ interface ItemDropChance {
 
 function fireWeapon(player: GameObject, weapon: WeaponIndex) {
     const weaponManager = player.getComponent("weapon-manager");
-    weaponManager?.data.fire(
+    return weaponManager?.data.fire(
         weapon,
         player.game.camera.screenToWorldPosition(input.mousePosition) // target
     );
@@ -48,9 +53,9 @@ const itemsCodex: Item[] = [
         itemIndex: ItemIndex.BROAD_SWORD,
         iconSpriteID: "broad_sword_icon",
         maxStack: 1,
+        consumable: false,
         use(player) {
-            fireWeapon(player, WeaponIndex.BROAD_SWORD);
-            return false;
+            return fireWeapon(player, WeaponIndex.BROAD_SWORD);
         },
         equip(player) {
             equipWeapon(player, WeaponIndex.BROAD_SWORD);
@@ -60,6 +65,7 @@ const itemsCodex: Item[] = [
         itemIndex: ItemIndex.ZOMBIE_BRAINS,
         iconSpriteID: "zombie_brains",
         maxStack: 99,
+        consumable: false,
         use(player) {
             console.log("[brraaaiiinnnss]");
             return true;
@@ -68,16 +74,33 @@ const itemsCodex: Item[] = [
     {
         itemIndex: ItemIndex.ZOMBIE_FLESH,
         iconSpriteID: "zombie_flesh",
-        maxStack: 999
+        maxStack: 999,
+        consumable: false
     },
     {
         itemIndex: ItemIndex.SHURIKEN,
         iconSpriteID: "shuriken",
         maxStack: 20,
+        consumable: true,
         use(player) {
-            fireWeapon(player, WeaponIndex.SHURIKEN);
-            return true;
+            return fireWeapon(player, WeaponIndex.SHURIKEN);
         }
+    },
+    {
+        itemIndex: ItemIndex.BOW,
+        iconSpriteID: "bow",
+        maxStack: 1,
+        usesItem: ItemIndex.ARROW,
+        consumable: false,
+        use(player) {
+            return fireWeapon(player, WeaponIndex.BOW);
+        }
+    },
+    {
+        itemIndex: ItemIndex.ARROW,
+        iconSpriteID: "arrow-icon",
+        maxStack: 100,
+        consumable: false,
     }
 ];
 
