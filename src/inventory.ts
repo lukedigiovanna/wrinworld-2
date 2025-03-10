@@ -41,8 +41,19 @@ class Inventory {
             const inventorySlot = $(INVENTORY_SLOT_HTML);
             row!.append(inventorySlot);
             inventorySlot.on("mouseenter", () => {
-                console.log("Mouse entered", index);
+                const itemDisplay = $("#item-display");
+                const slot = this.slots[index];
+                if (slot) {
+                    itemDisplay.find("#item-name").text(slot.item.displayName);
+                    itemDisplay.find("#item-category").text(slot.item.category);
+                    itemDisplay.find("#item-icon").attr("src", getImage(slot.item.iconSpriteID).src);
+                    itemDisplay.show();
+                }
             });
+            inventorySlot.on("mouseleave", () => {
+                $("#item-display").hide();
+            })
+            inventorySlot.css("cursor", "pointer");
             this.inventorySlotDivs.push(inventorySlot);
         }
 
@@ -66,6 +77,24 @@ class Inventory {
             $("#inventory").append(currentRow);
         }
         $("#inventory").append(hotbarRow);
+
+        $("#inventory-screen").on("mousemove", (ev) => {
+            const itemDisplay = $("#item-display");
+
+            const width = itemDisplay.outerWidth() as number;
+            console.log(width, window.innerWidth, ev.clientX);
+            let x = ev.clientX;
+            if (ev.clientX + width >= window.innerWidth) {
+                x -= width;
+            }
+            let y = ev.clientY;
+            const height = itemDisplay.outerHeight() as number;
+            if (ev.clientY + height >= window.innerHeight) {
+                y -= height;
+            }
+            itemDisplay.css("left", x);
+            itemDisplay.css("top", y);
+        });
 
         // Create the regular hotbar UI
         this.hotbarSlotDivs = [];

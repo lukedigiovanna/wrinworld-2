@@ -12,12 +12,22 @@
       url("assets/fonts/Heavitas.ttf") format("truetype")
 }
 
+@font-face {
+    font-family: "Nexa-Light";
+    src: url("assets/fonts/Nexa-ExtraLight.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Nexa-Heavy";
+    src: url("assets/fonts/Nexa-Heavy.ttf") format("truetype");
+}
+
 .primary-font {
     font-family: "Enchanted Land";
 }
 
 .secondary-font {
-    font-family: "Heavitas";
+    font-family: "Nexa-Light";
 }
 
 #game-canvas {
@@ -50,15 +60,12 @@
     pointer-events: all;
 }
 
-#hotbar {
+.background {
     position: absolute;
-    display: flex;
-    gap: 5px;
-    bottom: 50px;
     width: 100%;
-    height: 100px;
-    align-items: center;
-    justify-content: center;
+    height: 100%;
+    background-color: black;
+    opacity: 40%;
 }
 
 .inventory-slot {
@@ -100,6 +107,17 @@
     text-stroke: 0.1px white;
 }
 
+#hotbar {
+    position: absolute;
+    display: flex;
+    gap: 5px;
+    bottom: 50px;
+    width: 100%;
+    height: 100px;
+    align-items: center;
+    justify-content: center;
+}
+
 #inventory-screen {
     display: none;
 }
@@ -121,23 +139,46 @@
 }
 
 #item-display {
-    width: 100px;
-    height: 200px;
-    background-color: tan;
+    position: absolute;
+    width: 200px;
+    padding-inline: 10px;
+    padding-block: 8px;
+    background-color: #e6b45d;
+    border-radius: 8px;
+    border: 3px solid black;
+    font-family: "Nexa-Heavy";
+}
+
+#item-display #item-title-row {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#item-title-row p {
+    margin: 0;
+}
+
+#item-display #item-name {
+    color: #333;
+    font-size: 20px;
+}
+
+#item-display #item-category {
+    color: #777;
+    font-style: italic;
+    font-size: 12px;
+}
+
+#item-display #item-icon {
+    width: 35px;
 }
 
 #pause-screen {
     opacity: 0%;
     visibility: hidden;
     transition: opacity 0.2s ease-in-out, visibility 0.0s linear;
-}
-
-.background {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: black;
-    opacity: 40%;
 }
 
 #pause-screen .content {

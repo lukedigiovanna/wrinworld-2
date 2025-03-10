@@ -52,8 +52,6 @@ class Game {
         this.addGameObject(this._player);
         this._camera.target = this._player.position;
 
-        this.addGameObject(EnemyFactory(new Vector(0, 24), EnemyIndex.ZOMBIE));
-
         this.generateLevelOne();
         this._camera.verticalBoundary = [16, 24 + 8 + 96];
     }

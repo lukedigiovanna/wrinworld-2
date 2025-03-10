@@ -6,6 +6,8 @@ import input from "./input";
 import { GameObject } from "./gameObjects";
 import { WeaponIndex } from "./weapons";
 
+type ItemCategory = "Weapon" | "Misc." | "Projectile";
+
 enum ItemIndex {
     BROAD_SWORD,
     ZOMBIE_BRAINS,
@@ -21,6 +23,8 @@ type EquipItemFunction = (player: GameObject) => void;
 
 interface Item {
     itemIndex: ItemIndex;
+    displayName: string;
+    category: ItemCategory;
     iconSpriteID: string;
     maxStack: number;
     consumable: boolean;
@@ -51,6 +55,8 @@ function equipWeapon(player: GameObject, weapon: WeaponIndex) {
 const itemsCodex: Item[] = [
     {
         itemIndex: ItemIndex.BROAD_SWORD,
+        displayName: "Broad Sword",
+        category: "Weapon",
         iconSpriteID: "broad_sword_icon",
         maxStack: 1,
         consumable: false,
@@ -63,6 +69,8 @@ const itemsCodex: Item[] = [
     },
     {
         itemIndex: ItemIndex.ZOMBIE_BRAINS,
+        displayName: "Zombie Brains",
+        category: "Misc.",
         iconSpriteID: "zombie_brains",
         maxStack: 99,
         consumable: false,
@@ -73,12 +81,16 @@ const itemsCodex: Item[] = [
     },
     {
         itemIndex: ItemIndex.ZOMBIE_FLESH,
+        displayName: "Zombie Flesh",
+        category: "Misc.",
         iconSpriteID: "zombie_flesh",
         maxStack: 999,
         consumable: false
     },
     {
         itemIndex: ItemIndex.SHURIKEN,
+        category: "Weapon",
+        displayName: "Shuriken",
         iconSpriteID: "shuriken",
         maxStack: 20,
         consumable: true,
@@ -88,6 +100,8 @@ const itemsCodex: Item[] = [
     },
     {
         itemIndex: ItemIndex.BOW,
+        displayName: "Bow",
+        category: "Weapon",
         iconSpriteID: "bow",
         maxStack: 1,
         usesItem: ItemIndex.ARROW,
@@ -98,6 +112,8 @@ const itemsCodex: Item[] = [
     },
     {
         itemIndex: ItemIndex.ARROW,
+        displayName: "Arrow",
+        category: "Projectile",
         iconSpriteID: "arrow-icon",
         maxStack: 100,
         consumable: false,

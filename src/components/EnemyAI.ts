@@ -19,6 +19,7 @@ const ZombieAI: ComponentFactory = (gameObject) => {
             data.weaponManager = gameObject.getComponent("weapon-manager");
         },
         update(dt) {
+            if (gameObject.age < 1.5) return;
             const direction = Vector.subtract(data.target, gameObject.position);
             let speed = data.speed;
             if (gameObject.game.getTileIndex(gameObject.position) === TileIndex.WATER) {
