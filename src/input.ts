@@ -4,6 +4,11 @@ import { Vector } from "./utils";
 
 type ScrollCallback = (deltaY: number) => void;
 
+enum InputLayer {
+    GAME,
+    INVENTORY,
+}
+
 // to be used as singleton
 class Input {
     private _mouseDown = false; // true as long as mouse is pressed
@@ -13,6 +18,8 @@ class Input {
     private _keyPressedMap = new Map<string, boolean>();
 
     private scrollListeners: ScrollCallback[] = [];
+
+    private _layer: InputLayer = InputLayer.GAME;
 
     constructor() {
         // initialize listeners
@@ -46,7 +53,10 @@ class Input {
         }
     }
 
-    public get mouseDown() {
+    public mouseDown(fromLayer: InputLayer=InputLayer.GAME) {
+        if (fromLayer !== this._layer) {
+            return false;
+        }
         return this._mouseDown;
     }
 
@@ -54,17 +64,26 @@ class Input {
         return this._mousePosition;
     }
 
-    public get mousePressed() {
+    public mousePressed(fromLayer: InputLayer=InputLayer.GAME) {
+        if (fromLayer !== this._layer) {
+            return false;
+        }
         const ret = this._mousePressed;
         this._mousePressed = false;
         return ret;
     }
 
-    public isKeyDown(code: string): boolean {
+    public isKeyDown(code: string, fromLayer: InputLayer=InputLayer.GAME): boolean {
+        if (fromLayer !== this._layer) {
+            return false;
+        }
         return !!this._keyDownMap.get(code);
     }
 
-    public isKeyPressed(code: string): boolean {
+    public isKeyPressed(code: string, fromLayer: InputLayer=InputLayer.GAME): boolean {
+        if (fromLayer !== this._layer) {
+            return false;
+        }
         const returnValue = !!this._keyPressedMap.get(code);
         this._keyPressedMap.set(code, false);
         return returnValue;
@@ -78,8 +97,17 @@ class Input {
         this.scrollListeners.splice(
             this.scrollListeners.indexOf(callback), 1);
     }
+
+    public get layer() {
+        return this._layer;
+    }
+
+    public set layer(layer: InputLayer) {
+        this._layer = layer;
+    }
 }
 
 const input = new Input();
 
 export default input;
+export { InputLayer };

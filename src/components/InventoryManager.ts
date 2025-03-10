@@ -1,6 +1,6 @@
 import { ComponentFactory } from "./index";
 import { GameObject } from "../gameObjects";
-import input from "../input";
+import input, { InputLayer } from "../input";
 import { Item } from "../items";
 import { Inventory } from "../inventory";
 import { getImage } from "../imageLoader";
@@ -63,8 +63,16 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
             if (input.isKeyPressed("KeyE")) {
                 data.inventory.toggleUI();
             }
+
+            if (input.isKeyPressed("KeyE", InputLayer.INVENTORY)) {
+                data.inventory.toggleUI();
+            }
+
+            if (input.isKeyPressed("Escape", InputLayer.INVENTORY)) {
+                data.inventory.toggleUI();
+            }
             
-            if (input.mousePressed) {
+            if (input.mousePressed()) {
                 data.inventory.useSelectedItem();
             }
         },

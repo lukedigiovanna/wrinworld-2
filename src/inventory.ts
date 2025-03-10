@@ -1,6 +1,7 @@
 import { Item, ItemIndex, itemsCodex } from "./items";
 import { getImage } from "./imageLoader";
 import { GameObject } from "./gameObjects";
+import input, { InputLayer } from "./input";
 
 interface InventorySlot {
     item: Item;
@@ -301,9 +302,11 @@ class Inventory {
                 this.heldSlot = null;
                 this.setSlotUI(this.heldSlot, $("#held-item-display"));
             }
+            input.layer = InputLayer.GAME;
         }
         else {
             $("#inventory-screen").show();
+            input.layer = InputLayer.INVENTORY;
         }
         this.inventoryDisplayed = !this.inventoryDisplayed;
     }
