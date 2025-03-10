@@ -18,6 +18,8 @@ interface Projectile {
     spriteID: string;
     // Amount of HP to deal upon hit
     damage: number;
+    // Amount to reduce the damage of this projectile by per hit when the maxHits > 1
+    damageReductionPerHit: number;
     // How much knockback force to apply
     knockback: number;
     // How long until the projectile should self-destruct
@@ -35,6 +37,8 @@ interface Projectile {
     // collider properties (optional... defaults to size of projectile)
     colliderOffset?: Vector,
     colliderSize?: Vector,
+
+    chanceOfBreaking?: number;
     // Any logic that should happen when this object dies (including after lifespan)
     onDestroy?: (gameObject: GameObject) => void;
 }
@@ -45,6 +49,7 @@ const projectilesCodex: Projectile[] = [
         maxHits: 1,
         spriteID: "fireball",
         damage: 15,
+        damageReductionPerHit: 0,
         knockback: 3,
         lifespan: 3,
         size: 1,
@@ -60,36 +65,46 @@ const projectilesCodex: Projectile[] = [
     },
     { // ProjectileIndex.SHURIKEN
         homingSkill: 0,
-        maxHits: 1,
+        maxHits: 20,
         spriteID: "shuriken",
-        damage: 10,
+        damage: 20,
+        damageReductionPerHit: 0.5,
         knockback: 3,
         lifespan: 999,
         size: 0.5,
         speed: 20,
         angularVelocity: 20,
         colliderSize: new Vector(0.25, 0.25),
+        chanceOfBreaking: 0.2,
         onDestroy(gameObject) {
-            gameObject.game.addGameObject(
-                ItemDropFactory(itemsCodex[ItemIndex.SHURIKEN], gameObject.position)
-            );
+            const chance = this.chanceOfBreaking ? this.chanceOfBreaking as number : 1;
+            if (Math.random() > chance) {
+                gameObject.game.addGameObject(
+                    ItemDropFactory(itemsCodex[ItemIndex.SHURIKEN], gameObject.position)
+                );
+            }
         },
     },
     {
         homingSkill: 0,
-        maxHits: 1,
+        maxHits: 10,
         spriteID: "arrow",
         damage: 10,
+        damageReductionPerHit: 0.6,
         knockback: 3,
         lifespan: 4,
         size: 1,
         speed: 16,
         angularVelocity: 0,
         colliderSize: new Vector(0.25, 0.25),
+        chanceOfBreaking: 0.5,
         onDestroy(gameObject) {
-            gameObject.game.addGameObject(
-                ItemDropFactory(itemsCodex[ItemIndex.ARROW], gameObject.position)
-            );
+            const chance = this.chanceOfBreaking ? this.chanceOfBreaking as number : 1;
+            if (Math.random() > chance) {
+                gameObject.game.addGameObject(
+                    ItemDropFactory(itemsCodex[ItemIndex.ARROW], gameObject.position)
+                );
+            }
         }
     }
 ];

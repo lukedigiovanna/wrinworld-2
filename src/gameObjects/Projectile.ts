@@ -6,6 +6,8 @@ import { Projectile } from "../projectiles";
 import { getImage } from "../imageLoader";
 
 const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: GameObject, position: Vector, target: Vector) => {
+    properties = {...properties};
+
     const projectile = new GameObject();
     projectile.position = position.copy();
     
@@ -22,6 +24,7 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
         const data: any = {
             owner,
             physics: undefined,
+            hitCount: 0
         };
         return {
             id: "projectile",
@@ -45,23 +48,23 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
                             )
                         );
                     }
-                    // const particles = gameObject.getComponent("particle-emitter-explosion");
-                    // for (let i = 0; i < 25; i++) particles?.data.emit();
-                    if (properties.onDestroy) {
-                        properties.onDestroy(gameObject);
+                    data.hitCount++;
+                    properties.damage *= properties.damageReductionPerHit;
+                    if (data.hitCount >= properties.maxHits) {
+                        if (properties.onDestroy) {
+                            properties.onDestroy(gameObject);
+                        }
+                        gameObject.destroy();
                     }
-                    gameObject.destroy();
                 }
             },
             onPhysicalCollision(collision, isTile) {
-                if (!isTile) {
-                    collision = collision as GameObject;
-                    if (collision.tag ===  "enemy") {
-                        return;
-                    }
-                }
-                // const particles = gameObject.getComponent("particle-emitter-explosion");
-                // for (let i = 0; i < 25; i++) particles?.data.emit();
+                // if (!isTile) {
+                //     collision = collision as GameObject;
+                //     if (collision.tag ===  "enemy") {
+                //         return;
+                //     }
+                // }
                 if (properties.onDestroy) {
                     properties.onDestroy(gameObject);
                 }
@@ -111,6 +114,7 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
     
     const collider = projectile.addComponent(PhysicalCollider);
     collider.data?.ignoreCollisionWith.add("player");
+    collider.data?.ignoreCollisionWith.add("enemy");
     if (properties.colliderOffset) {
         collider.data.boxOffset.set(properties.colliderOffset);
     }
