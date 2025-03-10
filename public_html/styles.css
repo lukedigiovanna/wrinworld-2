@@ -107,6 +107,13 @@
     text-stroke: 0.1px white;
 }
 
+#held-item-display {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    pointer-events: none;
+}
+
 #hotbar {
     position: absolute;
     display: flex;

@@ -27,11 +27,37 @@ class Inventory {
     private hotbarSlotDivs: JQuery<HTMLElement>[];
     private _selectedSlot: number = -1;
     private player: GameObject;
+    private heldSlot: InventorySlot | null = null;
 
     constructor(player: GameObject) {
         this.player = player;
 
         this.slots = Array.from({ length: this.size }, () => null);
+
+        const updateDisplayPositions = (ev: any) => {
+            if (this.heldSlot) {
+                const heldItemDisplay = $("#held-item-display");
+                const width = heldItemDisplay.outerWidth() as number;
+                const height = heldItemDisplay.outerHeight() as number;
+                heldItemDisplay.css("left", ev.clientX - width / 2);
+                heldItemDisplay.css("top", ev.clientY - height / 2);
+            }
+            else {
+                const itemDisplay = $("#item-display");
+                const width = itemDisplay.outerWidth() as number;
+                let x = ev.clientX;
+                if (ev.clientX + width >= window.innerWidth) {
+                    x -= width;
+                }
+                let y = ev.clientY;
+                const height = itemDisplay.outerHeight() as number;
+                if (ev.clientY + height >= window.innerHeight) {
+                    y -= height;
+                }
+                itemDisplay.css("left", x);
+                itemDisplay.css("top", y);
+            }
+        }
 
         // Create the inventory UI
         this.inventorySlotDivs = [];
@@ -52,7 +78,44 @@ class Inventory {
             });
             inventorySlot.on("mouseleave", () => {
                 $("#item-display").hide();
-            })
+            });
+            inventorySlot.on("click", (ev) => {
+                const slot = this.slots[index];
+                if (this.heldSlot === null) {
+                    if (slot !== null) { 
+                        // "pick up" the item in the slot.
+                        this.heldSlot = this.slots[index];
+                        this.slots[index] = null;
+                        this.setSlotUI(null, this.inventorySlotDivs[index]);
+                    }
+                }
+                else {
+                    // Place the held slot
+                    if (this.slots[index] !== null && this.slots[index].item.itemIndex === this.heldSlot.item.itemIndex) {
+                        // Transfer as much count as possible
+                        const count = Math.min(
+                            this.heldSlot.count,
+                            this.heldSlot.item.maxStack - this.slots[index].count
+                        );
+                        this.slots[index].count += count;
+                        this.heldSlot.count -= count;
+                        if (this.heldSlot.count <= 0) {
+                            this.heldSlot = null;
+                        }
+                    }
+                    else {
+                        // Swap the slots
+                        const temp = this.slots[index];
+                        this.slots[index] = this.heldSlot;
+                        this.heldSlot = temp;
+                    }
+                    this.setSlotUI(this.slots[index], this.inventorySlotDivs[index]);
+                }
+
+                this.setSlotUI(this.heldSlot, $("#held-item-display"));
+                this.updateUI();
+                updateDisplayPositions(ev);
+            });
             inventorySlot.css("cursor", "pointer");
             this.inventorySlotDivs.push(inventorySlot);
         }
@@ -78,23 +141,7 @@ class Inventory {
         }
         $("#inventory").append(hotbarRow);
 
-        $("#inventory-screen").on("mousemove", (ev) => {
-            const itemDisplay = $("#item-display");
-
-            const width = itemDisplay.outerWidth() as number;
-            console.log(width, window.innerWidth, ev.clientX);
-            let x = ev.clientX;
-            if (ev.clientX + width >= window.innerWidth) {
-                x -= width;
-            }
-            let y = ev.clientY;
-            const height = itemDisplay.outerHeight() as number;
-            if (ev.clientY + height >= window.innerHeight) {
-                y -= height;
-            }
-            itemDisplay.css("left", x);
-            itemDisplay.css("top", y);
-        });
+        $("#inventory-screen").on("mousemove", updateDisplayPositions);
 
         // Create the regular hotbar UI
         this.hotbarSlotDivs = [];
