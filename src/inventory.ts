@@ -68,16 +68,19 @@ class Inventory {
         const addInventorySlot = (row: JQuery<HTMLElement>, index: number) => {
             const inventorySlot = $(INVENTORY_SLOT_HTML);
             row!.append(inventorySlot);
+            const showItemDisplay = () => {
+                const itemDisplay = $("#item-display");
+                const slot = this.slots[index];
+                if (slot) {
+                    itemDisplay.find("#item-name").text(slot.item.displayName);
+                    itemDisplay.find("#item-category").text(slot.item.category);
+                    itemDisplay.find("#item-icon").attr("src", getImage(slot.item.iconSpriteID).src);
+                    itemDisplay.show();
+                }
+            }
             inventorySlot.on("mouseenter", () => {
                 if (!this.heldSlot) {
-                    const itemDisplay = $("#item-display");
-                    const slot = this.slots[index];
-                    if (slot) {
-                        itemDisplay.find("#item-name").text(slot.item.displayName);
-                        itemDisplay.find("#item-category").text(slot.item.category);
-                        itemDisplay.find("#item-icon").attr("src", getImage(slot.item.iconSpriteID).src);
-                        itemDisplay.show();
-                    }
+                    showItemDisplay();
                 }
             });
             inventorySlot.on("mouseleave", () => {
@@ -92,6 +95,7 @@ class Inventory {
                         this.slots[index] = null;
                         this.setSlotUI(null, this.inventorySlotDivs[index]);
                     }
+                    $("#item-display").hide();
                 }
                 else {
                     // Place the held slot
@@ -117,6 +121,9 @@ class Inventory {
                 }
 
                 this.setSlotUI(this.heldSlot, $("#held-item-display"));
+                if (this.heldSlot === null) {
+                    showItemDisplay();
+                }
                 this.updateUI();
                 updateDisplayPositions(ev);
             });
