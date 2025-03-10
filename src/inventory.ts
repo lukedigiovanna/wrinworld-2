@@ -28,6 +28,7 @@ class Inventory {
     private _selectedSlot: number = -1;
     private player: GameObject;
     private heldSlot: InventorySlot | null = null;
+    private inventoryDisplayed: boolean = false;
 
     constructor(player: GameObject) {
         this.player = player;
@@ -196,6 +197,17 @@ class Inventory {
         this.addItem(itemsCodex[itemIndex]);
     }
 
+    // Returns the first index containing an item with the given index.
+    // returns -1 if there is no such match.
+    public indexOf(itemIndex: ItemIndex): number {
+        for (let i = 0; i < this.slots.length; i++) {
+            if (this.slots[i] && this.slots[i]?.item.itemIndex === itemIndex) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public setSelectedHotbarSlot(index: number) {
         if (index < 0 || index >= this._hotbarSize) {
             throw Error("Index out of bounds: " + index);
@@ -213,6 +225,37 @@ class Inventory {
         if (slot) {
             if (slot.item.equip) {
                 slot.item.equip(this.player);
+            }
+        }
+    }
+
+    public getSelectedItem(): Item | null {
+        const slot = this.slots[this._selectedSlot];
+        return slot ? slot.item : null;
+    }
+
+    public useSelectedItem() {
+        const slot = this.slots[this._selectedSlot];
+        const item = slot?.item;
+        if (!item) {
+            return;
+        }
+        if (item.use) {
+            let useIndex = -1;
+            if (item.usesItem) {
+                useIndex = this.indexOf(item.usesItem);
+                if (useIndex < 0) {
+                    return;
+                }
+            }
+            const success = item.use(this.player);
+            if (success) {
+                if (useIndex > -1) {
+                    this.decreaseItemCount(useIndex);
+                }
+                if (item.consumable) {
+                    this.decreaseItemCount(this._selectedSlot);
+                }
             }
         }
     }
@@ -241,28 +284,36 @@ class Inventory {
         }
     }
 
+    public toggleUI() {
+        if (this.inventoryDisplayed) {
+            $("#inventory-screen").hide();
+            if (this.heldSlot !== null) {
+                for (let i = 0; i < this.heldSlot.count; i++) {
+                    if (!this.addItem(this.heldSlot.item)) {
+                        // Need to add it to the world!
+                        // what do we do here!
+                        // need to do something or items will disappear
+                        // when the inventory is full
+                        //.... i will worry about this later :)
+                        break;
+                    }
+                }
+                this.heldSlot = null;
+                this.setSlotUI(this.heldSlot, $("#held-item-display"));
+            }
+        }
+        else {
+            $("#inventory-screen").show();
+        }
+        this.inventoryDisplayed = !this.inventoryDisplayed;
+    }
+
     public get selectedHotbarIndex() {
         return this._selectedSlot;
     }
 
     public get hotbarSize() {
         return this._hotbarSize;
-    }
-
-    public getSelectedItem(): Item | null {
-        const slot = this.slots[this._selectedSlot];
-        return slot ? slot.item : null;
-    }
-
-    // Returns the first index containing an item with the given index.
-    // returns -1 if there is no such match.
-    public indexOf(itemIndex: ItemIndex): number {
-        for (let i = 0; i < this.slots.length; i++) {
-            if (this.slots[i] && this.slots[i]?.item.itemIndex === itemIndex) {
-                return i;
-            }
-        }
-        return -1;
     }
 
     private decreaseItemCount(slotIndex: number) {
@@ -274,32 +325,6 @@ class Inventory {
             this.slots[slotIndex] = null;
         }
         this.updateUI();
-    }
-
-    public useSelectedItem() {
-        const slot = this.slots[this._selectedSlot];
-        const item = slot?.item;
-        if (!item) {
-            return;
-        }
-        if (item.use) {
-            let useIndex = -1;
-            if (item.usesItem) {
-                useIndex = this.indexOf(item.usesItem);
-                if (useIndex < 0) {
-                    return;
-                }
-            }
-            const success = item.use(this.player);
-            if (success) {
-                if (useIndex > -1) {
-                    this.decreaseItemCount(useIndex);
-                }
-                if (item.consumable) {
-                    this.decreaseItemCount(this._selectedSlot);
-                }
-            }
-        }
     }
 };
 

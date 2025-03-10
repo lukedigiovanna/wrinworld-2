@@ -61,16 +61,7 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
             }
 
             if (input.isKeyPressed("KeyE")) {
-                // Toggle inventory display
-                if (data.inventoryDisplayed) {
-                    // $("#hotbar-screen").show();
-                    $("#inventory-screen").hide();
-                }
-                else {
-                    // $("#hotbar-screen").hide();
-                    $("#inventory-screen").show();
-                }
-                data.inventoryDisplayed = !data.inventoryDisplayed;
+                data.inventory.toggleUI();
             }
             
             if (input.mousePressed) {
