@@ -10,8 +10,25 @@
     </head>
     <body>
         <div class="ui">
-            <div id="hotbar-screen">
-                <div id="hotbar">
+            <div id="hud-screen">
+                <div id="hud-container">
+                    <div id="hud">
+                        <div id="hud-row">
+                            <div>
+                                <img id="health-bar" src="assets/images/bar_frame.png" />
+                            </div>
+                            <div id="essence-container">
+                                <p>
+                                    <span id="essence-amount">0</span>
+                                    /
+                                    <span id="essence-max">100</span>
+                                </p>
+                                <img id="essence-jar" />
+                            </div>
+                        </div>
+                        <div id="hotbar">
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="inventory-screen">
@@ -26,12 +43,8 @@
                 <div id="item-display">
                     <div id="item-title-row">
                         <div>
-                            <p id="item-name">
-                                Shuriken
-                            </p>
-                            <p id="item-category">
-                                Weapon
-                            </p>
+                            <p id="item-name"></p>
+                            <p id="item-category"></p>
                         </div>
                         <div>
                             <img id="item-icon" src="assets/images/shuriken.png" />

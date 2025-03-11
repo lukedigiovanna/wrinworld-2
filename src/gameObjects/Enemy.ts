@@ -1,4 +1,4 @@
-import { GameObject, GameObjectFactory } from "./";
+import { GameObject, GameObjectFactory, EssenceOrbFactory } from "./";
 import { spriteRenderer } from "../renderers";
 import { Vector } from "../utils";
 import { Health, Hitbox, Physics, PhysicalCollider, ItemDropper, WeaponManager } from "../components";
@@ -45,6 +45,16 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
                     data.collider!.data.castShadow = true;
                 }
             },
+        }
+    });
+    enemy.addComponent((gameObject) => {
+        return {
+            id: "essence-dropper",
+            destroy() {
+                gameObject.game.addGameObject(
+                    EssenceOrbFactory(enemyType.essenceAmount, gameObject.position)
+                );
+            }
         }
     });
     enemy.tag = "enemy";

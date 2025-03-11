@@ -1,9 +1,9 @@
 import { GameObjectFactory, GameObject } from "./index";
 import { Vector } from "../utils";
 import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager, 
-         Health, WeaponManager} from "../components";
+         Health, WeaponManager, EssenceManager} from "../components";
 import { spriteRenderer } from "../renderers";
-import { ItemIndex, itemsCodex } from "../items";
+import { ItemIndex } from "../items";
 
 const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const player = new GameObject();
@@ -32,6 +32,8 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
     }
 
     player.addComponent(WeaponManager);
+
+    player.addComponent(EssenceManager);
 
     player.renderer = spriteRenderer("peach_water");
 

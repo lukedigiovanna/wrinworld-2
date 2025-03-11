@@ -86,10 +86,23 @@ window.onload = async () => {
         loadImage("hotbar_slot", "assets/images/hotbar_slot.png"),
         loadImage("hotbar_slot_selected", "assets/images/hotbar_slot_selected.png"),
         
+        loadImage("essence_orb", "assets/images/essence_orb.png"),
+        
+        loadImage("essence_jar_small_0", "assets/images/essence_jar_small_0.png"),
+        loadImage("essence_jar_small_1", "assets/images/essence_jar_small_1.png"),
+        loadImage("essence_jar_small_2", "assets/images/essence_jar_small_2.png"),
+        loadImage("essence_jar_small_3", "assets/images/essence_jar_small_3.png"),
+        loadImage("essence_jar_small_4", "assets/images/essence_jar_small_4.png"),
+        loadImage("essence_jar_small_5", "assets/images/essence_jar_small_5.png"),
+        loadImage("essence_jar_small_6", "assets/images/essence_jar_small_6.png"),
+        loadImage("essence_jar_small_7", "assets/images/essence_jar_small_7.png"),
+        loadImage("essence_jar_small_8", "assets/images/essence_jar_small_8.png"),
+        
         loadImage("square",  "assets/images/square.png"),
 
         // -- SOUNDS --
-        loadSound("item_pickup", "assets/sounds/item_pickup.wav", 5)
+        loadSound("item_pickup", "assets/sounds/item_pickup.wav", 5),
+        loadSound("essence_pickup", "assets/sounds/essence_pickup.wav", 5),
     ]);
     console.log("[FINISHED LOADING ASSETS...]");
 

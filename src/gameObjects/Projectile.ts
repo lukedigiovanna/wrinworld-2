@@ -39,7 +39,7 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
                     }
                     const physics = collision.getComponent("physics");
                     if (physics) {
-                        physics.data.impulse.add(
+                        physics.data.impulse.set(
                             Vector.scaled(
                                 Vector.normalized(
                                     data.physics.data.velocity
@@ -50,6 +50,7 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
                     }
                     data.hitCount++;
                     properties.damage *= properties.damageReductionPerHit;
+                    properties.knockback *= properties.damageReductionPerHit;
                     if (data.hitCount >= properties.maxHits) {
                         if (properties.onDestroy) {
                             properties.onDestroy(gameObject);

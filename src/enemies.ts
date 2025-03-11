@@ -15,6 +15,7 @@ interface Enemy {
     physicalColliderSize: Vector;
     hp: number;
     drops: ItemDropChance[];
+    essenceAmount: number;
     ai: ComponentFactory;
 }
 
@@ -27,10 +28,11 @@ const enemyCodex: Enemy[] = [
         physicalColliderSize: new Vector(0.8, 0.3),
         hp: 20,
         drops: [
-            {chance: 0.2, itemIndex: ItemIndex.ZOMBIE_BRAINS},
-            {chance: 0.8, itemIndex: ItemIndex.ZOMBIE_FLESH},
-            {chance: 0.8, itemIndex: ItemIndex.ZOMBIE_FLESH},
+            {chance: 0.05, itemIndex: ItemIndex.ZOMBIE_BRAINS},
+            // {chance: 0.8, itemIndex: ItemIndex.ZOMBIE_FLESH},
+            // {chance: 0.8, itemIndex: ItemIndex.ZOMBIE_FLESH},
         ],
+        essenceAmount: 2,
         ai: ZombieAI,
     }
 ]
