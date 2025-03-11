@@ -6,6 +6,12 @@ import { Game, getChunkIndex } from "../game";
 import settings from "../settings";
 import { Tile } from "tiles";
 
+enum Team {
+    UNTEAMED,
+    PLAYER,
+    ENEMY,
+}
+
 class GameObject {
     public position: Vector;
     public scale: Vector;
@@ -27,6 +33,8 @@ class GameObject {
 
     private started: boolean = false;
     private destroyed: boolean = false;
+
+    public team: Team = Team.UNTEAMED;
 
     constructor() {
         this.position = Vector.zero();
@@ -174,7 +182,7 @@ class GameObject {
 
 type GameObjectFactory = (...args: any[]) => GameObject;
 
-export { GameObject, GameObjectFactory };
+export { GameObject, GameObjectFactory, Team };
 export * from "./Projectile";
 export * from "./MeleeAttack";
 export * from "./Player";

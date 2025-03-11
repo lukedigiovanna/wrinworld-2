@@ -1,10 +1,10 @@
 import { ItemDropFactory } from "./gameObjects";
 import { GameObject } from "./gameObjects";
 import { Vector } from "./utils";
-import { ItemIndex, itemsCodex } from "./items";
+import { Item, ItemIndex, itemsCodex } from "./items";
 
 enum ProjectileIndex {
-    FIREBALL,
+    ZOMBIE_BRAINS,
     SHURIKEN,
     ARROW,
 }
@@ -43,24 +43,33 @@ interface Projectile {
     onDestroy?: (gameObject: GameObject) => void;
 }
 
+function chanceDropItem(gameObject: GameObject, item: Item, chanceOfBreaking: number | undefined) {
+    const chance = chanceOfBreaking ? chanceOfBreaking as number : 1;
+    if (Math.random() > chance) {
+        gameObject.game.addGameObject(
+            ItemDropFactory(item, gameObject.position)
+        );
+    }
+}
+
 const projectilesCodex: Projectile[] = [
-    { // ProjectileIndex.FIREBALL
+    { // ProjectileIndex.ZOMBIE_BRAINS
         homingSkill: 0,
         maxHits: 1,
-        spriteID: "fireball",
-        damage: 15,
+        spriteID: "zombie_brains",
+        damage: 1,
         damageReductionPerHit: 0,
         knockback: 3,
-        lifespan: 3,
-        size: 1,
-        speed: 15,
-        angularVelocity: 0,
-        hitboxOffset: new Vector(0.25, 0),
+        lifespan: 10,
+        size: 0.8,
+        speed: 6,
+        angularVelocity: 6,
+        chanceOfBreaking: 0.2,
         hitboxSize: new Vector(0.25, 0.25),
         colliderOffset: new Vector(0.25, 0),
         colliderSize: new Vector(0.5, 0.5),
         onDestroy(gameObject) {
-
+            chanceDropItem(gameObject, itemsCodex[ItemIndex.ZOMBIE_BRAINS], this.chanceOfBreaking);
         }
     },
     { // ProjectileIndex.SHURIKEN
@@ -77,12 +86,7 @@ const projectilesCodex: Projectile[] = [
         colliderSize: new Vector(0.25, 0.25),
         chanceOfBreaking: 0.2,
         onDestroy(gameObject) {
-            const chance = this.chanceOfBreaking ? this.chanceOfBreaking as number : 1;
-            if (Math.random() > chance) {
-                gameObject.game.addGameObject(
-                    ItemDropFactory(itemsCodex[ItemIndex.SHURIKEN], gameObject.position)
-                );
-            }
+            chanceDropItem(gameObject, itemsCodex[ItemIndex.SHURIKEN], this.chanceOfBreaking);
         },
     },
     {
@@ -99,12 +103,7 @@ const projectilesCodex: Projectile[] = [
         colliderSize: new Vector(0.25, 0.25),
         chanceOfBreaking: 0.5,
         onDestroy(gameObject) {
-            const chance = this.chanceOfBreaking ? this.chanceOfBreaking as number : 1;
-            if (Math.random() > chance) {
-                gameObject.game.addGameObject(
-                    ItemDropFactory(itemsCodex[ItemIndex.ARROW], gameObject.position)
-                );
-            }
+            chanceDropItem(gameObject, itemsCodex[ItemIndex.ARROW], this.chanceOfBreaking);
         }
     }
 ];

@@ -54,7 +54,6 @@ const PortalFactory: GameObjectFactory = (position: Vector) => {
             data
         }
     })
-    portal.addComponent(Health);
     portal.tag = "portal";
     return portal;
 }

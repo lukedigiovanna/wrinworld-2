@@ -35,8 +35,8 @@ const ZombieAI: ComponentFactory = (gameObject) => {
                 gameObject.scale.x = Math.abs(gameObject.scale.x);
             }
 
-            if (Vector.subtract(gameObject.position, data.target).magnitude < 1) {
-                data.weaponManager.data.fire(WeaponIndex.ZOMBIE_ATTACK, data.target);
+            if (Vector.subtract(gameObject.position, data.target).magnitude < 8) {
+                data.weaponManager.data.fire(WeaponIndex.ZOMBIE_BRAINS, data.target);
             }
         },
         data

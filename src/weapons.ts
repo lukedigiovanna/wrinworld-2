@@ -14,7 +14,7 @@ interface Weapon {
 
 enum WeaponIndex {
     BROAD_SWORD,
-    ZOMBIE_ATTACK,
+    ZOMBIE_BRAINS,
     SHURIKEN,
     BOW,
 }
@@ -40,10 +40,11 @@ const weaponsCodex: Weapon[] = [
         }
     },
     {
-        weaponIndex: WeaponIndex.ZOMBIE_ATTACK,
-        cooldown: 1,
+        weaponIndex: WeaponIndex.ZOMBIE_BRAINS,
+        cooldown: 2,
         fire(gameObject, target) {
             // fireMelee(gameObject, target, 5);
+            fireProjectile(projectilesCodex[ProjectileIndex.ZOMBIE_BRAINS], gameObject, target);
         }
     },
     {

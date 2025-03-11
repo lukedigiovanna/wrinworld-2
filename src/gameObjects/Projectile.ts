@@ -1,4 +1,4 @@
-import { GameObject, GameObjectFactory } from "./index";
+import { GameObject, GameObjectFactory, Team } from "./index";
 import { Vector, MathUtils } from "../utils";
 import { Hitbox, Physics, ParticleEmitter, PhysicalCollider } from "../components";
 import { spriteRenderer } from "../renderers";
@@ -32,7 +32,8 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
                 data.physics = gameObject.getComponent("physics");
             },
             onHitboxCollisionEnter(collision) {
-                if (collision.tag === "portal" || collision.tag ===  "enemy") {
+                if (collision.team !== Team.UNTEAMED && 
+                    data.owner.team !== collision.team) {
                     const health = collision.getComponent("health");
                     if (health) {
                         health.data.damage(properties.damage);
@@ -110,6 +111,7 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
     const collider = projectile.addComponent(PhysicalCollider);
     collider.data?.ignoreCollisionWith.add("player");
     collider.data?.ignoreCollisionWith.add("enemy");
+    collider.data?.ignoreCollisionWith.add("projectile");
     if (properties.colliderOffset) {
         collider.data.boxOffset.set(properties.colliderOffset);
     }

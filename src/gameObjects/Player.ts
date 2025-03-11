@@ -1,13 +1,13 @@
-import { GameObjectFactory, GameObject } from "./index";
+import { GameObjectFactory, GameObject, Team } from "./";
 import { Vector } from "../utils";
 import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager, 
          Health, WeaponManager, EssenceManager} from "../components";
 import { spriteRenderer } from "../renderers";
 import { ItemIndex } from "../items";
-import input from "../input";
 
 const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const player = new GameObject();
+    player.team = Team.PLAYER;
     player.scale.setComponents(1.333, 2);
     player.position = position.copy();
     player.addComponent(Physics);

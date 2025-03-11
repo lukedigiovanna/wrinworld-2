@@ -1,4 +1,4 @@
-import { GameObject, GameObjectFactory, EssenceOrbFactory } from "./";
+import { GameObject, GameObjectFactory, EssenceOrbFactory, Team } from "./";
 import { spriteRenderer } from "../renderers";
 import { Vector } from "../utils";
 import { Health, Hitbox, Physics, PhysicalCollider, ItemDropper, WeaponManager } from "../components";
@@ -7,6 +7,7 @@ import { enemyCodex, EnemyIndex } from "../enemies";
 
 const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyIndex) => {
     const enemy = new GameObject();
+    enemy.team = Team.ENEMY;
     enemy.position = position.copy();
     const enemyType = enemyCodex[enemyIndex];
     if (!enemyType) {

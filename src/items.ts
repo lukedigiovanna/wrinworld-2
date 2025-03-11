@@ -75,8 +75,10 @@ const itemsCodex: Item[] = [
         maxStack: 99,
         consumable: false,
         use(player) {
-            console.log("[brraaaiiinnnss]");
-            return true;
+            return fireWeapon(player, WeaponIndex.ZOMBIE_BRAINS);
+        },
+        equip(player) {
+            equipWeapon(player, WeaponIndex.ZOMBIE_BRAINS);
         }
     },
     {
