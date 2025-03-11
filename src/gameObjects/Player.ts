@@ -61,9 +61,11 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                 }
             }
         }
-    })
+    });
 
     player.renderer = spriteRenderer("peach_water");
+    health.data.damageSoundEffectID = "peach_damage";
+    health.data.deathSoundEffectID = "peach_die";
 
     player.tag = "player";
     return player;

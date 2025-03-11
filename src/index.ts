@@ -103,6 +103,8 @@ window.onload = async () => {
         // -- SOUNDS --
         loadSound("item_pickup", "assets/sounds/item_pickup.wav", 5),
         loadSound("essence_pickup", "assets/sounds/essence_pickup.wav", 5),
+        loadSound("peach_damage", "assets/sounds/peach_damage.wav", 1),
+        loadSound("peach_die", "assets/sounds/peach_die.wav", 1),
     ]);
     console.log("[FINISHED LOADING ASSETS...]");
 

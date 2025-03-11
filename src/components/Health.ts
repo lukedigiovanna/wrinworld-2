@@ -1,3 +1,4 @@
+import { getSound } from "../soundLoader";
 import { GameObject } from "../gameObjects/index";
 import { ComponentFactory } from "./index";
 
@@ -8,11 +9,16 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
         regenerationRate: 0,
         showHealthBar: true,
         timeLastShowedHealthBar: -999,
+        damageSoundEffectID: undefined,
+        deathSoundEffectID: undefined,
         heal(amount: number) {
             this.hp = Math.min(this.maximumHP, this.hp + amount);
             this.timeLastShowedHealthBar = gameObject.game.time;
         },
         damage(amount: number) {
+            if (data.damageSoundEffectID) {
+                getSound(data.damageSoundEffectID).play();
+            }
             this.hp = Math.max(0, this.hp - amount);
             this.timeLastShowedHealthBar = gameObject.game.time;
         }
@@ -21,6 +27,9 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
         id: "health",
         update(dt) {
             if (this.data.hp <= 0) {
+                if (data.deathSoundEffectID) {
+                    getSound(data.deathSoundEffectID).play();
+                }
                 gameObject.destroy();
             }
         },
