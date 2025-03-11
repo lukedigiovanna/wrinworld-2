@@ -13,6 +13,16 @@ const fpsSamples = 5;
 let canvas: HTMLCanvasElement | undefined;
 let ctx: CanvasRenderingContext2D | null = null;
 
+// const testCanvas = document.createElement("canvas");
+// testCanvas.width = 60;
+// testCanvas.height = 10;
+// const testContext = testCanvas.getContext("2d");
+// if (testContext) {
+//     testContext.fillStyle = "red";
+//     testContext.fillRect(0, 0, 60, 10);
+// }
+// testCanvas.
+
 const mainLoop = () => {
     if (!game || !canvas || !ctx) {
         throw Error("Cannot run main loop without initialized game");
@@ -52,11 +62,8 @@ window.onload = async () => {
         loadImage("rocks", "assets/images/rocks.png"),
         loadImage("path", "assets/images/path.png"),
 
-        loadImage("edge_merge_path_grass", "assets/images/edge_merge_path_grass.png"),
-
         loadImage("peach", "assets/images/peach.png"),
         loadImage("peach_water", "assets/images/peach_water.png"),
-        loadImage("chicken", "assets/images/chicken.png"),
         loadImage("zombie", "assets/images/zombie.png"),
         loadImage("zombie_water", "assets/images/zombie_water.png"),
 
@@ -64,13 +71,9 @@ window.onload = async () => {
 
         loadImage("tree", "assets/images/tree.png"),
         loadImage("evergreen", "assets/images/evergreen.png"),
-        loadImage("rose", "assets/images/rose.png"),
-        loadImage("tallgrass", "assets/images/tallgrass.png"),
         
-        loadImage("fireball", "assets/images/fireball.webp"),
         loadImage("arrow", "assets/images/arrow.png"),
 
-        loadImage("kfc", "assets/images/kfc.png"),
         loadImage("zombie_brains", "assets/images/zombie_brains.png"),
         loadImage("zombie_flesh", "assets/images/zombie_flesh.png"),
         loadImage("broad_sword_icon", "assets/images/broad_sword_icon.png"),
@@ -78,9 +81,6 @@ window.onload = async () => {
         loadImage("bow", "assets/images/bow.png"),
         loadImage("arrow-icon", "assets/images/arrow-icon.png"),
 
-        loadImage("feather", "assets/images/feather.png"),
-        loadImage("spark", "assets/images/spark.png"),
-        loadImage("smoke", "assets/images/smoke.webp"),
         loadImage("portal_particle", "assets/images/portal_particle.png"),
     
         loadImage("hotbar_slot", "assets/images/hotbar_slot.png"),

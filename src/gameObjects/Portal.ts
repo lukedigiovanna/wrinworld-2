@@ -13,7 +13,7 @@ const PortalFactory: GameObjectFactory = (position: Vector) => {
     portal.addComponent(Hitbox)
     portal.addComponent(ParticleEmitter(
         {
-            spriteID: () => MathUtils.randomChoice(["portal_particle", "portal_particle", "portal_particle", "smoke"]),
+            spriteID: () => "portal_particle",
             rate: () => 16,
             size: () => new Vector(0.35, 0.35),
             spawnBoxSize: () => Vector.zero(),
