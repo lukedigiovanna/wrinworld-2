@@ -4,6 +4,7 @@ import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager,
          Health, WeaponManager, EssenceManager} from "../components";
 import { spriteRenderer } from "../renderers";
 import { ItemIndex } from "../items";
+import input from "../input";
 
 const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const player = new GameObject();
@@ -32,8 +33,35 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
     }
 
     player.addComponent(WeaponManager);
-
     player.addComponent(EssenceManager);
+
+    player.addComponent((gameObject) => {
+        const data: any = {
+            health: undefined,
+            lastHP: 0,
+            lastMaxHP: 0
+        };
+        const updateUI = (hp: number, maxHP: number) => {
+            data.lastHP = hp;
+            data.lastMaxHP = maxHP;
+            console.log(hp, maxHP);
+            const percent = Math.floor(hp / maxHP * 100);
+            $("#health-bar-fill").css("width", `${percent}%`);
+        }
+        return {
+            id: "player-health-bar-display",
+            start() {
+                data.health = gameObject.getComponent("health");
+            },
+            update() {
+                const dirty = data.lastHP !== data.health.data.hp ||
+                             data.lastMaxHP !== data.health.data.maximumHP;
+                if (dirty) {
+                    updateUI(data.health.data.hp, data.health.data.maximumHP);
+                }
+            }
+        }
+    })
 
     player.renderer = spriteRenderer("peach_water");
 

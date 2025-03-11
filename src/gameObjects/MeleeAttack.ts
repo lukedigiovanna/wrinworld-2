@@ -43,7 +43,7 @@ const MeleeAttackFactory: GameObjectFactory = (owner: GameObject, position: Vect
                 if (collision.tag === "animal" || collision.tag === "portal" || collision.tag ===  "enemy") {
                     const health = collision.getComponent("health");
                     if (health) {
-                        health.data.hp -= 5;
+                        health.data.damage(5);
                     }
                     const physics = collision.getComponent("physics");
                     if (physics) {
@@ -54,20 +54,10 @@ const MeleeAttackFactory: GameObjectFactory = (owner: GameObject, position: Vect
                             )
                         );
                     }
-                    const particles = gameObject.getComponent("particle-emitter-explosion");
-                    for (let i = 0; i < 25; i++) particles?.data.emit();
                     gameObject.destroy();
                 }
             },
             onPhysicalCollision(collision, isTile) {
-                if (!isTile) {
-                    collision = collision as GameObject;
-                    if (collision.tag ===  "enemy") {
-                        return;
-                    }
-                }
-                const particles = gameObject.getComponent("particle-emitter-explosion");
-                for (let i = 0; i < 25; i++) particles?.data.emit();
                 gameObject.destroy();
             },
             data

@@ -54,6 +54,8 @@ class Game {
 
         this.generateLevelOne();
         this._camera.verticalBoundary = [16, 24 + 8 + 96];
+
+        this.addGameObject(EnemyFactory(new Vector(0, 20), EnemyIndex.ZOMBIE));
     }
 
     private generateChunk(chunkIndex: number): void {

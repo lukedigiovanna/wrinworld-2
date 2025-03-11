@@ -32,10 +32,10 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
                 data.physics = gameObject.getComponent("physics");
             },
             onHitboxCollisionEnter(collision) {
-                if (collision.tag === "animal" || collision.tag === "portal" || collision.tag ===  "enemy") {
+                if (collision.tag === "portal" || collision.tag ===  "enemy") {
                     const health = collision.getComponent("health");
                     if (health) {
-                        health.data.hp -= properties.damage;
+                        health.data.damage(properties.damage);
                     }
                     const physics = collision.getComponent("physics");
                     if (physics) {
@@ -60,12 +60,6 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
                 }
             },
             onPhysicalCollision(collision, isTile) {
-                // if (!isTile) {
-                //     collision = collision as GameObject;
-                //     if (collision.tag ===  "enemy") {
-                //         return;
-                //     }
-                // }
                 if (properties.onDestroy) {
                     properties.onDestroy(gameObject);
                 }
