@@ -9,7 +9,7 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
     const enemy = new GameObject();
     enemy.team = Team.ENEMY;
     enemy.position = position.copy();
-    const enemyType = enemyCodex[enemyIndex];
+    const enemyType = enemyCodex.get(enemyIndex);
     if (!enemyType) {
         throw Error("Invalid enemy type");
     }

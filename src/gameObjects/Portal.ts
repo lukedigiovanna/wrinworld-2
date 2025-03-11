@@ -42,7 +42,7 @@ const PortalFactory: GameObjectFactory = (position: Vector) => {
                 if (data.timer > 1 / data.rate) {
                     data.timer -= 1 / data.rate;
                     const enemy = EnemyFactory(
-                        gameObject.position, EnemyIndex.ZOMBIE
+                        gameObject.position, EnemyIndex.MINION
                     );
                     const physics = enemy.getComponent("physics");
                     if (physics) {

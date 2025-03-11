@@ -66,6 +66,8 @@ window.onload = async () => {
         loadImage("peach_water", "assets/images/peach_water.png"),
         loadImage("zombie", "assets/images/zombie.png"),
         loadImage("zombie_water", "assets/images/zombie_water.png"),
+        loadImage("minion", "assets/images/minion.png"),
+        loadImage("minion_water", "assets/images/minion_water.png"),
 
         loadImage("portal", "assets/images/portal.png"),
 
