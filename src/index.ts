@@ -101,11 +101,11 @@ window.onload = async () => {
         loadImage("square",  "assets/images/square.png"),
 
         // -- SOUNDS --
-        loadSound("item_pickup", "assets/sounds/item_pickup.wav", 5),
-        loadSound("essence_pickup", "assets/sounds/essence_pickup.wav", 10),
+        loadSound("item_pickup", "assets/sounds/item_pickup.wav", 1),
+        loadSound("essence_pickup", "assets/sounds/essence_pickup.wav", 1),
         loadSound("peach_damage", "assets/sounds/peach_damage.wav", 1),
         loadSound("peach_die", "assets/sounds/peach_die.wav", 1),
-        loadSound("hitmarker", "assets/sound/hitmarker.mp3", 5),
+        loadSound("hitmarker", "assets/sounds/hitmarker.mp3", 1),
     ]);
     console.log("[FINISHED LOADING ASSETS...]");
 

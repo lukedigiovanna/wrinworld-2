@@ -163,12 +163,12 @@ img {
     transition: width 0.2s ease-in-out;
 }
 
-#essence-container {
+.hud-row-container {
     display: flex;
     align-items: flex-end;
 }
 
-#essence-container p {
+.hud-row-container p {
     margin-bottom: 4px;
     font-family: "Heavitas";
     -webkit-text-stroke: 1px black;

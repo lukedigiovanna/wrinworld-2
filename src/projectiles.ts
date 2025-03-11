@@ -65,12 +65,11 @@ projectilesCodex.set(ProjectileIndex.ZOMBIE_BRAINS, {
     size: 0.8,
     speed: 6,
     angularVelocity: 6,
-    chanceOfBreaking: 0.2,
     hitboxSize: new Vector(0.25, 0.25),
     colliderOffset: new Vector(0.25, 0),
     colliderSize: new Vector(0.5, 0.5),
     onDestroy(gameObject) {
-        chanceDropItem(gameObject, itemsCodex.get(ItemIndex.ZOMBIE_BRAINS), this.chanceOfBreaking);
+        // chanceDropItem(gameObject, itemsCodex.get(ItemIndex.ZOMBIE_BRAINS), this.chanceOfBreaking);
     }
 });
 projectilesCodex.set(ProjectileIndex.SHURIKEN, {

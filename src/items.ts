@@ -71,10 +71,10 @@ itemsCodex.set(ItemIndex.BROAD_SWORD, {
 itemsCodex.set(ItemIndex.ZOMBIE_BRAINS, {
     itemIndex: ItemIndex.ZOMBIE_BRAINS,
     displayName: "Zombie Brains",
-    category: "Misc.",
+    category: "Weapon",
     iconSpriteID: "zombie_brains",
     maxStack: 99,
-    consumable: false,
+    consumable: true,
     use(player) {
         return fireWeapon(player, WeaponIndex.ZOMBIE_BRAINS);
     },
