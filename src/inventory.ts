@@ -202,7 +202,7 @@ class Inventory {
     }
 
     public addItemIndex(itemIndex: ItemIndex) {
-        this.addItem(itemsCodex[itemIndex]);
+        this.addItem(itemsCodex.get(itemIndex));
     }
 
     // Returns the first index containing an item with the given index.

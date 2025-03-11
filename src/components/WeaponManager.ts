@@ -7,7 +7,7 @@ const WeaponManager: ComponentFactory = (gameObject: GameObject) => {
     const data = {
         timeLastFired: 0,
         fire: (weaponIndex: WeaponIndex, target: Vector) => {
-            const weapon = weaponsCodex[weaponIndex];
+            const weapon = weaponsCodex.get(weaponIndex);
             const timeSinceLastFired = gameObject.game.time - data.timeLastFired;
             if (timeSinceLastFired >= weapon.cooldown) {
                 weapon.fire(gameObject, target);
