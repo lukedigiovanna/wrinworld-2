@@ -61,7 +61,8 @@ const Hitbox: ComponentFactory = (gameObject: GameObject) => {
         },
         data: {
             boxOffset,
-            boxSize
+            boxSize,
+            collidingWith
         }
     }
 }

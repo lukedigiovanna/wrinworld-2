@@ -23,11 +23,17 @@ const ItemDropFactory: GameObjectFactory = (item: Item, position: Vector) => {
         }
     });
     itemDrop.addComponent((gameObject: GameObject) => {
+        const data: any =  {
+            hitbox: undefined,
+        };
         return {
             id: "item-pickup",
-            onHitboxCollisionEnter(collision) {
-                if (collision.tag === "player") {
-                    const inventoryManager = collision.getComponent("inventory-manager");
+            start() {
+                data.hitbox = gameObject.getComponent("hitbox");
+            },
+            update(dt) {
+                if (gameObject.age > 0.8 && data.hitbox.data.collidingWith.has(gameObject.game.player)) {
+                    const inventoryManager = gameObject.game.player.getComponent("inventory-manager");
                     if (inventoryManager?.data.inventory.addItem(item)) {
                         gameObject.destroy();
                         getSound("item_pickup").play();

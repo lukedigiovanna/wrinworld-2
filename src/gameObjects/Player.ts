@@ -44,7 +44,6 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
         const updateUI = (hp: number, maxHP: number) => {
             data.lastHP = hp;
             data.lastMaxHP = maxHP;
-            console.log(hp, maxHP);
             const percent = Math.floor(hp / maxHP * 100);
             $("#health-bar-fill").css("width", `${percent}%`);
         }

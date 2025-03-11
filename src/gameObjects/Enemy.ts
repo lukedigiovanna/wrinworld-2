@@ -17,6 +17,7 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
     enemy.scale.set(enemyType.scale);
     const health = enemy.addComponent(Health);
     health.data.hp = enemyType.hp;
+    health.data.damageSoundEffectID = "hitmarker";
     enemy.addComponent(Hitbox);
     enemy.addComponent(Physics);
     enemy.addComponent(ItemDropper(enemyType.drops));
