@@ -114,6 +114,11 @@ img {
     pointer-events: none;
 }
 
+#attack-reload-icon {
+    position: absolute;
+    width: 40px;
+}
+
 #hud-container {
     display: flex;
     flex-direction: column;

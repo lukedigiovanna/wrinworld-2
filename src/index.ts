@@ -100,6 +100,17 @@ window.onload = async () => {
         loadImage("essence_jar_small_7", "assets/images/essence_jar_small_7.png"),
         loadImage("essence_jar_small_8", "assets/images/essence_jar_small_8.png"),
         
+        loadImage("attack_reload_0", "assets/images/attack_reload_0.png"),
+        loadImage("attack_reload_1", "assets/images/attack_reload_1.png"),
+        loadImage("attack_reload_2", "assets/images/attack_reload_2.png"),
+        loadImage("attack_reload_3", "assets/images/attack_reload_3.png"),
+        loadImage("attack_reload_4", "assets/images/attack_reload_4.png"),
+        loadImage("attack_reload_5", "assets/images/attack_reload_5.png"),
+        loadImage("attack_reload_6", "assets/images/attack_reload_6.png"),
+        loadImage("attack_reload_7", "assets/images/attack_reload_7.png"),
+        loadImage("attack_reload_8", "assets/images/attack_reload_8.png"),
+        loadImage("attack_reload_9", "assets/images/attack_reload_9.png"),
+
         loadImage("square",  "assets/images/square.png"),
 
         // -- SOUNDS --

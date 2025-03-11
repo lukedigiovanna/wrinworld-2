@@ -194,6 +194,9 @@ class Inventory {
                 count: 1
             };
             this.updateUI();
+            if (empty === this._selectedSlot && item.equip) {
+                item.equip(this.player);
+            }
             return true;
         }
         else {

@@ -4,20 +4,28 @@ import { WeaponIndex, weaponsCodex } from "../weapons";
 import { Vector } from "../utils";
 
 const WeaponManager: ComponentFactory = (gameObject: GameObject) => {
-    const data = {
+    const data: any = {
         timeLastFired: 0,
-        fire: (weaponIndex: WeaponIndex, target: Vector) => {
+        equippedWeapon: undefined,
+        fire(weaponIndex: WeaponIndex, target: Vector) {
             const weapon = weaponsCodex.get(weaponIndex);
-            const timeSinceLastFired = gameObject.game.time - data.timeLastFired;
+            const timeSinceLastFired = gameObject.game.time - this.timeLastFired;
             if (timeSinceLastFired >= weapon.cooldown) {
                 weapon.fire(gameObject, target);
-                data.timeLastFired = gameObject.game.time;
+                this.timeLastFired = gameObject.game.time;
                 return true;
             }
             return false;
         },
-        equip: (weaponIndex: WeaponIndex) => {
-            data.timeLastFired = gameObject.game.time;
+        equip(weaponIndex: WeaponIndex | undefined) {
+            this.timeLastFired = gameObject.game.time;
+            console.log("[equipped " + weaponIndex + "]")
+            if (weaponIndex !== undefined) {
+                this.equippedWeapon = weaponsCodex.get(weaponIndex);
+            }
+            else {
+                this.equippedWeapon = undefined;
+            }
         }
     };
     return {

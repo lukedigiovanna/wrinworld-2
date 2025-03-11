@@ -4,6 +4,8 @@ import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager,
          Health, WeaponManager, EssenceManager} from "../components";
 import { spriteRenderer } from "../renderers";
 import { ItemIndex } from "../items";
+import { getImage } from "../imageLoader";
+import input from "../input";
 
 const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const player = new GameObject();
@@ -24,26 +26,38 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
     health.data.maximumHP = 1000;
     health.data.showHealthBar = false;
 
-    const inventoryManager = player.addComponent(InventoryManager);
-    inventoryManager.data.inventory.addItemIndex(ItemIndex.BROAD_SWORD);
-    for (let i = 0; i < 20; i++) {
-        inventoryManager.data.inventory.addItemIndex(ItemIndex.SHURIKEN);
-    }
-    inventoryManager.data.inventory.addItemIndex(ItemIndex.BOW);
-    for (let i = 0; i < 120; i++) {
-        inventoryManager.data.inventory.addItemIndex(ItemIndex.ARROW);
-    }
+    player.addComponent(InventoryManager);
 
     player.addComponent(WeaponManager);
     player.addComponent(EssenceManager);
 
     player.addComponent((gameObject) => {
+        return {
+            id: "add-starter-items",
+            start() {
+                const inventoryManager = gameObject.getComponent("inventory-manager");
+                if (inventoryManager) {
+                    inventoryManager.data.inventory.addItemIndex(ItemIndex.BROAD_SWORD);
+                    for (let i = 0; i < 20; i++) {
+                        inventoryManager.data.inventory.addItemIndex(ItemIndex.SHURIKEN);
+                    }
+                    inventoryManager.data.inventory.addItemIndex(ItemIndex.BOW);
+                    for (let i = 0; i < 120; i++) {
+                        inventoryManager.data.inventory.addItemIndex(ItemIndex.ARROW);
+                    }
+                }
+            }
+        }
+    })
+
+    player.addComponent((gameObject) => {
         const data: any = {
             health: undefined,
             lastHP: 0,
-            lastMaxHP: 0
+            lastMaxHP: 0,
+            weaponManager: undefined,
         };
-        const updateUI = (hp: number, maxHP: number) => {
+        const updateHealthUI = (hp: number, maxHP: number) => {
             data.lastHP = hp;
             data.lastMaxHP = maxHP;
             const percent = Math.floor(hp / maxHP * 100);
@@ -52,15 +66,34 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
             $("#hp-max").text(maxHP);
         }
         return {
-            id: "player-health-bar-display",
+            id: "player-ui-management",
             start() {
                 data.health = gameObject.getComponent("health");
+                data.weaponManager = gameObject.getComponent("weapon-manager");
             },
             update() {
                 const dirty = data.lastHP !== data.health.data.hp ||
                              data.lastMaxHP !== data.health.data.maximumHP;
                 if (dirty) {
-                    updateUI(data.health.data.hp, data.health.data.maximumHP);
+                    updateHealthUI(data.health.data.hp, data.health.data.maximumHP);
+                }
+
+                const equipped = data.weaponManager.data.equippedWeapon;
+                if (equipped) {
+                    const elapsed = gameObject.game.time - data.weaponManager.data.timeLastFired;
+                    const cooldown = equipped.cooldown;
+                    const percent = elapsed / cooldown;
+                    const index = Math.floor(percent * 10);
+                    const attackReloadIcon = $("#attack-reload-icon");
+                    if (percent <= 1) {
+                        attackReloadIcon.show();
+                        attackReloadIcon.attr("src", getImage(`attack_reload_${index}`).src);
+                        attackReloadIcon.css("left", input.mousePosition.x);
+                        attackReloadIcon.css("top", input.mousePosition.y);
+                    }
+                    else {
+                        attackReloadIcon.hide();
+                    }
                 }
             }
         }

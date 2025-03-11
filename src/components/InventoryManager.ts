@@ -7,12 +7,13 @@ import { getImage } from "../imageLoader";
 
 const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
-        inventory: new Inventory(gameObject),
+        inventory: undefined,
         inventoryDisplayed: false
     }
     return {
         id: "inventory-manager",
         start() {
+            data.inventory = new Inventory(gameObject);
             data.inventory.updateUI();
             input.registerScrollCallback((deltaY: number) => {
                 const currIndex = data.inventory.selectedHotbarIndex;

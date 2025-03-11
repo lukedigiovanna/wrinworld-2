@@ -99,6 +99,9 @@ itemsCodex.set(ItemIndex.SHURIKEN, {
     consumable: true,
     use(player) {
         return fireWeapon(player, WeaponIndex.SHURIKEN);
+    },
+    equip(player) {
+        equipWeapon(player, WeaponIndex.SHURIKEN);
     }
 });
 itemsCodex.set(ItemIndex.BOW, {
@@ -111,6 +114,9 @@ itemsCodex.set(ItemIndex.BOW, {
     consumable: false,
     use(player) {
         return fireWeapon(player, WeaponIndex.BOW);
+    },
+    equip(player) {
+        equipWeapon(player, WeaponIndex.BOW);
     }
 });
 itemsCodex.set(ItemIndex.ARROW, {
