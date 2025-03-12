@@ -31,6 +31,11 @@ const PortalFactory: GameObjectFactory = (position: Vector) => {
             start() {
                 this.data.health = gameObject.getComponent("health");
             },
+            destroy() {
+                const particles = gameObject.getComponent("particle-emitter");
+                for (let i = 0; i < 50; i++)
+                particles?.data.emit()
+            },
             update(dt) {
                 gameObject.rotation = gameObject.age * 3;
                 const distanceToPlayer = Vector.subtract(gameObject.position, gameObject.game.player.position).magnitude;
@@ -47,7 +52,7 @@ const PortalFactory: GameObjectFactory = (position: Vector) => {
     portal.addComponent((gameObject: GameObject) => {
         const data = {
             timer: 0,
-            rate: 0.025
+            rate: 0.05
         }
         return {
             id: "portal-spawner",
@@ -70,6 +75,7 @@ const PortalFactory: GameObjectFactory = (position: Vector) => {
     });
 
     const health = portal.addComponent(Health);
+    health.data.initializeHealth(100);
     health.data.barColor = [0, 255, 255];
     health.data.healthBarDisplayMode = HealthBarDisplayMode.NONE;
 

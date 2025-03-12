@@ -18,16 +18,24 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
         damageSoundEffectID: undefined,
         deathSoundEffectID: undefined,
         barColor: [0, 255, 0],
+        initializeHealth(hp: number) {
+            this.hp = hp;
+            this.maximumHP = hp;
+        },
         heal(amount: number) {
             this.hp = Math.min(this.maximumHP, this.hp + amount);
-            this.timeLastShowedHealthBar = gameObject.game.time;
+            if (this.healthBarDisplayMode !== HealthBarDisplayMode.NONE) {
+                this.timeLastShowedHealthBar = gameObject.game.time;
+            }
         },
         damage(amount: number) {
             if (data.damageSoundEffectID) {
                 getSound(data.damageSoundEffectID).play();
             }
             this.hp = Math.max(0, this.hp - amount);
-            this.timeLastShowedHealthBar = gameObject.game.time;
+            if (this.healthBarDisplayMode !== HealthBarDisplayMode.NONE) {
+                this.timeLastShowedHealthBar = gameObject.game.time;
+            }
         }
     }
     return {

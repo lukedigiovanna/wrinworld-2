@@ -43,7 +43,7 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                         inventoryManager.data.inventory.addItemIndex(ItemIndex.SHURIKEN);
                     }
                     inventoryManager.data.inventory.addItemIndex(ItemIndex.BOW);
-                    for (let i = 0; i < 120; i++) {
+                    for (let i = 0; i < 200; i++) {
                         inventoryManager.data.inventory.addItemIndex(ItemIndex.ARROW);
                     }
                 }

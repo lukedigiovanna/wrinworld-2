@@ -34,7 +34,7 @@ enemyCodex.set(EnemyIndex.ZOMBIE, {
         // {chance: 0.8, itemIndex: ItemIndex.ZOMBIE_FLESH},
         // {chance: 0.8, itemIndex: ItemIndex.ZOMBIE_FLESH},
     ],
-    essenceAmount: 2,
+    essenceAmount: 100,
     ai: ZombieAI,
 });
 enemyCodex.set(EnemyIndex.MINION, {
@@ -45,7 +45,7 @@ enemyCodex.set(EnemyIndex.MINION, {
     physicalColliderSize: new Vector(0.8, 0.2),
     hp: 10,
     drops: [],
-    essenceAmount: 1,
+    essenceAmount: 50,
     ai: ZombieAI
 });
 

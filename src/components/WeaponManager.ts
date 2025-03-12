@@ -19,7 +19,6 @@ const WeaponManager: ComponentFactory = (gameObject: GameObject) => {
         },
         equip(weaponIndex: WeaponIndex | undefined) {
             this.timeLastFired = gameObject.game.time;
-            console.log("[equipped " + weaponIndex + "]")
             if (weaponIndex !== undefined) {
                 this.equippedWeapon = weaponsCodex.get(weaponIndex);
             }

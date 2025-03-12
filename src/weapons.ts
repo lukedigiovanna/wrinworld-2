@@ -42,7 +42,7 @@ weaponsCodex.set(WeaponIndex.BROAD_SWORD, {
 });
 weaponsCodex.set(WeaponIndex.ZOMBIE_BRAINS, {
     weaponIndex: WeaponIndex.ZOMBIE_BRAINS,
-    cooldown: 2,
+    cooldown: 6,
     fire(gameObject, target) {
         // fireMelee(gameObject, target, 5);
         fireProjectile(projectilesCodex.get(ProjectileIndex.ZOMBIE_BRAINS), gameObject, target);

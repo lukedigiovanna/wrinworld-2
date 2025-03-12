@@ -420,6 +420,25 @@ class Game {
         return objs;
     }
 
+    public getNearestGameObjectWithTag(source: Vector, tag: string): 
+                    {object: GameObject, distance: number} | undefined {
+        let minDistance = 999999;
+        let object = undefined;
+        for (let i = 0; i < this.activeObjects.length; i++) {
+            if (this.activeObjects[i].tag === tag) {
+                const distance = Vector.subtract(source, this.activeObjects[i].position).magnitude;
+                if (distance < minDistance) {
+                    object = this.activeObjects[i];
+                    minDistance = distance;
+                }
+            }
+        }
+        return !object ? undefined : {
+            object,
+            distance: minDistance
+        };
+    }
+
     public addParticle(particle: Particle) {
         this.particles.push(particle);
     }
