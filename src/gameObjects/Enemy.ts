@@ -1,7 +1,7 @@
 import { GameObject, GameObjectFactory, EssenceOrbFactory, Team } from "./";
 import { spriteRenderer } from "../renderers";
 import { Vector } from "../utils";
-import { Health, Hitbox, Physics, PhysicalCollider, ItemDropper, WeaponManager } from "../components";
+import { Health, Hitbox, Physics, PhysicalCollider, ItemDropper, WeaponManager, HealthBarDisplayMode } from "../components";
 import { TileIndex } from "../tiles";
 import { enemyCodex, EnemyIndex } from "../enemies";
 
@@ -18,6 +18,7 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
     const health = enemy.addComponent(Health);
     health.data.hp = enemyType.hp;
     health.data.damageSoundEffectID = "hitmarker";
+    health.data.healthBarDisplayMode = HealthBarDisplayMode.ON_HIT;
     enemy.addComponent(Hitbox);
     enemy.addComponent(Physics);
     enemy.addComponent(ItemDropper(enemyType.drops));

@@ -2,7 +2,7 @@ import { spriteRenderer } from "../renderers";
 import { Item } from "../items";
 import { GameObjectFactory, GameObject } from "./index";
 import { Vector, MathUtils } from "../utils";
-import { Hitbox, ParticleEmitter, Health } from "../components";
+import { Hitbox, ParticleEmitter, Health, HealthBarDisplayMode } from "../components";
 import { EnemyFactory, EnemyIndex } from "./Enemy";
 
 const PortalFactory: GameObjectFactory = (position: Vector) => {
@@ -23,17 +23,31 @@ const PortalFactory: GameObjectFactory = (position: Vector) => {
         }
     ))
     portal.addComponent((gameObject: GameObject) => {
+        const data: any = {
+            health: undefined,
+        };
         return {
             id: "portal-effects",
+            start() {
+                this.data.health = gameObject.getComponent("health");
+            },
             update(dt) {
                 gameObject.rotation = gameObject.age * 3;
+                const distanceToPlayer = Vector.subtract(gameObject.position, gameObject.game.player.position).magnitude;
+                if (distanceToPlayer < 5) {
+                    this.data.health.data.healthBarDisplayMode = HealthBarDisplayMode.ACTIVE;
+                }
+                else {
+                    this.data.health.data.healthBarDisplayMode = HealthBarDisplayMode.NONE;
+                }
             },
+            data,
         }
     });
     portal.addComponent((gameObject: GameObject) => {
         const data = {
             timer: 0,
-            rate: 0.2
+            rate: 0.025
         }
         return {
             id: "portal-spawner",
@@ -53,7 +67,12 @@ const PortalFactory: GameObjectFactory = (position: Vector) => {
             },
             data
         }
-    })
+    });
+
+    const health = portal.addComponent(Health);
+    health.data.barColor = [0, 255, 255];
+    health.data.healthBarDisplayMode = HealthBarDisplayMode.NONE;
+
     portal.tag = "portal";
     return portal;
 }

@@ -1,7 +1,8 @@
 import { GameObjectFactory, GameObject, Team } from "./";
 import { Vector } from "../utils";
 import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager, 
-         Health, WeaponManager, EssenceManager} from "../components";
+         Health, WeaponManager, EssenceManager,
+         HealthBarDisplayMode} from "../components";
 import { spriteRenderer } from "../renderers";
 import { ItemIndex } from "../items";
 import { getImage } from "../imageLoader";
@@ -24,7 +25,7 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const health = player.addComponent(Health);
     health.data.hp = 1000;
     health.data.maximumHP = 1000;
-    health.data.showHealthBar = false;
+    health.data.healthBarDisplayMode = HealthBarDisplayMode.NONE;
 
     player.addComponent(InventoryManager);
 

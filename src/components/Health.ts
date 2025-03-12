@@ -2,15 +2,22 @@ import { getSound } from "../soundLoader";
 import { GameObject } from "../gameObjects/index";
 import { ComponentFactory } from "./index";
 
+enum HealthBarDisplayMode {
+    NONE,
+    ON_HIT,
+    ACTIVE,
+}
+
 const Health: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
         hp: 20,
         maximumHP: 20,
         regenerationRate: 0,
-        showHealthBar: true,
+        healthBarDisplayMode: HealthBarDisplayMode.NONE,
         timeLastShowedHealthBar: -999,
         damageSoundEffectID: undefined,
         deathSoundEffectID: undefined,
+        barColor: [0, 255, 0],
         heal(amount: number) {
             this.hp = Math.min(this.maximumHP, this.hp + amount);
             this.timeLastShowedHealthBar = gameObject.game.time;
@@ -32,15 +39,18 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
                 }
                 gameObject.destroy();
             }
+            this.data.hp += this.data.regenerationRate * dt;
+            if (this.data.healthBarDisplayMode === HealthBarDisplayMode.ACTIVE) {
+                this.data.timeLastShowedHealthBar = gameObject.game.time;
+            }
         },
         render(camera) {
             const showHealthBarPeriod = 1.5;
             const timeSinceShowed = gameObject.game.time - data.timeLastShowedHealthBar;
-            if (!data.showHealthBar || 
-                timeSinceShowed > showHealthBarPeriod) {
+            const opacity = timeSinceShowed === 0 ? 1 : 4 / timeSinceShowed - 4 / showHealthBarPeriod;
+            if (opacity <= 0) {
                 return;
             }
-            const opacity = 4 / timeSinceShowed - 4 / showHealthBarPeriod;
             const topMargin = 0.2;
             const barWidth = Math.abs(gameObject.scale.x);
             const barHeight = 0.1;
@@ -50,7 +60,11 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
                 gameObject.position.x, 
                 gameObject.position.y + gameObject.scale.y / 2 + topMargin, 
                 barWidth, barHeight);
-            camera.setFillColor(`rgba(0,255,0,${opacity})`);
+            camera.setFillColor(`rgba(
+                ${data.barColor[0]},
+                ${data.barColor[1]},
+                ${data.barColor[2]},
+                ${opacity})`);
             const realWidth = barWidth * data.hp / data.maximumHP - padding * 2;
             camera.fillRect(
                 gameObject.position.x - barWidth / 2 + padding + realWidth / 2, 
@@ -61,4 +75,4 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
     }
 }
 
-export { Health };
+export { Health, HealthBarDisplayMode };
