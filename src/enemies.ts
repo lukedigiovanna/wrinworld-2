@@ -7,6 +7,7 @@ import { Codex } from "./codex";
 enum EnemyIndex {
     ZOMBIE,
     MINION,
+    SLIME,
 }
 
 interface Enemy {
@@ -34,7 +35,7 @@ enemyCodex.set(EnemyIndex.ZOMBIE, {
         // {chance: 0.8, itemIndex: ItemIndex.ZOMBIE_FLESH},
         // {chance: 0.8, itemIndex: ItemIndex.ZOMBIE_FLESH},
     ],
-    essenceAmount: 100,
+    essenceAmount: 4,
     ai: ZombieAI,
 });
 enemyCodex.set(EnemyIndex.MINION, {
@@ -45,8 +46,20 @@ enemyCodex.set(EnemyIndex.MINION, {
     physicalColliderSize: new Vector(0.8, 0.2),
     hp: 10,
     drops: [],
-    essenceAmount: 50,
+    essenceAmount: 2,
     ai: ZombieAI
 });
+enemyCodex.set(EnemyIndex.SLIME, {
+    spriteID: "slime",
+    waterSpriteID: "slime",
+    scale: new Vector(0.75, 0.5),
+    physicalColliderOffset: new Vector(0, -0.1),
+    physicalColliderSize: new Vector(0.5, 0.1),
+    hp: 5,
+    drops: [],
+    essenceAmount: 1,
+    ai: ZombieAI
+});
+
 
 export { enemyCodex, EnemyIndex };

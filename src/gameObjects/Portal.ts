@@ -52,7 +52,7 @@ const PortalFactory: GameObjectFactory = (position: Vector) => {
     portal.addComponent((gameObject: GameObject) => {
         const data = {
             timer: 0,
-            rate: 0.05
+            rate: 0.2
         }
         return {
             id: "portal-spawner",
@@ -61,7 +61,9 @@ const PortalFactory: GameObjectFactory = (position: Vector) => {
                 if (data.timer > 1 / data.rate) {
                     data.timer -= 1 / data.rate;
                     const enemy = EnemyFactory(
-                        gameObject.position, EnemyIndex.MINION
+                        gameObject.position, MathUtils.randomChoice([
+                            EnemyIndex.MINION, EnemyIndex.SLIME, EnemyIndex.ZOMBIE
+                        ])
                     );
                     const physics = enemy.getComponent("physics");
                     if (physics) {
