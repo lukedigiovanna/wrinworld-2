@@ -1,4 +1,4 @@
-import { GameObject, PlayerFactory, PortalFactory, EnemyFactory, EnemyIndex } from "./gameObjects";
+import { GameObject, PlayerFactory, PortalFactory, EnemyFactory, EnemyIndex, PortalProperties } from "./gameObjects";
 import { Vector, MathUtils, PerlinNoise, CatmullRomParametricCurve } from "./utils";
 import input from "./input";
 import { Camera } from "./camera";
@@ -154,7 +154,19 @@ class Game {
                     MathUtils.randomInt(bottom, top) + 0.5
                 );
             } while (this.isTileWithPropertyInArea(position, 2, "canSpawnPortal", false));
-            this.addGameObject(PortalFactory(position));
+            const properties: PortalProperties = {
+                lowerBoundCooldown: 6,
+                upperBoundCooldown: 12,
+                maxEnemies: 16,
+                packs: [
+                    {
+                        enemyIndex: EnemyIndex.ZOMBIE,
+                        lowerBound: 1,
+                        upperBound: 5
+                    }
+                ]
+            }
+            this.addGameObject(PortalFactory(properties, position));
             portalPositions.push(position);
         }
 

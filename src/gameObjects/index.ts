@@ -143,7 +143,6 @@ class GameObject {
         });
         
         if (this.lifespan && this.age >= this.lifespan) {
-            console.log(`Destroyed ${this.tag} by lifetime`);
             this.destroy();
         }
 
@@ -163,7 +162,6 @@ class GameObject {
     }
 
     public destroy() {
-        console.log(`Destroying ${this.tag}`)
         if (this.destroyed) {
             return;
         }

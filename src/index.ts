@@ -71,6 +71,7 @@ window.onload = async () => {
         loadImage("minion", "assets/images/minion.png"),
         loadImage("minion_water", "assets/images/minion_water.png"),
         loadImage("slime", "assets/images/slime.png"),
+        loadImage("revenant_eye", "assets/images/revenant_eye.png"),
 
         loadImage("portal", "assets/images/portal.png"),
         loadImage("essence_orb", "assets/images/essence_orb.png"),

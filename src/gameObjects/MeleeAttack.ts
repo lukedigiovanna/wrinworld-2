@@ -69,7 +69,6 @@ const MeleeAttackFactory: GameObjectFactory = (properties: MeleeAttack, owner: G
                     data.hitCount++;
                     if (data.hitCount >= properties.maxHits) {
                         gameObject.destroy();
-                        console.log('destroyed');
                     }
                 }
             },

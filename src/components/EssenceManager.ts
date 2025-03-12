@@ -1,4 +1,4 @@
-import { EssenceOrbAttackFactory, GameObject } from "../gameObjects";
+import { EssenceOrbAttackFactory, GameObject, PORTAL_ACTIVE_RADIUS } from "../gameObjects";
 import { getImage } from "../imageLoader";
 import { ComponentFactory } from "./";
 import input from "../input";
@@ -45,7 +45,7 @@ const EssenceManager: ComponentFactory = (gameObject: GameObject) => {
                 const nearest = gameObject.game.getNearestGameObjectWithTag(gameObject.position, "portal");
                 if (nearest) {
                     const { object, distance } = nearest;
-                    if (distance <= 5) {
+                    if (distance <= PORTAL_ACTIVE_RADIUS) {
                         attacking = true;
                         const elapsed = gameObject.game.time - this.data.lastThrownEssenceTime;
                         if (elapsed >= this.data.rate) {

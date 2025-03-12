@@ -60,6 +60,20 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
             }
         }
     });
+    enemy.addComponent((gameObject) => {
+        return {
+            id: "portal-tracker",
+            destroy() {
+                console.log(this.data.portal);
+                if (this.data.portal) {
+                    this.data.portal.data.enemiesSpawned--;
+                }
+            },
+            data: {
+                portal: undefined
+            }
+        }
+    });
     enemy.tag = "enemy";
     return enemy;
 }

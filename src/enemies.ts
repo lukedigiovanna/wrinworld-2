@@ -8,6 +8,7 @@ enum EnemyIndex {
     ZOMBIE,
     MINION,
     SLIME,
+    REVENANT_EYE,
 }
 
 interface Enemy {
@@ -59,6 +60,17 @@ enemyCodex.set(EnemyIndex.SLIME, {
     drops: [],
     essenceAmount: 1,
     ai: ZombieAI
+});
+enemyCodex.set(EnemyIndex.REVENANT_EYE, {
+    spriteID: "revenant_eye",
+    waterSpriteID: "revenant_eye",
+    scale: new Vector(1, 1),
+    physicalColliderOffset: new Vector(0, -0.4),
+    physicalColliderSize: new Vector(0.8, 0.2),
+    hp: 20,
+    drops: [],
+    essenceAmount: 5,
+    ai: ZombieAI,
 });
 
 
