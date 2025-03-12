@@ -74,10 +74,10 @@ projectilesCodex.set(ProjectileIndex.ZOMBIE_BRAINS, {
 });
 projectilesCodex.set(ProjectileIndex.SHURIKEN, {
     homingSkill: 0,
-    maxHits: 20,
+    maxHits: 1,
     spriteID: "shuriken",
     damage: 20,
-    damageReductionPerHit: 0.5,
+    damageReductionPerHit: 0,
     knockback: 3,
     lifespan: 999,
     size: 0.5,
@@ -91,17 +91,17 @@ projectilesCodex.set(ProjectileIndex.SHURIKEN, {
 });
 projectilesCodex.set(ProjectileIndex.ARROW, {
     homingSkill: 0,
-    maxHits: 10,
+    maxHits: 1,
     spriteID: "arrow",
     damage: 10,
-    damageReductionPerHit: 0.6,
+    damageReductionPerHit: 0,
     knockback: 3,
     lifespan: 4,
     size: 1,
     speed: 16,
     angularVelocity: 0,
     colliderSize: new Vector(0.25, 0.25),
-    chanceOfBreaking: 0.5,
+    chanceOfBreaking: 0.4,
     onDestroy(gameObject) {
         chanceDropItem(gameObject, itemsCodex.get(ItemIndex.ARROW), this.chanceOfBreaking);
     }

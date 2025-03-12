@@ -1,6 +1,6 @@
 import { ItemIndex } from "./items";
 import { Vector } from "./utils";
-import { ComponentFactory, ZombieAI } from "./components";
+import { ComponentFactory, MinionAI, ZombieAI } from "./components";
 import { ItemDropChance } from "./items";
 import { Codex } from "./codex";
 
@@ -47,7 +47,7 @@ enemyCodex.set(EnemyIndex.MINION, {
     hp: 10,
     drops: [],
     essenceAmount: 2,
-    ai: ZombieAI
+    ai: MinionAI
 });
 enemyCodex.set(EnemyIndex.SLIME, {
     spriteID: "slime",

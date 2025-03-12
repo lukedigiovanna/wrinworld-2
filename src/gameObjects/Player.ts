@@ -23,8 +23,7 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
     collider.data.castShadow = false;
 
     const health = player.addComponent(Health);
-    health.data.hp = 1000;
-    health.data.maximumHP = 1000;
+    health.data.initializeHealth(50);
     health.data.healthBarDisplayMode = HealthBarDisplayMode.NONE;
 
     player.addComponent(InventoryManager);

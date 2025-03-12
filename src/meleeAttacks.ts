@@ -1,10 +1,55 @@
+import { Codex } from "./codex";
+
 enum MeleeAttackIndex {
-    
+    BROAD_SWORD, // Sweeping attack for broad sword types
+    BASIC, // Basic pointed attack
 }
 
 interface MeleeAttack {
+    // How much damage this attack does to a main target
     damage: number;
+    // How much damage this attack does to additional targets
+    sweepDamage: number;
+    // The maximum number of distinct opponents this attack can hit
     maxHits: number;
+    // How much knockback force to apply
     knockback: number;
+    // How long the attack lasts
+    duration: number;
+    // How large the hitbox of the attack is
+    size: number;
+    // How far out the attack goes from the owner
+    range: number;
+    // Define a sweep of the attack around the attacker
+    sweepArcStart?: number;
+    sweepArcLength?: number;
+    // Particle effects, if applicable
+    particleSpriteID?: string;
 }
 
+const meleeAttacksCodex = new Codex<MeleeAttackIndex, MeleeAttack>();
+meleeAttacksCodex.set(MeleeAttackIndex.BROAD_SWORD, {
+    damage: 8,
+    sweepDamage: 3,
+    maxHits: 5,
+    knockback: 1,
+    size: 0.25,
+    range: 1,
+    duration: 0.25,
+    sweepArcStart: -Math.PI / 4,
+    sweepArcLength: Math.PI / 2,
+    particleSpriteID: "sword_spark"
+});
+meleeAttacksCodex.set(MeleeAttackIndex.BASIC, {
+    damage: 1,
+    sweepDamage: 0,
+    maxHits: 1,
+    knockback: 1,
+    size: 0.25,
+    range: 0.5,
+    duration: 0.1,
+    particleSpriteID: "sword_spark"
+});
+
+export { meleeAttacksCodex, MeleeAttackIndex };
+export type { MeleeAttack };

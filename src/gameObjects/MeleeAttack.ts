@@ -1,70 +1,81 @@
 import { GameObject, GameObjectFactory } from "./index";
 import { Vector, MathUtils } from "../utils";
-import { Hitbox, Physics, ParticleEmitter, PhysicalCollider } from "../components";
+import { Hitbox, Physics, ParticleEmitter } from "../components";
 import { spriteRenderer } from "../renderers";
+import { MeleeAttack } from "../meleeAttacks";
+import { Team } from "./index";
 
-interface MeleeAttackProperties {
-    // How many distinct mobs this attack can hit
-    maxHits: number;
-    // The sprite this attack should represent as (invisible if undefined)
-    spriteID?: string;
-    // Amount of HP to deal upon hit
-    damage: number;
-    // Any logic that should happen upon collision
-    onCollision?: () => void;
-    // How much knockback force to apply
-    knockback: number;
-}
+const MeleeAttackFactory: GameObjectFactory = (properties: MeleeAttack, owner: GameObject, target: Vector) => {
+    properties = {...properties};
 
-const MeleeAttackFactory: GameObjectFactory = (owner: GameObject, position: Vector, target: Vector) => {
     const meleeAttack = new GameObject();
     
-    const direction = Vector.normalized(Vector.subtract(target, position));
+    const direction = Vector.normalized(Vector.subtract(target, owner.position));
     
-    meleeAttack.position = Vector.add(position, direction);
-    meleeAttack.scale.setComponents(1, 0.6);
+    meleeAttack.scale.scale(properties.size);
+    meleeAttack.lifespan = properties.duration;
 
-    meleeAttack.lifespan = 0.1;
-
-    meleeAttack.renderer = spriteRenderer("square");
+    if (properties.particleSpriteID) {
+        meleeAttack.addComponent(ParticleEmitter({
+            lifetime: () => 0.1,
+            spriteID: () => properties.particleSpriteID as string,
+            rate: () => 100,
+            rotation: () => MathUtils.random(0, Math.PI * 2),
+            spawnBoxSize: () => new Vector(0.3, 0.3),
+            size: () => new Vector(0.25, 0.25),
+            velocity: () => MathUtils.randomVector(MathUtils.random(0.2, 0.8))
+        }));
+    }
 
     meleeAttack.addComponent((gameObject: GameObject) => {
         const data: any = {
             owner,
             direction,
-            physics: undefined,
+            hitCount: 0,
+            updatePosition() {
+                const startAngle = properties.sweepArcStart ? properties.sweepArcStart : 0;
+                const sweepLength = properties.sweepArcLength ? properties.sweepArcLength : 0;
+                const angle = startAngle + sweepLength * gameObject.age / properties.duration;
+                const transformedDirection = Vector.rotated(data.direction, angle);
+                transformedDirection.scale(properties.range);
+                gameObject.position = Vector.add(data.owner.position, transformedDirection);
+            }
         };
         return {
             id: "melee",
             start() {
-                data.physics = gameObject.getComponent("physics");
+                data.updatePosition();
+            },
+            update(dt) {
+                data.updatePosition();
             },
             onHitboxCollisionEnter(collision) {
-                if (collision.tag === "animal" || collision.tag === "portal" || collision.tag ===  "enemy") {
+                if (collision.team !== Team.UNTEAMED &&
+                    data.owner.team !== collision.team) {
                     const health = collision.getComponent("health");
                     if (health) {
-                        health.data.damage(5);
+                        const damage = data.hitCount === 0 ? properties.damage : properties.sweepDamage;
+                        health.data.damage(damage);
                     }
                     const physics = collision.getComponent("physics");
                     if (physics) {
                         physics.data.impulse.add(
                             Vector.scaled(
                                 data.direction, 
-                                2
+                                properties.knockback
                             )
                         );
                     }
-                    gameObject.destroy();
+                    data.hitCount++;
+                    if (data.hitCount >= properties.maxHits) {
+                        gameObject.destroy();
+                        console.log('destroyed');
+                    }
                 }
-            },
-            onPhysicalCollision(collision, isTile) {
-                gameObject.destroy();
             },
             data
         }
     });
-    
-    meleeAttack.addComponent(Physics);
 
     const hitbox = meleeAttack.addComponent(Hitbox);
     hitbox.data.boxOffset.setComponents(0.25, 0);

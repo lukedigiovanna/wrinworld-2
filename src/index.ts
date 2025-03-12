@@ -57,11 +57,13 @@ const mainLoop = () => {
 window.onload = async () => {
     console.log("[LOADING ASSETS...]");
     await Promise.all([
+        // Tiles
         loadImage("grass", "assets/images/grass.png"),
         loadImage("water", "assets/images/water.png"),
         loadImage("rocks", "assets/images/rocks.png"),
         loadImage("path", "assets/images/path.png"),
 
+        // Entities
         loadImage("peach", "assets/images/peach.png"),
         loadImage("peach_water", "assets/images/peach_water.png"),
         loadImage("zombie", "assets/images/zombie.png"),
@@ -71,12 +73,16 @@ window.onload = async () => {
         loadImage("slime", "assets/images/slime.png"),
 
         loadImage("portal", "assets/images/portal.png"),
+        loadImage("essence_orb", "assets/images/essence_orb.png"),
 
+        // Props
         loadImage("tree", "assets/images/tree.png"),
         loadImage("evergreen", "assets/images/evergreen.png"),
         
+        // Projectiles
         loadImage("arrow", "assets/images/arrow.png"),
 
+        // Item icons
         loadImage("zombie_brains", "assets/images/zombie_brains.png"),
         loadImage("zombie_flesh", "assets/images/zombie_flesh.png"),
         loadImage("broad_sword_icon", "assets/images/broad_sword_icon.png"),
@@ -84,12 +90,13 @@ window.onload = async () => {
         loadImage("bow", "assets/images/bow.png"),
         loadImage("arrow-icon", "assets/images/arrow-icon.png"),
 
+        // Particle sprites
         loadImage("portal_particle", "assets/images/portal_particle.png"),
+        loadImage("sword_spark", "assets/images/sword_spark.png"),
     
+        // UI
         loadImage("hotbar_slot", "assets/images/hotbar_slot.png"),
         loadImage("hotbar_slot_selected", "assets/images/hotbar_slot_selected.png"),
-        
-        loadImage("essence_orb", "assets/images/essence_orb.png"),
         
         loadImage("essence_jar_small_0", "assets/images/essence_jar_small_0.png"),
         loadImage("essence_jar_small_1", "assets/images/essence_jar_small_1.png"),
@@ -112,6 +119,7 @@ window.onload = async () => {
         loadImage("attack_reload_8", "assets/images/attack_reload_8.png"),
         loadImage("attack_reload_9", "assets/images/attack_reload_9.png"),
 
+        // Misc.
         loadImage("square",  "assets/images/square.png"),
 
         // -- SOUNDS --

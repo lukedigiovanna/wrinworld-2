@@ -1,6 +1,7 @@
 import { Vector } from "./utils";
 import { ProjectileFactory, GameObject, MeleeAttackFactory } from "./gameObjects";
 import { Projectile, projectilesCodex, ProjectileIndex } from "./projectiles";
+import { MeleeAttack, meleeAttacksCodex, MeleeAttackIndex } from "./meleeAttacks";
 import { Codex } from "./codex";
 
 // NOTE: players AND enemies can fire weapons!
@@ -18,6 +19,9 @@ enum WeaponIndex {
     ZOMBIE_BRAINS,
     SHURIKEN,
     BOW,
+
+    ZOMBIE_ATTACK,
+    MINION_ATTACK,
 }
 
 const fireProjectile = (projectile: Projectile, gameObject: GameObject, target: Vector) => {
@@ -26,9 +30,9 @@ const fireProjectile = (projectile: Projectile, gameObject: GameObject, target: 
     );
 }
 
-const fireMelee = (gameObject: GameObject, target: Vector, strength: number) => {
+const fireMelee = (meleeAttack: MeleeAttack, gameObject: GameObject, target: Vector) => {
     gameObject.game.addGameObject(
-        MeleeAttackFactory(gameObject, gameObject.position, target)
+        MeleeAttackFactory(meleeAttack, gameObject, target)
     );
 }
 
@@ -37,7 +41,7 @@ weaponsCodex.set(WeaponIndex.BROAD_SWORD, {
     weaponIndex: WeaponIndex.BROAD_SWORD,
     cooldown: 1,
     fire(gameObject, target) {
-        fireMelee(gameObject, target, 1);
+        fireMelee(meleeAttacksCodex.get(MeleeAttackIndex.BROAD_SWORD), gameObject, target);
     }
 });
 weaponsCodex.set(WeaponIndex.ZOMBIE_BRAINS, {
@@ -60,6 +64,25 @@ weaponsCodex.set(WeaponIndex.BOW, {
     cooldown: 0.1,
     fire(gameObject, target) {
         fireProjectile(projectilesCodex.get(ProjectileIndex.ARROW), gameObject, target);
+    }
+});
+
+weaponsCodex.set(WeaponIndex.ZOMBIE_ATTACK, {
+    weaponIndex: WeaponIndex.ZOMBIE_ATTACK,
+    cooldown: 1,
+    fire(gameObject, target) {
+        const attack = {...meleeAttacksCodex.get(MeleeAttackIndex.BASIC)};
+        attack.damage = 4;
+        fireMelee(attack, gameObject, target);
+    }
+});
+weaponsCodex.set(WeaponIndex.MINION_ATTACK, {
+    weaponIndex: WeaponIndex.MINION_ATTACK,
+    cooldown: 0.7,
+    fire(gameObject, target) {
+        const attack = {...meleeAttacksCodex.get(MeleeAttackIndex.BASIC)};
+        attack.damage = 2;
+        fireMelee(attack, gameObject, target);
     }
 });
 
