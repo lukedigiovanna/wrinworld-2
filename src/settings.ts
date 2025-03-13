@@ -6,6 +6,7 @@ type Settings = {
     showRotationPoint: boolean;
     showChunks: boolean;
     showCameraPosition: boolean;
+    muted: boolean;
 }
 
 const settings: Settings = {
@@ -16,6 +17,7 @@ const settings: Settings = {
     showRotationPoint: false,
     showChunks: false,
     showCameraPosition: false,
+    muted: false,
 }
 
 export default settings;

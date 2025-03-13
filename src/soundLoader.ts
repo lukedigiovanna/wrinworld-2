@@ -1,4 +1,4 @@
-
+import settings from "./settings";
 
 class AudioPool {
     private pool: HTMLAudioElement[];
@@ -13,7 +13,9 @@ class AudioPool {
     }
 
     public play() {
-        return;
+        if (settings.muted) {
+            return;
+        }
         const audio = this.pool[this.index];
         audio.currentTime = 0;
         audio.play();

@@ -14,9 +14,11 @@ enum TileIndex {
     ROCKS,
     PATH,
     SAND,
+    PLANKS,
     CURSED_GRASS,
     CURSED_PATH,
     CURSED_SAND,
+    CURSED_PLANKS,
 }
 
 const tileCodex = new Codex<TileIndex, Tile>();
@@ -73,7 +75,19 @@ tileCodex.set(TileIndex.CURSED_SAND, {
     canGrowPlants: false,
     canSpawnPortal: true,
     wall: false,
-})
+});
+tileCodex.set(TileIndex.PLANKS, {
+    spriteID: "planks",
+    canGrowPlants: false,
+    canSpawnPortal: true,
+    wall: false,
+});
+tileCodex.set(TileIndex.CURSED_PLANKS, {
+    spriteID: "cursed_planks",
+    canGrowPlants: false,
+    canSpawnPortal: true,
+    wall: false,
+});
 
 export type { Tile };
 export { tileCodex, TileIndex };

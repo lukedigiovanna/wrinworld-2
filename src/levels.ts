@@ -75,7 +75,20 @@ const LEVEL_1: Level = {
             }
         }
         
-        // 2. Fill a path from the bottom to top of the world
+        // 2. Add ponds
+        for (let x = left; x <= right; x++) {
+            for (let y = marginTrail; y <= height + marginTrail; y++) {
+                const noise = game.noise.get(x / 16.32 + 1000, y / 16.543 + 1000);
+                if (noise > 0.6) {
+                    game.setTile(new Vector(x, y), TileIndex.WATER);
+                }
+                else if (noise > 0.55) {
+                    game.setTile(new Vector(x, y), TileIndex.SAND);
+                }
+            }
+        }
+
+        // 3. Fill a path from the bottom to top of the world
         const pathPoints = [];
         pathPoints.push(start);
         pathPoints.push(Vector.add(start, new Vector(0, marginTrail)))
@@ -94,24 +107,19 @@ const LEVEL_1: Level = {
             const p = t / height;
             const position = curve.getPosition(p);
             const normal = curve.getNormal(p);
-            for (let d = -1; d <= 1; d++) {
-                game.setTile(Vector.add(position, Vector.scaled(normal, d)), TileIndex.PATH);
-            }
-        }
-
-        // 3. Add ponds
-        for (let x = left; x <= right; x++) {
-            for (let y = marginTrail; y <= height + marginTrail; y++) {
-                const noise = game.noise.get(x / 16.32 + 1000, y / 16.543 + 1000);
-                if (noise > 0.6) {
-                    if (!game.isTileInArea(new Vector(x, y), 2, TileIndex.PATH)) {
-                        game.setTile(new Vector(x, y), TileIndex.WATER);
+            const R = 1;
+            for (let xo = -R; xo <= R; xo++) {
+                for (let yo = -R; yo <= R; yo++) {
+                    const po = Vector.add(position, new Vector(xo, yo));
+                    const currTile = game.getTileIndex(po);
+                    if (currTile === TileIndex.PATH || currTile === TileIndex.PLANKS) {
+                        continue;
                     }
-                }
-                else if (noise > 0.55) {
-                    if (!game.isTileInArea(new Vector(x, y), 2, TileIndex.PATH)) {
-                        game.setTile(new Vector(x, y), TileIndex.SAND);
+                    let tile = TileIndex.PATH;
+                    if (currTile === TileIndex.WATER || currTile === TileIndex.SAND) {
+                        tile = TileIndex.PLANKS;
                     }
+                    game.setTile(po, tile);
                 }
             }
         }
@@ -183,6 +191,9 @@ const LEVEL_1: Level = {
                         }
                         else if (tile === TileIndex.SAND) {
                             game.setTile(po, TileIndex.CURSED_SAND);
+                        }
+                        else if (tile === TileIndex.PLANKS) {
+                            game.setTile(po, TileIndex.CURSED_PLANKS);
                         }
                     }
                 }

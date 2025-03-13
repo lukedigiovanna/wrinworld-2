@@ -186,7 +186,6 @@ export { GameObject, GameObjectFactory, Team };
 export * from "./Projectile";
 export * from "./MeleeAttack";
 export * from "./Player";
-export * from "./Animal";
 export * from "./Portal";
 export * from "./Enemy";
 export * from "./ItemDrop";

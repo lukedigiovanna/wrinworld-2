@@ -10,7 +10,7 @@ interface InventorySlot {
 
 const INVENTORY_SLOT_HTML = `
 <div class="inventory-slot">
-    <img class="slot-icon" src="assets/images/hotbar_slot.png" />
+    <img class="slot-icon" src="assets/images/ui/hotbar_slot.png" />
     <img class="item" />
     <span class="count"></span>
 </div>
