@@ -12,7 +12,7 @@ const MeleeAttackFactory: GameObjectFactory = (properties: MeleeAttack, owner: G
     
     const direction = Vector.normalized(Vector.subtract(target, owner.position));
     
-    meleeAttack.scale.scale(properties.size);
+    meleeAttack.scale.setComponents(properties.size, properties.size);
     meleeAttack.lifespan = properties.duration;
 
     if (properties.particleSpriteID) {
@@ -76,9 +76,7 @@ const MeleeAttackFactory: GameObjectFactory = (properties: MeleeAttack, owner: G
         }
     });
 
-    const hitbox = meleeAttack.addComponent(Hitbox);
-    hitbox.data.boxOffset.setComponents(0.25, 0);
-    hitbox.data.boxSize.setComponents(0.25, 0.25);
+    meleeAttack.addComponent(Hitbox);
     
     meleeAttack.rotation = direction.angle;
 

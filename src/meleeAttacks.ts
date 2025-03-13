@@ -34,7 +34,7 @@ meleeAttacksCodex.set(MeleeAttackIndex.BROAD_SWORD, {
     maxHits: 5,
     knockback: 1,
     size: 0.6,
-    range: 1.2,
+    range: 1,
     duration: 0.25,
     sweepArcStart: -Math.PI / 4,
     sweepArcLength: Math.PI / 2,

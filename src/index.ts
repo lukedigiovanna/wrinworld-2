@@ -96,7 +96,8 @@ window.onload = async () => {
         loadImage("broad_sword_icon", "assets/images/items/broad_sword_icon.png"),
         loadImage("shuriken", "assets/images/items/shuriken.png"),
         loadImage("bow", "assets/images/items/bow.png"),
-        loadImage("arrow-icon", "assets/images/items/arrow-icon.png"),
+        loadImage("arrow_icon", "assets/images/items/arrow_icon.png"),
+        loadImage("healing_vial", "assets/images/items/healing_vial.png"),
 
         // Particle sprites
         loadImage("portal_particle", "assets/images/particles/portal_particle.png"),
@@ -132,7 +133,7 @@ window.onload = async () => {
         loadImage("square",  "assets/images/square.png"),
 
         // -- SOUNDS --
-        loadSound("item_pickup", "assets/sounds/item_pickup.wav", 1),
+        loadSound("item_pickup", "assets/sounds/item_pickup.wav", 5),
         loadSound("essence_pickup", "assets/sounds/essence_pickup.wav", 1),
         loadSound("peach_damage", "assets/sounds/peach_damage.wav", 1),
         loadSound("peach_die", "assets/sounds/peach_die.wav", 1),

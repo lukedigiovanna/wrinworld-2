@@ -7,7 +7,7 @@ import { GameObject } from "./gameObjects";
 import { WeaponIndex } from "./weapons";
 import { Codex } from "./codex";
 
-type ItemCategory = "Weapon" | "Misc." | "Projectile";
+type ItemCategory = "Weapon" | "Misc." | "Projectile" | "Consumable";
 
 enum ItemIndex {
     BROAD_SWORD,
@@ -16,6 +16,7 @@ enum ItemIndex {
     SHURIKEN,
     BOW,
     ARROW,
+    HEALING_VIAL,
 }
 
 // Return true if successfully used.
@@ -123,9 +124,24 @@ itemsCodex.set(ItemIndex.ARROW, {
     itemIndex: ItemIndex.ARROW,
     displayName: "Arrow",
     category: "Projectile",
-    iconSpriteID: "arrow-icon",
+    iconSpriteID: "arrow_icon",
     maxStack: 100,
     consumable: false,
+});
+itemsCodex.set(ItemIndex.HEALING_VIAL, {
+    itemIndex: ItemIndex.HEALING_VIAL,
+    displayName: "Healing Vial",
+    category: "Consumable",
+    iconSpriteID: "healing_vial",
+    consumable: true,
+    maxStack: 20,
+    use(player) {
+        const health = player.getComponent("health");
+        if (health) {
+            return health.data.heal(10) > 0;
+        }
+        return false;
+    }
 });
 
 export { itemsCodex, ItemIndex };

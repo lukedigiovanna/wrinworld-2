@@ -40,6 +40,7 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                     inventoryManager.data.inventory.addItemIndex(ItemIndex.BROAD_SWORD);
                     for (let i = 0; i < 20; i++) {
                         inventoryManager.data.inventory.addItemIndex(ItemIndex.SHURIKEN);
+                        inventoryManager.data.inventory.addItemIndex(ItemIndex.HEALING_VIAL);
                     }
                     inventoryManager.data.inventory.addItemIndex(ItemIndex.BOW);
                     for (let i = 0; i < 200; i++) {

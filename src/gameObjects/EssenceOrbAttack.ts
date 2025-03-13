@@ -1,7 +1,7 @@
 import { spriteRenderer } from "../renderers";
 import { GameObjectFactory, GameObject } from "./index";
 import { MathUtils, Vector } from "../utils";
-import { Physics } from "../components";
+import { getSound } from "../soundLoader";
 
 const EssenceOrbAttackFactory: GameObjectFactory = (value: number, position: Vector, target: GameObject) => {
     const orb = new GameObject();
@@ -23,6 +23,7 @@ const EssenceOrbAttackFactory: GameObjectFactory = (value: number, position: Vec
                 if (distance < 0.5) {
                     target.getComponent("health")?.data.damage(value);
                     gameObject.destroy();
+                    getSound("essence_pickup").play();
                 }
                 this.data.velocity.scale(Math.exp(-dt * 2));
                 gameObject.position.add(Vector.scaled(

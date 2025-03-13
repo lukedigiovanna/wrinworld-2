@@ -23,10 +23,14 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
             this.maximumHP = hp;
         },
         heal(amount: number) {
-            this.hp = Math.min(this.maximumHP, this.hp + amount);
+            if (this.hp + amount > this.maximumHP) {
+                amount = this.maximumHP - this.hp;
+            }
+            this.hp += amount;
             if (this.healthBarDisplayMode !== HealthBarDisplayMode.NONE) {
                 this.timeLastShowedHealthBar = gameObject.game.time;
             }
+            return amount;
         },
         damage(amount: number) {
             if (data.damageSoundEffectID) {
