@@ -155,14 +155,14 @@ class Game {
                 );
             } while (this.isTileWithPropertyInArea(position, 2, "canSpawnPortal", false));
             const properties: PortalProperties = {
-                lowerBoundCooldown: 6,
-                upperBoundCooldown: 12,
-                maxEnemies: 16,
+                lowerBoundCooldown: 12,
+                upperBoundCooldown: 20,
+                maxEnemies: 4,
                 packs: [
                     {
-                        enemyIndex: EnemyIndex.ZOMBIE,
+                        enemyIndex: EnemyIndex.REVENANT_EYE,
                         lowerBound: 1,
-                        upperBound: 5
+                        upperBound: 2
                     }
                 ]
             }

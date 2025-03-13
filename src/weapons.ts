@@ -9,7 +9,6 @@ import { Codex } from "./codex";
 type WeaponFireFunction = (gameObject: GameObject, target: Vector) => void;
 
 interface Weapon {
-    weaponIndex: WeaponIndex;
     cooldown: number; // Minimum time between uses
     fire: WeaponFireFunction;
 }
@@ -22,6 +21,7 @@ enum WeaponIndex {
 
     ZOMBIE_ATTACK,
     MINION_ATTACK,
+    REVENANT_EYE_ATTACK,
 }
 
 const fireProjectile = (projectile: Projectile, gameObject: GameObject, target: Vector) => {
@@ -38,14 +38,12 @@ const fireMelee = (meleeAttack: MeleeAttack, gameObject: GameObject, target: Vec
 
 const weaponsCodex = new Codex<WeaponIndex, Weapon>();
 weaponsCodex.set(WeaponIndex.BROAD_SWORD, {
-    weaponIndex: WeaponIndex.BROAD_SWORD,
     cooldown: 1,
     fire(gameObject, target) {
         fireMelee(meleeAttacksCodex.get(MeleeAttackIndex.BROAD_SWORD), gameObject, target);
     }
 });
 weaponsCodex.set(WeaponIndex.ZOMBIE_BRAINS, {
-    weaponIndex: WeaponIndex.ZOMBIE_BRAINS,
     cooldown: 6,
     fire(gameObject, target) {
         // fireMelee(gameObject, target, 5);
@@ -53,14 +51,12 @@ weaponsCodex.set(WeaponIndex.ZOMBIE_BRAINS, {
     }
 });
 weaponsCodex.set(WeaponIndex.SHURIKEN, {
-    weaponIndex: WeaponIndex.SHURIKEN,
     cooldown: 0,
     fire(gameObject, target) {
         fireProjectile(projectilesCodex.get(ProjectileIndex.SHURIKEN), gameObject, target);
     }
 });
 weaponsCodex.set(WeaponIndex.BOW, {
-    weaponIndex: WeaponIndex.BOW,
     cooldown: 0.1,
     fire(gameObject, target) {
         fireProjectile(projectilesCodex.get(ProjectileIndex.ARROW), gameObject, target);
@@ -68,7 +64,6 @@ weaponsCodex.set(WeaponIndex.BOW, {
 });
 
 weaponsCodex.set(WeaponIndex.ZOMBIE_ATTACK, {
-    weaponIndex: WeaponIndex.ZOMBIE_ATTACK,
     cooldown: 1,
     fire(gameObject, target) {
         const attack = {...meleeAttacksCodex.get(MeleeAttackIndex.BASIC)};
@@ -77,12 +72,17 @@ weaponsCodex.set(WeaponIndex.ZOMBIE_ATTACK, {
     }
 });
 weaponsCodex.set(WeaponIndex.MINION_ATTACK, {
-    weaponIndex: WeaponIndex.MINION_ATTACK,
     cooldown: 0.7,
     fire(gameObject, target) {
         const attack = {...meleeAttacksCodex.get(MeleeAttackIndex.BASIC)};
         attack.damage = 2;
         fireMelee(attack, gameObject, target);
+    }
+});
+weaponsCodex.set(WeaponIndex.REVENANT_EYE_ATTACK, {
+    cooldown: 4,
+    fire(gameObject, target) {
+        fireProjectile(projectilesCodex.get(ProjectileIndex.TEAR_DROP), gameObject, target);
     }
 });
 

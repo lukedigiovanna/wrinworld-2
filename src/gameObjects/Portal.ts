@@ -1,5 +1,4 @@
 import { spriteRenderer } from "../renderers";
-import { Item } from "../items";
 import { GameObjectFactory, GameObject } from "./index";
 import { Vector, MathUtils } from "../utils";
 import { Hitbox, ParticleEmitter, Health, HealthBarDisplayMode } from "../components";
@@ -66,7 +65,7 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, position
     });
     portal.addComponent((gameObject: GameObject) => {
         const data: any = {
-            cooldown: properties.lowerBoundCooldown,
+            cooldown: MathUtils.random(properties.lowerBoundCooldown, properties.upperBoundCooldown),
             enemiesSpawned: 0,
             lastSpawnedTime: undefined,
         };

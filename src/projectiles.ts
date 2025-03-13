@@ -8,6 +8,7 @@ enum ProjectileIndex {
     ZOMBIE_BRAINS,
     SHURIKEN,
     ARROW,
+    TEAR_DROP
 }
 
 interface Projectile {
@@ -100,11 +101,24 @@ projectilesCodex.set(ProjectileIndex.ARROW, {
     size: 1,
     speed: 16,
     angularVelocity: 0,
-    colliderSize: new Vector(0.25, 0.25),
+    colliderSize: new Vector(0.2, 0.2),
     chanceOfBreaking: 0.4,
     onDestroy(gameObject) {
         chanceDropItem(gameObject, itemsCodex.get(ItemIndex.ARROW), this.chanceOfBreaking);
     }
+});
+projectilesCodex.set(ProjectileIndex.TEAR_DROP, {
+    homingSkill: 0,
+    maxHits: 1,
+    spriteID: "tear_drop",
+    damage: 4,
+    damageReductionPerHit: 0,
+    knockback: 4,
+    lifespan: 4,
+    size: 0.4,
+    speed: 7,
+    angularVelocity: 0,
+    colliderSize: new Vector(0.3, 0.3),
 });
 
 export { ProjectileIndex, projectilesCodex };

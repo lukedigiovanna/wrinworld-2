@@ -13,6 +13,7 @@ class AudioPool {
     }
 
     public play() {
+        return;
         const audio = this.pool[this.index];
         audio.currentTime = 0;
         audio.play();

@@ -1,6 +1,6 @@
 import { ItemIndex } from "./items";
 import { Vector } from "./utils";
-import { ComponentFactory, MinionAI, ZombieAI } from "./components";
+import { ComponentFactory, MinionAI, RevenantEyeAI, ZombieAI } from "./components";
 import { ItemDropChance } from "./items";
 import { Codex } from "./codex";
 
@@ -70,7 +70,7 @@ enemyCodex.set(EnemyIndex.REVENANT_EYE, {
     hp: 20,
     drops: [],
     essenceAmount: 5,
-    ai: ZombieAI,
+    ai: RevenantEyeAI,
 });
 
 

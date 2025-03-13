@@ -82,6 +82,7 @@ window.onload = async () => {
         
         // Projectiles
         loadImage("arrow", "assets/images/arrow.png"),
+        loadImage("tear_drop", "assets/images/tear_drop.png"),
 
         // Item icons
         loadImage("zombie_brains", "assets/images/zombie_brains.png"),
