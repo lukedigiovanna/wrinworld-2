@@ -24,7 +24,6 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, position
     portal.renderer = spriteRenderer("portal");
     portal.position.set(position);
     portal.scale.scale(4);
-    portal.addComponent(Hitbox);
     portal.addComponent(ParticleEmitter(
         {
             spriteID: () => "portal_particle",
@@ -104,8 +103,6 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, position
                     data.lastSpawnedTime = gameObject.game.time;
                     data.cooldown = MathUtils.random(properties.lowerBoundCooldown, properties.upperBoundCooldown);
                 }
-
-                console.log(data.enemiesSpawned);
             },
             data
         }

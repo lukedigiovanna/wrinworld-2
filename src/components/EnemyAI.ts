@@ -1,130 +1,75 @@
-import { WeaponIndex } from "../weapons";
+import { ComponentFactory } from "./index";
+import { GameObject } from "../gameObjects";
 import { TileIndex } from "../tiles";
 import { Vector } from "../utils";
-import { ComponentFactory } from "./index";
+import { WeaponIndex } from "../weapons";
 
-const ZombieAI: ComponentFactory = (gameObject) => {
-    const data: any = {
-        speed: 0.8,
-        waterSpeed: 0.4,
-        target: undefined,
-        physics: undefined,
-        weaponManager: undefined,
-    };
-    return {
-        id: "zombie-ai",
-        start() {
-            data.target = gameObject.game.player.position;
-            data.physics = gameObject.getComponent("physics");
-            data.weaponManager = gameObject.getComponent("weapon-manager");
-        },
-        update(dt) {
-            if (gameObject.age < 1.5) return;
-            const direction = Vector.subtract(data.target, gameObject.position);
-            let speed = data.speed;
-            if (gameObject.game.getTileIndex(gameObject.position) === TileIndex.WATER) {
-                speed = data.waterSpeed;
-            }
-            direction.normalize()
-            direction.scale(speed);
-            data.physics.data.velocity.set(direction);
-            if (direction.x < 0) {
-                gameObject.scale.x = Math.abs(gameObject.scale.x) * -1;
-            }
-            else if (direction.x > 0) {
-                gameObject.scale.x = Math.abs(gameObject.scale.x);
-            }
+interface BasicFollowAndAttackProperties {
+    // How close the target must be before we can start attacking
+    followDistance: number;
+    // Movement speed
+    speed: number;
+    // Movement speed in water
+    waterSpeed: number;
+    // How close the target must be to start attacking
+    attackRange: number;
+    // The weapon to use on attack
+    weaponIndex: WeaponIndex;
+    //
+    customVelocityFunction?: (gameObject: GameObject, direction: Vector) => Vector;
+}
 
-            if (Vector.subtract(gameObject.position, data.target).magnitude < 1) {
-                data.weaponManager.data.fire(WeaponIndex.ZOMBIE_ATTACK, data.target);
-            }
-        },
-        data
+const BasicFollowAndAttackAI: (props: BasicFollowAndAttackProperties) => ComponentFactory = 
+(props) => {
+    return (gameObject) => {
+        const data: any = {
+            target: undefined,
+            physics: undefined,
+            weaponManager: undefined,
+        }
+        return {
+            id: "basic-follow-and-attack-ai",
+            start() {
+                data.target = gameObject.game.player;
+                data.physics = gameObject.getComponent("physics");
+                data.weaponManager = gameObject.getComponent("weapon-manager");
+            },
+            update(dt) {
+                if (gameObject.age < 1.5) {
+                    return;
+                }
+                
+                const targetPosition = data.target.position;
+                const direction = Vector.subtract(targetPosition, gameObject.position);
+                const distance = direction.magnitude;
+                if (distance > props.followDistance) {
+                    data.physics.data.velocity.setComponents(0, 0);
+                    return;
+                }
+
+                let speed = props.speed;
+                if (gameObject.game.getTileIndex(gameObject.position) === TileIndex.WATER) {
+                    speed = props.waterSpeed;
+                }
+
+                if (distance <= props.attackRange) {
+                    data.weaponManager.data.fire(props.weaponIndex, targetPosition);
+                    data.physics.data.velocity.set(Vector.zero());
+                }
+                else {
+                    direction.normalize()
+                    direction.scale(speed);
+                    if (props.customVelocityFunction) {
+                        data.physics.data.velocity.set(props.customVelocityFunction(gameObject, direction));
+                    }
+                    else {
+                        data.physics.data.velocity.set(direction);
+                    }
+                }   
+            },
+            data
+        }
     }
 }
 
-const MinionAI: ComponentFactory = (gameObject) => {
-    const data: any = {
-        speed: 1.2,
-        waterSpeed: 0.6,
-        target: undefined,
-        physics: undefined,
-        weaponManager: undefined,
-    };
-    return {
-        id: "minion-ai",
-        start() {
-            data.target = gameObject.game.player.position;
-            data.physics = gameObject.getComponent("physics");
-            data.weaponManager = gameObject.getComponent("weapon-manager");
-        },
-        update(dt) {
-            if (gameObject.age < 1.5) return;
-            const direction = Vector.subtract(data.target, gameObject.position);
-            let speed = data.speed;
-            if (gameObject.game.getTileIndex(gameObject.position) === TileIndex.WATER) {
-                speed = data.waterSpeed;
-            }
-            direction.normalize()
-            direction.scale(speed);
-            data.physics.data.velocity.set(direction);
-            if (direction.x < 0) {
-                gameObject.scale.x = Math.abs(gameObject.scale.x) * -1;
-            }
-            else if (direction.x > 0) {
-                gameObject.scale.x = Math.abs(gameObject.scale.x);
-            }
-
-            if (Vector.subtract(gameObject.position, data.target).magnitude < 1) {
-                data.weaponManager.data.fire(WeaponIndex.MINION_ATTACK, data.target);
-            }
-        },
-        data
-    }
-}
-
-const RevenantEyeAI: ComponentFactory = (gameObject) => {
-    const data: any = {
-        speed: 0.6,
-        waterSpeed: 0.6,
-        target: undefined,
-        physics: undefined,
-        weaponManager: undefined,
-    };
-    return {
-        id: "revenant-eye-ai",
-        start() {
-            data.target = gameObject.game.player.position;
-            data.physics = gameObject.getComponent("physics");
-            data.weaponManager = gameObject.getComponent("weapon-manager");
-        },
-        update(dt) {
-            if (gameObject.age < 1.5) return;
-            const direction = Vector.subtract(data.target, gameObject.position);
-            let speed = data.speed;
-            if (gameObject.game.getTileIndex(gameObject.position) === TileIndex.WATER) {
-                speed = data.waterSpeed;
-            }
-            
-            if (Vector.subtract(gameObject.position, data.target).magnitude < 8) {
-                data.weaponManager.data.fire(WeaponIndex.REVENANT_EYE_ATTACK, data.target);
-                data.physics.data.velocity.set(Vector.zero());
-            }
-            else {
-                direction.normalize()
-                direction.scale(speed);
-                data.physics.data.velocity.set(direction);
-            }
-
-            if (direction.x < 0) {
-                gameObject.scale.x = Math.abs(gameObject.scale.x) * -1;
-            }
-            else if (direction.x > 0) {
-                gameObject.scale.x = Math.abs(gameObject.scale.x);
-            }
-        },
-        data
-    }
-}
-
-export { ZombieAI, MinionAI, RevenantEyeAI };
+export { BasicFollowAndAttackAI };

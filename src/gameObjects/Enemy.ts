@@ -29,12 +29,14 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
     collider.data.boxSize = enemyType.physicalColliderSize.copy();
     enemy.addComponent((gameObject) => {
         const data: any = {
-            collider: undefined
+            collider: undefined,
+            physics: undefined,
         };
         return {
-            id: "enemy-water",
+            id: "common-enemy-logic",
             start() {
                 data.collider = gameObject.getComponent("physical-collider");
+                data.physics = gameObject.getComponent("physics");
             },
             update(dt) {
                 if (gameObject.game.getTileIndex(gameObject.position) === TileIndex.WATER) {
@@ -46,6 +48,13 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
                     gameObject.renderer!.data.spriteID = enemyType.spriteID;
                     gameObject.renderer!.data.offset = Vector.zero();
                     data.collider!.data.castShadow = true;
+                }
+
+                if (data.physics.data.velocity.x < 0) {
+                    gameObject.scale.x = Math.abs(gameObject.scale.x) * -1;
+                }
+                else if (data.physics.data.velocity.x > 0) {
+                    gameObject.scale.x = Math.abs(gameObject.scale.x);
                 }
             },
         }
@@ -64,7 +73,6 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
         return {
             id: "portal-tracker",
             destroy() {
-                console.log(this.data.portal);
                 if (this.data.portal) {
                     this.data.portal.data.enemiesSpawned--;
                 }

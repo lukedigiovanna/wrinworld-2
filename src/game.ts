@@ -55,7 +55,7 @@ class Game {
         this.generateLevelOne();
         this._camera.verticalBoundary = [16, 24 + 8 + 96];
 
-        this.addGameObject(EnemyFactory(new Vector(0, 20), EnemyIndex.ZOMBIE));
+        this.addGameObject(EnemyFactory(new Vector(0, 20), EnemyIndex.SLIME));
     }
 
     private generateChunk(chunkIndex: number): void {
@@ -160,10 +160,25 @@ class Game {
                 maxEnemies: 4,
                 packs: [
                     {
+                        enemyIndex: EnemyIndex.ZOMBIE,
+                        lowerBound: 1,
+                        upperBound: 3
+                    },
+                    {
+                        enemyIndex: EnemyIndex.MINION,
+                        lowerBound: 2,
+                        upperBound: 5
+                    },
+                    {
+                        enemyIndex: EnemyIndex.SLIME,
+                        lowerBound: 1,
+                        upperBound: 4
+                    },
+                    {
                         enemyIndex: EnemyIndex.REVENANT_EYE,
                         lowerBound: 1,
                         upperBound: 2
-                    }
+                    },
                 ]
             }
             this.addGameObject(PortalFactory(properties, position));

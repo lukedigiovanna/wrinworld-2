@@ -16,7 +16,7 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
     player.addComponent(Physics);
     player.addComponent(PlayerMovement);
     const hitbox = player.addComponent(Hitbox);
-    hitbox.data?.boxSize.setComponents(1.0, 2.0);
+    hitbox.data?.boxSize.setComponents(1.0, 1.0);
     const collider = player.addComponent(PhysicalCollider);
     collider.data?.boxOffset.setComponents(0, -0.8);
     collider.data?.boxSize.setComponents(1, 0.5);

@@ -84,6 +84,7 @@ projectilesCodex.set(ProjectileIndex.SHURIKEN, {
     size: 0.5,
     speed: 20,
     angularVelocity: 20,
+    hitboxSize: new Vector(0.25, 0.25),
     colliderSize: new Vector(0.25, 0.25),
     chanceOfBreaking: 0.2,
     onDestroy(gameObject) {
@@ -94,13 +95,14 @@ projectilesCodex.set(ProjectileIndex.ARROW, {
     homingSkill: 0,
     maxHits: 1,
     spriteID: "arrow",
-    damage: 10,
+    damage: 6,
     damageReductionPerHit: 0,
     knockback: 3,
     lifespan: 4,
     size: 1,
     speed: 16,
     angularVelocity: 0,
+    hitboxSize: new Vector(0.25, 0.25),
     colliderSize: new Vector(0.2, 0.2),
     chanceOfBreaking: 0.4,
     onDestroy(gameObject) {

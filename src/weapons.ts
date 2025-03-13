@@ -21,6 +21,7 @@ enum WeaponIndex {
 
     ZOMBIE_ATTACK,
     MINION_ATTACK,
+    SLIME_ATTACK,
     REVENANT_EYE_ATTACK,
 }
 
@@ -83,6 +84,15 @@ weaponsCodex.set(WeaponIndex.REVENANT_EYE_ATTACK, {
     cooldown: 4,
     fire(gameObject, target) {
         fireProjectile(projectilesCodex.get(ProjectileIndex.TEAR_DROP), gameObject, target);
+    }
+});
+weaponsCodex.set(WeaponIndex.SLIME_ATTACK, {
+    cooldown: 2,
+    fire(gameObject, target) {
+        const attack = {...meleeAttacksCodex.get(MeleeAttackIndex.BASIC)};
+        attack.damage = 1;
+        attack.knockback = 5;
+        fireMelee(attack, gameObject, target);
     }
 });
 
