@@ -146,14 +146,25 @@ class Game {
 
         // 6. Place portals
         const portalPositions = [];
+        const minDistance = 8;
         for (let i = 0; i < 10; i++) {
             let position;
+            let invalid;
             do {
                 position = new Vector(
                     MathUtils.randomInt(left, right) + 0.5,
                     MathUtils.randomInt(bottom, top) + 0.5
                 );
-            } while (this.isTileWithPropertyInArea(position, 2, "canSpawnPortal", false));
+                invalid = this.isTileWithPropertyInArea(position, 2, "canSpawnPortal", false);
+                if (!invalid) {
+                    for (const other of portalPositions) {
+                        if (position.distanceTo(other) <= minDistance) {
+                            invalid = true;
+                            break;
+                        }
+                    }
+                }
+            } while (invalid);
             const properties: PortalProperties = {
                 lowerBoundCooldown: 12,
                 upperBoundCooldown: 20,
@@ -183,6 +194,23 @@ class Game {
             }
             this.addGameObject(PortalFactory(properties, position));
             portalPositions.push(position);
+            const R = 3;
+            for (let xo = -R; xo <= R; xo++) {
+                for (let yo = -R; yo <= R; yo++) {
+                    const dist = Math.sqrt(xo * xo + yo * yo);
+                    const chance = 1 - dist / 4;
+                    if (Math.random() < chance) {
+                        const po = Vector.add(new Vector(xo, yo), position);
+                        const tile = this.getTileIndex(po);
+                        if (tile === TileIndex.GRASS) {
+                            this.setTile(po, TileIndex.CURSED_GRASS);
+                        }
+                        else if (tile === TileIndex.PATH) {
+                            this.setTile(po, TileIndex.CURSED_PATH);
+                        }
+                    }
+                }
+            }
         }
 
         // 7. Place trees

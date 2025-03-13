@@ -52,13 +52,13 @@ weaponsCodex.set(WeaponIndex.ZOMBIE_BRAINS, {
     }
 });
 weaponsCodex.set(WeaponIndex.SHURIKEN, {
-    cooldown: 0,
+    cooldown: 0.25,
     fire(gameObject, target) {
         fireProjectile(projectilesCodex.get(ProjectileIndex.SHURIKEN), gameObject, target);
     }
 });
 weaponsCodex.set(WeaponIndex.BOW, {
-    cooldown: 0.1,
+    cooldown: 1,
     fire(gameObject, target) {
         fireProjectile(projectilesCodex.get(ProjectileIndex.ARROW), gameObject, target);
     }

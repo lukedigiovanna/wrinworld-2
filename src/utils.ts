@@ -91,6 +91,10 @@ class Vector {
         return Math.atan2(this.y, this.x);
     }
 
+    public distanceTo(other: Vector): number {
+        return Vector.subtract(this, other).magnitude;
+    }
+
     public static add(vec1: Vector, vec2: Vector): Vector {
         return new Vector(vec1.x + vec2.x, vec1.y + vec2.y);
     }

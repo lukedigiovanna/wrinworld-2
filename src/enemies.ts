@@ -31,7 +31,7 @@ enemyCodex.set(EnemyIndex.ZOMBIE, {
     scale: new Vector(1, 2.33),
     physicalColliderOffset: new Vector(0, -1),
     physicalColliderSize: new Vector(0.8, 0.3),
-    hp: 20,
+    hp: 25,
     drops: [
         {chance: 0.05, itemIndex: ItemIndex.ZOMBIE_BRAINS},
     ],

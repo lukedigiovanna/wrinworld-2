@@ -110,7 +110,7 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, position
 
     const health = portal.addComponent(Health);
     health.data.initializeHealth(100);
-    health.data.barColor = [0, 255, 255];
+    health.data.barColor = [0, 225, 255];
     health.data.healthBarDisplayMode = HealthBarDisplayMode.NONE;
 
     portal.tag = "portal";

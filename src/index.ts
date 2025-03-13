@@ -62,6 +62,8 @@ window.onload = async () => {
         loadImage("water", "assets/images/water.png"),
         loadImage("rocks", "assets/images/rocks.png"),
         loadImage("path", "assets/images/path.png"),
+        loadImage("cursed_grass", "assets/images/cursed_grass.png"),
+        loadImage("cursed_path", "assets/images/cursed_path.png"),
 
         // Entities
         loadImage("peach", "assets/images/peach.png"),

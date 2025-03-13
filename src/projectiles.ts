@@ -77,7 +77,7 @@ projectilesCodex.set(ProjectileIndex.SHURIKEN, {
     homingSkill: 0,
     maxHits: 1,
     spriteID: "shuriken",
-    damage: 20,
+    damage: 16,
     damageReductionPerHit: 0,
     knockback: 3,
     lifespan: 999,
@@ -86,7 +86,7 @@ projectilesCodex.set(ProjectileIndex.SHURIKEN, {
     angularVelocity: 20,
     hitboxSize: new Vector(0.25, 0.25),
     colliderSize: new Vector(0.25, 0.25),
-    chanceOfBreaking: 0.2,
+    chanceOfBreaking: 0.1,
     onDestroy(gameObject) {
         chanceDropItem(gameObject, itemsCodex.get(ItemIndex.SHURIKEN), this.chanceOfBreaking);
     },
