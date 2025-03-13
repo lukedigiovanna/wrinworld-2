@@ -15,6 +15,7 @@ enum EnemyIndex {
 interface Enemy {
     spriteID: string;
     waterSpriteID?: string; // No water effects when undefined
+    particleID?: string; // No particles when undefined
     scale: Vector;
     physicalColliderOffset: Vector;
     physicalColliderSize: Vector;
@@ -24,8 +25,8 @@ interface Enemy {
     ai: ComponentFactory;
 }
 
-const enemyCodex = new Codex<EnemyIndex, Enemy>();
-enemyCodex.set(EnemyIndex.ZOMBIE, {
+const enemiesCodex = new Codex<EnemyIndex, Enemy>();
+enemiesCodex.set(EnemyIndex.ZOMBIE, {
     spriteID: "zombie",
     waterSpriteID: "zombie_water",
     scale: new Vector(1, 2.33),
@@ -44,7 +45,7 @@ enemyCodex.set(EnemyIndex.ZOMBIE, {
         weaponIndex: WeaponIndex.ZOMBIE_ATTACK,
     }),
 });
-enemyCodex.set(EnemyIndex.MINION, {
+enemiesCodex.set(EnemyIndex.MINION, {
     spriteID: "minion",
     waterSpriteID: "minion_water",
     scale: new Vector(1, 1),
@@ -61,9 +62,10 @@ enemyCodex.set(EnemyIndex.MINION, {
         weaponIndex: WeaponIndex.MINION_ATTACK,
     })
 });
-enemyCodex.set(EnemyIndex.SLIME, {
+enemiesCodex.set(EnemyIndex.SLIME, {
     spriteID: "slime",
     waterSpriteID: "slime",
+    particleID: "slime_particle",
     scale: new Vector(0.75, 0.5),
     physicalColliderOffset: new Vector(0, -0.1),
     physicalColliderSize: new Vector(0.5, 0.1),
@@ -71,7 +73,7 @@ enemyCodex.set(EnemyIndex.SLIME, {
     drops: [],
     essenceAmount: 1,
     ai: BasicFollowAndAttackAI({
-        attackRange: 1.2,
+        attackRange: 0.8,
         followDistance: 12,
         speed: 1,
         waterSpeed: 1,
@@ -81,7 +83,7 @@ enemyCodex.set(EnemyIndex.SLIME, {
         },
     })
 });
-enemyCodex.set(EnemyIndex.REVENANT_EYE, {
+enemiesCodex.set(EnemyIndex.REVENANT_EYE, {
     spriteID: "revenant_eye",
     scale: new Vector(1, 1),
     physicalColliderOffset: new Vector(0, -0.4),
@@ -99,4 +101,4 @@ enemyCodex.set(EnemyIndex.REVENANT_EYE, {
 });
 
 
-export { enemyCodex, EnemyIndex };
+export { enemiesCodex, EnemyIndex };

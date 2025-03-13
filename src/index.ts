@@ -97,6 +97,7 @@ window.onload = async () => {
         // Particle sprites
         loadImage("portal_particle", "assets/images/portal_particle.png"),
         loadImage("sword_spark", "assets/images/sword_spark.png"),
+        loadImage("slime_particle", "assets/images/slime_particle.png"),
     
         // UI
         loadImage("hotbar_slot", "assets/images/hotbar_slot.png"),

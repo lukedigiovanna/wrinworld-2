@@ -4,7 +4,11 @@
 import { ComponentFactory } from "./index";
 import { GameObject } from "../gameObjects";
 import { Vector, MathUtils } from "../utils";
-import { getImage } from "../imageLoader";
+
+enum ParticleLayer {
+    ABOVE_OBJECTS,
+    BELOW_OBJECTS,
+}
 
 interface Particle {
     position: Vector;
@@ -17,6 +21,7 @@ interface Particle {
     gameObject?: GameObject;
 
     spriteID: string;
+    layer: ParticleLayer;
     
     birthTime: number; // game time of birth
     lifetime: number; // time the particle should be allowed to live
@@ -26,6 +31,7 @@ interface Particle {
 
 interface ParticleEmitterData {
     spriteID: () => string;
+    layer: () => ParticleLayer;
     rate: () => number; // particles per second
     spawnBoxOffset: () => Vector;
     spawnBoxSize: () => Vector;
@@ -42,7 +48,8 @@ const ParticleEmitter: (data: Partial<ParticleEmitterData>, altID?: string) => C
     return (gameObject: GameObject) => {
         let timer = 0.0;
         const data: ParticleEmitterData = {
-            spriteID: () => "feather",
+            spriteID: () => "square",
+            layer: () => ParticleLayer.ABOVE_OBJECTS,
             rate: () => 1.0, 
             spawnBoxOffset: () => Vector.zero(),
             spawnBoxSize: () => new Vector(1, 1),
@@ -71,6 +78,7 @@ const ParticleEmitter: (data: Partial<ParticleEmitterData>, altID?: string) => C
                     update(particle, dt) {
                         data.particleUpdate(particle, dt);
                     },
+                    layer: data.layer()
                 });
             },
             ...settings
@@ -91,4 +99,4 @@ const ParticleEmitter: (data: Partial<ParticleEmitterData>, altID?: string) => C
     }
 }
 
-export { ParticleEmitter, ParticleEmitterData, Particle };
+export { ParticleEmitter, ParticleEmitterData, Particle, ParticleLayer };

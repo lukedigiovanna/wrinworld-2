@@ -10,6 +10,47 @@ interface Level {
     generate: (game: Game) => void;    
 }
 
+const level1PortalTypes: PortalProperties[] = [
+    { // Slime portal
+        lowerBoundCooldown: 8,
+        upperBoundCooldown: 16,
+        maxEnemies: 10,
+        packs: [
+            {
+                lowerBound: 2,
+                upperBound: 6,
+                enemyIndex: EnemyIndex.SLIME
+            }
+        ]
+    },
+    { // Minion portal
+        lowerBoundCooldown: 4,
+        upperBoundCooldown: 10,
+        difficulty: 0.2,
+        maxEnemies: 16,
+        packs: [
+            {
+                lowerBound: 1,
+                upperBound: 3,
+                enemyIndex: EnemyIndex.MINION
+            }
+        ]
+    }, 
+    { // Revenant eye portal
+        lowerBoundCooldown: 12,
+        upperBoundCooldown: 20,
+        difficulty: 0.7,
+        maxEnemies: 4,
+        packs: [
+            {
+                lowerBound: 1,
+                upperBound: 2,
+                enemyIndex: EnemyIndex.REVENANT_EYE
+            }
+        ]
+    }
+]
+
 // LEVEL 1
 const LEVEL_1: Level = {
     regionName: "Corrupted Forest",
@@ -97,7 +138,7 @@ const LEVEL_1: Level = {
             do {
                 position = new Vector(
                     MathUtils.randomInt(left, right) + 0.5,
-                    MathUtils.randomInt(bottom, top) + 0.5
+                    MathUtils.randomInt(bottom + marginTrail, top - marginTrail) + 0.5
                 );
                 invalid = game.isTileWithPropertyInArea(position, 2, "canSpawnPortal", false);
                 if (!invalid) {
@@ -109,33 +150,12 @@ const LEVEL_1: Level = {
                     }
                 }
             } while (invalid);
-            const properties: PortalProperties = {
-                lowerBoundCooldown: 12,
-                upperBoundCooldown: 20,
-                maxEnemies: 4,
-                packs: [
-                    {
-                        enemyIndex: EnemyIndex.ZOMBIE,
-                        lowerBound: 1,
-                        upperBound: 3
-                    },
-                    {
-                        enemyIndex: EnemyIndex.MINION,
-                        lowerBound: 2,
-                        upperBound: 5
-                    },
-                    {
-                        enemyIndex: EnemyIndex.SLIME,
-                        lowerBound: 1,
-                        upperBound: 4
-                    },
-                    {
-                        enemyIndex: EnemyIndex.REVENANT_EYE,
-                        lowerBound: 1,
-                        upperBound: 2
-                    },
-                ]
+            const progression = (position.y - marginTrail) / height;
+            const validChoices = level1PortalTypes.filter(type => type.difficulty ? type.difficulty : 0 <= progression);
+            if (validChoices.length === 0) {
+                throw Error("Cannot generate portal for position: " + position + " progressio " + progression + " because no portal has low enough difficulty");
             }
+            const properties = MathUtils.randomChoice(validChoices);
             game.addGameObject(PortalFactory(properties, position));
             portalPositions.push(position);
             const R = 3;

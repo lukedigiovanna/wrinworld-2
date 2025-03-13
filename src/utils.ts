@@ -146,9 +146,6 @@ class MathUtils {
 
     // generates a random float in [a, b)
     public static random(a: number, b: number) {
-        if (b < a) {
-            throw new Error("Upper bound of range cannot be less than lower bound");
-        }
         return Math.random() * (b - a) + a;
     }
 
@@ -167,6 +164,10 @@ class MathUtils {
     public static randomVector(magnitude: number): Vector {
         const angle = MathUtils.random(0, Math.PI * 2);
         return new Vector(Math.cos(angle) * magnitude, Math.sin(angle) * magnitude);
+    }
+
+    public static randomAngle() {
+        return MathUtils.random(0, 2 * Math.PI);
     }
 
     // achieves the same effect as the following c code: (int) a

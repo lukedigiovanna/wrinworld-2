@@ -3,6 +3,7 @@ import { GameObjectFactory, GameObject } from "./index";
 import { Vector, MathUtils } from "../utils";
 import { Hitbox, ParticleEmitter, Health, HealthBarDisplayMode } from "../components";
 import { EnemyFactory, EnemyIndex } from "./Enemy";
+import { enemiesCodex } from "../enemies";
 
 const PORTAL_ACTIVE_RADIUS = 6;
 
@@ -13,6 +14,7 @@ interface PortalSpawnPack {
 }
 
 interface PortalProperties {
+    difficulty?: number; // 0/undefined means portal can spawn anywhere, higher number means portal can only spawn further in the level
     lowerBoundCooldown: number;
     upperBoundCooldown: number;
     maxEnemies: number;
@@ -30,11 +32,25 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, position
             rate: () => 16,
             size: () => new Vector(0.35, 0.35),
             spawnBoxSize: () => Vector.zero(),
-            rotation: () => MathUtils.random(0, Math.PI * 2),
+            rotation: () => MathUtils.randomAngle(),
             velocity: () => MathUtils.randomVector(MathUtils.random(1, 1.5)),
             lifetime: () => MathUtils.random(0.3, 1.2)
         }
     ));
+    const enemyParticles = properties.packs.map(pack => enemiesCodex.get(pack.enemyIndex).particleID).filter(p => p !== undefined);
+    if (enemyParticles.length > 0) {
+        portal.addComponent(ParticleEmitter(
+            {
+                spriteID: () => MathUtils.randomChoice(enemyParticles),
+                size: () => new Vector(0.25, 0.25),
+                spawnBoxSize: () => Vector.zero(),
+                rotation: () => MathUtils.randomAngle(),
+                velocity: () => MathUtils.randomVector(MathUtils.random(1, 1.5)),
+                lifetime: () => MathUtils.random(0.3, 1.2)
+            },
+            "enemy-particles"
+        ));
+    }
     portal.addComponent((gameObject: GameObject) => {
         const data: any = {
             health: undefined,

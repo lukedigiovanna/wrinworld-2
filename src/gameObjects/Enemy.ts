@@ -1,15 +1,15 @@
 import { GameObject, GameObjectFactory, EssenceOrbFactory, Team } from "./";
 import { spriteRenderer } from "../renderers";
-import { Vector } from "../utils";
-import { Health, Hitbox, Physics, PhysicalCollider, ItemDropper, WeaponManager, HealthBarDisplayMode } from "../components";
+import { Vector, MathUtils } from "../utils";
+import { Health, Hitbox, Physics, PhysicalCollider, ItemDropper, WeaponManager, HealthBarDisplayMode, ParticleEmitter, ParticleLayer } from "../components";
 import { TileIndex } from "../tiles";
-import { enemyCodex, EnemyIndex } from "../enemies";
+import { enemiesCodex, EnemyIndex } from "../enemies";
 
 const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyIndex) => {
     const enemy = new GameObject();
     enemy.team = Team.ENEMY;
     enemy.position = position.copy();
-    const enemyType = enemyCodex.get(enemyIndex);
+    const enemyType = enemiesCodex.get(enemyIndex);
     if (!enemyType) {
         throw Error("Invalid enemy type");
     }
@@ -82,6 +82,16 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
             }
         }
     });
+    if (enemyType.particleID) {
+        enemy.addComponent(ParticleEmitter({
+            spriteID: () => enemyType.particleID as string,
+            size: () => new Vector(0.25, 0.25),
+            rotation: () => MathUtils.random(0, 2 * Math.PI),
+            spawnBoxSize: () => enemy.scale,
+            rate: () => 5,
+            layer: () => ParticleLayer.BELOW_OBJECTS
+        }));
+    }
     enemy.tag = "enemy";
     return enemy;
 }

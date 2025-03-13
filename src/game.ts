@@ -3,7 +3,7 @@ import { Vector, MathUtils, PerlinNoise } from "./utils";
 import input from "./input";
 import { Camera } from "./camera";
 import { getImage } from "./imageLoader";
-import { Particle } from "./components";
+import { Particle, ParticleLayer } from "./components";
 import settings from "./settings";
 import { Tile, tileCodex, TileIndex } from "./tiles";
 import { Level, LEVEL_1 } from "./levels";
@@ -172,6 +172,21 @@ class Game {
         this._camera.update(dt);
     }
 
+    private drawParticle(particle: Particle) {
+        const pos = particle.position.copy();
+        if (particle.useRelativePosition && particle.gameObject) {
+            pos.add(particle.gameObject.position);
+        }
+        this._camera.drawImage(
+            getImage(particle.spriteID), 
+            pos.x,
+            pos.y,
+            particle.size.x, 
+            particle.size.y, 
+            particle.rotation
+        );
+    }
+
     public draw() {
         this._camera.setFillColor("black");
         this._camera.clear();
@@ -203,26 +218,20 @@ class Game {
         }
 
         
+        for (let i = 0; i < this.particles.length; i++) {
+            if (this.particles[i].layer === ParticleLayer.BELOW_OBJECTS)
+                this.drawParticle(this.particles[i]);
+        }
 
         [...this.activeObjects].sort((a: GameObject, b: GameObject) => (b.position.y - b.scale.y / 2) - (a.position.y - a.scale.y / 2))
             .forEach((gameObject: GameObject) => {
                 gameObject.render(this._camera);
             });
 
-        this.particles.forEach((particle: Particle) => {
-            const pos = particle.position.copy();
-            if (particle.useRelativePosition && particle.gameObject) {
-                pos.add(particle.gameObject.position);
-            }
-            this._camera.drawImage(
-                getImage(particle.spriteID), 
-                pos.x,
-                pos.y,
-                particle.size.x, 
-                particle.size.y, 
-                particle.rotation
-            );
-        });
+        for (let i = 0; i < this.particles.length; i++) {
+            if (this.particles[i].layer === ParticleLayer.ABOVE_OBJECTS)
+                this.drawParticle(this.particles[i]);
+        }
         
         if (settings.showChunks) {
             this._camera.setStrokeColor("lime");
