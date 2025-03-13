@@ -15,6 +15,7 @@ interface PortalSpawnPack {
 
 interface PortalProperties {
     difficulty?: number; // 0/undefined means portal can spawn anywhere, higher number means portal can only spawn further in the level
+    health: number;
     lowerBoundCooldown: number;
     upperBoundCooldown: number;
     maxEnemies: number;
@@ -125,7 +126,7 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, position
     });
 
     const health = portal.addComponent(Health);
-    health.data.initializeHealth(100);
+    health.data.initializeHealth(properties.health);
     health.data.barColor = [0, 225, 255];
     health.data.healthBarDisplayMode = HealthBarDisplayMode.NONE;
 

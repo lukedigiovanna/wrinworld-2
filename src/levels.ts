@@ -15,6 +15,7 @@ const level1PortalTypes: PortalProperties[] = [
         lowerBoundCooldown: 8,
         upperBoundCooldown: 16,
         maxEnemies: 10,
+        health: 30,
         packs: [
             {
                 lowerBound: 2,
@@ -28,6 +29,7 @@ const level1PortalTypes: PortalProperties[] = [
         upperBoundCooldown: 10,
         difficulty: 0.2,
         maxEnemies: 16,
+        health: 50,
         packs: [
             {
                 lowerBound: 1,
@@ -41,6 +43,7 @@ const level1PortalTypes: PortalProperties[] = [
         upperBoundCooldown: 20,
         difficulty: 0.7,
         maxEnemies: 4,
+        health: 70,
         packs: [
             {
                 lowerBound: 1,
@@ -99,9 +102,15 @@ const LEVEL_1: Level = {
         // 3. Add ponds
         for (let x = left; x <= right; x++) {
             for (let y = marginTrail; y <= height + marginTrail; y++) {
-                if (game.noise.get(x / 16.32 + 1000, y / 16.543 + 1000) > 0.6) {
+                const noise = game.noise.get(x / 16.32 + 1000, y / 16.543 + 1000);
+                if (noise > 0.6) {
                     if (!game.isTileInArea(new Vector(x, y), 2, TileIndex.PATH)) {
                         game.setTile(new Vector(x, y), TileIndex.WATER);
+                    }
+                }
+                else if (noise > 0.55) {
+                    if (!game.isTileInArea(new Vector(x, y), 2, TileIndex.PATH)) {
+                        game.setTile(new Vector(x, y), TileIndex.SAND);
                     }
                 }
             }
@@ -172,13 +181,16 @@ const LEVEL_1: Level = {
                         else if (tile === TileIndex.PATH) {
                             game.setTile(po, TileIndex.CURSED_PATH);
                         }
+                        else if (tile === TileIndex.SAND) {
+                            game.setTile(po, TileIndex.CURSED_SAND);
+                        }
                     }
                 }
             }
         }
 
         // 7. Place trees
-        const TREE_RATE = 0.3;
+        const TREE_RATE = 0.05;
         for (let x = left; x <= right; x++) {
             for (let y = bottom; y <= top; y++) {
                 if (Math.random() > TREE_RATE) {

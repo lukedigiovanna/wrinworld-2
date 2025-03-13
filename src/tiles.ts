@@ -13,8 +13,10 @@ enum TileIndex {
     WATER,
     ROCKS,
     PATH,
+    SAND,
     CURSED_GRASS,
     CURSED_PATH,
+    CURSED_SAND,
 }
 
 const tileCodex = new Codex<TileIndex, Tile>();
@@ -60,6 +62,18 @@ tileCodex.set(TileIndex.CURSED_PATH, {
     canSpawnPortal: true,
     wall: false,
 });
+tileCodex.set(TileIndex.SAND, {
+    spriteID: "sand",
+    canGrowPlants: false,
+    canSpawnPortal: true,
+    wall: false,
+});
+tileCodex.set(TileIndex.CURSED_SAND, {
+    spriteID: "cursed_sand",
+    canGrowPlants: false,
+    canSpawnPortal: true,
+    wall: false,
+})
 
 export type { Tile };
 export { tileCodex, TileIndex };

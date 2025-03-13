@@ -22,21 +22,25 @@ const rectangleRenderer: (color: string) => Renderer = (color: string) => {
 }
 
 const spriteRenderer: (id: string) => Renderer = (id: string) => {
-    const data = {
-        spriteID: id,
-        offset: Vector.zero()
-    };
     return {
         render(camera: Camera, gameObject: GameObject) {
-            const pos = Vector.add(gameObject.position, data.offset);
+            const pos = Vector.add(gameObject.position, this.data.offset);
             const collider = gameObject.getComponent("physical-collider");
             if (collider && collider.data.castShadow) {
                 camera.setFillColor(`rgba(32,32,32,0.25)`);
-                camera.fillEllipse(pos.x + collider.data.boxOffset.x, pos.y + collider.data.boxOffset.y - 0.1, collider.data.boxSize.x, collider.data.boxSize.y);
+                camera.fillEllipse(
+                    pos.x + collider.data.boxOffset.x, 
+                    pos.y + collider.data.boxOffset.y - 0.1, 
+                    collider.data.boxSize.x, 
+                    collider.data.boxSize.y
+                );
             }
-            camera.drawImage(getImage(data.spriteID), pos.x, pos.y, gameObject.scale.x, gameObject.scale.y, gameObject.rotation, gameObject.rotationPointOffset);
+            camera.drawImage(getImage(this.data.spriteID), pos.x, pos.y, gameObject.scale.x, gameObject.scale.y, gameObject.rotation, gameObject.rotationPointOffset);
         },
-        data
+        data: {
+            spriteID: id,
+            offset: Vector.zero()
+        }
     }
 }
 

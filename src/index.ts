@@ -58,12 +58,14 @@ window.onload = async () => {
     console.log("[LOADING ASSETS...]");
     await Promise.all([
         // Tiles
-        loadImage("grass", "assets/images/grass.png"),
-        loadImage("water", "assets/images/water.png"),
-        loadImage("rocks", "assets/images/rocks.png"),
-        loadImage("path", "assets/images/path.png"),
-        loadImage("cursed_grass", "assets/images/cursed_grass.png"),
-        loadImage("cursed_path", "assets/images/cursed_path.png"),
+        loadImage("grass", "assets/images/tiles/grass.png"),
+        loadImage("water", "assets/images/tiles/water.png"),
+        loadImage("rocks", "assets/images/tiles/rocks.png"),
+        loadImage("path", "assets/images/tiles/path.png"),
+        loadImage("sand", "assets/images/tiles/sand.png"),
+        loadImage("cursed_grass", "assets/images/tiles/cursed_grass.png"),
+        loadImage("cursed_path", "assets/images/tiles/cursed_path.png"),
+        loadImage("cursed_sand", "assets/images/tiles/cursed_sand.png"),
 
         // Entities
         loadImage("peach", "assets/images/peach.png"),
