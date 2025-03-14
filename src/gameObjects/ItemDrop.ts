@@ -2,7 +2,7 @@ import { spriteRenderer } from "../renderers";
 import { Item } from "../items";
 import { GameObjectFactory, GameObject } from "./index";
 import { Vector } from "../utils";
-import { Hitbox } from "../components";
+import { Hitbox, Physics } from "../components";
 import { getSound } from "../soundLoader";
 
 const ITEM_LIFESPAN = 180;
@@ -13,7 +13,8 @@ const ItemDropFactory: GameObjectFactory = (item: Item, position: Vector) => {
     itemDrop.renderer = spriteRenderer(item.iconSpriteID);
     itemDrop.position.set(position);
     itemDrop.lifespan = ITEM_LIFESPAN;
-    itemDrop.addComponent(Hitbox)
+    itemDrop.addComponent(Hitbox);
+    itemDrop.addComponent(Physics);
     itemDrop.addComponent((gameObject: GameObject) => {
         return {
             id: "item-bob-effect",

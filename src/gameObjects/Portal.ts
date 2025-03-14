@@ -1,10 +1,11 @@
 import { spriteRenderer } from "../renderers";
-import { GameObjectFactory, GameObject } from "./index";
+import { GameObjectFactory, GameObject, ItemDropFactory } from "./index";
 import { Vector, MathUtils, NumberRange } from "../utils";
 import { ParticleEmitter, Health, HealthBarDisplayMode } from "../components";
 import { EnemyFactory, EnemyIndex } from "./Enemy";
 import { enemiesCodex } from "../enemies";
 import { getSound } from "../soundLoader";
+import { ItemIndex, itemsCodex } from "../items";
 
 const PORTAL_ACTIVE_RADIUS = 6;
 
@@ -21,7 +22,12 @@ interface PortalProperties {
     packs: PortalSpawnPack[];
 }
 
-const PortalFactory: GameObjectFactory = (properties: PortalProperties, position: Vector) => {
+interface PortalDrop {
+    itemIndex: ItemIndex;
+    count: NumberRange;
+}
+
+const PortalFactory: GameObjectFactory = (properties: PortalProperties, drops: PortalDrop[],  position: Vector) => {
     const portal = new GameObject();
     portal.renderer = spriteRenderer("portal");
     portal.position.set(position);
@@ -142,7 +148,26 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, position
                 effectiveHP: properties.health,
             }
         }
-    })
+    });
+    portal.addComponent((gameObject: GameObject) => {
+        return {
+            id: "portal-drops-dropper",
+            destroy() {
+                for (let i = 0; i < drops.length; i++) {
+                    const drop = drops[i];
+                    const count = drop.count.randomInt();
+                    for (let j = 0; j < count; j++) {
+                        const item = ItemDropFactory(itemsCodex.get(drop.itemIndex), gameObject.position);
+                        const physics = item.getComponent("physics");
+                        if (physics) {
+                            physics.data.impulse.add(MathUtils.randomVector(MathUtils.random(0, 2)));
+                        }
+                        gameObject.game.addGameObject(item);
+                    }
+                }
+            }
+        }
+    });
 
     const health = portal.addComponent(Health);
     health.data.initializeHealth(properties.health);
@@ -154,4 +179,4 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, position
 }
 
 export { PortalFactory, PORTAL_ACTIVE_RADIUS };
-export type { PortalSpawnPack, PortalProperties };
+export type { PortalSpawnPack, PortalProperties, PortalDrop };

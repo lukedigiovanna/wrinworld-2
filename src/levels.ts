@@ -1,9 +1,10 @@
 import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange } from "./utils";
 import { Game } from "./game";
 import { TileIndex } from "./tiles";
-import { EnemyIndex, GameObject, PortalFactory, PortalProperties } from "./gameObjects";
+import { EnemyIndex, GameObject, PortalFactory, PortalProperties, PortalDrop } from "./gameObjects";
 import { spriteRenderer } from "./renderers";
 import { PhysicalCollider } from "./components";
+import { ItemIndex } from "./items";
 
 interface Level {
     regionName: string;
@@ -42,7 +43,7 @@ const level1PortalTypes: PortalProperties[] = [
         ]
     }, 
     { // Revenant eye portal
-        difficulty: 0.7,
+        difficulty: 0.4,
         health: 70,
         packs: [
             {
@@ -67,8 +68,29 @@ const level1PortalTypes: PortalProperties[] = [
     }
 ];
 
-const level1PortalDrops = [
-
+const level1PortalDrops: PortalDrop[][] = [
+    [
+        {
+            itemIndex: ItemIndex.ARROW,
+            count: new NumberRange(12, 24)
+        },
+        {
+            itemIndex: ItemIndex.BOW,
+            count: new NumberRange(1, 1)
+        }
+    ],
+    [
+        {
+            itemIndex: ItemIndex.SHURIKEN,
+            count: new NumberRange(2, 6)
+        }
+    ],
+    [
+        {
+            itemIndex: ItemIndex.HEALING_VIAL,
+            count: new NumberRange(1, 3)
+        }
+    ]
 ];
 
 // LEVEL 1
@@ -190,7 +212,8 @@ const LEVEL_1: Level = {
                 throw Error("Cannot generate portal for position: " + position + " progressio " + progression + " because no portal has low enough difficulty");
             }
             const properties = MathUtils.randomChoice(validChoices);
-            game.addGameObject(PortalFactory(properties, position));
+            const drops = MathUtils.randomChoice(level1PortalDrops);
+            game.addGameObject(PortalFactory(properties, drops, position));
             portalPositions.push(position);
             const R = 3;
             for (let xo = -R; xo <= R; xo++) {
