@@ -16,7 +16,7 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
     enemy.renderer = spriteRenderer(enemyType.spriteID);
     enemy.scale.set(enemyType.scale);
     const health = enemy.addComponent(Health);
-    health.data.hp = enemyType.hp;
+    health.data.initializeHealth(enemyType.hp);
     health.data.damageSoundEffectID = "hitmarker";
     health.data.healthBarDisplayMode = HealthBarDisplayMode.ON_HIT;
     enemy.addComponent(Hitbox);
@@ -40,7 +40,9 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
             },
             update(dt) {
                 if (gameObject.game.getTileIndex(gameObject.position) === TileIndex.WATER) {
-                    gameObject.renderer!.data.spriteID = enemyType.waterSpriteID;
+                    if (enemyType.spriteID) {
+                        gameObject.renderer!.data.spriteID = enemyType.waterSpriteID;
+                    }
                     gameObject.renderer!.data.offset = new Vector(0, Math.sin(gameObject.age * 6) * 0.04);
                     data.collider!.data.castShadow = false;
                 }

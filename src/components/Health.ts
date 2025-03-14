@@ -64,9 +64,10 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
                 return;
             }
             const topMargin = 0.2;
+            // Includes the width of the border
             const barWidth = Math.abs(gameObject.scale.x);
             const barHeight = 0.1;
-            const padding = 0.025;
+            const borderWidth = 0.025;
             camera.setFillColor(`rgba(0,0,0,${opacity})`);
             camera.fillRect(
                 gameObject.position.x, 
@@ -77,11 +78,11 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
                 ${data.barColor[1]},
                 ${data.barColor[2]},
                 ${opacity})`);
-            const realWidth = barWidth * data.hp / data.maximumHP - padding * 2;
+            const realWidth = barWidth * data.hp / data.maximumHP - borderWidth * 2;
             camera.fillRect(
-                gameObject.position.x - barWidth / 2 + padding + realWidth / 2, 
+                gameObject.position.x - barWidth / 2 + borderWidth + realWidth / 2, 
                 gameObject.position.y + gameObject.scale.y / 2 + topMargin, 
-                realWidth, barHeight - padding * 2)
+                realWidth, barHeight - borderWidth * 2)
         },
         data
     }

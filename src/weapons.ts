@@ -102,10 +102,11 @@ weaponsCodex.set(WeaponIndex.SLIME_ATTACK, {
     }
 });
 weaponsCodex.set(WeaponIndex.WRETCHED_SKELETON_ATTACK, {
-    cooldown: 1.5,
+    cooldown: 3.5,
     fire(gameObject, target) {
         const arrow = {...projectilesCodex.get(ProjectileIndex.ARROW)};
         arrow.chanceOfBreaking = 1;
+        arrow.damage = 6;
         fireProjectile(arrow, gameObject, target);
     }
 });

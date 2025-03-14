@@ -188,6 +188,10 @@ class Game {
     }
 
     public draw() {
+        if (this.paused) {
+            return;
+        }
+
         this._camera.setFillColor("black");
         this._camera.clear();
 
