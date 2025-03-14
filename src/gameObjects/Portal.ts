@@ -135,6 +135,14 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, position
             data
         }
     });
+    portal.addComponent((gameObject: GameObject) => {
+        return {
+            id: "essence-damage-tracker",
+            data: {
+                effectiveHP: properties.health,
+            }
+        }
+    })
 
     const health = portal.addComponent(Health);
     health.data.initializeHealth(properties.health);

@@ -24,6 +24,7 @@ const EssenceManager: ComponentFactory = (gameObject: GameObject) => {
         maxEssence: 100,
         startingRate: 0.5,
         rate: 0.5,
+        multiplier: 1,
         lastThrownEssenceTime: -999,
         addEssence(amount: number) {
             this.essence = Math.min(this.essence + amount, this.maxEssence);
@@ -49,15 +50,19 @@ const EssenceManager: ComponentFactory = (gameObject: GameObject) => {
                         attacking = true;
                         const elapsed = gameObject.game.time - this.data.lastThrownEssenceTime;
                         if (elapsed >= this.data.rate) {
-                            this.data.lastThrownEssenceTime = gameObject.game.time;
-                            this.data.rate = Math.max(0.05, 0.9 * this.data.rate);
-                            const portalHealth = object.getComponent("health");
-                            if (portalHealth) {
-                                // portalHealth.data.damage(1);
+                            const tracker = object.getComponent("essence-damage-tracker");
+                            if (tracker && tracker.data.effectiveHP > 0) {
+                                this.data.lastThrownEssenceTime = gameObject.game.time;
+                                this.data.rate = Math.max(0.05, 0.9 * this.data.rate);
                                 data.useEssence(1);
                                 gameObject.game.addGameObject(EssenceOrbAttackFactory(
-                                    1, gameObject.position, object
+                                    data.multiplier, gameObject.position, object
                                 ));
+                                tracker.data.effectiveHP -= data.multiplier;
+                                data.multiplier *= 1.02;
+                            }
+                            else {
+                                attacking = false;
                             }
                         }
                     }
@@ -65,6 +70,7 @@ const EssenceManager: ComponentFactory = (gameObject: GameObject) => {
             }
             if (!attacking) {
                 this.data.rate = this.data.startingRate;
+                this.data.multiplier = 1;
             }
         },
         data
