@@ -2,6 +2,7 @@ import { Item, ItemIndex, itemsCodex } from "./items";
 import { getImage } from "./imageLoader";
 import { GameObject } from "./gameObjects";
 import input, { InputLayer } from "./input";
+import { Vector } from "./utils";
 
 interface InventorySlot {
     item: Item;
@@ -245,7 +246,7 @@ class Inventory {
         return slot ? slot.item : null;
     }
 
-    public useSelectedItem() {
+    public useSelectedItem(target: Vector) {
         const slot = this.slots[this._selectedSlot];
         const item = slot?.item;
         if (!item) {
@@ -259,7 +260,7 @@ class Inventory {
                     return;
                 }
             }
-            const success = item.use(this.player);
+            const success = item.use(this.player, target);
             if (success) {
                 if (useIndex > -1) {
                     this.decreaseItemCount(useIndex);

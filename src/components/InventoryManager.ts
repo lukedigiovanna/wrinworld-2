@@ -4,6 +4,7 @@ import input, { InputLayer } from "../input";
 import { Item } from "../items";
 import { Inventory } from "../inventory";
 import { getImage } from "../imageLoader";
+import { Vector } from "../utils";
 
 const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
@@ -74,7 +75,20 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
             }
             
             if (input.mousePressed()) {
-                data.inventory.useSelectedItem();
+                data.inventory.useSelectedItem(gameObject.game.camera.screenToWorldPosition(input.mousePosition));
+            }
+
+            if (input.isKeyPressed("ArrowLeft")) {
+                data.inventory.useSelectedItem(Vector.add(gameObject.position, Vector.left()));
+            }
+            if (input.isKeyPressed("ArrowRight")) {
+                data.inventory.useSelectedItem(Vector.add(gameObject.position, Vector.right()));
+            }
+            if (input.isKeyPressed("ArrowDown")) {
+                data.inventory.useSelectedItem(Vector.add(gameObject.position, Vector.down()));
+            }
+            if (input.isKeyPressed("ArrowUp")) {
+                data.inventory.useSelectedItem(Vector.add(gameObject.position, Vector.up()));
             }
         },
         render(camera) {

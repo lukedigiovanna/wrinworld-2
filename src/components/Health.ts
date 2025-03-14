@@ -51,7 +51,7 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
                 }
                 gameObject.destroy();
             }
-            this.data.hp += this.data.regenerationRate * dt;
+            this.data.hp = Math.min(this.data.maximumHP, this.data.hp + this.data.regenerationRate * dt);
             if (this.data.healthBarDisplayMode === HealthBarDisplayMode.ACTIVE) {
                 this.data.timeLastShowedHealthBar = gameObject.game.time;
             }

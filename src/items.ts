@@ -2,7 +2,7 @@
 
 // NOTE: items are exclusively used by the player
 
-import input from "./input";
+import { Vector } from "./utils";
 import { GameObject } from "./gameObjects";
 import { WeaponIndex } from "./weapons";
 import { Codex } from "./codex";
@@ -20,7 +20,7 @@ enum ItemIndex {
 }
 
 // Return true if successfully used.
-type UseItemFunction = (player: GameObject) => boolean;
+type UseItemFunction = (player: GameObject, target: Vector) => boolean;
 type EquipItemFunction = (player: GameObject) => void;
 
 interface Item {
@@ -41,11 +41,10 @@ interface ItemDropChance {
     itemIndex: ItemIndex;
 }
 
-function fireWeapon(player: GameObject, weapon: WeaponIndex) {
+function fireWeapon(player: GameObject, weapon: WeaponIndex, target: Vector) {
     const weaponManager = player.getComponent("weapon-manager");
     return weaponManager?.data.fire(
-        weapon,
-        player.game.camera.screenToWorldPosition(input.mousePosition) // target
+        weapon, target
     );
 }
 
@@ -62,8 +61,8 @@ itemsCodex.set(ItemIndex.BROAD_SWORD, {
     iconSpriteID: "broad_sword_icon",
     maxStack: 1,
     consumable: false,
-    use(player) {
-        return fireWeapon(player, WeaponIndex.BROAD_SWORD);
+    use(player, target) {
+        return fireWeapon(player, WeaponIndex.BROAD_SWORD, target);
     },
     equip(player) {
         equipWeapon(player, WeaponIndex.BROAD_SWORD);
@@ -76,8 +75,8 @@ itemsCodex.set(ItemIndex.ZOMBIE_BRAINS, {
     iconSpriteID: "zombie_brains",
     maxStack: 99,
     consumable: true,
-    use(player) {
-        return fireWeapon(player, WeaponIndex.ZOMBIE_BRAINS);
+    use(player, target) {
+        return fireWeapon(player, WeaponIndex.ZOMBIE_BRAINS, target);
     },
     equip(player) {
         equipWeapon(player, WeaponIndex.ZOMBIE_BRAINS);
@@ -98,8 +97,8 @@ itemsCodex.set(ItemIndex.SHURIKEN, {
     iconSpriteID: "shuriken",
     maxStack: 20,
     consumable: true,
-    use(player) {
-        return fireWeapon(player, WeaponIndex.SHURIKEN);
+    use(player, target) {
+        return fireWeapon(player, WeaponIndex.SHURIKEN, target);
     },
     equip(player) {
         equipWeapon(player, WeaponIndex.SHURIKEN);
@@ -113,8 +112,8 @@ itemsCodex.set(ItemIndex.BOW, {
     maxStack: 1,
     usesItem: ItemIndex.ARROW,
     consumable: false,
-    use(player) {
-        return fireWeapon(player, WeaponIndex.BOW);
+    use(player, target) {
+        return fireWeapon(player, WeaponIndex.BOW, target);
     },
     equip(player) {
         equipWeapon(player, WeaponIndex.BOW);

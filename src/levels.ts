@@ -31,13 +31,13 @@ const level1PortalTypes: PortalProperties[] = [
             {
                 cooldownRange: new NumberRange(4, 10),
                 packSizeRange: new NumberRange(1, 4),
-                maxEnemies: 16,
+                maxEnemies: 10,
                 enemyIndex: EnemyIndex.MINION
             },
             {
                 cooldownRange: new NumberRange(12, 24),
                 packSizeRange: new NumberRange(1, 1),
-                maxEnemies: 2,
+                maxEnemies: 1,
                 enemyIndex: EnemyIndex.WRETCHED_SKELETON
             }
         ]
@@ -49,7 +49,7 @@ const level1PortalTypes: PortalProperties[] = [
             {
                 cooldownRange: new NumberRange(12, 20),
                 packSizeRange: new NumberRange(1, 2),
-                maxEnemies: 4,
+                maxEnemies: 3,
                 enemyIndex: EnemyIndex.REVENANT_EYE
             }
         ]
@@ -61,7 +61,7 @@ const level1PortalTypes: PortalProperties[] = [
             {
                 cooldownRange: new NumberRange(12, 20),
                 packSizeRange: new NumberRange(1, 1),
-                maxEnemies: 4,
+                maxEnemies: 2,
                 enemyIndex: EnemyIndex.WRAITH
             }
         ]

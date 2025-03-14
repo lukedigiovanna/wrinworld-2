@@ -24,6 +24,7 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
 
     const health = player.addComponent(Health);
     health.data.initializeHealth(50);
+    health.data.regenerationRate = 0.1;
     health.data.healthBarDisplayMode = HealthBarDisplayMode.NONE;
 
     player.addComponent(InventoryManager);
@@ -63,7 +64,7 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
             data.lastMaxHP = maxHP;
             const percent = Math.floor(hp / maxHP * 100);
             $("#health-bar-fill").css("width", `${percent}%`);
-            $("#hp-amount").text(hp);
+            $("#hp-amount").text(Math.round(hp));
             $("#hp-max").text(maxHP);
         }
         return {
