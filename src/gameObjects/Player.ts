@@ -4,7 +4,7 @@ import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager,
          Health, WeaponManager, EssenceManager,
          HealthBarDisplayMode} from "../components";
 import { spriteRenderer } from "../renderers";
-import { ItemIndex } from "../items";
+import { ItemIndex, itemsCodex } from "../items";
 import { getImage } from "../imageLoader";
 import input from "../input";
 
@@ -38,15 +38,10 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
             start() {
                 const inventoryManager = gameObject.getComponent("inventory-manager");
                 if (inventoryManager) {
-                    inventoryManager.data.inventory.addItemIndex(ItemIndex.BROAD_SWORD);
-                    // for (let i = 0; i < 20; i++) {
-                    //     inventoryManager.data.inventory.addItemIndex(ItemIndex.SHURIKEN);
-                    //     inventoryManager.data.inventory.addItemIndex(ItemIndex.HEALING_VIAL);
-                    // }
-                    // inventoryManager.data.inventory.addItemIndex(ItemIndex.BOW);
-                    // for (let i = 0; i < 200; i++) {
-                    //     inventoryManager.data.inventory.addItemIndex(ItemIndex.ARROW);
-                    // }
+                    // inventoryManager.data.inventory.addItemIndex(ItemIndex.BROAD_SWORD);
+                    for (let i = 0; i <= 20; i++) {
+                        inventoryManager.data.inventory.addItemIndex(i);
+                    }
                 }
             }
         }

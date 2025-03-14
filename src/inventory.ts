@@ -21,7 +21,7 @@ const INVENTORY_ROW_HTML = `<div class="inventory-row"> </div>`;
 
 class Inventory {
     // Includes all the free space to place arbitrary items
-    private size: number = 18;
+    private size: number = 27;
     // The hotbar is the first N elements of the slots array.
     private _hotbarSize: number = 9;
     private slots: (InventorySlot | null)[];
@@ -252,10 +252,13 @@ class Inventory {
         if (!item) {
             return;
         }
-        if (item.use) {
+        if (item.use !== undefined) {
             let useIndex = -1;
             if (item.usesItem) {
-                useIndex = this.indexOf(item.usesItem);
+                for (const useItem of item.usesItem) {
+                    useIndex = this.indexOf(useItem);
+                    if (useIndex >= 0) break;
+                }
                 if (useIndex < 0) {
                     return;
                 }
