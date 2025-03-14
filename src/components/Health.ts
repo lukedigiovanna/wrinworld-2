@@ -81,7 +81,7 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
             camera.fillRect(
                 gameObject.position.x - barWidth / 2 + padding + realWidth / 2, 
                 gameObject.position.y + gameObject.scale.y / 2 + topMargin, 
-                realWidth - 0.1, barHeight - padding * 2)
+                realWidth, barHeight - padding * 2)
         },
         data
     }

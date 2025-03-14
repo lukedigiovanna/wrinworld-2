@@ -106,7 +106,6 @@ const LEVEL_1: Level = {
         for (let t = bottom; t < height; t+=0.1) {
             const p = t / height;
             const position = curve.getPosition(p);
-            const normal = curve.getNormal(p);
             const R = 1;
             for (let xo = -R; xo <= R; xo++) {
                 for (let yo = -R; yo <= R; yo++) {
@@ -201,7 +200,7 @@ const LEVEL_1: Level = {
         }
 
         // 7. Place trees
-        const TREE_RATE = 0.05;
+        const TREE_RATE = 0.25;
         for (let x = left; x <= right; x++) {
             for (let y = bottom; y <= top; y++) {
                 if (Math.random() > TREE_RATE) {

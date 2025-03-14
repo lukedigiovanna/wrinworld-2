@@ -24,7 +24,6 @@ export * from "./Physics";
 export * from "./PlayerMovement";
 export * from "./PhysicalCollider";
 export * from "./Hitbox";
-export * from "./AnimalAI";
 export * from "./Health";
 export * from "./ItemDropper";
 export * from "./ParticleEmitter";

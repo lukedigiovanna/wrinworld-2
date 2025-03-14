@@ -29,9 +29,9 @@ interface MeleeAttack {
 
 const meleeAttacksCodex = new Codex<MeleeAttackIndex, MeleeAttack>();
 meleeAttacksCodex.set(MeleeAttackIndex.BROAD_SWORD, {
-    damage: 8,
-    sweepDamage: 3,
-    maxHits: 5,
+    damage: 6,
+    sweepDamage: 2,
+    maxHits: 3,
     knockback: 1,
     size: 0.6,
     range: 1,

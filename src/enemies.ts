@@ -51,7 +51,7 @@ enemiesCodex.set(EnemyIndex.MINION, {
     scale: new Vector(1, 1),
     physicalColliderOffset: new Vector(0, -0.4),
     physicalColliderSize: new Vector(0.8, 0.2),
-    hp: 10,
+    hp: 16,
     drops: [],
     essenceAmount: 2,
     ai: BasicFollowAndAttackAI({
@@ -69,7 +69,7 @@ enemiesCodex.set(EnemyIndex.SLIME, {
     scale: new Vector(0.75, 0.5),
     physicalColliderOffset: new Vector(0, -0.1),
     physicalColliderSize: new Vector(0.5, 0.1),
-    hp: 5,
+    hp: 10,
     drops: [],
     essenceAmount: 1,
     ai: BasicFollowAndAttackAI({
@@ -88,7 +88,7 @@ enemiesCodex.set(EnemyIndex.REVENANT_EYE, {
     scale: new Vector(1, 1),
     physicalColliderOffset: new Vector(0, -0.4),
     physicalColliderSize: new Vector(0.8, 0.2),
-    hp: 20,
+    hp: 25,
     drops: [],
     essenceAmount: 5,
     ai: BasicFollowAndAttackAI({
