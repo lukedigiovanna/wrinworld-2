@@ -77,7 +77,7 @@ enemiesCodex.set(EnemyIndex.SLIME, {
     ai: BasicFollowAndAttackAI({
         attackRange: 0.8,
         followDistance: 12,
-        speed: 1,
+        speed: 1.4,
         waterSpeed: 1,
         weaponIndex: WeaponIndex.SLIME_ATTACK,
         customVelocityFunction(gameObject, direction) {

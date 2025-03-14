@@ -179,6 +179,27 @@ class MathUtils {
         return options[this.randomInt(0, options.length - 1)];
     }
 
+    public static randomWeightedChoice(options: any[], chances: number[]) {
+        // Establish preconditions: chances must sum to 1 and the chances must correspond with the options
+        if (options.length !== chances.length) {
+            throw Error("Options and chances must be the same size");
+        }
+        let sumChance = 0;
+        for (let i = 0; i < chances.length; i++) sumChance += chances[i];
+        if (Math.abs(sumChance - 1) > 1e-4) {
+            throw Error("Chances must sum to 1");
+        }
+        const p = Math.random();
+        let s = 0;
+        for (let i = 0; i < options.length; i++) {
+            s += chances[i];
+            if (p < s) {
+                return options[i];
+            }
+        }
+        return options[options.length - 1];
+    }
+
     public static randomVector(magnitude: number): Vector {
         const angle = MathUtils.random(0, Math.PI * 2);
         return new Vector(Math.cos(angle) * magnitude, Math.sin(angle) * magnitude);

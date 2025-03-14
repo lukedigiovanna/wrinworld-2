@@ -18,7 +18,7 @@ const level1PortalTypes: PortalProperties[] = [
         packs: [
             {
                 packSizeRange: new NumberRange(2, 6),
-                cooldownRange: new NumberRange(8, 14),
+                cooldownRange: new NumberRange(5, 10),
                 maxEnemies: 10,
                 enemyIndex: EnemyIndex.SLIME
             }
@@ -68,29 +68,43 @@ const level1PortalTypes: PortalProperties[] = [
     }
 ];
 
-const level1PortalDrops: PortalDrop[][] = [
-    [
-        {
-            itemIndex: ItemIndex.ARROW,
-            count: new NumberRange(12, 24)
-        },
-        {
-            itemIndex: ItemIndex.BOW,
-            count: new NumberRange(1, 1)
-        }
-    ],
-    [
-        {
-            itemIndex: ItemIndex.SHURIKEN,
-            count: new NumberRange(2, 6)
-        }
-    ],
-    [
-        {
-            itemIndex: ItemIndex.HEALING_VIAL,
-            count: new NumberRange(1, 3)
-        }
-    ]
+interface PortalDropPool {
+    drops: PortalDrop[];
+    rarity: number; // low number = more rare
+}
+
+const level1PortalDrops: PortalDropPool[] = [
+    {
+        drops: [
+            {
+                itemIndex: ItemIndex.ARROW,
+                count: new NumberRange(12, 24)
+            },
+            {
+                itemIndex: ItemIndex.BOW,
+                count: new NumberRange(1, 1)
+            }
+        ],
+        rarity: 1
+    },
+    {
+        drops: [
+            {
+                itemIndex: ItemIndex.SHURIKEN,
+                count: new NumberRange(2, 6)
+            }
+        ],
+        rarity: 1,
+    },
+    {
+        drops: [
+            {
+                itemIndex: ItemIndex.HEALING_VIAL,
+                count: new NumberRange(1, 3)
+            }
+        ],
+        rarity: 1,
+    }
 ];
 
 // LEVEL 1
@@ -106,6 +120,8 @@ const LEVEL_1: Level = {
         const start = new Vector(0, bottom);
         const end = new Vector(0, top);
         const N = 10;
+        const numPortals = 10;
+        const minDistance = 8;
 
         // 1. Set Grass Background
         for (let x = left; x <= right; x++) {
@@ -186,8 +202,15 @@ const LEVEL_1: Level = {
 
         // 6. Place portals
         const portalPositions = [];
-        const minDistance = 8;
-        for (let i = 0; i < 10; i++) {
+        const dropChances = [];
+        let totalRarity = 0;
+        for (let i = 0; i < level1PortalDrops.length; i++) {
+            totalRarity += level1PortalDrops[i].rarity;
+        }
+        for (let i = 0; i < level1PortalDrops.length; i++) {
+            dropChances.push(level1PortalDrops[i].rarity / totalRarity);
+        }
+        for (let i = 0; i < numPortals; i++) {
             let position;
             let invalid;
             do {
@@ -212,8 +235,8 @@ const LEVEL_1: Level = {
                 throw Error("Cannot generate portal for position: " + position + " progressio " + progression + " because no portal has low enough difficulty");
             }
             const properties = MathUtils.randomChoice(validChoices);
-            const drops = MathUtils.randomChoice(level1PortalDrops);
-            game.addGameObject(PortalFactory(properties, drops, position));
+            const dropPool = MathUtils.randomWeightedChoice(level1PortalDrops, dropChances);
+            game.addGameObject(PortalFactory(properties, dropPool.drops, position));
             portalPositions.push(position);
             const R = 3;
             for (let xo = -R; xo <= R; xo++) {
