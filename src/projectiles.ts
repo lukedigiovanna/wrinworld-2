@@ -8,7 +8,8 @@ enum ProjectileIndex {
     ZOMBIE_BRAINS,
     SHURIKEN,
     ARROW,
-    TEAR_DROP
+    TEAR_DROP,
+    WRAITH_ATTACK,
 }
 
 interface Projectile {
@@ -119,6 +120,19 @@ projectilesCodex.set(ProjectileIndex.TEAR_DROP, {
     lifespan: 4,
     size: 0.4,
     speed: 7,
+    angularVelocity: 0,
+    colliderSize: new Vector(0.3, 0.3),
+});
+projectilesCodex.set(ProjectileIndex.WRAITH_ATTACK, {
+    homingSkill: 0,
+    maxHits: 1,
+    spriteID: "wraith_attack",
+    damage: 8,
+    damageReductionPerHit: 0,
+    knockback: 2,
+    lifespan: 4,
+    size: 0.5,
+    speed: 9,
     angularVelocity: 0,
     colliderSize: new Vector(0.3, 0.3),
 });

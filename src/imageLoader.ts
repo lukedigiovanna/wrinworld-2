@@ -15,7 +15,8 @@ const loadImage = (id: string, url: string) => {
 const getImage = (id: string): HTMLImageElement => {
     const img = images.get(id);
     if (!img) {
-        throw new Error(`No image found with id ${id}`);
+      console.error("Warning: getting an undefined image... returning the undefined sprite")
+        return getImage("undefined");
     }
     return img;
 }

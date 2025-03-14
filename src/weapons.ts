@@ -23,6 +23,8 @@ enum WeaponIndex {
     MINION_ATTACK,
     SLIME_ATTACK,
     REVENANT_EYE_ATTACK,
+    WRETCHED_SKELETON_ATTACK,
+    WRAITH_ATTACK,
 }
 
 const fireProjectile = (projectile: Projectile, gameObject: GameObject, target: Vector) => {
@@ -43,7 +45,7 @@ const fireMelee = (meleeAttack: MeleeAttack, gameObject: GameObject, target: Vec
 
 const weaponsCodex = new Codex<WeaponIndex, Weapon>();
 weaponsCodex.set(WeaponIndex.BROAD_SWORD, {
-    cooldown: 0.7,
+    cooldown: 0.2,
     fire(gameObject, target) {
         fireMelee(meleeAttacksCodex.get(MeleeAttackIndex.BROAD_SWORD), gameObject, target);
     }
@@ -97,6 +99,20 @@ weaponsCodex.set(WeaponIndex.SLIME_ATTACK, {
         attack.damage = 1;
         attack.knockback = 5;
         fireMelee(attack, gameObject, target);
+    }
+});
+weaponsCodex.set(WeaponIndex.WRETCHED_SKELETON_ATTACK, {
+    cooldown: 1.5,
+    fire(gameObject, target) {
+        const arrow = {...projectilesCodex.get(ProjectileIndex.ARROW)};
+        arrow.chanceOfBreaking = 1;
+        fireProjectile(arrow, gameObject, target);
+    }
+});
+weaponsCodex.set(WeaponIndex.WRAITH_ATTACK, {
+    cooldown: 2,
+    fire(gameObject, target) {
+        fireProjectile(projectilesCodex.get(ProjectileIndex.WRAITH_ATTACK), gameObject, target);
     }
 });
 

@@ -72,12 +72,15 @@ window.onload = async () => {
         // Entities
         loadImage("peach", "assets/images/peach.png"),
         loadImage("peach_water", "assets/images/peach_water.png"),
+
         loadImage("zombie", "assets/images/enemies/zombie.png"),
         loadImage("zombie_water", "assets/images/enemies/zombie_water.png"),
         loadImage("minion", "assets/images/enemies/minion.png"),
         loadImage("minion_water", "assets/images/enemies/minion_water.png"),
         loadImage("slime", "assets/images/enemies/slime.png"),
         loadImage("revenant_eye", "assets/images/enemies/revenant_eye.png"),
+        loadImage("wraith", "assets/images/enemies/wraith.png"),
+        loadImage("wretched_skeleton", "assets/images/enemies/wretched_skeleton.png"),
 
         loadImage("portal", "assets/images/portal.png"),
         loadImage("essence_orb", "assets/images/essence_orb.png"),
@@ -89,6 +92,7 @@ window.onload = async () => {
         // Projectiles
         loadImage("arrow", "assets/images/projectiles/arrow.png"),
         loadImage("tear_drop", "assets/images/projectiles/tear_drop.png"),
+        loadImage("wraith_attack", "assets/images/projectiles/wraith_attack.png"),
 
         // Item icons
         loadImage("zombie_brains", "assets/images/items/zombie_brains.png"),
@@ -131,6 +135,7 @@ window.onload = async () => {
 
         // Misc.
         loadImage("square",  "assets/images/square.png"),
+        loadImage("undefined", "assets/images/undefined.png"),
 
         // -- SOUNDS --
         loadSound("item_pickup", "assets/sounds/item_pickup.wav", 5),

@@ -15,7 +15,7 @@ const level1PortalTypes: PortalProperties[] = [
         lowerBoundCooldown: 8,
         upperBoundCooldown: 16,
         maxEnemies: 10,
-        health: 30,
+        health: 25,
         packs: [
             {
                 lowerBound: 2,
@@ -35,6 +35,11 @@ const level1PortalTypes: PortalProperties[] = [
                 lowerBound: 1,
                 upperBound: 3,
                 enemyIndex: EnemyIndex.MINION
+            },
+            {
+                lowerBound: 1,
+                upperBound: 1,
+                enemyIndex: EnemyIndex.WRETCHED_SKELETON
             }
         ]
     }, 
@@ -51,8 +56,26 @@ const level1PortalTypes: PortalProperties[] = [
                 enemyIndex: EnemyIndex.REVENANT_EYE
             }
         ]
+    },
+    { // Wraith portal
+        lowerBoundCooldown: 12,
+        upperBoundCooldown: 20,
+        difficulty: 0.7,
+        maxEnemies: 4,
+        health: 80,
+        packs: [
+            {
+                lowerBound: 1,
+                upperBound: 1,
+                enemyIndex: EnemyIndex.WRAITH
+            }
+        ]
     }
-]
+];
+
+const level1PortalDrops = [
+
+];
 
 // LEVEL 1
 const LEVEL_1: Level = {
@@ -167,7 +190,8 @@ const LEVEL_1: Level = {
                 }
             } while (invalid);
             const progression = (position.y - marginTrail) / height;
-            const validChoices = level1PortalTypes.filter(type => type.difficulty ? type.difficulty : 0 <= progression);
+            const validChoices = level1PortalTypes.filter(type => (type.difficulty ? type.difficulty : 0) <= progression);
+            console.log(progression, validChoices);
             if (validChoices.length === 0) {
                 throw Error("Cannot generate portal for position: " + position + " progressio " + progression + " because no portal has low enough difficulty");
             }

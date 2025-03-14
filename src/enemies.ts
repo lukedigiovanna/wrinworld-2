@@ -10,6 +10,8 @@ enum EnemyIndex {
     MINION,
     SLIME,
     REVENANT_EYE,
+    WRAITH,
+    WRETCHED_SKELETON,
 }
 
 interface Enemy {
@@ -57,8 +59,8 @@ enemiesCodex.set(EnemyIndex.MINION, {
     ai: BasicFollowAndAttackAI({
         attackRange: 0.5,
         followDistance: 10,
-        speed: 1.2,
-        waterSpeed: 0.6,
+        speed: 1.8,
+        waterSpeed: 1,
         weaponIndex: WeaponIndex.MINION_ATTACK,
     })
 });
@@ -98,6 +100,38 @@ enemiesCodex.set(EnemyIndex.REVENANT_EYE, {
         waterSpeed: 0.8,
         weaponIndex: WeaponIndex.REVENANT_EYE_ATTACK,
     }),
+});
+enemiesCodex.set(EnemyIndex.WRETCHED_SKELETON, {
+    spriteID: "wretched_skeleton",
+    scale: new Vector(1, 2),
+    physicalColliderOffset: new Vector(0, -0.9),
+    physicalColliderSize: new Vector(0.8, 0.2),
+    hp: 30,
+    drops: [],
+    essenceAmount: 6,
+    ai: BasicFollowAndAttackAI({
+        attackRange: 8,
+        followDistance: 16,
+        speed: 1.2,
+        waterSpeed: 0.6,
+        weaponIndex: WeaponIndex.WRETCHED_SKELETON_ATTACK,
+    })
+});
+enemiesCodex.set(EnemyIndex.WRAITH, {
+    spriteID: "wraith",
+    scale: new Vector(0.75, 1.5),
+    physicalColliderOffset: new Vector(0, -0.65),
+    physicalColliderSize: new Vector(0.5, 0.2),
+    hp: 35,
+    drops: [],
+    essenceAmount: 8,
+    ai: BasicFollowAndAttackAI({
+        attackRange: 6,
+        followDistance: 16,
+        speed: 1.6,
+        waterSpeed: 1.6,
+        weaponIndex: WeaponIndex.WRAITH_ATTACK
+    })
 });
 
 
