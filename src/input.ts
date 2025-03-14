@@ -23,34 +23,44 @@ class Input {
 
     constructor() {
         // initialize listeners
-        window.onmousedown = (e: MouseEvent) => {
+        window.addEventListener("mousedown", (e: MouseEvent) => {
             this._mouseDown = true;
             this._mousePressed = true;
-        }
+        }, true);
         const releaseMouse = (e: MouseEvent) => {
             this._mouseDown = false;
             this._mousePressed = false;
         }   
-        window.onmouseup = releaseMouse;
-        window.onmouseleave = releaseMouse;
-        window.onmousemove = (e: MouseEvent) => {
+        window.addEventListener("mouseup", releaseMouse, true);
+        window.addEventListener("mouseleave", releaseMouse, true);
+        window.addEventListener("mousemove", (e: MouseEvent) => {
             this._mousePosition.x = e.clientX; 
             this._mousePosition.y = e.clientY ;
-        }
+        }, true);
 
-        window.onkeydown = (ev: KeyboardEvent) => {
+        window.addEventListener("keydown", (ev: KeyboardEvent) => {
+            console.log("Key down", ev.code);
             this._keyDownMap.set(ev.code, true);
             this._keyPressedMap.set(ev.code, true);         
-        }
-        window.onkeyup = (ev: KeyboardEvent) => {
+        }, true);
+        window.addEventListener("keyup", (ev: KeyboardEvent) => {
+            console.log("Key up", ev.code);
             this._keyDownMap.set(ev.code, false);
             this._keyPressedMap.set(ev.code, false);         
-        }
+        }), true;
         window.onwheel = (ev: WheelEvent) => {
             this.scrollListeners.forEach(callback => {
                 callback(ev.deltaY);
             });
         }
+
+        window.addEventListener("blur", () => {
+            this._keyDownMap.clear();
+            this._keyPressedMap.clear();
+        });
+        window.addEventListener("contextmenu", (event) => {
+            event.preventDefault();
+        });         
     }
 
     public mouseDown(fromLayer: InputLayer=InputLayer.GAME) {

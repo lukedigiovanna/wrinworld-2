@@ -49,7 +49,7 @@ const fireMelee = (meleeAttack: MeleeAttack, gameObject: GameObject, target: Vec
 
 const weaponsCodex = new Codex<WeaponIndex, Weapon>();
 weaponsCodex.set(WeaponIndex.BROAD_SWORD, {
-    cooldown: 0.2,
+    cooldown: 0.5,
     fire(gameObject, target) {
         fireMelee(meleeAttacksCodex.get(MeleeAttackIndex.BROAD_SWORD), gameObject, target);
     }
