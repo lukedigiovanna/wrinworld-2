@@ -1,6 +1,6 @@
 import { spriteRenderer } from "../renderers";
 import { GameObjectFactory, GameObject } from "./index";
-import { Vector, MathUtils } from "../utils";
+import { Vector, MathUtils, NumberRange } from "../utils";
 import { ParticleEmitter, Health, HealthBarDisplayMode } from "../components";
 import { EnemyFactory, EnemyIndex } from "./Enemy";
 import { enemiesCodex } from "../enemies";
@@ -9,17 +9,15 @@ import { getSound } from "../soundLoader";
 const PORTAL_ACTIVE_RADIUS = 6;
 
 interface PortalSpawnPack {
-    lowerBound: number;
-    upperBound: number;
-    enemyIndex: EnemyIndex;
+    packSizeRange: NumberRange; // Range of possible spawn pack sizes
+    cooldownRange: NumberRange; // Range of time to wait between spawns
+    maxEnemies: number; // Max active enemies of this type at once
+    enemyIndex: EnemyIndex; // Type of enemy to spawn in this pack
 }
 
 interface PortalProperties {
     difficulty?: number; // 0/undefined means portal can spawn anywhere, higher number means portal can only spawn further in the level
     health: number;
-    lowerBoundCooldown: number;
-    upperBoundCooldown: number;
-    maxEnemies: number;
     packs: PortalSpawnPack[];
 }
 
@@ -83,44 +81,55 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, position
     });
     portal.addComponent((gameObject: GameObject) => {
         const data: any = {
-            cooldown: MathUtils.random(properties.lowerBoundCooldown, properties.upperBoundCooldown),
-            enemiesSpawned: 0,
-            lastSpawnedTime: undefined,
+            cooldowns: [],
+            enemiesSpawned: [],
+            lastSpawnedTimes: [],
         };
         return {
             id: "portal-spawner",
             start() {
-                data.lastSpawnedTime = gameObject.age;
+                for (let i = 0; i < properties.packs.length; i++) {
+                    data.cooldowns.push(properties.packs[i].cooldownRange.random());
+                    data.enemiesSpawned.push(0);
+                    data.lastSpawnedTimes.push(gameObject.age);
+                }
             },
             update(dt) {
-                if (data.enemiesSpawned >= properties.maxEnemies) {
-                    data.lastSpawnedTime = gameObject.game.time;
-                    return;
-                }
-                const elapsedTime = gameObject.game.time - data.lastSpawnedTime;
-                if (elapsedTime >= data.cooldown) {
-                    const pack = MathUtils.randomChoice(properties.packs);
-                    let packSize = MathUtils.randomInt(pack.lowerBound, pack.upperBound);
-                    if (packSize + data.enemiesSpawned > properties.maxEnemies) {
-                        packSize = properties.maxEnemies - data.enemiesSpawned;
+                for (let i = 0; i < properties.packs.length; i++) {
+                    const pack = properties.packs[i];
+                    const enemiesSpawned = data.enemiesSpawned[i];
+                    if (enemiesSpawned >= pack.maxEnemies) {
+                        data.lastSpawnedTimes[i] = gameObject.game.time;
                     }
-                    for (let i = 0; i < packSize; i++) {
+                    const cooldown = data.cooldowns[i];
+                    const lastSpawnedTime = data.lastSpawnedTimes[i];
+                    const elapsedTime = gameObject.game.time - lastSpawnedTime;
+                    if (elapsedTime < cooldown) {
+                        continue;
+                    }
+                    // Do the spawning
+                    let packSize = pack.packSizeRange.randomInt();
+                    if (packSize + enemiesSpawned > pack.maxEnemies) {
+                        packSize = pack.maxEnemies - enemiesSpawned;
+                    }
+                    for (let j = 0; j < packSize; j++) {
                         const enemy = EnemyFactory(
                             gameObject.position, pack.enemyIndex
                         );
                         const physics = enemy.getComponent("physics");
                         if (physics) {
-                            physics.data.impulse.add(MathUtils.randomVector(7));
+                            physics.data.impulse.add(MathUtils.randomVector(6));
                         }
                         const portalTracker = enemy.getComponent("portal-tracker");
                         if (portalTracker) {
                             portalTracker.data.portal = this;
+                            portalTracker.data.index = i;
                         }
                         gameObject.game.addGameObject(enemy);
                     }
-                    data.enemiesSpawned += packSize;
-                    data.lastSpawnedTime = gameObject.game.time;
-                    data.cooldown = MathUtils.random(properties.lowerBoundCooldown, properties.upperBoundCooldown);
+                    data.enemiesSpawned[i] += packSize;
+                    data.lastSpawnedTimes[i] = gameObject.game.time;
+                    data.cooldowns[i] = pack.cooldownRange.random();
                 }
             },
             data

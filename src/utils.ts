@@ -131,6 +131,24 @@ class Vector {
     }
 }
 
+class NumberRange {
+    public low: number;
+    public high: number;
+
+    constructor(low: number, high: number) {
+        this.low = low;
+        this.high = high;
+    }
+
+    public random(): number {
+        return MathUtils.random(this.low, this.high);
+    }
+
+    public randomInt(): number {
+        return MathUtils.randomInt(this.low, this.high);
+    }
+}
+
 class MathUtils {
     public static clamp(x: number, a: number, b: number) {
         return x < a ? a : (x > b) ? b : x;
@@ -333,4 +351,5 @@ class CatmullRomParametricCurve {
     }
 }
 
-export { Vector, MathUtils, PerlinNoise, LinearParametricCurve, CatmullRomParametricCurve };
+export { Vector, MathUtils, PerlinNoise, LinearParametricCurve, 
+         CatmullRomParametricCurve, NumberRange };

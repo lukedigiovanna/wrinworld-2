@@ -73,12 +73,13 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
         return {
             id: "portal-tracker",
             destroy() {
-                if (this.data.portal) {
-                    this.data.portal.data.enemiesSpawned--;
+                if (this.data.portal !== undefined && this.data.index !== undefined) {
+                    this.data.portal.data.enemiesSpawned[this.data.index]--;
                 }
             },
             data: {
-                portal: undefined
+                portal: undefined,
+                index: undefined,
             }
         }
     });

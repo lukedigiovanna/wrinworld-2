@@ -1,4 +1,4 @@
-import { Vector, MathUtils, CatmullRomParametricCurve} from "./utils";
+import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange } from "./utils";
 import { Game } from "./game";
 import { TileIndex } from "./tiles";
 import { EnemyIndex, GameObject, PortalFactory, PortalProperties } from "./gameObjects";
@@ -12,61 +12,55 @@ interface Level {
 
 const level1PortalTypes: PortalProperties[] = [
     { // Slime portal
-        lowerBoundCooldown: 8,
-        upperBoundCooldown: 16,
-        maxEnemies: 10,
         health: 25,
+        difficulty: 0,
         packs: [
             {
-                lowerBound: 2,
-                upperBound: 6,
+                packSizeRange: new NumberRange(2, 6),
+                cooldownRange: new NumberRange(8, 14),
+                maxEnemies: 10,
                 enemyIndex: EnemyIndex.SLIME
             }
         ]
     },
     { // Minion portal
-        lowerBoundCooldown: 4,
-        upperBoundCooldown: 10,
         difficulty: 0.2,
-        maxEnemies: 16,
-        health: 50,
+        health: 40,
         packs: [
             {
-                lowerBound: 1,
-                upperBound: 3,
+                cooldownRange: new NumberRange(4, 10),
+                packSizeRange: new NumberRange(1, 4),
+                maxEnemies: 16,
                 enemyIndex: EnemyIndex.MINION
             },
             {
-                lowerBound: 1,
-                upperBound: 1,
+                cooldownRange: new NumberRange(12, 24),
+                packSizeRange: new NumberRange(1, 1),
+                maxEnemies: 2,
                 enemyIndex: EnemyIndex.WRETCHED_SKELETON
             }
         ]
     }, 
     { // Revenant eye portal
-        lowerBoundCooldown: 12,
-        upperBoundCooldown: 20,
         difficulty: 0.7,
-        maxEnemies: 4,
         health: 70,
         packs: [
             {
-                lowerBound: 1,
-                upperBound: 2,
+                cooldownRange: new NumberRange(12, 20),
+                packSizeRange: new NumberRange(1, 2),
+                maxEnemies: 4,
                 enemyIndex: EnemyIndex.REVENANT_EYE
             }
         ]
     },
     { // Wraith portal
-        lowerBoundCooldown: 12,
-        upperBoundCooldown: 20,
         difficulty: 0.7,
-        maxEnemies: 4,
         health: 80,
         packs: [
             {
-                lowerBound: 1,
-                upperBound: 1,
+                cooldownRange: new NumberRange(12, 20),
+                packSizeRange: new NumberRange(1, 1),
+                maxEnemies: 4,
                 enemyIndex: EnemyIndex.WRAITH
             }
         ]
