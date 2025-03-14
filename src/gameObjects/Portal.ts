@@ -1,9 +1,10 @@
 import { spriteRenderer } from "../renderers";
 import { GameObjectFactory, GameObject } from "./index";
 import { Vector, MathUtils } from "../utils";
-import { Hitbox, ParticleEmitter, Health, HealthBarDisplayMode } from "../components";
+import { ParticleEmitter, Health, HealthBarDisplayMode } from "../components";
 import { EnemyFactory, EnemyIndex } from "./Enemy";
 import { enemiesCodex } from "../enemies";
+import { getSound } from "../soundLoader";
 
 const PORTAL_ACTIVE_RADIUS = 6;
 
@@ -64,7 +65,8 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, position
             destroy() {
                 const particles = gameObject.getComponent("particle-emitter");
                 for (let i = 0; i < 50; i++)
-                particles?.data.emit()
+                    particles?.data.emit();
+                getSound("portal_break").play();
             },
             update(dt) {
                 gameObject.rotation = gameObject.age * 3;

@@ -26,12 +26,16 @@ enum WeaponIndex {
 }
 
 const fireProjectile = (projectile: Projectile, gameObject: GameObject, target: Vector) => {
+    const direction = Vector.subtract(target, gameObject.position);
+    gameObject.scale.x = Math.abs(gameObject.scale.x) * Math.sign(direction.x);
     gameObject.game.addGameObject(
         ProjectileFactory(projectile, gameObject, gameObject.position, target)
     );
 }
 
 const fireMelee = (meleeAttack: MeleeAttack, gameObject: GameObject, target: Vector) => {
+    const direction = Vector.subtract(target, gameObject.position);
+    gameObject.scale.x = Math.abs(gameObject.scale.x) * Math.sign(direction.x);
     gameObject.game.addGameObject(
         MeleeAttackFactory(meleeAttack, gameObject, target)
     );
@@ -39,7 +43,7 @@ const fireMelee = (meleeAttack: MeleeAttack, gameObject: GameObject, target: Vec
 
 const weaponsCodex = new Codex<WeaponIndex, Weapon>();
 weaponsCodex.set(WeaponIndex.BROAD_SWORD, {
-    cooldown: 1,
+    cooldown: 0.7,
     fire(gameObject, target) {
         fireMelee(meleeAttacksCodex.get(MeleeAttackIndex.BROAD_SWORD), gameObject, target);
     }
