@@ -283,7 +283,12 @@ class Inventory {
         else {
             slotDiv.find(".item").css("display", "block");
             slotDiv.find(".item").attr("src", getImage(slot.item.iconSpriteID).src);
-            slotDiv.find(".count").text(slot.count);
+            if (slot.count === 1) {
+                slotDiv.find(".count").text("");
+            }
+            else {
+                slotDiv.find(".count").text(slot.count);
+            }
         }
     }
 
