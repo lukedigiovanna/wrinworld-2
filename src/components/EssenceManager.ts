@@ -26,9 +26,14 @@ const EssenceManager: ComponentFactory = (gameObject: GameObject) => {
         rate: 0.5,
         multiplier: 1,
         lastThrownEssenceTime: -999,
+        // Returns the amount actually added
         addEssence(amount: number) {
-            this.essence = Math.min(this.essence + amount, this.maxEssence);
+            if (this.essence + amount > this.maxEssence) {
+                amount = this.maxEssence - this.essence;
+            }
+            this.essence += amount;
             updateEssenceUI(this.essence, this.maxEssence);
+            return amount;
         },
         useEssence(amount: number) {
             this.essence = Math.max(this.essence - amount, 0);

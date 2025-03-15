@@ -208,6 +208,10 @@ itemsCodex.set(ItemIndex.ESSENCE_VIAL, {
     maxStack: 20,
     use(player) {
         // TODO: add 20 essence (or something like that) to the player
+        const essenceManager = player.getComponent("essence-manager");
+        if (essenceManager) {
+            return essenceManager.data.addEssence(20) > 0;
+        }
         return false;
     }
 });
@@ -251,17 +255,15 @@ itemsCodex.set(ItemIndex.HEART, {
     essenceCost: 0,
     maxStack: 1,
     equip(player) {
-        console.log("Equip heart");
         const health = player.getComponent("health");
         if (health) {
-            health.data.maximumHP += 10;
+            health.data.setMaximumHP(health.data.maximumHP + 10);
         }
     },
     unequip(player) {
-        console.log("Unequip heart");
         const health = player.getComponent("health");
         if (health) {
-            health.data.maximumHP -= 10;
+            health.data.setMaximumHP(health.data.maximumHP - 10);
         }
     }
 });
@@ -336,6 +338,18 @@ itemsCodex.set(ItemIndex.HEART_CRYSTAL, {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
+    equip(player) {
+        const health = player.getComponent("health");
+        if (health) {
+            health.data.regenerationRate += 1;
+        }
+    },
+    unequip(player) {
+        const health = player.getComponent("health");
+        if (health) {
+            health.data.regenerationRate -= 1;
+        }
+    }
 });
 itemsCodex.set(ItemIndex.STUN_FIDDLE, {
     itemIndex: ItemIndex.STUN_FIDDLE,

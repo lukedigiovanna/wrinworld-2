@@ -22,6 +22,11 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
             this.hp = hp;
             this.maximumHP = hp;
         },
+        setMaximumHP(maximumHP: number) {
+            this.maximumHP = maximumHP;
+            this.hp = Math.min(this.hp, this.maximumHP);
+        },
+        // Returns the amount actually healed
         heal(amount: number) {
             if (this.hp + amount > this.maximumHP) {
                 amount = this.maximumHP - this.hp;
