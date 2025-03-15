@@ -12,25 +12,36 @@ type ItemCategory = "Weapon" | "Misc." | "Projectile" | "Consumable" | "Upgrade"
 enum ItemIndex {
     ZOMBIE_BRAINS,
     ZOMBIE_FLESH,
+    // Melee weapons
     BROAD_SWORD,
-    SHURIKEN,
-    BOW,
-    ARROW,
-    HEALING_VIAL,
     DAGGERS,
+    BATTLE_HAMMER,
+    ESSENCE_DRIPPED_DAGGER,
+    // Ranged weapons
+    BOW,
+    SHURIKEN,
+    SLINGSHOT,
+    QUICK_BOW,
+    // Projectiles
+    ARROW,
+    POISON_ARROW,
+    FLAME_ARROW,
+    CRYSTAL_BOMB,
+    ROOT_SNARE,
+    // Consumables
+    HEALING_VIAL,
     ESSENCE_VIAL,
+    // Upgrades
     FLAME_UPGRADE,
     POISON_UPGRADE,
     STRENGTH_UPGRADE,
+    // Buffs
     HEART,
-    POISON_ARROW,
-    SLINGSHOT,
-    TELEPORTATION_RUNE,
-    BATTLE_HAMMER,
-    CRYSTAL_BOMB,
     HEART_CRYSTAL,
+    BASIC_SHIELD,
+    // Mystic arts
+    TELEPORTATION_RUNE,
     STUN_FIDDLE,
-    ESSENCE_DRIPPED_DAGGER
 }
 
 // Return true if successfully used.
@@ -336,6 +347,52 @@ itemsCodex.set(ItemIndex.ESSENCE_DRIPPED_DAGGER, {
     use(player) {
         return false; // TOOD: add strong dagger melee attack
     }
+});
+itemsCodex.set(ItemIndex.ROOT_SNARE, {
+    itemIndex: ItemIndex.ROOT_SNARE,
+    displayName: "Root Snare",
+    description: "Send out a groveling root to tangle up any enemies in its path",
+    category: "Projectile",
+    iconSpriteID: "root_snare",
+    consumable: true,
+    essenceCost: 0,
+    maxStack: 20,
+    use(player) {
+        return false; // TODO: add projectile
+    }
+});
+itemsCodex.set(ItemIndex.BASIC_SHIELD, {
+    itemIndex: ItemIndex.BASIC_SHIELD,
+    displayName: "Basic Shield",
+    description: "Deflects some damage",
+    category: "Buff",
+    iconSpriteID: "basic_shield",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+});
+itemsCodex.set(ItemIndex.QUICK_BOW, {
+    itemIndex: ItemIndex.QUICK_BOW,
+    displayName: "Quick Bow",
+    description: "Crafted from a hyper-elastic material this bow can shoot much faster, but at a cost to effectiveness",
+    category: "Weapon",
+    iconSpriteID: "quick_bow",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+    use(player) {
+        return false; // TODO: use quick bow
+    }
+});
+itemsCodex.set(ItemIndex.FLAME_ARROW,  {
+    itemIndex: ItemIndex.FLAME_ARROW,
+    displayName: "Flame Arrow",
+    description: "A firey tip is sure to leave a burn",
+    category: "Projectile",
+    iconSpriteID: "flame_arrow_icon",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 100,
 });
 
 export { itemsCodex, ItemIndex };

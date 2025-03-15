@@ -39,7 +39,7 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                 const inventoryManager = gameObject.getComponent("inventory-manager");
                 if (inventoryManager) {
                     // inventoryManager.data.inventory.addItemIndex(ItemIndex.BROAD_SWORD);
-                    for (let i = 0; i <= 20; i++) {
+                    for (let i = 2; i <= 24; i++) {
                         const item = itemsCodex.get(i as ItemIndex);
                         for (let j = 0; j < item.maxStack; j++) {
                             inventoryManager.data.inventory.addItemIndex(i);

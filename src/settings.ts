@@ -17,7 +17,7 @@ const settings: Settings = {
     showRotationPoint: false,
     showChunks: false,
     showCameraPosition: false,
-    muted: false,
+    muted: true,
 }
 
 export default settings;

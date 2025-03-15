@@ -10,6 +10,8 @@ enum ProjectileIndex {
     ARROW,
     TEAR_DROP,
     WRAITH_ATTACK,
+    ROCK,
+    CRYSTAL_BOMB,
 }
 
 interface Projectile {
@@ -34,6 +36,10 @@ interface Projectile {
     speed: number;
     // how fast the projectile should rotate
     angularVelocity: number;
+    // Whether this projectile should set its rotation to the direction of the target on instantiation
+    rotateToDirectionOfTarget: boolean;
+    // The rate at which "drag" is applied, 0 is none.
+    drag: number;
     // hitbox properties (optional... defaults to size of projectile)
     hitboxOffset?: Vector,
     hitboxSize?: Vector,
@@ -67,6 +73,8 @@ projectilesCodex.set(ProjectileIndex.ZOMBIE_BRAINS, {
     size: 0.8,
     speed: 6,
     angularVelocity: 6,
+    rotateToDirectionOfTarget: true,
+    drag: 0,
     hitboxSize: new Vector(0.25, 0.25),
     colliderOffset: new Vector(0.25, 0),
     colliderSize: new Vector(0.5, 0.5),
@@ -85,6 +93,8 @@ projectilesCodex.set(ProjectileIndex.SHURIKEN, {
     size: 0.5,
     speed: 20,
     angularVelocity: 20,
+    rotateToDirectionOfTarget: true,
+    drag: 0,
     hitboxSize: new Vector(0.25, 0.25),
     colliderSize: new Vector(0.25, 0.25),
     chanceOfBreaking: 0.1,
@@ -103,6 +113,8 @@ projectilesCodex.set(ProjectileIndex.ARROW, {
     size: 1,
     speed: 16,
     angularVelocity: 0,
+    rotateToDirectionOfTarget: true,
+    drag: 0.2,
     hitboxSize: new Vector(0.25, 0.25),
     colliderSize: new Vector(0.2, 0.2),
     chanceOfBreaking: 0.4,
@@ -121,6 +133,8 @@ projectilesCodex.set(ProjectileIndex.TEAR_DROP, {
     size: 0.4,
     speed: 7,
     angularVelocity: 0,
+    rotateToDirectionOfTarget: false,
+    drag: 0,
     colliderSize: new Vector(0.3, 0.3),
 });
 projectilesCodex.set(ProjectileIndex.WRAITH_ATTACK, {
@@ -134,7 +148,39 @@ projectilesCodex.set(ProjectileIndex.WRAITH_ATTACK, {
     size: 0.5,
     speed: 9,
     angularVelocity: 0,
+    rotateToDirectionOfTarget: true,
+    drag: 0,
     colliderSize: new Vector(0.3, 0.3),
+});
+projectilesCodex.set(ProjectileIndex.ROCK, {
+    homingSkill: 0,
+    maxHits: 1,
+    spriteID: "rock",
+    damage: 4,
+    damageReductionPerHit: 0,
+    knockback: 1,
+    lifespan: 4,
+    size: 0.5,
+    speed: 16,
+    rotateToDirectionOfTarget: true,
+    drag: 0,
+    angularVelocity: 5,
+    colliderSize: new Vector(0.25, 0.25),
+});
+projectilesCodex.set(ProjectileIndex.CRYSTAL_BOMB, {
+    homingSkill: 0,
+    maxHits: 999,
+    spriteID: "crystal_bomb",
+    damage: 0,
+    damageReductionPerHit: 0,
+    knockback: 0,
+    lifespan: 5,
+    size: 1,
+    speed: 8,
+    angularVelocity: 0,
+    rotateToDirectionOfTarget: false,
+    drag: 0.2,
+    colliderSize: new Vector(1, 1),
 });
 
 export { ProjectileIndex, projectilesCodex };

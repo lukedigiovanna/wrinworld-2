@@ -111,11 +111,15 @@ window.onload = async () => {
         loadImage("heart_crystal", "assets/images/items/heart_crystal.png"),
         loadImage("heart", "assets/images/items/heart.png"),
         loadImage("poison_arrow_icon", "assets/images/items/poison_arrow.png"),
+        loadImage("flame_arrow_icon", "assets/images/items/flame_arrow_icon.png"),
         loadImage("poison_upgrade", "assets/images/items/poison_upgrade.png"),
         loadImage("slingshot", "assets/images/items/slingshot.png"),
         loadImage("strength_upgrade", "assets/images/items/strength_upgrade.png"),
         loadImage("stun_fiddle", "assets/images/items/stun_fiddle.png"),
         loadImage("teleportation_rune", "assets/images/items/teleportation_rune.png"),
+        loadImage("root_snare", "assets/images/items/root_snare.png"),
+        loadImage("basic_shield", "assets/images/items/basic_shield.png"),
+        loadImage("quick_bow", "assets/images/items/quick_bow.png"),
 
         // Particle sprites
         loadImage("portal_particle", "assets/images/particles/portal_particle.png"),
