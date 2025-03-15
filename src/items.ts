@@ -279,8 +279,11 @@ itemsCodex.set(ItemIndex.SLINGSHOT, {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-    use(player) {
-        return false; // TODO: fireprojectile
+    use(player, target) {
+        return fireWeapon(player, WeaponIndex.SLINGSHOT, target); // TODO: fireprojectile
+    },
+    equip(player) {
+        equipWeapon(player, WeaponIndex.SLINGSHOT);
     }
 });
 itemsCodex.set(ItemIndex.TELEPORTATION_RUNE, {
@@ -404,8 +407,11 @@ itemsCodex.set(ItemIndex.QUICK_BOW, {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-    use(player) {
-        return false; // TODO: use quick bow
+    use(player, target) {
+        return fireWeapon(player, WeaponIndex.QUICK_BOW, target);
+    },
+    equip(player) {
+        equipWeapon(player, WeaponIndex.QUICK_BOW);
     }
 });
 itemsCodex.set(ItemIndex.FLAME_ARROW,  {

@@ -14,13 +14,16 @@ interface Weapon {
 }
 
 enum WeaponIndex {
-    BROAD_SWORD,
     ZOMBIE_BRAINS,
-    SHURIKEN,
-    BOW,
+
+    BROAD_SWORD,
     DAGGERS,
     BATTLE_HAMMER,
     ESSENCE_DRIPPED_DAGGER,
+    SHURIKEN,
+    BOW,
+    SLINGSHOT,
+    QUICK_BOW,
 
     ZOMBIE_ATTACK,
     MINION_ATTACK,
@@ -96,6 +99,22 @@ weaponsCodex.set(WeaponIndex.ESSENCE_DRIPPED_DAGGER, {
         const attack = {...meleeAttacksCodex.get(MeleeAttackIndex.DAGGER)};
         attack.damage = 16;
         fireMelee(attack, gameObject, target);
+    }
+});
+weaponsCodex.set(WeaponIndex.SLINGSHOT, {
+    cooldown: 0.8,
+    fire(gameObject, target) {
+        fireProjectile(projectilesCodex.get(ProjectileIndex.ROCK), gameObject, target);
+    }
+});
+weaponsCodex.set(WeaponIndex.QUICK_BOW, {
+    cooldown: 0.25,
+    fire(gameObject, target) {
+        const attack = {...projectilesCodex.get(ProjectileIndex.ARROW)};
+        attack.damage = 4;
+        attack.knockback = 2;
+        attack.speed = 20;
+        fireProjectile(attack, gameObject, target);
     }
 })
 
