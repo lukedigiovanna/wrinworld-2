@@ -61,6 +61,7 @@ interface Item {
     usesItem?: ItemIndex[];
     use?: UseItemFunction;
     equip?: EquipItemFunction;
+    unequip?: EquipItemFunction;
 }
 
 interface ItemDropChance {
@@ -249,6 +250,20 @@ itemsCodex.set(ItemIndex.HEART, {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
+    equip(player) {
+        console.log("Equip heart");
+        const health = player.getComponent("health");
+        if (health) {
+            health.data.maximumHP += 10;
+        }
+    },
+    unequip(player) {
+        console.log("Unequip heart");
+        const health = player.getComponent("health");
+        if (health) {
+            health.data.maximumHP -= 10;
+        }
+    }
 });
 itemsCodex.set(ItemIndex.POISON_ARROW, {
     itemIndex: ItemIndex.POISON_ARROW,

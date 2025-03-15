@@ -31,7 +31,8 @@
 }
 
 img {
-    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    /* image-rendering: pixelated; */
 }
 
 #game-canvas {
@@ -75,8 +76,8 @@ img {
 .inventory-slot {
     position: relative;
     display: inline-block;
-    flex: 0 0 80px;
-    height: 80px;
+    flex: 0 0 64px;
+    height: 64px;
 }
 
 .inventory-slot .slot-icon {
@@ -101,7 +102,7 @@ img {
     text-align: right;
     font-weight: bold;
     color: #111;
-    font-size: 22px;
+    font-size: 18px;
     font-family: "Heavitas";
     -webkit-text-stroke: 0.1px white;
     text-stroke: 0.1px white;
@@ -109,8 +110,8 @@ img {
 
 #held-item-display {
     position: absolute;
-    width: 80px;
-    height: 80px;
+    width: 64px;
+    height: 64px;
     pointer-events: none;
 }
 

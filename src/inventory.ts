@@ -17,6 +17,14 @@ const INVENTORY_SLOT_HTML = `
 </div>
 `
 
+const INVENTORY_BUFF_SLOT_HTML = `
+<div class="inventory-slot">
+    <img class="slot-icon" src="assets/images/ui/buff_slot.png" />
+    <img class="item" />
+    <span class="count"></span>
+</div>
+`
+
 const INVENTORY_ROW_HTML = `<div class="inventory-row"> </div>`;
 
 class Inventory {
@@ -28,6 +36,10 @@ class Inventory {
     private inventorySlotDivs: JQuery<HTMLElement>[];
     private hotbarSlotDivs: JQuery<HTMLElement>[];
     private _selectedSlot: number = -1;
+    private numberOfBuffSlots: number = 3;
+    private buffSlots: (InventorySlot | null)[];
+    private buffSlotDivs: JQuery<HTMLElement>[];
+
     private player: GameObject;
     private heldSlot: InventorySlot | null = null;
     private inventoryDisplayed: boolean = false;
@@ -36,6 +48,7 @@ class Inventory {
         this.player = player;
 
         this.slots = Array.from({ length: this.size }, () => null);
+        this.buffSlots = Array.from({ length: this.numberOfBuffSlots }, () => null);
 
         const updateDisplayPositions = (ev: any) => {
             if (this.heldSlot) {
@@ -62,16 +75,17 @@ class Inventory {
             }
         }
 
-        // Create the inventory UI
-        this.inventorySlotDivs = [];
-        $("#inventory").empty();
-
-        const addInventorySlot = (row: JQuery<HTMLElement>, index: number) => {
-            const inventorySlot = $(INVENTORY_SLOT_HTML);
+        const addInventorySlot = (
+                row: JQuery<HTMLElement>,
+                html: string,
+                index: number, 
+                slotArray: (InventorySlot | null)[], 
+                slotDivsArray: JQuery<HTMLElement>[]) => {
+            const inventorySlot = $(html);
             row!.append(inventorySlot);
             const showItemDisplay = () => {
                 const itemDisplay = $("#item-display");
-                const slot = this.slots[index];
+                const slot = slotArray[index];
                 if (slot) {
                     itemDisplay.find("#item-name").text(slot.item.displayName);
                     itemDisplay.find("#item-category").text(slot.item.category);
@@ -89,25 +103,30 @@ class Inventory {
                 $("#item-display").hide();
             });
             inventorySlot.on("click", (ev) => {
-                const slot = this.slots[index];
+                const slot = slotArray[index];
                 if (this.heldSlot === null) {
                     if (slot !== null) { 
                         // "pick up" the item in the slot.
-                        this.heldSlot = this.slots[index];
-                        this.slots[index] = null;
-                        this.setSlotUI(null, this.inventorySlotDivs[index]);
+                        this.heldSlot = slot;
+                        if (slotArray === this.buffSlots) {
+                            if (slot.item.unequip) {
+                                slot.item.unequip(this.player);
+                            }
+                        }
+                        slotArray[index] = null;
+                        this.setSlotUI(null, slotDivsArray[index]);
                     }
                     $("#item-display").hide();
                 }
                 else {
                     // Place the held slot
-                    if (this.slots[index] !== null && this.slots[index].item.itemIndex === this.heldSlot.item.itemIndex) {
+                    if (slotArray[index] !== null && slotArray[index].item.itemIndex === this.heldSlot.item.itemIndex) {
                         // Transfer as much count as possible
                         const count = Math.min(
                             this.heldSlot.count,
-                            this.heldSlot.item.maxStack - this.slots[index].count
+                            this.heldSlot.item.maxStack - slotArray[index].count
                         );
-                        this.slots[index].count += count;
+                        slotArray[index].count += count;
                         this.heldSlot.count -= count;
                         if (this.heldSlot.count <= 0) {
                             this.heldSlot = null;
@@ -115,11 +134,24 @@ class Inventory {
                     }
                     else {
                         // Swap the slots
-                        const temp = this.slots[index];
-                        this.slots[index] = this.heldSlot;
-                        this.heldSlot = temp;
+                        // can only place in an upgrade slot if the item is an upgrade!
+                        console.log(this.heldSlot.item.category);
+                        if (slotArray !== this.buffSlots || this.heldSlot.item.category === "Buff") {
+                            if (slotArray === this.buffSlots) {
+                                if (this.heldSlot.item.equip) {
+                                    this.heldSlot.item.equip(this.player);
+                                }
+                                if (slotArray[index] !== null && slotArray[index].item.unequip) {
+                                    slotArray[index].item.unequip(player);
+                                }
+                            }
+
+                            const temp = slotArray[index];
+                            slotArray[index] = this.heldSlot;
+                            this.heldSlot = temp;
+                        }
                     }
-                    this.setSlotUI(this.slots[index], this.inventorySlotDivs[index]);
+                    this.setSlotUI(slotArray[index], slotDivsArray[index]);
                 }
 
                 this.setSlotUI(this.heldSlot, $("#held-item-display"));
@@ -130,12 +162,25 @@ class Inventory {
                 updateDisplayPositions(ev);
             });
             inventorySlot.css("cursor", "pointer");
-            this.inventorySlotDivs.push(inventorySlot);
+            slotDivsArray.push(inventorySlot);
         }
+        
+        // Create the inventory UI
+        this.inventorySlotDivs = [];
+        this.buffSlotDivs = [];
+
+        $("#inventory").empty();
+
+        const upgradeRow = $(INVENTORY_ROW_HTML);
+        for (let i = 0; i < this.numberOfBuffSlots; i++) {
+            addInventorySlot(upgradeRow, INVENTORY_BUFF_SLOT_HTML, i, this.buffSlots, this.buffSlotDivs);
+        }
+        upgradeRow.css("marginBottom", "15px");
+        $("#inventory").append(upgradeRow);
 
         const hotbarRow = $(INVENTORY_ROW_HTML); 
         for (let i = 0; i < this._hotbarSize; i++) {
-            addInventorySlot(hotbarRow, i);
+            addInventorySlot(hotbarRow, INVENTORY_SLOT_HTML, i, this.slots, this.inventorySlotDivs);
         }
         hotbarRow.css("marginTop", "20px");
         // Add the hotbar row after the regular inventory
@@ -147,7 +192,7 @@ class Inventory {
                 }
                 currentRow = $(INVENTORY_ROW_HTML);
             }
-            addInventorySlot(currentRow as JQuery<HTMLElement>, i);
+            addInventorySlot(currentRow as JQuery<HTMLElement>, INVENTORY_SLOT_HTML, i, this.slots, this.inventorySlotDivs);
         }
         if (currentRow) {
             $("#inventory").append(currentRow);
