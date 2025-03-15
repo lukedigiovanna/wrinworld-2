@@ -23,9 +23,9 @@ const Hitbox: ComponentFactory = (gameObject: GameObject) => {
             ];
             gameObject.getAdjacentObjects().forEach((obj: GameObject) => {
                 if (gameObject === obj) return;
+                if (!obj.hasComponent("hitbox")) return;
                 const other = obj.getComponent("hitbox");
-                if (!other) return;
-                
+            
                 // check for collision
                 const oRotatedBoxOffset = Vector.rotated(other.data?.boxOffset, obj.rotation);
                 const [ol, or, ot, ob] = [

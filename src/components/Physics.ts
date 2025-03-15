@@ -16,8 +16,8 @@ const Physics: ComponentFactory = (gameObject: GameObject) => {
             const netVelocity = Vector.add(data.velocity, data.impulse);
             if (!netVelocity.isZero()) {
                 gameObject.position.add(Vector.scaled(netVelocity, dt));
-                const collider = gameObject.getComponent("physical-collider");
-                if (collider) {
+                if (gameObject.hasComponent("physical-collider")) {
+                    const collider = gameObject.getComponent("physical-collider");
                     let [l, r, t, b] = [
                         gameObject.position.x + collider.data?.boxOffset.x - collider.data?.boxSize.x / 2,
                         gameObject.position.x + collider.data?.boxOffset.x + collider.data?.boxSize.x / 2,
@@ -28,10 +28,10 @@ const Physics: ComponentFactory = (gameObject: GameObject) => {
                         if (gameObject === obj) {
                             return;
                         }
-                        const other = obj.getComponent("physical-collider");
-                        if (!other) {
+                        if (!obj.hasComponent("physical-collider")) {
                             return;
                         }
+                        const other = obj.getComponent("physical-collider");
                         if (collider.data?.ignoreCollisionWith.has(obj.tag)) {
                             return;
                         }

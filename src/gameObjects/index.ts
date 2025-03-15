@@ -125,13 +125,22 @@ class GameObject {
         return newComponent;
     }
 
-    public getComponent(componentID: ComponentID): Component | undefined {
+    public getComponent(componentID: ComponentID): Component {
         for (let i = 0; i < this.components.length; i++) {
             if (componentID === this.components[i].id) {
                 return this.components[i];
             }
         }
-        return undefined;
+        throw new Error("No component found with ID " + componentID + ". Hint: if existence is conditional use hasComponent first");
+    }
+
+    public hasComponent(componentID: ComponentID): boolean {
+        for (let i = 0; i < this.components.length; i++) {
+            if (componentID === this.components[i].id) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public update(dt: number) {

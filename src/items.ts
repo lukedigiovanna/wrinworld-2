@@ -71,14 +71,14 @@ interface ItemDropChance {
 
 function fireWeapon(player: GameObject, weapon: WeaponIndex, target: Vector) {
     const weaponManager = player.getComponent("weapon-manager");
-    return weaponManager?.data.fire(
+    return weaponManager.data.fire(
         weapon, target
     );
 }
 
 function equipWeapon(player: GameObject, weapon: WeaponIndex) {
     const weaponManager = player.getComponent("weapon-manager");
-    weaponManager?.data.equip(weapon);
+    weaponManager.data.equip(weapon);
 }
 
 const itemsCodex = new Codex<ItemIndex, Item>();
@@ -178,10 +178,7 @@ itemsCodex.set(ItemIndex.HEALING_VIAL, {
     maxStack: 20,
     use(player) {
         const health = player.getComponent("health");
-        if (health) {
-            return health.data.heal(10) > 0;
-        }
-        return false;
+        return health.data.heal(10) > 0;
     }
 });
 itemsCodex.set(ItemIndex.DAGGERS, {
@@ -209,10 +206,7 @@ itemsCodex.set(ItemIndex.ESSENCE_VIAL, {
     use(player) {
         // TODO: add 20 essence (or something like that) to the player
         const essenceManager = player.getComponent("essence-manager");
-        if (essenceManager) {
-            return essenceManager.data.addEssence(20) > 0;
-        }
-        return false;
+        return essenceManager.data.addEssence(20) > 0;
     }
 });
 itemsCodex.set(ItemIndex.FLAME_UPGRADE, {
@@ -256,15 +250,11 @@ itemsCodex.set(ItemIndex.HEART, {
     maxStack: 1,
     equip(player) {
         const health = player.getComponent("health");
-        if (health) {
-            health.data.setMaximumHP(health.data.maximumHP + 10);
-        }
+        health.data.setMaximumHP(health.data.maximumHP + 10);
     },
     unequip(player) {
         const health = player.getComponent("health");
-        if (health) {
-            health.data.setMaximumHP(health.data.maximumHP - 10);
-        }
+        health.data.setMaximumHP(health.data.maximumHP - 10);
     }
 });
 itemsCodex.set(ItemIndex.POISON_ARROW, {
@@ -340,15 +330,11 @@ itemsCodex.set(ItemIndex.HEART_CRYSTAL, {
     maxStack: 1,
     equip(player) {
         const health = player.getComponent("health");
-        if (health) {
-            health.data.regenerationRate += 1;
-        }
+        health.data.regenerationRate += 1;
     },
     unequip(player) {
         const health = player.getComponent("health");
-        if (health) {
-            health.data.regenerationRate -= 1;
-        }
+        health.data.regenerationRate -= 1;
     }
 });
 itemsCodex.set(ItemIndex.STUN_FIDDLE, {

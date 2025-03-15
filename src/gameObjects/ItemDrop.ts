@@ -35,7 +35,7 @@ const ItemDropFactory: GameObjectFactory = (item: Item, position: Vector) => {
             update(dt) {
                 if (gameObject.age > 0.8 && data.hitbox.data.collidingWith.has(gameObject.game.player)) {
                     const inventoryManager = gameObject.game.player.getComponent("inventory-manager");
-                    if (inventoryManager?.data.inventory.addItem(item)) {
+                    if (inventoryManager.data.inventory.addItem(item)) {
                         gameObject.destroy();
                         getSound("item_pickup").play();
                     }
