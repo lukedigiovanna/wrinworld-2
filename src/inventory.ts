@@ -76,6 +76,7 @@ class Inventory {
                     itemDisplay.find("#item-name").text(slot.item.displayName);
                     itemDisplay.find("#item-category").text(slot.item.category);
                     itemDisplay.find("#item-icon").attr("src", getImage(slot.item.iconSpriteID).src);
+                    itemDisplay.find("#item-description").text(slot.item.description);
                     itemDisplay.show();
                 }
             }

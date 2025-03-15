@@ -222,7 +222,8 @@ img {
     background-color: #e6b45d;
     border-radius: 8px;
     border: 3px solid black;
-    font-family: "Nexa-Heavy";
+    font-family: "Nexa-Light";
+    font-weight: bold;
     display: none;
 }
 
@@ -238,8 +239,9 @@ img {
 }
 
 #item-display #item-name {
-    color: #333;
+    color: #222;
     font-size: 20px;
+    line-height: 1em;
 }
 
 #item-display #item-category {
@@ -250,6 +252,15 @@ img {
 
 #item-display #item-icon {
     width: 35px;
+}
+
+#item-display #item-description {
+    margin-block: 0;
+    margin-inline: 3px;
+    color: #333;
+    font-size: 13px;
+    line-height: 0.9em;
+    font-weight: normal;
 }
 
 #pause-screen {
