@@ -74,7 +74,7 @@ interface PortalDropPool {
 }
 
 const level1PortalDrops: PortalDropPool[] = [
-    {
+    { // Bow and Arrow
         drops: [
             {
                 itemIndex: ItemIndex.ARROW,
@@ -87,23 +87,188 @@ const level1PortalDrops: PortalDropPool[] = [
         ],
         rarity: 1
     },
-    {
+    { // Shurikens
         drops: [
             {
                 itemIndex: ItemIndex.SHURIKEN,
-                count: new NumberRange(2, 6)
+                count: new NumberRange(4, 10)
             }
         ],
         rarity: 1,
     },
-    {
+    { // Healing vials
         drops: [
             {
                 itemIndex: ItemIndex.HEALING_VIAL,
-                count: new NumberRange(1, 3)
+                count: new NumberRange(1, 4)
             }
         ],
         rarity: 1,
+    },
+    { // Slingshot
+        drops: [
+            {
+                itemIndex: ItemIndex.SLINGSHOT,
+                count: new NumberRange(1, 1)
+            }
+        ],
+        rarity: 1
+    },
+    { // Quick bow and Arrows
+        drops: [
+            {
+                itemIndex: ItemIndex.QUICK_BOW,
+                count: new NumberRange(1, 1)
+            },
+            {
+                itemIndex: ItemIndex.ARROW,
+                count: new NumberRange(24, 32),
+            }
+        ],
+        rarity: 1
+    },
+    { // Daggers
+        drops: [
+            {
+                itemIndex: ItemIndex.DAGGERS,
+                count: new NumberRange(1, 1)
+            }
+        ],
+        rarity: 1
+    },
+    { // Battle Hammer
+        drops: [
+            {
+                itemIndex: ItemIndex.BATTLE_HAMMER,
+                count: new NumberRange(1, 1)
+            }
+        ],
+        rarity: 1
+    },
+    { // Essence Dripped Dagger and Essence Vial
+        drops: [
+            {
+                itemIndex: ItemIndex.ESSENCE_DRIPPED_DAGGER,
+                count: new NumberRange(1, 1)
+            },
+            {
+                itemIndex: ItemIndex.ESSENCE_VIAL,
+                count: new NumberRange(1, 4)
+            }
+        ],
+        rarity: 1
+    },
+    { // Poison arrows
+        drops: [
+            {
+                itemIndex: ItemIndex.POISON_ARROW,
+                count: new NumberRange(16, 32),
+            }
+        ],
+        rarity: 1
+    },
+    { // Flame arrows
+        drops: [
+            {
+                itemIndex: ItemIndex.FLAME_ARROW,
+                count: new NumberRange(16, 32),
+            }
+        ],
+        rarity: 1
+    },
+    { // Crystal bombs and essence vials
+        drops: [
+            {
+                itemIndex: ItemIndex.CRYSTAL_BOMB,
+                count: new NumberRange(1, 4)
+            },
+            {
+                itemIndex: ItemIndex.ESSENCE_VIAL,
+                count: new NumberRange(1, 4)
+            }
+        ],
+        rarity: 1
+    },
+    { // Root snares
+        drops: [
+            {
+                itemIndex: ItemIndex.ROOT_SNARE,
+                count: new NumberRange(2, 5),
+            }
+        ],
+        rarity: 1
+    },
+    { // Flame upgrade
+        drops: [
+            {
+                itemIndex: ItemIndex.FLAME_UPGRADE,
+                count: new NumberRange(1, 1)
+            }
+        ],
+        rarity: 1
+    },
+    { // Poison upgrade
+        drops: [
+            {
+                itemIndex: ItemIndex.POISON_UPGRADE,
+                count: new NumberRange(1, 1)
+            }
+        ],
+        rarity: 1
+    },
+    { // Strength upgrade
+        drops: [
+            {
+                itemIndex: ItemIndex.STRENGTH_UPGRADE,
+                count: new NumberRange(1, 1)
+            }
+        ],
+        rarity: 1
+    },
+    { // Heart buff
+        drops: [
+            {
+                itemIndex: ItemIndex.HEART,
+                count: new NumberRange(1, 1)
+            }
+        ],
+        rarity: 1
+    },
+    { // Heart crystal buff
+        drops: [
+            {
+                itemIndex: ItemIndex.HEART_CRYSTAL,
+                count: new NumberRange(1, 1)
+            }
+        ],
+        rarity: 1
+    },
+    { // Basic shield buff
+        drops: [
+            {
+                itemIndex: ItemIndex.BASIC_SHIELD,
+                count: new NumberRange(1, 1)
+            }
+        ],
+        rarity: 1
+    },
+    { // Teleportation rune
+        drops: [
+            {
+                itemIndex: ItemIndex.TELEPORTATION_RUNE,
+                count: new NumberRange(1, 1)
+            }
+        ],
+        rarity: 1
+    },
+    { // Stun fiddle
+        drops: [
+            {
+                itemIndex: ItemIndex.STUN_FIDDLE,
+                count: new NumberRange(1, 1)
+            }
+        ],
+        rarity: 1
     }
 ];
 
