@@ -2,6 +2,8 @@ import { Codex } from "./codex";
 
 enum MeleeAttackIndex {
     BROAD_SWORD, // Sweeping attack for broad sword types
+    DAGGER, // Short range dagger attack
+    BATTLE_HAMMER, // Long range heavy attack
     BASIC, // Basic pointed attack
 }
 
@@ -40,6 +42,26 @@ meleeAttacksCodex.set(MeleeAttackIndex.BROAD_SWORD, {
     sweepArcLength: Math.PI / 2,
     particleSpriteID: "sword_spark"
 });
+meleeAttacksCodex.set(MeleeAttackIndex.DAGGER, {
+    damage: 4,
+    sweepDamage: 0,
+    maxHits: 1,
+    knockback: 0.5,
+    size: 0.4,
+    range: 1.2,
+    duration: 0.1,
+    particleSpriteID: "sword_spark"
+});
+meleeAttacksCodex.set(MeleeAttackIndex.BATTLE_HAMMER, {
+    damage: 10,
+    sweepDamage: 2,
+    maxHits: 6,
+    knockback: 0.5,
+    size: 1,
+    range: 1.5,
+    duration: 0.4,
+    particleSpriteID: "sword_spark",
+})
 meleeAttacksCodex.set(MeleeAttackIndex.BASIC, {
     damage: 1,
     sweepDamage: 0,

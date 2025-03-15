@@ -18,6 +18,9 @@ enum WeaponIndex {
     ZOMBIE_BRAINS,
     SHURIKEN,
     BOW,
+    DAGGERS,
+    BATTLE_HAMMER,
+    ESSENCE_DRIPPED_DAGGER,
 
     ZOMBIE_ATTACK,
     MINION_ATTACK,
@@ -57,7 +60,6 @@ weaponsCodex.set(WeaponIndex.BROAD_SWORD, {
 weaponsCodex.set(WeaponIndex.ZOMBIE_BRAINS, {
     cooldown: 6,
     fire(gameObject, target) {
-        // fireMelee(gameObject, target, 5);
         fireProjectile(projectilesCodex.get(ProjectileIndex.ZOMBIE_BRAINS), gameObject, target);
     }
 });
@@ -73,7 +75,31 @@ weaponsCodex.set(WeaponIndex.BOW, {
         fireProjectile(projectilesCodex.get(ProjectileIndex.ARROW), gameObject, target);
     }
 });
+weaponsCodex.set(WeaponIndex.DAGGERS, {
+    cooldown: 0.2,
+    fire(gameObject, target) {
+        fireMelee(meleeAttacksCodex.get(MeleeAttackIndex.DAGGER), gameObject, target);
+        setTimeout(() => {
+            fireMelee(meleeAttacksCodex.get(MeleeAttackIndex.DAGGER), gameObject, target);
+        }, 200);
+    }
+});
+weaponsCodex.set(WeaponIndex.BATTLE_HAMMER, {
+    cooldown: 1.2,
+    fire(gameObject, target) {
+        fireMelee(meleeAttacksCodex.get(MeleeAttackIndex.BATTLE_HAMMER), gameObject, target);
+    }
+});
+weaponsCodex.set(WeaponIndex.ESSENCE_DRIPPED_DAGGER, {
+    cooldown: 0.4,
+    fire(gameObject, target) {
+        const attack = {...meleeAttacksCodex.get(MeleeAttackIndex.DAGGER)};
+        attack.damage = 16;
+        fireMelee(attack, gameObject, target);
+    }
+})
 
+// Enemy attacks
 weaponsCodex.set(WeaponIndex.ZOMBIE_ATTACK, {
     cooldown: 1,
     fire(gameObject, target) {

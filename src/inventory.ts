@@ -309,13 +309,18 @@ class Inventory {
                     return;
                 }
             }
-            const success = item.use(this.player, target);
-            if (success) {
-                if (useIndex > -1) {
-                    this.decreaseItemCount(useIndex);
-                }
-                if (item.consumable) {
-                    this.decreaseItemCount(this._selectedSlot);
+            // Check if the player has enough essence to use the item
+            const essenceManager = this.player.getComponent("essence-manager");
+            if (essenceManager.data.essence >= item.essenceCost) {
+                const success = item.use(this.player, target);
+                if (success) {
+                    if (useIndex > -1) {
+                        this.decreaseItemCount(useIndex);
+                    }
+                    if (item.consumable) {
+                        this.decreaseItemCount(this._selectedSlot);
+                    }
+                    essenceManager.data.useEssence(item.essenceCost);
                 }
             }
         }

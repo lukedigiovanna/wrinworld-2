@@ -190,8 +190,11 @@ itemsCodex.set(ItemIndex.DAGGERS, {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-    use(player) {
-        return false;
+    use(player, target) {
+        return fireWeapon(player, WeaponIndex.DAGGERS, target);
+    },
+    equip(player) {
+        equipWeapon(player, WeaponIndex.DAGGERS);
     }
 });
 itemsCodex.set(ItemIndex.ESSENCE_VIAL, {
@@ -302,8 +305,11 @@ itemsCodex.set(ItemIndex.BATTLE_HAMMER, {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-    use(player) {
-        return false; // TODO: use battle hammer melee
+    use(player, target) {
+        return fireWeapon(player, WeaponIndex.BATTLE_HAMMER, target);
+    },
+    equip(player) {
+        equipWeapon(player, WeaponIndex.BATTLE_HAMMER);
     }
 });
 itemsCodex.set(ItemIndex.CRYSTAL_BOMB, {
@@ -359,8 +365,11 @@ itemsCodex.set(ItemIndex.ESSENCE_DRIPPED_DAGGER, {
     consumable: false,
     essenceCost: 2,
     maxStack: 1,
-    use(player) {
-        return false; // TOOD: add strong dagger melee attack
+    use(player, target) {
+        return fireWeapon(player, WeaponIndex.ESSENCE_DRIPPED_DAGGER, target);
+    },
+    equip(player) {
+        equipWeapon(player, WeaponIndex.ESSENCE_DRIPPED_DAGGER);
     }
 });
 itemsCodex.set(ItemIndex.ROOT_SNARE, {
