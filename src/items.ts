@@ -431,8 +431,11 @@ itemsCodex.set(ItemIndex.CRYSTAL_BOMB, {
     consumable: true,
     essenceCost: 10,
     maxStack: 20,
-    use(player) {
-        return false; // TODO: make crystal bomb projectile
+    use(player, target) {
+        return fireWeapon(player, WeaponIndex.CRYSTAL_BOMB, target);
+    },
+    equip(player) {
+        equipWeapon(player, WeaponIndex.CRYSTAL_BOMB);
     }
 });
 itemsCodex.set(ItemIndex.HEART_CRYSTAL, {

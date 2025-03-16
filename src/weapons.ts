@@ -25,6 +25,7 @@ enum WeaponIndex {
     BOW,
     SLINGSHOT,
     QUICK_BOW,
+    CRYSTAL_BOMB,
 
     ZOMBIE_ATTACK,
     MINION_ATTACK,
@@ -122,6 +123,13 @@ weaponsCodex.set(WeaponIndex.QUICK_BOW, {
         knockback: 2,
         speed: 20,
     }),
+    fire(gameObject, target) {
+        fireProjectile(this.attack() as Projectile, gameObject, target);
+    }
+});
+weaponsCodex.set(WeaponIndex.CRYSTAL_BOMB, {
+    cooldown: 1,
+    attack: () => projectilesCodex.get(ProjectileIndex.CRYSTAL_BOMB),
     fire(gameObject, target) {
         fireProjectile(this.attack() as Projectile, gameObject, target);
     }

@@ -1,6 +1,6 @@
-import { ItemDropFactory } from "./gameObjects";
+import { ItemDropFactory, ProjectileFactory } from "./gameObjects";
 import { GameObject } from "./gameObjects";
-import { Vector } from "./utils";
+import { Vector, MathUtils } from "./utils";
 import { Item, ItemIndex, itemsCodex } from "./items";
 import { Codex } from "./codex";
 
@@ -12,6 +12,7 @@ enum ProjectileIndex {
     WRAITH_ATTACK,
     ROCK,
     CRYSTAL_BOMB,
+    CRYSTAL_SHARD,
 }
 
 interface Projectile {
@@ -40,12 +41,15 @@ interface Projectile {
     rotateToDirectionOfTarget: boolean;
     // The rate at which "drag" is applied, 0 is none.
     drag: number;
+    // Whether or not we should destroy when hitting a prop (like a wall or tree)
+    destroyOnPhysicalCollision: boolean;
     // hitbox properties (optional... defaults to size of projectile)
     hitboxOffset?: Vector,
     hitboxSize?: Vector,
     // collider properties (optional... defaults to size of projectile)
     colliderOffset?: Vector,
     colliderSize?: Vector,
+
 
     chanceOfBreaking?: number;
     // Any logic that should happen when this object dies (including after lifespan)
@@ -78,6 +82,7 @@ projectilesCodex.set(ProjectileIndex.ZOMBIE_BRAINS, {
     hitboxSize: new Vector(0.25, 0.25),
     colliderOffset: new Vector(0.25, 0),
     colliderSize: new Vector(0.5, 0.5),
+    destroyOnPhysicalCollision: true,
     onDestroy(gameObject) {
         // chanceDropItem(gameObject, itemsCodex.get(ItemIndex.ZOMBIE_BRAINS), this.chanceOfBreaking);
     }
@@ -98,6 +103,7 @@ projectilesCodex.set(ProjectileIndex.SHURIKEN, {
     hitboxSize: new Vector(0.25, 0.25),
     colliderSize: new Vector(0.25, 0.25),
     chanceOfBreaking: 0.1,
+    destroyOnPhysicalCollision: true,
     onDestroy(gameObject) {
         chanceDropItem(gameObject, itemsCodex.get(ItemIndex.SHURIKEN), this.chanceOfBreaking);
     },
@@ -118,6 +124,7 @@ projectilesCodex.set(ProjectileIndex.ARROW, {
     hitboxSize: new Vector(0.25, 0.25),
     colliderSize: new Vector(0.2, 0.2),
     chanceOfBreaking: 0.4,
+    destroyOnPhysicalCollision: true,
     onDestroy(gameObject) {
         chanceDropItem(gameObject, itemsCodex.get(ItemIndex.ARROW), this.chanceOfBreaking);
     }
@@ -136,6 +143,7 @@ projectilesCodex.set(ProjectileIndex.TEAR_DROP, {
     rotateToDirectionOfTarget: false,
     drag: 0,
     colliderSize: new Vector(0.3, 0.3),
+    destroyOnPhysicalCollision: true,
 });
 projectilesCodex.set(ProjectileIndex.WRAITH_ATTACK, {
     homingSkill: 0,
@@ -151,6 +159,7 @@ projectilesCodex.set(ProjectileIndex.WRAITH_ATTACK, {
     rotateToDirectionOfTarget: true,
     drag: 0,
     colliderSize: new Vector(0.3, 0.3),
+    destroyOnPhysicalCollision: true,
 });
 projectilesCodex.set(ProjectileIndex.ROCK, {
     homingSkill: 0,
@@ -166,6 +175,7 @@ projectilesCodex.set(ProjectileIndex.ROCK, {
     drag: 0,
     angularVelocity: 5,
     colliderSize: new Vector(0.25, 0.25),
+    destroyOnPhysicalCollision: true,
 });
 projectilesCodex.set(ProjectileIndex.CRYSTAL_BOMB, {
     homingSkill: 0,
@@ -176,11 +186,39 @@ projectilesCodex.set(ProjectileIndex.CRYSTAL_BOMB, {
     knockback: 0,
     lifespan: 5,
     size: 1,
-    speed: 8,
+    speed: 10,
     angularVelocity: 0,
     rotateToDirectionOfTarget: false,
-    drag: 0.2,
+    drag: 1.5,
     colliderSize: new Vector(1, 1),
+    destroyOnPhysicalCollision: false,
+    onDestroy(gameObject) {
+        const owner = gameObject.getComponent("projectile").data.owner;
+        for (let i = 0; i < 50; i++) {
+            const target = Vector.add(gameObject.position, MathUtils.randomVector(1));
+            const projectile = {...projectilesCodex.get(ProjectileIndex.CRYSTAL_SHARD)};
+            projectile.speed += MathUtils.random(-5, 5);
+            projectile.angularVelocity += MathUtils.random(-10, 10);
+            projectile.size += MathUtils.random(-0.1, 0.1);
+            const shard = ProjectileFactory(projectile, owner, gameObject.position, target);
+            gameObject.game.addGameObject(shard);
+        }
+    },
+});
+projectilesCodex.set(ProjectileIndex.CRYSTAL_SHARD, {
+    homingSkill: 0,
+    maxHits: 3,
+    spriteID: "crystal_shard",
+    damage: 8,
+    damageReductionPerHit: 0.8,
+    knockback: 0.4,
+    lifespan: 3,
+    size: 0.25,
+    speed: 10,
+    angularVelocity: 0,
+    rotateToDirectionOfTarget: true,
+    drag: 0,
+    destroyOnPhysicalCollision: true,
 });
 
 export { ProjectileIndex, projectilesCodex };

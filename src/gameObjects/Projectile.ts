@@ -61,10 +61,14 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
                 }
             },
             onPhysicalCollision(collision, isTile) {
+                if (properties.destroyOnPhysicalCollision) {
+                    gameObject.destroy();
+                }
+            },
+            destroy() {
                 if (properties.onDestroy) {
                     properties.onDestroy(gameObject);
                 }
-                gameObject.destroy();
             },
             data
         }
@@ -120,7 +124,10 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
     }
     
     physics.data.angularVelocity = properties.angularVelocity;
-    projectile.rotation = physics.data.velocity.angle;
+    if (properties.rotateToDirectionOfTarget) {
+        projectile.rotation = physics.data.velocity.angle;
+    }
+    physics.data.drag = properties.drag;
 
     projectile.tag = "projectile";
 
