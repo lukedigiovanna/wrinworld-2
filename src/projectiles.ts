@@ -106,7 +106,7 @@ projectilesCodex.set(ProjectileIndex.ARROW, {
     homingSkill: 0,
     maxHits: 1,
     spriteID: "arrow",
-    damage: 6,
+    damage: 8,
     damageReductionPerHit: 0,
     knockback: 3,
     lifespan: 4,
