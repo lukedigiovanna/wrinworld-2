@@ -53,7 +53,7 @@ meleeAttacksCodex.set(MeleeAttackIndex.DAGGER, {
     particleSpriteID: "sword_spark"
 });
 meleeAttacksCodex.set(MeleeAttackIndex.BATTLE_HAMMER, {
-    damage: 10,
+    damage: 26,
     sweepDamage: 2,
     maxHits: 6,
     knockback: 0.5,

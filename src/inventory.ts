@@ -1,4 +1,4 @@
-import { Item, ItemIndex, itemsCodex } from "./items";
+import { Item, ItemIndex, itemsCodex, ItemStat, ItemStatIndex, itemStatPropertiesCodex } from "./items";
 import { getImage } from "./imageLoader";
 import { GameObject } from "./gameObjects";
 import input, { InputLayer } from "./input";
@@ -91,6 +91,32 @@ class Inventory {
                     itemDisplay.find("#item-category").text(slot.item.category);
                     itemDisplay.find("#item-icon").attr("src", getImage(slot.item.iconSpriteID).src);
                     itemDisplay.find("#item-description").text(slot.item.description);
+                    const statsList = itemDisplay.find("#item-stats-list");
+                    statsList.empty();
+                    itemDisplay.find("#item-stats-title").hide();
+                    let stats: ItemStat[] = [];
+                    if (slot.item.essenceCost > 0) {
+                        stats.push({
+                            statIndex: ItemStatIndex.ESSENCE_COST,
+                            value: slot.item.essenceCost,
+                        });
+                    }
+                    if (slot.item.getStats) {
+                        stats = [...stats, ...slot.item.getStats()];
+                    }
+                        
+                    if (stats.length > 0) {
+                        itemDisplay.find("#item-stats-title").show();
+                    }
+                    for (let i = 0; i < stats.length; i++) {
+                        const stat = stats[i];
+                        const statProperties = itemStatPropertiesCodex.get(stat.statIndex);
+                        const value = statProperties.isPercent ? Math.round(stat.value * 100) : Math.round(stat.value * 10) / 10;
+                        statsList.append($(`
+                            <li>${statProperties.displayName}: ${value}${statProperties.unit}</li>
+                        `))
+                    }
+                    
                     itemDisplay.show();
                 }
             }

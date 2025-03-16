@@ -264,6 +264,21 @@ img {
     font-weight: normal;
 }
 
+#item-display #item-stats-title {
+    color: #222;
+    font-size: 14px;
+    margin: 6px 0 0 3px;
+}
+
+#item-display #item-stats-list {
+    color: #333;
+    font-size: 12px;
+    margin: 0;
+    padding-inline-start: 18px;
+    line-height: 1.1em;
+    font-weight: bold;
+}
+
 #pause-screen {
     opacity: 0%;
     visibility: hidden;

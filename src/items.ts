@@ -4,10 +4,72 @@
 
 import { Vector } from "./utils";
 import { GameObject } from "./gameObjects";
-import { WeaponIndex } from "./weapons";
+import { WeaponIndex, weaponsCodex } from "./weapons";
 import { Codex } from "./codex";
 
 type ItemCategory = "Weapon" | "Misc." | "Projectile" | "Consumable" | "Upgrade" | "Buff" | "Mystic Arts";
+
+enum ItemStatIndex {
+    // Weapon based
+    DAMAGE, // How much damage a hit does
+    COOLDOWN, // How long to wait between attacks
+    DAMAGE_PER_SECOND, // How much damage a weapon does per second
+    CHANCE_OF_BREAKING, // Percent chance of breaking (for projectiles),
+    KNOCKBACK, // Knockback force
+    // Health based
+    HEAL, // How much healing the item does
+    REGENERATION, // How much healing the item does a second (i.e. for buffs)
+    MAX_HP_BOOST, // How much the item boosts the max HP (i.e. for buffs)
+    RESISTANCE, // Percentage based resistance
+    // Essence based
+    ESSENCE_COST, // How much essence an item costs to use
+    ESSENCE, // How much essence the item gives
+    MAX_ESSENCE_BOOST, // How much the item boosts the max essence (i.e. for buffs)
+}
+
+interface ItemStatProperty {
+    displayName: string;
+    iconID: string;
+    unit: string;
+    isPercent: boolean;
+}
+
+const itemStatPropertiesCodex = new Codex<ItemStatIndex, ItemStatProperty>();
+itemStatPropertiesCodex.set(ItemStatIndex.DAMAGE, {
+    displayName: "Damage",
+    iconID: "damage_stat_icon",
+    unit: "",
+    isPercent: false,
+});
+itemStatPropertiesCodex.set(ItemStatIndex.COOLDOWN, {
+    displayName: "Cooldown",
+    iconID: "cooldown_stat_icon",
+    unit: "s",
+    isPercent: false,
+});
+itemStatPropertiesCodex.set(ItemStatIndex.DAMAGE_PER_SECOND, {
+    displayName: "DPS",
+    iconID: "damage_per_second_stat_icon",
+    unit: "",
+    isPercent: false,
+});
+itemStatPropertiesCodex.set(ItemStatIndex.KNOCKBACK, {
+    displayName: "Knockback",
+    iconID: "knockback_stat_icon",
+    unit: "",
+    isPercent: false,
+});
+itemStatPropertiesCodex.set(ItemStatIndex.ESSENCE_COST, {
+    displayName: "Essence Cost",
+    iconID: "essence_cost_stat_icon",
+    unit: "",
+    isPercent: false,
+})
+
+interface ItemStat {
+    statIndex: ItemStatIndex;
+    value: number;
+}
 
 enum ItemIndex {
     ZOMBIE_BRAINS,
@@ -62,6 +124,7 @@ interface Item {
     use?: UseItemFunction;
     equip?: EquipItemFunction;
     unequip?: EquipItemFunction;
+    getStats?: () => ItemStat[];
 }
 
 interface ItemDropChance {
@@ -81,6 +144,29 @@ function equipWeapon(player: GameObject, weapon: WeaponIndex) {
     weaponManager.data.equip(weapon);
 }
 
+function generateStatsForWeapon(weaponIndex: WeaponIndex): ItemStat[] {
+    const weapon = weaponsCodex.get(weaponIndex);
+    const attack = weapon.attack();
+    return [
+        {
+            statIndex: ItemStatIndex.COOLDOWN,
+            value: weapon.cooldown,
+        },
+        {
+            statIndex: ItemStatIndex.DAMAGE,
+            value: attack.damage,
+        },
+        {
+            statIndex: ItemStatIndex.DAMAGE_PER_SECOND,
+            value: attack.damage / weapon.cooldown,
+        },
+        {
+            statIndex: ItemStatIndex.KNOCKBACK,
+            value: attack.knockback,
+        }
+    ];
+}
+
 const itemsCodex = new Codex<ItemIndex, Item>();
 itemsCodex.set(ItemIndex.BROAD_SWORD, {
     itemIndex: ItemIndex.BROAD_SWORD,
@@ -96,6 +182,9 @@ itemsCodex.set(ItemIndex.BROAD_SWORD, {
     },
     equip(player) {
         equipWeapon(player, WeaponIndex.BROAD_SWORD);
+    },
+    getStats() {
+        return generateStatsForWeapon(WeaponIndex.BROAD_SWORD);
     }
 });
 itemsCodex.set(ItemIndex.ZOMBIE_BRAINS, {
@@ -112,7 +201,10 @@ itemsCodex.set(ItemIndex.ZOMBIE_BRAINS, {
     },
     equip(player) {
         equipWeapon(player, WeaponIndex.ZOMBIE_BRAINS);
-    }
+    },
+    getStats() {
+        return generateStatsForWeapon(WeaponIndex.ZOMBIE_BRAINS);
+    },
 });
 itemsCodex.set(ItemIndex.ZOMBIE_FLESH, {
     itemIndex: ItemIndex.ZOMBIE_FLESH,
@@ -120,7 +212,7 @@ itemsCodex.set(ItemIndex.ZOMBIE_FLESH, {
     description: "Tasty!",
     category: "Misc.",
     iconSpriteID: "zombie_flesh",
-    maxStack: 999,
+    maxStack: 100,
     consumable: false,
     essenceCost: 0,
 });
@@ -138,7 +230,10 @@ itemsCodex.set(ItemIndex.SHURIKEN, {
     },
     equip(player) {
         equipWeapon(player, WeaponIndex.SHURIKEN);
-    }
+    },
+    getStats() {
+        return generateStatsForWeapon(WeaponIndex.SHURIKEN);
+    },
 });
 itemsCodex.set(ItemIndex.BOW, {
     itemIndex: ItemIndex.BOW,
@@ -147,7 +242,7 @@ itemsCodex.set(ItemIndex.BOW, {
     category: "Weapon",
     iconSpriteID: "bow",
     maxStack: 1,
-    usesItem: [ItemIndex.ARROW, ItemIndex.POISON_ARROW],
+    usesItem: [ItemIndex.ARROW, ItemIndex.POISON_ARROW, ItemIndex.FLAME_ARROW],
     consumable: false,
     essenceCost: 0,
     use(player, target) {
@@ -155,7 +250,10 @@ itemsCodex.set(ItemIndex.BOW, {
     },
     equip(player) {
         equipWeapon(player, WeaponIndex.BOW);
-    }
+    },
+    getStats() {
+        return generateStatsForWeapon(WeaponIndex.BOW);
+    },
 });
 itemsCodex.set(ItemIndex.ARROW, {
     itemIndex: ItemIndex.ARROW,
@@ -195,7 +293,10 @@ itemsCodex.set(ItemIndex.DAGGERS, {
     },
     equip(player) {
         equipWeapon(player, WeaponIndex.DAGGERS);
-    }
+    },
+    getStats() {
+        return generateStatsForWeapon(WeaponIndex.DAGGERS);
+    },
 });
 itemsCodex.set(ItemIndex.ESSENCE_VIAL, {
     itemIndex: ItemIndex.ESSENCE_VIAL,
@@ -284,7 +385,10 @@ itemsCodex.set(ItemIndex.SLINGSHOT, {
     },
     equip(player) {
         equipWeapon(player, WeaponIndex.SLINGSHOT);
-    }
+    },
+    getStats() {
+        return generateStatsForWeapon(WeaponIndex.SLINGSHOT);
+    },
 });
 itemsCodex.set(ItemIndex.TELEPORTATION_RUNE, {
     itemIndex: ItemIndex.TELEPORTATION_RUNE,
@@ -313,7 +417,10 @@ itemsCodex.set(ItemIndex.BATTLE_HAMMER, {
     },
     equip(player) {
         equipWeapon(player, WeaponIndex.BATTLE_HAMMER);
-    }
+    },
+    getStats() {
+        return generateStatsForWeapon(WeaponIndex.BATTLE_HAMMER);
+    },
 });
 itemsCodex.set(ItemIndex.CRYSTAL_BOMB, {
     itemIndex: ItemIndex.CRYSTAL_BOMB,
@@ -373,7 +480,10 @@ itemsCodex.set(ItemIndex.ESSENCE_DRIPPED_DAGGER, {
     },
     equip(player) {
         equipWeapon(player, WeaponIndex.ESSENCE_DRIPPED_DAGGER);
-    }
+    },
+    getStats() {
+        return generateStatsForWeapon(WeaponIndex.ESSENCE_DRIPPED_DAGGER);
+    },
 });
 itemsCodex.set(ItemIndex.ROOT_SNARE, {
     itemIndex: ItemIndex.ROOT_SNARE,
@@ -404,6 +514,7 @@ itemsCodex.set(ItemIndex.QUICK_BOW, {
     description: "Crafted from a hyper-elastic material this bow can shoot much faster, but at a cost to effectiveness",
     category: "Weapon",
     iconSpriteID: "quick_bow",
+    usesItem: [ItemIndex.ARROW, ItemIndex.POISON_ARROW, ItemIndex.FLAME_ARROW],
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
@@ -412,7 +523,10 @@ itemsCodex.set(ItemIndex.QUICK_BOW, {
     },
     equip(player) {
         equipWeapon(player, WeaponIndex.QUICK_BOW);
-    }
+    },
+    getStats() {
+        return generateStatsForWeapon(WeaponIndex.QUICK_BOW);
+    },
 });
 itemsCodex.set(ItemIndex.FLAME_ARROW,  {
     itemIndex: ItemIndex.FLAME_ARROW,
@@ -425,5 +539,5 @@ itemsCodex.set(ItemIndex.FLAME_ARROW,  {
     maxStack: 100,
 });
 
-export { itemsCodex, ItemIndex };
-export type { Item, ItemDropChance };
+export { itemsCodex, ItemIndex, ItemStatIndex, itemStatPropertiesCodex };
+export type { Item, ItemDropChance, ItemStat, ItemStatProperty };

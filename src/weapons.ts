@@ -10,6 +10,7 @@ type WeaponFireFunction = (gameObject: GameObject, target: Vector) => void;
 
 interface Weapon {
     cooldown: number; // Minimum time between uses
+    attack: () => MeleeAttack | Projectile;
     fire: WeaponFireFunction;
 }
 
@@ -56,113 +57,131 @@ const fireMelee = (meleeAttack: MeleeAttack, gameObject: GameObject, target: Vec
 const weaponsCodex = new Codex<WeaponIndex, Weapon>();
 weaponsCodex.set(WeaponIndex.BROAD_SWORD, {
     cooldown: 0.5,
+    attack: () => meleeAttacksCodex.get(MeleeAttackIndex.BROAD_SWORD),
     fire(gameObject, target) {
-        fireMelee(meleeAttacksCodex.get(MeleeAttackIndex.BROAD_SWORD), gameObject, target);
+        fireMelee(this.attack() as MeleeAttack, gameObject, target);
     }
 });
 weaponsCodex.set(WeaponIndex.ZOMBIE_BRAINS, {
     cooldown: 6,
+    attack: () => projectilesCodex.get(ProjectileIndex.ZOMBIE_BRAINS),
     fire(gameObject, target) {
-        fireProjectile(projectilesCodex.get(ProjectileIndex.ZOMBIE_BRAINS), gameObject, target);
+        fireProjectile(this.attack() as Projectile, gameObject, target);
     }
 });
 weaponsCodex.set(WeaponIndex.SHURIKEN, {
     cooldown: 0.25,
+    attack: () => projectilesCodex.get(ProjectileIndex.SHURIKEN),
     fire(gameObject, target) {
-        fireProjectile(projectilesCodex.get(ProjectileIndex.SHURIKEN), gameObject, target);
+        fireProjectile(this.attack() as Projectile, gameObject, target);
     }
 });
 weaponsCodex.set(WeaponIndex.BOW, {
     cooldown: 1,
+    attack: () => projectilesCodex.get(ProjectileIndex.ARROW),
     fire(gameObject, target) {
-        fireProjectile(projectilesCodex.get(ProjectileIndex.ARROW), gameObject, target);
+        fireProjectile(this.attack() as Projectile, gameObject, target);
     }
 });
 weaponsCodex.set(WeaponIndex.DAGGERS, {
     cooldown: 0.2,
+    attack: () => meleeAttacksCodex.get(MeleeAttackIndex.DAGGER),
     fire(gameObject, target) {
-        fireMelee(meleeAttacksCodex.get(MeleeAttackIndex.DAGGER), gameObject, target);
-        setTimeout(() => {
-            fireMelee(meleeAttacksCodex.get(MeleeAttackIndex.DAGGER), gameObject, target);
-        }, 200);
+        fireMelee(this.attack() as MeleeAttack, gameObject, target);
     }
 });
 weaponsCodex.set(WeaponIndex.BATTLE_HAMMER, {
     cooldown: 1.2,
+    attack: () => meleeAttacksCodex.get(MeleeAttackIndex.BATTLE_HAMMER),
     fire(gameObject, target) {
-        fireMelee(meleeAttacksCodex.get(MeleeAttackIndex.BATTLE_HAMMER), gameObject, target);
+        fireMelee(this.attack() as MeleeAttack, gameObject, target);
     }
 });
 weaponsCodex.set(WeaponIndex.ESSENCE_DRIPPED_DAGGER, {
     cooldown: 0.4,
+    attack: () => ({
+        ...meleeAttacksCodex.get(MeleeAttackIndex.DAGGER),
+        damage: 16
+    }),
     fire(gameObject, target) {
-        const attack = {...meleeAttacksCodex.get(MeleeAttackIndex.DAGGER)};
-        attack.damage = 16;
-        fireMelee(attack, gameObject, target);
+        fireMelee(this.attack() as MeleeAttack, gameObject, target);
     }
 });
 weaponsCodex.set(WeaponIndex.SLINGSHOT, {
     cooldown: 0.8,
+    attack: () => projectilesCodex.get(ProjectileIndex.ROCK),
     fire(gameObject, target) {
-        fireProjectile(projectilesCodex.get(ProjectileIndex.ROCK), gameObject, target);
+        fireProjectile(this.attack() as Projectile, gameObject, target);
     }
 });
 weaponsCodex.set(WeaponIndex.QUICK_BOW, {
     cooldown: 0.25,
+    attack: () => ({
+        ...projectilesCodex.get(ProjectileIndex.ARROW),
+        damage: 4,
+        knockback: 2,
+        speed: 20,
+    }),
     fire(gameObject, target) {
-        const attack = {...projectilesCodex.get(ProjectileIndex.ARROW)};
-        attack.damage = 4;
-        attack.knockback = 2;
-        attack.speed = 20;
-        fireProjectile(attack, gameObject, target);
+        fireProjectile(this.attack() as Projectile, gameObject, target);
     }
 })
 
 // Enemy attacks
 weaponsCodex.set(WeaponIndex.ZOMBIE_ATTACK, {
     cooldown: 1,
+    attack: () => ({
+        ...meleeAttacksCodex.get(MeleeAttackIndex.BASIC),
+        damage: 4,
+    }),
     fire(gameObject, target) {
-        const attack = {...meleeAttacksCodex.get(MeleeAttackIndex.BASIC)};
-        attack.damage = 4;
-        fireMelee(attack, gameObject, target);
+        fireMelee(this.attack() as MeleeAttack, gameObject, target);
     }
 });
 weaponsCodex.set(WeaponIndex.MINION_ATTACK, {
     cooldown: 0.7,
+    attack: () => ({
+        ...meleeAttacksCodex.get(MeleeAttackIndex.BASIC),
+        damage: 2,
+    }),
     fire(gameObject, target) {
-        const attack = {...meleeAttacksCodex.get(MeleeAttackIndex.BASIC)};
-        attack.damage = 2;
-        fireMelee(attack, gameObject, target);
+        fireMelee(this.attack() as MeleeAttack, gameObject, target);
     }
 });
 weaponsCodex.set(WeaponIndex.REVENANT_EYE_ATTACK, {
     cooldown: 4,
+    attack: () => projectilesCodex.get(ProjectileIndex.TEAR_DROP),
     fire(gameObject, target) {
-        fireProjectile(projectilesCodex.get(ProjectileIndex.TEAR_DROP), gameObject, target);
+        fireProjectile(this.attack() as Projectile, gameObject, target);
     }
 });
 weaponsCodex.set(WeaponIndex.SLIME_ATTACK, {
     cooldown: 2,
+    attack: () => ({
+        ...meleeAttacksCodex.get(MeleeAttackIndex.BASIC),
+        damage: 1,
+        knockback: 2.5,
+    }),
     fire(gameObject, target) {
-        const attack = {...meleeAttacksCodex.get(MeleeAttackIndex.BASIC)};
-        attack.damage = 1;
-        attack.knockback = 5;
-        fireMelee(attack, gameObject, target);
+        fireMelee(this.attack() as MeleeAttack, gameObject, target);
     }
 });
 weaponsCodex.set(WeaponIndex.WRETCHED_SKELETON_ATTACK, {
     cooldown: 3.5,
+    attack: () => ({
+        ...projectilesCodex.get(ProjectileIndex.ARROW),
+        chanceOfBreaking: 1,
+        damage: 6,
+    }),
     fire(gameObject, target) {
-        const arrow = {...projectilesCodex.get(ProjectileIndex.ARROW)};
-        arrow.chanceOfBreaking = 1;
-        arrow.damage = 6;
-        fireProjectile(arrow, gameObject, target);
+        fireProjectile(this.attack() as Projectile, gameObject, target);
     }
 });
 weaponsCodex.set(WeaponIndex.WRAITH_ATTACK, {
     cooldown: 2,
+    attack: () => projectilesCodex.get(ProjectileIndex.WRAITH_ATTACK),
     fire(gameObject, target) {
-        fireProjectile(projectilesCodex.get(ProjectileIndex.WRAITH_ATTACK), gameObject, target);
+        fireProjectile(this.attack() as Projectile, gameObject, target);
     }
 });
 
