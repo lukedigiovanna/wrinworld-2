@@ -53,9 +53,6 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
                     properties.damage *= properties.damageReductionPerHit;
                     properties.knockback *= properties.damageReductionPerHit;
                     if (data.hitCount >= properties.maxHits) {
-                        if (properties.onDestroy) {
-                            properties.onDestroy(gameObject);
-                        }
                         gameObject.destroy();
                     }
                 }
