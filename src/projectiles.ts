@@ -114,7 +114,7 @@ projectilesCodex.set(ProjectileIndex.SHURIKEN, {
 });
 projectilesCodex.set(ProjectileIndex.ARROW, {
     homingSkill: 0,
-    maxHits: 1,
+    maxHits: 10,
     spriteID: "arrow",
     damage: 8,
     damageReductionPerHit: 0,
@@ -135,7 +135,7 @@ projectilesCodex.set(ProjectileIndex.ARROW, {
 });
 projectilesCodex.set(ProjectileIndex.POISON_ARROW, {
     homingSkill: 0,
-    maxHits: 1,
+    maxHits: 10,
     spriteID: "poison_arrow",
     damage: 8,
     damageReductionPerHit: 0,
@@ -240,7 +240,7 @@ projectilesCodex.set(ProjectileIndex.CRYSTAL_SHARD, {
     maxHits: 3,
     spriteID: "crystal_shard",
     damage: 8,
-    damageReductionPerHit: 0.8,
+    damageReductionPerHit: 0.2,
     knockback: 0.4,
     lifespan: 3,
     size: 0.25,

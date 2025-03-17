@@ -37,7 +37,6 @@ const StatusEffectManager: ComponentFactory = (gameObject: GameObject) => {
                 const period = 1.0 / effect.statusEffect.rate;
                 while (effect.timer >= period) {
                     effect.statusEffect.apply(gameObject, effect.level);
-                    console.log('applied se');
                     effect.timer -= period;
                 }
                 const totalElapsed = gameObject.game.time - effect.startTime;
