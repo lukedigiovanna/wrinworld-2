@@ -162,7 +162,6 @@ class Inventory {
                     else {
                         // Swap the slots
                         // can only place in an upgrade slot if the item is an upgrade!
-                        console.log(this.heldSlot.item.category);
                         if (slotArray !== this.buffSlots || this.heldSlot.item.category === "Buff") {
                             if (slotArray === this.buffSlots) {
                                 if (this.heldSlot.item.equip) {
@@ -328,9 +327,18 @@ class Inventory {
         if (item.use !== undefined) {
             let useIndex = -1;
             if (item.usesItem) {
-                for (const useItem of item.usesItem) {
-                    useIndex = this.indexOf(useItem);
-                    if (useIndex >= 0) break;
+                // Iterate up from selected slot
+                for (let i = 1; i < this.slots.length; i++) {
+                    const index = (i + this._selectedSlot) % this.slots.length;
+                    for (const useItem of item.usesItem) {
+                        if (this.slots[index]?.item.itemIndex === useItem) {
+                            useIndex = index;
+                            break;
+                        }
+                    }
+                    if (useIndex >= 0) {
+                        break;
+                    }
                 }
                 if (useIndex < 0) {
                     return;
@@ -339,9 +347,11 @@ class Inventory {
             // Check if the player has enough essence to use the item
             const essenceManager = this.player.getComponent("essence-manager");
             if (essenceManager.data.essence >= item.essenceCost) {
-                const success = item.use(this.player, target);
+                const useSlot = this.slots[useIndex];
+                const useItem = (useIndex >= 0 && useSlot) ? useSlot.item : undefined;
+                const success = item.use(this.player, target, useItem);
                 if (success) {
-                    if (useIndex > -1) {
+                    if (useIndex >= 0) {
                         this.decreaseItemCount(useIndex);
                     }
                     if (item.consumable) {

@@ -3,11 +3,13 @@ import { GameObject } from "./gameObjects";
 import { Vector, MathUtils } from "./utils";
 import { Item, ItemIndex, itemsCodex } from "./items";
 import { Codex } from "./codex";
+import { StatusEffectIndex } from "./statusEffects";
 
 enum ProjectileIndex {
     ZOMBIE_BRAINS,
     SHURIKEN,
     ARROW,
+    POISON_ARROW,
     TEAR_DROP,
     WRAITH_ATTACK,
     ROCK,
@@ -54,6 +56,8 @@ interface Projectile {
     chanceOfBreaking?: number;
     // Any logic that should happen when this object dies (including after lifespan)
     onDestroy?: (gameObject: GameObject) => void;
+    // Any additional logic that happens to a thing this projectile hits
+    onHit?: (hit: GameObject) => void;
 }
 
 function chanceDropItem(gameObject: GameObject, item: Item, chanceOfBreaking: number | undefined) {
@@ -129,6 +133,32 @@ projectilesCodex.set(ProjectileIndex.ARROW, {
         chanceDropItem(gameObject, itemsCodex.get(ItemIndex.ARROW), this.chanceOfBreaking);
     }
 });
+projectilesCodex.set(ProjectileIndex.POISON_ARROW, {
+    homingSkill: 0,
+    maxHits: 1,
+    spriteID: "poison_arrow",
+    damage: 8,
+    damageReductionPerHit: 0,
+    knockback: 3,
+    lifespan: 4,
+    size: 1,
+    speed: 16,
+    angularVelocity: 0,
+    rotateToDirectionOfTarget: true,
+    drag: 0.2,
+    hitboxSize: new Vector(0.25, 0.25),
+    colliderSize: new Vector(0.2, 0.2),
+    chanceOfBreaking: 0.2,
+    destroyOnPhysicalCollision: true,
+    onDestroy(gameObject) {
+        chanceDropItem(gameObject, itemsCodex.get(ItemIndex.POISON_ARROW), this.chanceOfBreaking);
+    },
+    onHit(hit) {
+        if (hit.hasComponent("status-effect-manager")) {
+            hit.getComponent("status-effect-manager").data.applyEffect(StatusEffectIndex.POISON, 1, 5);
+        }
+    },
+})
 projectilesCodex.set(ProjectileIndex.TEAR_DROP, {
     homingSkill: 0,
     maxHits: 1,

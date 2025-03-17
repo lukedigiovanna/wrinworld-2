@@ -19,10 +19,10 @@ statusEffectsCodex.set(StatusEffectIndex.POISON, {
     displayName: "Poison",
     iconSpriteID: "poison_effect_icon",
     particleID: "poison_particle",
-    rate: 0.25,
+    rate: 4,
     apply(gameObject, level) {
         if (gameObject.hasComponent("health")) {
-            gameObject.getComponent("health").data.damage(level / 4);
+            gameObject.getComponent("health").data.damage(level * 0.25);
         }
     },
 });

@@ -155,7 +155,7 @@ enum ItemIndex {
 }
 
 // Return true if successfully used.
-type UseItemFunction = (player: GameObject, target: Vector) => boolean;
+type UseItemFunction = (player: GameObject, target: Vector, uses?: Item) => boolean;
 type EquipItemFunction = (player: GameObject) => void;
 
 interface Item {
@@ -180,10 +180,10 @@ interface ItemDropChance {
     itemIndex: ItemIndex;
 }
 
-function fireWeapon(player: GameObject, weapon: WeaponIndex, target: Vector) {
+function fireWeapon(player: GameObject, weapon: WeaponIndex, target: Vector, uses?: Item) {
     const weaponManager = player.getComponent("weapon-manager");
     return weaponManager.data.fire(
-        weapon, target
+        weapon, target, uses
     );
 }
 
@@ -300,8 +300,8 @@ itemsCodex.set(ItemIndex.BOW, {
     usesItem: [ItemIndex.ARROW, ItemIndex.POISON_ARROW, ItemIndex.FLAME_ARROW],
     consumable: false,
     essenceCost: 0,
-    use(player, target) {
-        return fireWeapon(player, WeaponIndex.BOW, target);
+    use(player, target, uses) {
+        return fireWeapon(player, WeaponIndex.BOW, target, uses);
     },
     equip(player) {
         equipWeapon(player, WeaponIndex.BOW);

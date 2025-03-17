@@ -1,7 +1,8 @@
 import { GameObject, GameObjectFactory, EssenceOrbFactory, Team } from "./";
 import { spriteRenderer } from "../renderers";
 import { Vector, MathUtils } from "../utils";
-import { Health, Hitbox, Physics, PhysicalCollider, ItemDropper, WeaponManager, HealthBarDisplayMode, ParticleEmitter, ParticleLayer } from "../components";
+import { Health, Hitbox, Physics, PhysicalCollider, ItemDropper, WeaponManager, 
+    HealthBarDisplayMode, ParticleEmitter, ParticleLayer, StatusEffectManager } from "../components";
 import { TileIndex } from "../tiles";
 import { enemiesCodex, EnemyIndex } from "../enemies";
 
@@ -10,9 +11,6 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
     enemy.team = Team.ENEMY;
     enemy.position = position.copy();
     const enemyType = enemiesCodex.get(enemyIndex);
-    if (!enemyType) {
-        throw Error("Invalid enemy type");
-    }
     enemy.renderer = spriteRenderer(enemyType.spriteID);
     enemy.scale.set(enemyType.scale);
     const health = enemy.addComponent(Health);
@@ -24,6 +22,7 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
     enemy.addComponent(ItemDropper(enemyType.drops));
     enemy.addComponent(enemyType.ai);
     enemy.addComponent(WeaponManager);
+    enemy.addComponent(StatusEffectManager);
     const collider = enemy.addComponent(PhysicalCollider);
     collider.data.boxOffset = enemyType.physicalColliderOffset.copy();
     collider.data.boxSize = enemyType.physicalColliderSize.copy();

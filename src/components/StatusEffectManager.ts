@@ -25,7 +25,8 @@ const StatusEffectManager: ComponentFactory = (gameObject: GameObject) => {
             };
             statusEffect.apply(gameObject, level);
             this.effects.push(effect);
-        }
+        },
+        statusEffectParticles: undefined,
     };
     return {
         id: "status-effect-manager",
@@ -36,6 +37,7 @@ const StatusEffectManager: ComponentFactory = (gameObject: GameObject) => {
                 const period = 1.0 / effect.statusEffect.rate;
                 while (effect.timer >= period) {
                     effect.statusEffect.apply(gameObject, effect.level);
+                    console.log('applied se');
                     effect.timer -= period;
                 }
                 const totalElapsed = gameObject.game.time - effect.startTime;
@@ -45,14 +47,14 @@ const StatusEffectManager: ComponentFactory = (gameObject: GameObject) => {
                 }
             }
             if (this.data.effects.length === 0) {
-                gameObject.getComponent("particle-emitter-status-effects").data.enabled = false;
+                data.statusEffectParticles.data.enabled = false;
             }
             else {
-                gameObject.getComponent("particle-emitter-status-effects").data.enabled = true;
+                data.statusEffectParticles.data.enabled = true;
             }
         },
         start() {
-            gameObject.addComponent(ParticleEmitter(
+            data.statusEffectParticles = gameObject.addComponent(ParticleEmitter(
                 {
                     rate: () => MathUtils.random(2.5, 3.5),
                     size: () => new Vector(0.5, 0.5),

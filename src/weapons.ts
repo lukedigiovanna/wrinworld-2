@@ -3,14 +3,15 @@ import { ProjectileFactory, GameObject, MeleeAttackFactory } from "./gameObjects
 import { Projectile, projectilesCodex, ProjectileIndex } from "./projectiles";
 import { MeleeAttack, meleeAttacksCodex, MeleeAttackIndex } from "./meleeAttacks";
 import { Codex } from "./codex";
+import { Item, ItemIndex } from "./items";
 
 // NOTE: players AND enemies can fire weapons!
 
-type WeaponFireFunction = (gameObject: GameObject, target: Vector) => void;
+type WeaponFireFunction = (gameObject: GameObject, target: Vector, uses?: Item) => void;
 
 interface Weapon {
     cooldown: number; // Minimum time between uses
-    attack: () => MeleeAttack | Projectile;
+    attack: (uses?: Item) => MeleeAttack | Projectile;
     fire: WeaponFireFunction;
 }
 
@@ -79,9 +80,16 @@ weaponsCodex.set(WeaponIndex.SHURIKEN, {
 });
 weaponsCodex.set(WeaponIndex.BOW, {
     cooldown: 1,
-    attack: () => projectilesCodex.get(ProjectileIndex.ARROW),
-    fire(gameObject, target) {
-        fireProjectile(this.attack() as Projectile, gameObject, target);
+    attack: (uses) => {
+        if (uses) {
+            if (uses.itemIndex === ItemIndex.POISON_ARROW) {
+                return projectilesCodex.get(ProjectileIndex.POISON_ARROW);
+            }
+        }
+        return projectilesCodex.get(ProjectileIndex.ARROW);
+    },
+    fire(gameObject, target, uses) {
+        fireProjectile(this.attack(uses) as Projectile, gameObject, target);
     }
 });
 weaponsCodex.set(WeaponIndex.DAGGERS, {

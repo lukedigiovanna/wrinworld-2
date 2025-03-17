@@ -395,7 +395,6 @@ const LEVEL_1: Level = {
             } while (invalid);
             const progression = (position.y - marginTrail) / height;
             const validChoices = level1PortalTypes.filter(type => (type.difficulty ? type.difficulty : 0) <= progression);
-            console.log(progression, validChoices);
             if (validChoices.length === 0) {
                 throw Error("Cannot generate portal for position: " + position + " progressio " + progression + " because no portal has low enough difficulty");
             }

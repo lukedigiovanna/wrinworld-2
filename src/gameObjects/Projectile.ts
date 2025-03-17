@@ -35,19 +35,18 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
                 if (collision.team !== Team.UNTEAMED && 
                     data.owner.team !== collision.team) {
                     const health = collision.getComponent("health");
-                    if (health) {
-                        health.data.damage(properties.damage);
-                    }
+                    health.data.damage(properties.damage);
                     const physics = collision.getComponent("physics");
-                    if (physics) {
-                        physics.data.impulse.set(
-                            Vector.scaled(
-                                Vector.normalized(
-                                    data.physics.data.velocity
-                                ), 
-                                properties.knockback
-                            )
-                        );
+                    physics.data.impulse.set(
+                        Vector.scaled(
+                            Vector.normalized(
+                                data.physics.data.velocity
+                            ), 
+                            properties.knockback
+                        )
+                    );
+                    if (properties.onHit) {
+                        properties.onHit(collision);
                     }
                     data.hitCount++;
                     properties.damage *= properties.damageReductionPerHit;
