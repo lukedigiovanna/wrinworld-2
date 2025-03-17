@@ -112,8 +112,9 @@ class Inventory {
                         const stat = stats[i];
                         const statProperties = itemStatPropertiesCodex.get(stat.statIndex);
                         const value = statProperties.isPercent ? Math.round(stat.value * 100) : Math.round(stat.value * 10) / 10;
+                        const sign = statProperties.showSign ? (value >= 0 ? "+" : "-") : "";
                         statsList.append($(`
-                            <li>${statProperties.displayName}: ${value}${statProperties.unit}</li>
+                            <li>${statProperties.displayName}: ${sign}${value}${statProperties.unit}</li>
                         `))
                     }
                     

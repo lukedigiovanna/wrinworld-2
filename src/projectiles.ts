@@ -123,7 +123,7 @@ projectilesCodex.set(ProjectileIndex.ARROW, {
     drag: 0.2,
     hitboxSize: new Vector(0.25, 0.25),
     colliderSize: new Vector(0.2, 0.2),
-    chanceOfBreaking: 0.4,
+    chanceOfBreaking: 0.2,
     destroyOnPhysicalCollision: true,
     onDestroy(gameObject) {
         chanceDropItem(gameObject, itemsCodex.get(ItemIndex.ARROW), this.chanceOfBreaking);

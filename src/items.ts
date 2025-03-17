@@ -32,6 +32,7 @@ interface ItemStatProperty {
     iconID: string;
     unit: string;
     isPercent: boolean;
+    showSign: boolean;
 }
 
 const itemStatPropertiesCodex = new Codex<ItemStatIndex, ItemStatProperty>();
@@ -40,31 +41,78 @@ itemStatPropertiesCodex.set(ItemStatIndex.DAMAGE, {
     iconID: "damage_stat_icon",
     unit: "",
     isPercent: false,
+    showSign: false,
 });
 itemStatPropertiesCodex.set(ItemStatIndex.COOLDOWN, {
     displayName: "Cooldown",
     iconID: "cooldown_stat_icon",
     unit: "s",
     isPercent: false,
+    showSign: false,
 });
 itemStatPropertiesCodex.set(ItemStatIndex.DAMAGE_PER_SECOND, {
     displayName: "DPS",
     iconID: "damage_per_second_stat_icon",
     unit: "",
     isPercent: false,
+    showSign: false,
 });
 itemStatPropertiesCodex.set(ItemStatIndex.KNOCKBACK, {
     displayName: "Knockback",
     iconID: "knockback_stat_icon",
     unit: "",
     isPercent: false,
+    showSign: false,
 });
 itemStatPropertiesCodex.set(ItemStatIndex.ESSENCE_COST, {
     displayName: "Essence Cost",
     iconID: "essence_cost_stat_icon",
     unit: "",
     isPercent: false,
-})
+    showSign: false,
+});
+itemStatPropertiesCodex.set(ItemStatIndex.RESISTANCE, {
+    displayName: "Resistance",
+    iconID: "resistance_stat_icon",
+    unit: "%",
+    isPercent: true,
+    showSign: true,
+});
+itemStatPropertiesCodex.set(ItemStatIndex.CHANCE_OF_BREAKING, {
+    displayName: "Break Chance",
+    iconID: "chance_of_breaking_stat_icon",
+    unit: "%",
+    isPercent: true,
+    showSign: false,
+});
+itemStatPropertiesCodex.set(ItemStatIndex.HEAL, {
+    displayName: "Heal",
+    iconID: "heal_stat_icon",
+    unit: " HP",
+    isPercent: false,
+    showSign: true,
+});
+itemStatPropertiesCodex.set(ItemStatIndex.REGENERATION, {
+    displayName: "Regeneration",
+    iconID: "regeneration_stat_icon",
+    unit: " HP/s",
+    isPercent: false,
+    showSign: true,
+});
+itemStatPropertiesCodex.set(ItemStatIndex.MAX_HP_BOOST, {
+    displayName: "Max HP Boost",
+    iconID: "max_hp_boost_stat_icon",
+    unit: " HP",
+    isPercent: false,
+    showSign: true,
+});
+itemStatPropertiesCodex.set(ItemStatIndex.ESSENCE, {
+    displayName: "Essence",
+    iconID: "essence_stat_icon",
+    unit: "",
+    isPercent: false,
+    showSign: true,
+});
 
 interface ItemStat {
     statIndex: ItemStatIndex;
@@ -147,7 +195,7 @@ function equipWeapon(player: GameObject, weapon: WeaponIndex) {
 function generateStatsForWeapon(weaponIndex: WeaponIndex): ItemStat[] {
     const weapon = weaponsCodex.get(weaponIndex);
     const attack = weapon.attack();
-    return [
+    const stats = [
         {
             statIndex: ItemStatIndex.COOLDOWN,
             value: weapon.cooldown,
@@ -165,6 +213,13 @@ function generateStatsForWeapon(weaponIndex: WeaponIndex): ItemStat[] {
             value: attack.knockback,
         }
     ];
+    if (attack.hasOwnProperty("chanceOfBreaking")) {
+        stats.push({
+            statIndex: ItemStatIndex.CHANCE_OF_BREAKING,
+            value: (attack as any).chanceOfBreaking
+        });
+    }
+    return stats;
 }
 
 const itemsCodex = new Codex<ItemIndex, Item>();
@@ -277,7 +332,15 @@ itemsCodex.set(ItemIndex.HEALING_VIAL, {
     use(player) {
         const health = player.getComponent("health");
         return health.data.heal(10) > 0;
-    }
+    },
+    getStats() {
+        return [
+            {
+                statIndex: ItemStatIndex.HEAL,
+                value: 10
+            }
+        ]
+    },
 });
 itemsCodex.set(ItemIndex.DAGGERS, {
     itemIndex: ItemIndex.DAGGERS,
@@ -311,7 +374,15 @@ itemsCodex.set(ItemIndex.ESSENCE_VIAL, {
         // TODO: add 20 essence (or something like that) to the player
         const essenceManager = player.getComponent("essence-manager");
         return essenceManager.data.addEssence(20) > 0;
-    }
+    },
+    getStats() {
+        return [
+            {
+                statIndex: ItemStatIndex.ESSENCE,
+                value: 20,
+            }
+        ]
+    },
 });
 itemsCodex.set(ItemIndex.FLAME_UPGRADE, {
     itemIndex: ItemIndex.FLAME_UPGRADE,
@@ -359,7 +430,15 @@ itemsCodex.set(ItemIndex.HEART, {
     unequip(player) {
         const health = player.getComponent("health");
         health.data.setMaximumHP(health.data.maximumHP - 10);
-    }
+    },
+    getStats() {
+        return [
+            {
+                statIndex: ItemStatIndex.MAX_HP_BOOST,
+                value: 10,
+            }
+        ]
+    },
 });
 itemsCodex.set(ItemIndex.POISON_ARROW, {
     itemIndex: ItemIndex.POISON_ARROW,
@@ -454,7 +533,15 @@ itemsCodex.set(ItemIndex.HEART_CRYSTAL, {
     unequip(player) {
         const health = player.getComponent("health");
         health.data.regenerationRate -= 1;
-    }
+    },
+    getStats() {
+        return [
+            {
+                statIndex: ItemStatIndex.REGENERATION,
+                value: 1
+            }
+        ]
+    },
 });
 itemsCodex.set(ItemIndex.STUN_FIDDLE, {
     itemIndex: ItemIndex.STUN_FIDDLE,
@@ -510,6 +597,20 @@ itemsCodex.set(ItemIndex.BASIC_SHIELD, {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
+    equip(player) {
+        player.getComponent("health").data.resistance += 0.1;
+    },
+    unequip(player) {
+        player.getComponent("health").data.resistance -= 0.1;
+    },
+    getStats() {
+        return [
+            {
+                statIndex: ItemStatIndex.RESISTANCE,
+                value: 0.1
+            }
+        ];
+    }
 });
 itemsCodex.set(ItemIndex.QUICK_BOW, {
     itemIndex: ItemIndex.QUICK_BOW,

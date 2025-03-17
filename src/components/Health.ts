@@ -13,6 +13,7 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
         hp: 20,
         maximumHP: 20,
         regenerationRate: 0,
+        resistance: 0, // percent damage avoided
         healthBarDisplayMode: HealthBarDisplayMode.NONE,
         timeLastShowedHealthBar: -999,
         damageSoundEffectID: undefined,
@@ -41,6 +42,7 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
             if (data.damageSoundEffectID) {
                 getSound(data.damageSoundEffectID).play();
             }
+            amount *= (1 - data.resistance);
             this.hp = Math.max(0, this.hp - amount);
             if (this.healthBarDisplayMode !== HealthBarDisplayMode.NONE) {
                 this.timeLastShowedHealthBar = gameObject.game.time;
