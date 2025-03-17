@@ -128,6 +128,8 @@ window.onload = async () => {
         loadImage("portal_particle", "assets/images/particles/portal_particle.png"),
         loadImage("sword_spark", "assets/images/particles/sword_spark.png"),
         loadImage("slime_particle", "assets/images/particles/slime_particle.png"),
+        loadImage("poison_particle", "assets/images/particles/poison.png"),
+        loadImage("flame_particle", "assets/images/particles/flame.png"),
     
         // UI
         loadImage("hotbar_slot", "assets/images/ui/hotbar_slot.png"),

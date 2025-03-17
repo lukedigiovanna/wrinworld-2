@@ -2,11 +2,13 @@ import { GameObjectFactory, GameObject, Team } from "./";
 import { Vector } from "../utils";
 import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager, 
          Health, WeaponManager, EssenceManager,
-         HealthBarDisplayMode} from "../components";
+         HealthBarDisplayMode,
+         StatusEffectManager} from "../components";
 import { spriteRenderer } from "../renderers";
 import { ItemIndex, itemsCodex } from "../items";
 import { getImage } from "../imageLoader";
 import input from "../input";
+import { StatusEffectIndex } from "../statusEffects";
 
 const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const player = new GameObject();
@@ -24,13 +26,14 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
 
     const health = player.addComponent(Health);
     health.data.initializeHealth(50);
-    health.data.regenerationRate = 0.1;
+    health.data.regenerationRate = 0.0;
     health.data.healthBarDisplayMode = HealthBarDisplayMode.NONE;
 
     player.addComponent(InventoryManager);
 
     player.addComponent(WeaponManager);
     player.addComponent(EssenceManager);
+    player.addComponent(StatusEffectManager);
 
     player.addComponent((gameObject) => {
         return {
@@ -48,8 +51,10 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                             inventoryManager.data.inventory.addItemIndex(i);
                         }
                     }
-
                 }
+
+                gameObject.getComponent("status-effect-manager").data.applyEffect(StatusEffectIndex.POISON, 1, 10);
+                gameObject.getComponent("status-effect-manager").data.applyEffect(StatusEffectIndex.FLAME, 1, 5);
             }
         }
     })

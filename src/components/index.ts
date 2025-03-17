@@ -31,3 +31,4 @@ export * from "./EnemyAI";
 export * from "./InventoryManager";
 export * from "./WeaponManager";
 export * from "./EssenceManager";
+export * from "./StatusEffectManager";

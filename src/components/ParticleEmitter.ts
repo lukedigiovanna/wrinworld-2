@@ -30,6 +30,7 @@ interface Particle {
 }
 
 interface ParticleEmitterData {
+    enabled: boolean;
     spriteID: () => string;
     layer: () => ParticleLayer;
     rate: () => number; // particles per second
@@ -48,6 +49,7 @@ const ParticleEmitter: (data: Partial<ParticleEmitterData>, altID?: string) => C
     return (gameObject: GameObject) => {
         let timer = 0.0;
         const data: ParticleEmitterData = {
+            enabled: true,
             spriteID: () => "square",
             layer: () => ParticleLayer.ABOVE_OBJECTS,
             rate: () => 1.0, 
@@ -87,11 +89,13 @@ const ParticleEmitter: (data: Partial<ParticleEmitterData>, altID?: string) => C
         return {
             id: `particle-emitter${altID.length > 0 ? `-${altID}` : ''}`,
             update(dt) {
-                timer += dt;
-                if (currentRate > 0 && timer > (1.0 / currentRate)) {
-                    timer %= 1.0 / currentRate;
-                    currentRate = data.rate();
-                    data.emit();
+                if (data.enabled) {
+                    timer += dt;
+                    if (currentRate > 0 && timer > (1.0 / currentRate)) {
+                        timer %= 1.0 / currentRate;
+                        currentRate = data.rate();
+                        data.emit();
+                    }
                 }
             },
             data

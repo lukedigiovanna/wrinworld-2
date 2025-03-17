@@ -176,6 +176,9 @@ class MathUtils {
     }
 
     public static randomChoice(options: any[]) {
+        if (options.length === 0) {
+            return undefined;
+        }
         return options[this.randomInt(0, options.length - 1)];
     }
 
