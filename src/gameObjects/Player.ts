@@ -39,8 +39,8 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                 const inventoryManager = gameObject.getComponent("inventory-manager");
                 if (inventoryManager) {
                     inventoryManager.data.inventory.addItemIndex(ItemIndex.BROAD_SWORD);
-                    inventoryManager.data.inventory.addItemIndex(ItemIndex.CRYSTAL_BOMB);
-                    inventoryManager.data.inventory.addItemIndex(ItemIndex.ESSENCE_VIAL);
+                    // inventoryManager.data.inventory.addItemIndex(ItemIndex.CRYSTAL_BOMB);
+                    // inventoryManager.data.inventory.addItemIndex(ItemIndex.ESSENCE_VIAL);
                     // for (let i = 2; i <= 24; i++) {
                     //     const item = itemsCodex.get(i as ItemIndex);
                     //     for (let j = 0; j < item.maxStack; j++) {

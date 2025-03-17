@@ -40,11 +40,11 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
             },
             update(dt) {
                 if (gameObject.game.getTileIndex(gameObject.position) === TileIndex.WATER) {
-                    if (enemyType.spriteID) {
+                    if (enemyType.waterSpriteID) {
                         gameObject.renderer!.data.spriteID = enemyType.waterSpriteID;
+                        gameObject.renderer!.data.offset = new Vector(0, Math.sin(gameObject.age * 6) * 0.04);
+                        data.collider!.data.castShadow = false;
                     }
-                    gameObject.renderer!.data.offset = new Vector(0, Math.sin(gameObject.age * 6) * 0.04);
-                    data.collider!.data.castShadow = false;
                 }
                 else {
                     gameObject.renderer!.data.spriteID = enemyType.spriteID;

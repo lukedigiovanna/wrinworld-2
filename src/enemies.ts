@@ -103,6 +103,7 @@ enemiesCodex.set(EnemyIndex.REVENANT_EYE, {
 });
 enemiesCodex.set(EnemyIndex.WRETCHED_SKELETON, {
     spriteID: "wretched_skeleton",
+    waterSpriteID: "wretched_skeleton_water",
     scale: new Vector(1, 2),
     physicalColliderOffset: new Vector(0, -0.9),
     physicalColliderSize: new Vector(0.8, 0.2),

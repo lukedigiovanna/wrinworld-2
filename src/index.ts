@@ -81,6 +81,7 @@ window.onload = async () => {
         loadImage("revenant_eye", "assets/images/enemies/revenant_eye.png"),
         loadImage("wraith", "assets/images/enemies/wraith.png"),
         loadImage("wretched_skeleton", "assets/images/enemies/wretched_skeleton.png"),
+        loadImage("wretched_skeleton_water", "assets/images/enemies/wretched_skeleton_water.png"),
 
         loadImage("portal", "assets/images/portal.png"),
         loadImage("essence_orb", "assets/images/essence_orb.png"),

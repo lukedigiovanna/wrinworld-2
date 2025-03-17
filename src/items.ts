@@ -86,24 +86,24 @@ enum ItemIndex {
     QUICK_BOW,
     // Projectiles
     ARROW,
-    POISON_ARROW,
-    FLAME_ARROW,
+    POISON_ARROW, // not implemented
+    FLAME_ARROW, // not implemented
     CRYSTAL_BOMB,
-    ROOT_SNARE,
+    ROOT_SNARE, // not implemented
     // Consumables
     HEALING_VIAL,
     ESSENCE_VIAL,
     // Upgrades
-    FLAME_UPGRADE,
-    POISON_UPGRADE,
-    STRENGTH_UPGRADE,
+    FLAME_UPGRADE, // not implemented
+    POISON_UPGRADE, // not implemented
+    STRENGTH_UPGRADE, // not implemented
     // Buffs
     HEART,
     HEART_CRYSTAL,
-    BASIC_SHIELD,
+    BASIC_SHIELD, // not implemented
     // Mystic arts
-    TELEPORTATION_RUNE,
-    STUN_FIDDLE,
+    TELEPORTATION_RUNE, // not implemented
+    STUN_FIDDLE, // not implemented
 }
 
 // Return true if successfully used.
