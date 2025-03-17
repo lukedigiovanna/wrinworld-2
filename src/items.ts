@@ -478,8 +478,10 @@ itemsCodex.set(ItemIndex.TELEPORTATION_RUNE, {
     consumable: false,
     essenceCost: 5,
     maxStack: 1,
-    use(player) {
-        return false; // TODO: teleport to mouse position
+    use(player, target) {
+        player.position.set(target);
+        // TODO: spawn particles
+        return true;
     }
 });
 itemsCodex.set(ItemIndex.BATTLE_HAMMER, {
