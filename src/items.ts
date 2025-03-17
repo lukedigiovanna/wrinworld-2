@@ -387,7 +387,7 @@ itemsCodex.set(ItemIndex.ESSENCE_VIAL, {
 itemsCodex.set(ItemIndex.FLAME_UPGRADE, {
     itemIndex: ItemIndex.FLAME_UPGRADE,
     displayName: "Flame Upgrade",
-    description: "Adds a firey touch to a weapon",
+    description: "Adds a fiery touch to a weapon",
     category: "Upgrade",
     iconSpriteID: "flame_upgrade",
     consumable: false,
@@ -637,7 +637,7 @@ itemsCodex.set(ItemIndex.QUICK_BOW, {
 itemsCodex.set(ItemIndex.FLAME_ARROW,  {
     itemIndex: ItemIndex.FLAME_ARROW,
     displayName: "Flame Arrow",
-    description: "A firey tip is sure to leave a burn",
+    description: "A fiery tip is sure to leave a burn",
     category: "Projectile",
     iconSpriteID: "flame_arrow_icon",
     consumable: false,
