@@ -264,7 +264,6 @@ class MathUtils {
             let t = (target[side] - (origin as any)[axis]) / (direction as any)[axis];
             if (t >= 0) {
                 let q = (p(t) as any)[altAxis];
-                console.log(side, axis, t, q);
                 if (axis === "x") {
                     if (q >= target.bottom && q <= target.top) {
                         return t;
