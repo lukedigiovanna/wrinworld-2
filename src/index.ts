@@ -13,16 +13,6 @@ const fpsSamples = 5;
 let canvas: HTMLCanvasElement | undefined;
 let ctx: CanvasRenderingContext2D | null = null;
 
-// const testCanvas = document.createElement("canvas");
-// testCanvas.width = 60;
-// testCanvas.height = 10;
-// const testContext = testCanvas.getContext("2d");
-// if (testContext) {
-//     testContext.fillStyle = "red";
-//     testContext.fillRect(0, 0, 60, 10);
-// }
-// testCanvas.
-
 const mainLoop = () => {
     if (!game || !canvas || !ctx) {
         throw Error("Cannot run main loop without initialized game");

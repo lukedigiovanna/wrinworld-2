@@ -4,6 +4,18 @@ import { TileIndex } from "../tiles";
 import { Vector } from "../utils";
 import { WeaponIndex } from "../weapons";
 
+// system: when enemies are far they should wander
+// .       enemy has a "sight" distance: if they have line of sight to player they follow
+// .       enemy has a "sense" distance: if their target is within a distance, regardless of obstacles they will track
+// .       
+
+enum EnemyAIState {
+    IDLE,
+    SEARCH,
+    FOLLOW,
+    ATTACK,
+}
+
 interface BasicFollowAndAttackProperties {
     // How close the target must be before we can start attacking
     followDistance: number;

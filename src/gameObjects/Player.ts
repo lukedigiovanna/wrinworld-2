@@ -1,5 +1,5 @@
 import { GameObjectFactory, GameObject, Team } from "./";
-import { Vector } from "../utils";
+import { MathUtils, Rectangle, Vector } from "../utils";
 import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager, 
          Health, WeaponManager, EssenceManager,
          HealthBarDisplayMode,
