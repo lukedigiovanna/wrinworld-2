@@ -1,6 +1,6 @@
 import settings from "./settings";
 import { Game } from "./game";
-import { loadImage } from "./imageLoader";
+import { getImage, loadImage } from "./imageLoader";
 import { loadSound } from "./soundLoader";
 
 let lastTime = new Date().getTime();
@@ -11,35 +11,85 @@ const gameTickRate = 60;
 const gameTickPeriod = 1 / gameTickRate;
 const fpsSamples = 5;
 let canvas: HTMLCanvasElement | undefined;
-let ctx: CanvasRenderingContext2D | null = null;
+let gl: WebGLRenderingContext | null = null;
+
+let squareVertexBuffer: WebGLBuffer | null = null;
+let shaderProgram: WebGLProgram | null = null;
+
+const squareVertices = new Float32Array([
+    -0.5, -0.5,  0, 1, // Bottom-left
+     0.5, -0.5,  1, 1, // Bottom-right
+    -0.5,  0.5,  0, 0, // Top-left
+     0.5,  0.5,  1, 0  // Top-right
+]);
+
+
+const vertexShaderCode = `
+attribute vec2 a_position;
+attribute vec2 a_textureCoord;
+varying vec2 texCoord;
+
+void main() {
+    gl_Position = vec4(a_position, 0.0, 1.0);
+    texCoord = a_textureCoord;
+}
+`
+
+const fragmentShaderCode = `
+precision mediump float;
+varying vec2 texCoord;
+uniform sampler2D texture;
+
+void main() {
+    vec4 textureColor = texture2D(texture, texCoord);
+    if (textureColor.a < 0.1) discard;
+    gl_FragColor = textureColor * vec4(texCoord.x, 1, 1, 1);
+}
+`
+
+let texture: WebGLTexture | null = null;
 
 const mainLoop = () => {
-    if (!game || !canvas || !ctx) {
-        throw Error("Cannot run main loop without initialized game");
-    }
-    const nowTime = new Date().getTime();
-    const dt = (nowTime - lastTime) / 1000;
-    fpsAverage = (fpsAverage * (fpsSamples - 1) + (1.0 / dt)) / fpsSamples;
-    lastTime = nowTime;
+    // if (!game || !canvas || !gl) {
+    //     throw Error("Cannot run main loop without initialized game");
+    // }
+    // const nowTime = new Date().getTime();
+    // const dt = (nowTime - lastTime) / 1000;
+    // fpsAverage = (fpsAverage * (fpsSamples - 1) + (1.0 / dt)) / fpsSamples;
+    // lastTime = nowTime;
     
-    accumulator += dt;
+    // accumulator += dt;
     // Don't allow accumulator to exceed a second of elapsed time -- too much of a jump
-    accumulator = Math.min(1, accumulator);
-    while (accumulator >= gameTickPeriod) {
-        game.preUpdate();
-        game.update(gameTickPeriod);
-        accumulator -= gameTickPeriod;
+    // accumulator = Math.min(1, accumulator);
+    // while (accumulator >= gameTickPeriod) {
+    //     game.preUpdate();
+    //     game.update(gameTickPeriod);
+    //     accumulator -= gameTickPeriod;
+    // }
+
+    // game.draw();
+
+    // if (settings.showFPS) {
+    //     ctx.fillStyle = "red";
+    //     ctx.font = "bold 20px sans-serif";
+    //     ctx.fillText(`FPS: ${Math.round(fpsAverage)}`, 10, 25);
+    //     ctx.fillText(`OBJS: ${game.totalObjects}`, 10, 50);
+    //     ctx.fillText(`ACTIVE: ${game.totalActiveObjects}`, 10, 75);
+    // }
+
+    if (!canvas || !gl) {
+        throw Error("Cannot run mainLoop without canvas or gl context");
     }
 
-    game.draw();
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.clearColor(0, 0, 0, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
 
-    if (settings.showFPS) {
-        ctx.fillStyle = "red";
-        ctx.font = "bold 20px sans-serif";
-        ctx.fillText(`FPS: ${Math.round(fpsAverage)}`, 10, 25);
-        ctx.fillText(`OBJS: ${game.totalObjects}`, 10, 50);
-        ctx.fillText(`ACTIVE: ${game.totalActiveObjects}`, 10, 75);
-    }
+    gl.useProgram(shaderProgram);
+
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexBuffer);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
     window.requestAnimationFrame(mainLoop);
 }
@@ -162,9 +212,9 @@ window.onload = async () => {
     console.log("[FINISHED LOADING ASSETS...]");
 
     canvas = document.getElementById('game-canvas') as HTMLCanvasElement;    
-    ctx = canvas.getContext('2d');
+    gl = canvas.getContext('webgl');
 
-    if (!ctx) {
+    if (!gl) {
         throw Error("Fatal: failed to get context");
     }
 
@@ -177,7 +227,60 @@ window.onload = async () => {
         canvas.height = window.innerHeight;
     }
 
-    game = new Game(canvas, ctx);
+    // game = new Game(canvas, gl);
+
+
+    // WebGL initialization
+    const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+    if (!vertexShader) throw Error("Failed to create vertex shader");
+    gl.shaderSource(vertexShader, vertexShaderCode);
+    gl.compileShader(vertexShader);
+    if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
+        console.error(gl.getShaderInfoLog(vertexShader));
+        gl.deleteShader(shaderProgram);
+        return null;
+    } 
+
+    const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+    if (!fragmentShader) throw Error("Failed to create vertex shader");
+    gl.shaderSource(fragmentShader, fragmentShaderCode);
+    gl.compileShader(fragmentShader);
+    if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
+        console.error(gl.getShaderInfoLog(fragmentShader));
+        gl.deleteShader(shaderProgram);
+        return null;
+    }
+
+    shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    gl.linkProgram(shaderProgram);
+
+
+    // const err = gl.getError();
+    // if (err !== 0) {
+        // throw Error(`Error compiling! Vertex: ${gl.getShaderInfoLog(vertexShader)}\nFragment: ${gl.getShaderInfoLog(fragmentShader)}`);
+    // }
+
+    gl.useProgram(shaderProgram);
+
+    squareVertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, squareVertices, gl.STATIC_DRAW);
+    const posAttribLocation = gl.getAttribLocation(shaderProgram, "a_position");
+    gl.enableVertexAttribArray(posAttribLocation);
+    gl.vertexAttribPointer(posAttribLocation, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
+    const texCoordAttribLocation = gl.getAttribLocation(shaderProgram, "a_textureCoord");
+    gl.enableVertexAttribArray(texCoordAttribLocation);
+    gl.vertexAttribPointer(texCoordAttribLocation, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+    
+    texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, getImage("wretched_skeleton"));
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
     window.requestAnimationFrame(mainLoop);
 }
