@@ -50,6 +50,15 @@ void main() {
 }
 `
 
+function getOrthographicProjection(left: number, right: number, bottom: number, top: number, far: number, near: number) {
+    return [
+        2 / (right - left), 0, 0, -(right + left) / (right - left),
+        0, 2 / (top - bottom), 0, -(top + bottom) / (top - bottom),
+        0, 0, -2 / (far - near), -(far + near) / (far - near),
+        0, 0, 0, 1
+    ];
+}
+
 let textureID = "undefined";
 window.addEventListener("click", () => {
     textureID = MathUtils.randomChoice(usedTextureIDs);
@@ -102,12 +111,9 @@ const mainLoop = () => {
     //     0, 0, 1, 0,
     //     0, 0, 0, 1,
     // ]);
-    gl.uniformMatrix4fv(gl.getUniformLocation(shaderProgram!, "projection"), false, [
-        1, 0, 0, 0,
-        0, 1, 0, 0,
-        0, 0, 1, 0,
-        0, 0, 0, 1,
-    ]);
+    gl.uniformMatrix4fv(gl.getUniformLocation(shaderProgram!, "projection"), false, 
+        getOrthographicProjection(0, 10, 0, 10, 100, 0)
+    );
 
     gl.uniform4f(gl.getUniformLocation(shaderProgram!, "color"), 1, 1, 1, 1);
     gl.bindTexture(gl.TEXTURE_2D, getTexture("grass").texture);

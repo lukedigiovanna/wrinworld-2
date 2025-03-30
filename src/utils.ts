@@ -441,5 +441,22 @@ class CatmullRomParametricCurve {
     }
 }
 
+class Color {
+    private r: number;
+    private g: number;
+    private b: number;
+    private a: number;
+
+    constructor(r: number, g: number, b: number, a: number) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
+    }
+
+    public static WHITE = new Color(1, 1, 1, 1);
+    public static BLACK = new Color(0, 0, 0, 1);
+}
+
 export { Vector, MathUtils, PerlinNoise, LinearParametricCurve, 
-         CatmullRomParametricCurve, NumberRange, Rectangle };
+         CatmullRomParametricCurve, NumberRange, Rectangle, Color };

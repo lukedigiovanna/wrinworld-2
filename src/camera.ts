@@ -1,5 +1,5 @@
 import input from "./input";
-import { Vector, MathUtils } from "./utils";
+import { Vector, MathUtils, Color} from "./utils";
 
 class Camera {
     public position: Vector; // center of camera view
@@ -7,15 +7,17 @@ class Camera {
     public height: number;
 
     private canvas: HTMLCanvasElement;
-    private ctx: CanvasRenderingContext2D;
+    private gl: WebGLRenderingContext;
+
+    private color: Color = Color.WHITE;
 
     public target: Vector = Vector.zero();
 
     public verticalBoundary: [number, number] = [-99999, 99999];
 
-    constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
+    constructor(canvas: HTMLCanvasElement, gl: WebGLRenderingContext) {
         this.canvas = canvas;
-        this.ctx = ctx;
+        this.gl = gl;
         this.position = Vector.zero();
         this.alignedPosition = Vector.zero();
         this.height = 18;
