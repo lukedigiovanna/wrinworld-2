@@ -9,7 +9,7 @@ class Camera {
     private canvas: HTMLCanvasElement;
     private gl: WebGLRenderingContext;
 
-    private color: Color = Color.WHITE;
+    public color: Color = Color.WHITE;
 
     public target: Vector = Vector.zero();
 
@@ -45,17 +45,17 @@ class Camera {
     }
 
     // sets the color for future draw operations
-    public setFillColor(color: string) {
-        this.ctx.fillStyle = color;
-    }
+    // public setFillColor(color: string) {
+    //     this.ctx.fillStyle = color;
+    // }
 
-    public setStrokeColor(color: string) {
-        this.ctx.strokeStyle = color;
-    }
+    // public setStrokeColor(color: string) {
+    //     this.ctx.strokeStyle = color;
+    // }
 
-    public setLineWidth(width: number) {
-        this.ctx.lineWidth = width;
-    }
+    // public setLineWidth(width: number) {
+    //     this.ctx.lineWidth = width;
+    // }
 
     // clears the camera view
     public clear() {

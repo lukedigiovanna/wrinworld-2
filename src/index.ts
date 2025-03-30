@@ -3,6 +3,7 @@ import { Game } from "./game";
 import { getImage, loadImage, loadImageAndTexture, getTexture, usedTextureIDs } from "./imageLoader";
 import { loadSound } from "./soundLoader";
 import { MathUtils } from "./utils";
+import { ShaderProgram } from "./shader";
 
 let lastTime = new Date().getTime();
 let game: Game | undefined = undefined;
@@ -15,7 +16,7 @@ let canvas: HTMLCanvasElement | undefined;
 let gl: WebGLRenderingContext | null = null;
 
 let squareVertexBuffer: WebGLBuffer | null = null;
-let shaderProgram: WebGLProgram | null = null;
+let shaderProgram: ShaderProgram | null = null;
 
 const squareVertices = new Float32Array([
     -0.5, -0.5,  0, 1, // Bottom-left
@@ -92,8 +93,8 @@ const mainLoop = () => {
     //     ctx.fillText(`ACTIVE: ${game.totalActiveObjects}`, 10, 75);
     // }
 
-    if (!canvas || !gl) {
-        throw Error("Cannot run mainLoop without canvas or gl context");
+    if (!canvas || !gl || !shaderProgram) {
+        throw Error("Cannot run mainLoop without canvas or gl context or shaderProgram");
     }
 
     const elapsed = new Date().getTime() - start;
@@ -102,7 +103,7 @@ const mainLoop = () => {
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    gl.useProgram(shaderProgram);
+    shaderProgram.use();
 
     // const R = elapsed / 1000;
     // gl.uniformMatrix4fv(gl.getUniformLocation(shaderProgram!, "projection"), false, [
@@ -111,11 +112,11 @@ const mainLoop = () => {
     //     0, 0, 1, 0,
     //     0, 0, 0, 1,
     // ]);
-    gl.uniformMatrix4fv(gl.getUniformLocation(shaderProgram!, "projection"), false, 
+    gl.uniformMatrix4fv(gl.getUniformLocation(shaderProgram.program, "projection"), false, 
         getOrthographicProjection(0, 10, 0, 10, 100, 0)
     );
 
-    gl.uniform4f(gl.getUniformLocation(shaderProgram!, "color"), 1, 1, 1, 1);
+    gl.uniform4f(gl.getUniformLocation(shaderProgram.program, "color"), 1, 1, 1, 1);
     gl.bindTexture(gl.TEXTURE_2D, getTexture("grass").texture);
     gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexBuffer);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -263,45 +264,24 @@ window.onload = async () => {
     // game = new Game(canvas, gl);
 
     // WebGL initialization
-    const vertexShader = gl.createShader(gl.VERTEX_SHADER);
-    if (!vertexShader) throw Error("Failed to create vertex shader");
-    gl.shaderSource(vertexShader, vertexShaderCode);
-    gl.compileShader(vertexShader);
-    if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
-        console.error(gl.getShaderInfoLog(vertexShader));
-        gl.deleteShader(shaderProgram);
-        return null;
-    } 
-
-    const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-    if (!fragmentShader) throw Error("Failed to create vertex shader");
-    gl.shaderSource(fragmentShader, fragmentShaderCode);
-    gl.compileShader(fragmentShader);
-    if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
-        console.error(gl.getShaderInfoLog(fragmentShader));
-        gl.deleteShader(shaderProgram);
-        return null;
-    }
-
-    shaderProgram = gl.createProgram();
-    gl.attachShader(shaderProgram, vertexShader);
-    gl.attachShader(shaderProgram, fragmentShader);
-    gl.linkProgram(shaderProgram);
+    
 
     // const err = gl.getError();
     // if (err !== 0) {
         // throw Error(`Error compiling! Vertex: ${gl.getShaderInfoLog(vertexShader)}\nFragment: ${gl.getShaderInfoLog(fragmentShader)}`);
     // }
 
-    gl.useProgram(shaderProgram);
+    shaderProgram = new ShaderProgram(gl, vertexShaderCode, fragmentShaderCode);
+
+    shaderProgram.use();
 
     squareVertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, squareVertices, gl.STATIC_DRAW);
-    const posAttribLocation = gl.getAttribLocation(shaderProgram, "a_position");
+    const posAttribLocation = shaderProgram.getAttribLocation("a_position");
     gl.enableVertexAttribArray(posAttribLocation);
     gl.vertexAttribPointer(posAttribLocation, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
-    const texCoordAttribLocation = gl.getAttribLocation(shaderProgram, "a_textureCoord");
+    const texCoordAttribLocation = shaderProgram.getAttribLocation("a_textureCoord");
     gl.enableVertexAttribArray(texCoordAttribLocation);
     gl.vertexAttribPointer(texCoordAttribLocation, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
     
