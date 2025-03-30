@@ -29,9 +29,10 @@ const vertexShaderCode = `
 attribute vec2 a_position;
 attribute vec2 a_textureCoord;
 varying vec2 texCoord;
+uniform mat4 projection;
 
 void main() {
-    gl_Position = vec4(a_position, 0.0, 1.0);
+    gl_Position = projection * vec4(a_position, 0.0, 1.0);
     texCoord = a_textureCoord;
 }
 `
@@ -40,15 +41,20 @@ const fragmentShaderCode = `
 precision mediump float;
 varying vec2 texCoord;
 uniform sampler2D texture;
+uniform vec4 color;
 
 void main() {
     vec4 textureColor = texture2D(texture, texCoord);
     if (textureColor.a < 0.1) discard;
-    gl_FragColor = textureColor * vec4(texCoord.x, 1, 1, 1);
+    gl_FragColor = textureColor * color;
 }
 `
 
 let textureID = "undefined";
+window.addEventListener("click", () => {
+    textureID = MathUtils.randomChoice(usedTextureIDs);
+});
+const start = new Date().getTime();
 const mainLoop = () => {
     // if (!game || !canvas || !gl) {
     //     throw Error("Cannot run main loop without initialized game");
@@ -81,11 +87,32 @@ const mainLoop = () => {
         throw Error("Cannot run mainLoop without canvas or gl context");
     }
 
+    const elapsed = new Date().getTime() - start;
+
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     gl.useProgram(shaderProgram);
+
+    // const R = elapsed / 1000;
+    // gl.uniformMatrix4fv(gl.getUniformLocation(shaderProgram!, "projection"), false, [
+    //     Math.cos(R), Math.sin(R), 0, 0,
+    //     -Math.sin(R), Math.cos(R), 0, 0,
+    //     0, 0, 1, 0,
+    //     0, 0, 0, 1,
+    // ]);
+    gl.uniformMatrix4fv(gl.getUniformLocation(shaderProgram!, "projection"), false, [
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1,
+    ]);
+
+    gl.uniform4f(gl.getUniformLocation(shaderProgram!, "color"), 1, 1, 1, 1);
+    gl.bindTexture(gl.TEXTURE_2D, getTexture("grass").texture);
+    gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexBuffer);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
     gl.bindTexture(gl.TEXTURE_2D, getTexture(textureID).texture);
     gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexBuffer);
@@ -229,7 +256,6 @@ window.onload = async () => {
 
     // game = new Game(canvas, gl);
 
-
     // WebGL initialization
     const vertexShader = gl.createShader(gl.VERTEX_SHADER);
     if (!vertexShader) throw Error("Failed to create vertex shader");
@@ -255,7 +281,6 @@ window.onload = async () => {
     gl.attachShader(shaderProgram, vertexShader);
     gl.attachShader(shaderProgram, fragmentShader);
     gl.linkProgram(shaderProgram);
-
 
     // const err = gl.getError();
     // if (err !== 0) {
