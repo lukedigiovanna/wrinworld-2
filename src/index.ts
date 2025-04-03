@@ -4,7 +4,8 @@ import { getImage, loadImage, loadImageAndTexture, getTexture, usedTextureIDs } 
 import { loadSound } from "./soundLoader";
 import { MathUtils } from "./utils";
 import { ShaderProgram } from "./shader";
-import { getOrthographicProjection } from "./matrixutils";
+import { getOrthographicProjection, Matrix4 } from "./matrixutils";
+import input from "./input";
 
 let lastTime = new Date().getTime();
 let game: Game | undefined = undefined;
@@ -32,9 +33,11 @@ attribute vec2 a_position;
 attribute vec2 a_textureCoord;
 varying vec2 texCoord;
 uniform mat4 projection;
+uniform mat4 view;
+uniform mat4 model;
 
 void main() {
-    gl_Position = projection * vec4(a_position, 0.0, 1.0);
+    gl_Position = projection * view * model * vec4(a_position, 0.0, 1.0);
     texCoord = a_textureCoord;
 }
 `
@@ -57,6 +60,10 @@ window.addEventListener("click", () => {
     textureID = MathUtils.randomChoice(usedTextureIDs);
 });
 const start = new Date().getTime();
+let x = 0;
+let y = 0;
+let r = 0;
+let s = 1;
 const mainLoop = () => {
     // if (!game || !canvas || !gl) {
     //     throw Error("Cannot run main loop without initialized game");
@@ -104,8 +111,40 @@ const mainLoop = () => {
     //     0, 0, 1, 0,
     //     0, 0, 0, 1,
     // ]);
+    const height = 10 * canvas.height / canvas.width;
+    shaderProgram.setUniformMatrix4("projection", getOrthographicProjection(-10, 10, -height, height, 0, 100))
+    // shaderProgram.setUniformMatrix4("projection", Matrix4.identity());
+    shaderProgram.setUniformMatrix4("view", Matrix4.identity());
+    const translation = Matrix4.translation(x, y);
+    const rotation = Matrix4.rotation(r);
+    const scale = Matrix4.scale(s, s);
+    const transformation = Matrix4.multiply(scale, Matrix4.multiply(rotation, translation));
+    shaderProgram.setUniformMatrix4("model", transformation);
 
-    shaderProgram.setUniformMatrix4("projection", getOrthographicProjection(0, 10, 0, 10, 100, 0.1))
+    if (input.isKeyDown("KeyD")) {
+        x += 0.05;
+    }
+    if (input.isKeyDown("KeyA")) {
+        x -= 0.05;
+    }
+    if (input.isKeyDown("KeyW")) {
+        y += 0.05;
+    }
+    if (input.isKeyDown("KeyS")) {
+        y -= 0.05;
+    }
+    if (input.isKeyDown("ArrowLeft")) {
+        r -= 0.05;
+    }
+    if (input.isKeyDown("ArrowRight")) {
+        r += 0.05;
+    }
+    if (input.isKeyDown("ArrowUp")) {
+        s += 0.05;
+    }
+    if (input.isKeyDown("ArrowDown")) {
+        s -= 0.05;
+    }
 
     gl.uniform4f(gl.getUniformLocation(shaderProgram.program, "color"), 1, 1, 1, 1);
     gl.bindTexture(gl.TEXTURE_2D, getTexture("grass").texture);
