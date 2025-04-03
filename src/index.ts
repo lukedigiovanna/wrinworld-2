@@ -20,24 +20,15 @@ let gl: WebGLRenderingContext | null = null;
 let squareVertexBuffer: WebGLBuffer | null = null;
 let shaderProgram: ShaderProgram | null = null;
 
-const squareVertices = new Float32Array([
-    -0.5, -0.5,  0, 1, // Bottom-left
-     0.5, -0.5,  1, 1, // Bottom-right
-    -0.5,  0.5,  0, 0, // Top-left
-     0.5,  0.5,  1, 0  // Top-right
-]);
-
-
 const vertexShaderCode = `
 attribute vec2 a_position;
 attribute vec2 a_textureCoord;
 varying vec2 texCoord;
 uniform mat4 projection;
-uniform mat4 view;
 uniform mat4 model;
 
 void main() {
-    gl_Position = projection * view * model * vec4(a_position, 0.0, 1.0);
+    gl_Position = projection * model * vec4(a_position, 0.0, 1.0);
     texCoord = a_textureCoord;
 }
 `
@@ -92,58 +83,64 @@ const mainLoop = () => {
     //     ctx.fillText(`ACTIVE: ${game.totalActiveObjects}`, 10, 75);
     // }
 
-    if (!canvas || !gl || !shaderProgram) {
+    if (!game || !canvas || !gl || !shaderProgram) {
         throw Error("Cannot run mainLoop without canvas or gl context or shaderProgram");
     }
 
-    const elapsed = new Date().getTime() - start;
-
-    gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.clearColor(0, 0, 0, 1);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-
-    shaderProgram.use();
-
-    const height = 10 * canvas.height / canvas.width;
-    shaderProgram.setUniformMatrix4("projection", getOrthographicProjection(-10, 10, -height, height, 0, 100))
-    shaderProgram.setUniformMatrix4("view", Matrix4.identity());
-    const transformation = Matrix4.transformation(x, y, s, s, elapsed / 1000);
-    shaderProgram.setUniformMatrix4("model", transformation);
-
-    if (input.isKeyDown("KeyD")) {
-        x += 0.05;
-    }
-    if (input.isKeyDown("KeyA")) {
-        x -= 0.05;
-    }
-    if (input.isKeyDown("KeyW")) {
-        y += 0.05;
-    }
-    if (input.isKeyDown("KeyS")) {
-        y -= 0.05;
-    }
-    if (input.isKeyDown("ArrowLeft")) {
-        r -= 0.05;
-    }
-    if (input.isKeyDown("ArrowRight")) {
-        r += 0.05;
-    }
-    if (input.isKeyDown("ArrowUp")) {
-        s += 0.05;
-    }
-    if (input.isKeyDown("ArrowDown")) {
-        s -= 0.05;
-    }
-
-    shaderProgram.setUniformColor("color", Color.WHITE);
-    gl.bindTexture(gl.TEXTURE_2D, getTexture("grass").texture);
-    gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexBuffer);
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    const nowTime = new Date().getTime();
+    const dt = (nowTime - lastTime) / 1000;
+    fpsAverage = (fpsAverage * (fpsSamples - 1) + (1.0 / dt)) / fpsSamples;
+    lastTime = nowTime;
     
-    shaderProgram.setUniformColor("color", new Color(1, 1, 1, 0.5));
-    gl.bindTexture(gl.TEXTURE_2D, getTexture(textureID).texture);
-    gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexBuffer);
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    accumulator += dt;
+    // Don't allow accumulator to exceed a second of elapsed time -- too much of a jump
+    accumulator = Math.min(1, accumulator);
+    while (accumulator >= gameTickPeriod) {
+        game.preUpdate();
+        game.update(gameTickPeriod);
+        accumulator -= gameTickPeriod;
+    }
+
+    game.draw();
+
+    // const elapsed = new Date().getTime() - start;
+
+    // gl.viewport(0, 0, canvas.width, canvas.height);
+    // gl.clearColor(0, 0, 0, 1);
+    // gl.clear(gl.COLOR_BUFFER_BIT);
+
+    // shaderProgram.use();
+
+    // const height = 10 * canvas.height / canvas.width;
+    // shaderProgram.setUniformMatrix4("projection", getOrthographicProjection(-10, 10, -height, height, 0, 100))
+    // shaderProgram.setUniformMatrix4("view", Matrix4.identity());
+    // const transformation = Matrix4.transformation(x, y, s, s, elapsed / 1000);
+    // shaderProgram.setUniformMatrix4("model", transformation);
+
+    // if (input.isKeyDown("KeyD")) {
+    //     x += 0.05;
+    // }
+    // if (input.isKeyDown("KeyA")) {
+    //     x -= 0.05;
+    // }
+    // if (input.isKeyDown("KeyW")) {
+    //     y += 0.05;
+    // }
+    // if (input.isKeyDown("KeyS")) {
+    //     y -= 0.05;
+    // }
+    // if (input.isKeyDown("ArrowLeft")) {
+    //     r -= 0.05;
+    // }
+    // if (input.isKeyDown("ArrowRight")) {
+    //     r += 0.05;
+    // }
+    // if (input.isKeyDown("ArrowUp")) {
+    //     s += 0.05;
+    // }
+    // if (input.isKeyDown("ArrowDown")) {
+    //     s -= 0.05;
+    // }
 
     window.requestAnimationFrame(mainLoop);
 }
@@ -281,32 +278,14 @@ window.onload = async () => {
         canvas.height = window.innerHeight;
     }
 
-    // game = new Game(canvas, gl);
-
-    // WebGL initialization
-    
-
-    // const err = gl.getError();
-    // if (err !== 0) {
-        // throw Error(`Error compiling! Vertex: ${gl.getShaderInfoLog(vertexShader)}\nFragment: ${gl.getShaderInfoLog(fragmentShader)}`);
-    // }
-
     shaderProgram = new ShaderProgram(gl, vertexShaderCode, fragmentShaderCode);
 
     shaderProgram.use();
-
-    squareVertexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, squareVertices, gl.STATIC_DRAW);
-    const posAttribLocation = shaderProgram.getAttribLocation("a_position");
-    gl.enableVertexAttribArray(posAttribLocation);
-    gl.vertexAttribPointer(posAttribLocation, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
-    const texCoordAttribLocation = shaderProgram.getAttribLocation("a_textureCoord");
-    gl.enableVertexAttribArray(texCoordAttribLocation);
-    gl.vertexAttribPointer(texCoordAttribLocation, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
     
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);  
+
+    game = new Game(canvas, gl, shaderProgram);
 
     window.requestAnimationFrame(mainLoop);
 }

@@ -1,6 +1,7 @@
 import { getSound } from "../soundLoader";
 import { GameObject } from "../gameObjects/index";
 import { ComponentFactory } from "./index";
+import { Color } from "../utils";
 
 enum HealthBarDisplayMode {
     NONE,
@@ -75,16 +76,12 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
             const barWidth = Math.abs(gameObject.scale.x);
             const barHeight = 0.1;
             const borderWidth = 0.025;
-            camera.setFillColor(`rgba(0,0,0,${opacity})`);
+            camera.color = new Color(0, 0, 0, opacity);
             camera.fillRect(
                 gameObject.position.x, 
                 gameObject.position.y + gameObject.scale.y / 2 + topMargin, 
                 barWidth, barHeight);
-            camera.setFillColor(`rgba(
-                ${data.barColor[0]},
-                ${data.barColor[1]},
-                ${data.barColor[2]},
-                ${opacity})`);
+            camera.color = new Color(data.barColor[0], data.barColor[1], data.barColor[2], opacity);
             const realWidth = barWidth * data.hp / data.maximumHP - borderWidth * 2;
             camera.fillRect(
                 gameObject.position.x - barWidth / 2 + borderWidth + realWidth / 2, 
