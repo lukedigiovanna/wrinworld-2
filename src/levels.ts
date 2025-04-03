@@ -450,6 +450,7 @@ const LEVEL_1: Level = {
                     continue;
                 }
                 const tree = new GameObject();
+                tree.tag = "prop";
                 if (Math.random() < 0.9) {
                     tree.scale.scale(3);
                     tree.renderer = spriteRenderer("tree");

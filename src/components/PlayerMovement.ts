@@ -37,13 +37,15 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
             if (input.isKeyDown("ShiftLeft")) {
                 movement.scale(4);
             }
-            if (movement.x < 0) {
-                gameObject.scale.x = Math.abs(gameObject.scale.x) * -1;
-            }
-            else if (movement.x > 0) {
+            data.physics.data.velocity.set(movement);
+
+            const mousePos = gameObject.game.camera.screenToWorldPosition(input.mousePosition);
+            if (mousePos.x > gameObject.position.x) {
                 gameObject.scale.x = Math.abs(gameObject.scale.x);
             }
-            data.physics.data.velocity.set(movement);
+            else {
+                gameObject.scale.x = -Math.abs(gameObject.scale.x);
+            }
 
             const tileIndex = gameObject.game.getTileIndex(gameObject.position);
             if (tileIndex === TileIndex.WATER) {

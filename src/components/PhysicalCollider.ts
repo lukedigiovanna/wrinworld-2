@@ -18,9 +18,9 @@ const PhysicalCollider: ComponentFactory = (gameObject: GameObject) => {
         },
         debugRender(camera) {
             if (settings.showPhysicalColliders) {
-                camera.setStrokeColor("red");
-                camera.setLineWidth(3);
-                camera.strokeRect(gameObject.position.x + data.boxOffset.x, gameObject.position.y + data.boxOffset.y, data.boxSize.x, data.boxSize.y);
+                // camera.setStrokeColor("red");
+                // camera.setLineWidth(3);
+                // camera.strokeRect(gameObject.position.x + data.boxOffset.x, gameObject.position.y + data.boxOffset.y, data.boxSize.x, data.boxSize.y);
             }
         },
         data

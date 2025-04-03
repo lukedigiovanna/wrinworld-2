@@ -1,6 +1,6 @@
 import { Camera } from "../camera";
 import { Component, ComponentFactory, ComponentID } from "../components/index";
-import { Vector } from "../utils";
+import { Vector, Rectangle, MathUtils } from "../utils";
 import { Renderer } from "../renderers";
 import { Game, getChunkIndex } from "../game";
 import settings from "../settings";
@@ -184,8 +184,52 @@ class GameObject {
     }
 
     // gets all objects within a 1 chunk radius of this object
+    // NOTE: this could be made more efficient through caching the result!
+    // could at least be cached per frame for individual objects
+    // better: caching such a collection across objects
     public getAdjacentObjects() {
         return this.game.getAdjacentObjects(this.position);
+    }
+
+    // Performs a raycast against all 
+    public raycastHitboxes(direction: Vector, ignoreSelf: boolean=true): {hit: GameObject, distance: number} | null {
+        const adjacent = this.getAdjacentObjects();
+        let closest = null;
+        for (let i = 0; i < adjacent.length; i++) {
+            const obj = adjacent[i];
+            if (ignoreSelf && obj === this) {
+                continue;
+            }
+            if (obj.hasComponent("hitbox")) {
+                const hitbox = obj.getComponent("hitbox");
+                const rectangle = Rectangle.from(Vector.add(obj.position, hitbox.data.boxOffset), hitbox.data.boxSize);
+                const raycastResult = MathUtils.raycast(this.position, direction, rectangle);
+                if (raycastResult !== Infinity && (closest === null || raycastResult < closest.distance)) {
+                    closest = { hit: obj, distance: raycastResult };
+                }
+            }
+        }
+        return closest;
+    }
+
+    public raycastPhysicalColliders(direction: Vector, ignoreSelf: boolean=true): {hit: GameObject, distance: number} | null {
+        const adjacent = this.getAdjacentObjects();
+        let closest = null;
+        for (let i = 0; i < adjacent.length; i++) {
+            const obj = adjacent[i];
+            if (ignoreSelf && obj === this) {
+                continue;
+            }
+            if (obj.hasComponent("physical-collider")) {
+                const hitbox = obj.getComponent("physical-collider");
+                const rectangle = Rectangle.from(Vector.add(obj.position, hitbox.data.boxOffset), hitbox.data.boxSize);
+                const raycastResult = MathUtils.raycast(this.position, direction, rectangle);
+                if (raycastResult !== Infinity && (closest === null || raycastResult < closest.distance)) {
+                    closest = { hit: obj, distance: raycastResult };
+                }
+            }
+        }
+        return closest;
     }
 }
 

@@ -3,7 +3,7 @@ import { GameObject } from "../gameObjects";
 import input, { InputLayer } from "../input";
 import { Item } from "../items";
 import { Inventory } from "../inventory";
-import { getImage } from "../imageLoader";
+import { getImage, getTexture } from "../imageLoader";
 import { Vector } from "../utils";
 
 const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
@@ -96,7 +96,7 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
             if (selected) {
                 let sign = Math.sign(gameObject.scale.x)
                 const offset = 0.5;
-                camera.drawImage(getImage(selected.iconSpriteID), gameObject.position.x + offset * sign, gameObject.position.y, 0.9 * sign, 0.9);
+                camera.drawTexture(getTexture(selected.iconSpriteID), gameObject.position.x + offset * sign, gameObject.position.y, 0.9 * sign, 0.9);
             }
         },
         data

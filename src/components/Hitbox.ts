@@ -48,15 +48,15 @@ const Hitbox: ComponentFactory = (gameObject: GameObject) => {
         },
         debugRender(camera) {
             if (settings.showHitboxes) {
-                camera.setStrokeColor("blue");
-                camera.setLineWidth(3);
-                const rotatedOffset = Vector.rotated(this.data.boxOffset, gameObject.rotation);
-                camera.strokeRect(
-                    gameObject.position.x + rotatedOffset.x, 
-                    gameObject.position.y + rotatedOffset.y, 
-                    boxSize.x,
-                    boxSize.y
-                )
+                // camera.setStrokeColor("blue");
+                // camera.setLineWidth(3);
+                // const rotatedOffset = Vector.rotated(this.data.boxOffset, gameObject.rotation);
+                // camera.strokeRect(
+                //     gameObject.position.x + rotatedOffset.x, 
+                //     gameObject.position.y + rotatedOffset.y, 
+                //     boxSize.x,
+                //     boxSize.y
+                // )
             }
         },
         data: {

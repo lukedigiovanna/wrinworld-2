@@ -131,6 +131,26 @@ class Vector {
     }
 }
 
+interface Rectangle {
+    right: number;
+    left: number;
+    bottom: number;
+    top: number;
+}
+
+class Rectangle {
+    public static from(position: Vector, scale: Vector): Rectangle {
+        const width2 = Math.abs(scale.x) / 2;
+        const height2 = Math.abs(scale.y) / 2;
+        return {
+            right: position.x + width2,
+            left: position.x - width2,
+            top: position.y + height2,
+            bottom: position.y - height2,
+        };
+    }
+}
+
 class NumberRange {
     public low: number;
     public high: number;
@@ -220,6 +240,52 @@ class MathUtils {
 
     public static interpolate(p: number, a: number, b: number) {
         return a + p * (b - a);
+    }
+
+    // Returns the distance to the target if it intersects and null if it never intersects
+    public static raycast(origin: Vector, direction: Vector, target: Rectangle) {
+        direction = Vector.normalized(direction);
+        // Operate on a parameterized function: p(t) = origin + direction * t
+        const p = (t: number) => Vector.add(origin, Vector.scaled(direction, t));
+        const check = (side: keyof Rectangle) => {
+            let axis;
+            let altAxis;
+            if (side === "left" || side === "right") {
+                axis = "x";
+                altAxis = "y";
+            }
+            else {
+                axis = "y";
+                altAxis = "x";
+            }
+            if ((direction as any)[axis] === 0) {
+                return null;
+            }
+            let t = (target[side] - (origin as any)[axis]) / (direction as any)[axis];
+            if (t >= 0) {
+                let q = (p(t) as any)[altAxis];
+                if (axis === "x") {
+                    if (q >= target.bottom && q <= target.top) {
+                        return t;
+                    }
+                }
+                else {
+                    if (q >= target.left && q <= target.right) {
+                        return t;
+                    }
+                }
+            }
+            return null;
+        }
+        let min = Infinity;
+        ["left", "right", "bottom", "top"].forEach(side => {
+            const c = check(side as keyof Rectangle);
+            if (c !== null && c < min) {
+                min = c;
+            }
+        });
+
+        return min;
     }
 }
 
@@ -375,5 +441,38 @@ class CatmullRomParametricCurve {
     }
 }
 
+class Color {
+    private _r: number;
+    private _g: number;
+    private _b: number;
+    private _a: number;
+
+    constructor(r: number, g: number, b: number, a: number) {
+        this._r = r;
+        this._g = g;
+        this._b = b;
+        this._a = a;
+    }
+
+    public get r() {
+        return this._r;
+    }
+
+    public get g() {
+        return this._g;
+    }
+
+    public get b() {
+        return this._b;
+    }
+
+    public get a() {
+        return this._a;
+    }
+
+    public static WHITE = new Color(1, 1, 1, 1);
+    public static BLACK = new Color(0, 0, 0, 1);
+}
+
 export { Vector, MathUtils, PerlinNoise, LinearParametricCurve, 
-         CatmullRomParametricCurve, NumberRange };
+         CatmullRomParametricCurve, NumberRange, Rectangle, Color };

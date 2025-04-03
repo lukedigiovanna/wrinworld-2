@@ -1,7 +1,9 @@
 import settings from "./settings";
 import { Game } from "./game";
-import { loadImage } from "./imageLoader";
+import { loadImage, loadImageAndTexture, usedTextureIDs } from "./imageLoader";
 import { loadSound } from "./soundLoader";
+import { MathUtils } from "./utils";
+import { ShaderProgram } from "./shader";
 
 let lastTime = new Date().getTime();
 let game: Game | undefined = undefined;
@@ -11,22 +13,46 @@ const gameTickRate = 60;
 const gameTickPeriod = 1 / gameTickRate;
 const fpsSamples = 5;
 let canvas: HTMLCanvasElement | undefined;
-let ctx: CanvasRenderingContext2D | null = null;
+let gl: WebGLRenderingContext | null = null;
+let shaderProgram: ShaderProgram | null = null;
 
-// const testCanvas = document.createElement("canvas");
-// testCanvas.width = 60;
-// testCanvas.height = 10;
-// const testContext = testCanvas.getContext("2d");
-// if (testContext) {
-//     testContext.fillStyle = "red";
-//     testContext.fillRect(0, 0, 60, 10);
-// }
-// testCanvas.
+const vertexShaderCode = `
+attribute vec2 a_position;
+attribute vec2 a_textureCoord;
+varying vec2 texCoord;
+uniform mat4 projection;
+uniform mat4 model;
 
+void main() {
+    gl_Position = projection * model * vec4(a_position, 0.0, 1.0);
+    texCoord = a_textureCoord;
+}
+`
+
+const fragmentShaderCode = `
+precision mediump float;
+varying vec2 texCoord;
+uniform sampler2D texture;
+uniform vec4 color;
+uniform vec2 spriteSize;
+
+void main() {
+    vec2 off = 0.5 / spriteSize;
+    vec4 textureColor = texture2D(texture, texCoord + off);
+    if (textureColor.a < 0.1) discard;
+    gl_FragColor = textureColor * color;
+}
+`
+
+let textureID = "undefined";
+window.addEventListener("click", () => {
+    textureID = MathUtils.randomChoice(usedTextureIDs);
+});
 const mainLoop = () => {
-    if (!game || !canvas || !ctx) {
-        throw Error("Cannot run main loop without initialized game");
+    if (!game || !canvas || !gl || !shaderProgram) {
+        throw Error("Cannot run mainLoop without canvas or gl context or shaderProgram");
     }
+
     const nowTime = new Date().getTime();
     const dt = (nowTime - lastTime) / 1000;
     fpsAverage = (fpsAverage * (fpsSamples - 1) + (1.0 / dt)) / fpsSamples;
@@ -43,94 +69,101 @@ const mainLoop = () => {
 
     game.draw();
 
-    if (settings.showFPS) {
-        ctx.fillStyle = "red";
-        ctx.font = "bold 20px sans-serif";
-        ctx.fillText(`FPS: ${Math.round(fpsAverage)}`, 10, 25);
-        ctx.fillText(`OBJS: ${game.totalObjects}`, 10, 50);
-        ctx.fillText(`ACTIVE: ${game.totalActiveObjects}`, 10, 75);
-    }
+    // if (settings.showFPS) {
+    //     ctx.fillStyle = "red";
+    //     ctx.font = "bold 20px sans-serif";
+    //     ctx.fillText(`FPS: ${Math.round(fpsAverage)}`, 10, 25);
+    //     ctx.fillText(`OBJS: ${game.totalObjects}`, 10, 50);
+    //     ctx.fillText(`ACTIVE: ${game.totalActiveObjects}`, 10, 75);
+    // }
 
     window.requestAnimationFrame(mainLoop);
 }
 
 window.onload = async () => {
+    canvas = document.getElementById('game-canvas') as HTMLCanvasElement;    
+    gl = canvas.getContext('webgl', { antialias: false });
+
+    if (!gl) {
+        throw Error("Fatal: failed to get context");
+    }
+
     console.log("[LOADING ASSETS...]");
     await Promise.all([
         // Tiles
-        loadImage("grass", "assets/images/tiles/grass.png"),
-        loadImage("water", "assets/images/tiles/water.png"),
-        loadImage("rocks", "assets/images/tiles/rocks.png"),
-        loadImage("path", "assets/images/tiles/path.png"),
-        loadImage("sand", "assets/images/tiles/sand.png"),
-        loadImage("planks", "assets/images/tiles/planks.png"),
-        loadImage("cursed_grass", "assets/images/tiles/cursed_grass.png"),
-        loadImage("cursed_path", "assets/images/tiles/cursed_path.png"),
-        loadImage("cursed_sand", "assets/images/tiles/cursed_sand.png"),
-        loadImage("cursed_planks", "assets/images/tiles/cursed_planks.png"),
+        loadImageAndTexture(gl, "grass", "assets/images/tiles/grass.png"),
+        loadImageAndTexture(gl, "water", "assets/images/tiles/water.png"),
+        loadImageAndTexture(gl, "rocks", "assets/images/tiles/rocks.png"),
+        loadImageAndTexture(gl, "path", "assets/images/tiles/path.png"),
+        loadImageAndTexture(gl, "sand", "assets/images/tiles/sand.png"),
+        loadImageAndTexture(gl, "planks", "assets/images/tiles/planks.png"),
+        loadImageAndTexture(gl, "cursed_grass", "assets/images/tiles/cursed_grass.png"),
+        loadImageAndTexture(gl, "cursed_path", "assets/images/tiles/cursed_path.png"),
+        loadImageAndTexture(gl, "cursed_sand", "assets/images/tiles/cursed_sand.png"),
+        loadImageAndTexture(gl, "cursed_planks", "assets/images/tiles/cursed_planks.png"),
 
         // Entities
-        loadImage("peach", "assets/images/peach.png"),
-        loadImage("peach_water", "assets/images/peach_water.png"),
+        loadImageAndTexture(gl, "peach", "assets/images/peach.png"),
+        loadImageAndTexture(gl, "peach_water", "assets/images/peach_water.png"),
 
-        loadImage("zombie", "assets/images/enemies/zombie.png"),
-        loadImage("zombie_water", "assets/images/enemies/zombie_water.png"),
-        loadImage("minion", "assets/images/enemies/minion.png"),
-        loadImage("minion_water", "assets/images/enemies/minion_water.png"),
-        loadImage("slime", "assets/images/enemies/slime.png"),
-        loadImage("revenant_eye", "assets/images/enemies/revenant_eye.png"),
-        loadImage("wraith", "assets/images/enemies/wraith.png"),
-        loadImage("wretched_skeleton", "assets/images/enemies/wretched_skeleton.png"),
-        loadImage("wretched_skeleton_water", "assets/images/enemies/wretched_skeleton_water.png"),
+        loadImageAndTexture(gl, "zombie", "assets/images/enemies/zombie.png"),
+        loadImageAndTexture(gl, "zombie_water", "assets/images/enemies/zombie_water.png"),
+        loadImageAndTexture(gl, "minion", "assets/images/enemies/minion.png"),
+        loadImageAndTexture(gl, "minion_water", "assets/images/enemies/minion_water.png"),
+        loadImageAndTexture(gl, "slime", "assets/images/enemies/slime.png"),
+        loadImageAndTexture(gl, "revenant_eye", "assets/images/enemies/revenant_eye.png"),
+        loadImageAndTexture(gl, "wraith", "assets/images/enemies/wraith.png"),
+        loadImageAndTexture(gl, "wretched_skeleton", "assets/images/enemies/wretched_skeleton.png"),
+        loadImageAndTexture(gl, "wretched_skeleton_water", "assets/images/enemies/wretched_skeleton_water.png"),
 
-        loadImage("portal", "assets/images/portal.png"),
-        loadImage("essence_orb", "assets/images/essence_orb.png"),
+        loadImageAndTexture(gl, "portal", "assets/images/portal.png"),
+        loadImageAndTexture(gl, "essence_orb", "assets/images/essence_orb.png"),
 
         // Props
-        loadImage("tree", "assets/images/props/tree.png"),
-        loadImage("evergreen", "assets/images/props/evergreen.png"),
+        loadImageAndTexture(gl, "tree", "assets/images/props/tree.png"),
+        loadImageAndTexture(gl, "evergreen", "assets/images/props/evergreen.png"),
         
         // Projectiles
-        loadImage("arrow", "assets/images/projectiles/arrow.png"),
-        loadImage("poison_arrow", "assets/images/projectiles/poison_arrow.png"),
-        loadImage("tear_drop", "assets/images/projectiles/tear_drop.png"),
-        loadImage("wraith_attack", "assets/images/projectiles/wraith_attack.png"),
-        loadImage("rock", "assets/images/projectiles/rock.png"),
-        loadImage("crystal_shard", "assets/images/projectiles/crystal_shard.png"),
+        loadImageAndTexture(gl, "arrow", "assets/images/projectiles/arrow.png"),
+        loadImageAndTexture(gl, "poison_arrow", "assets/images/projectiles/poison_arrow.png"),
+        loadImageAndTexture(gl, "tear_drop", "assets/images/projectiles/tear_drop.png"),
+        loadImageAndTexture(gl, "wraith_attack", "assets/images/projectiles/wraith_attack.png"),
+        loadImageAndTexture(gl, "rock", "assets/images/projectiles/rock.png"),
+        loadImageAndTexture(gl, "crystal_shard", "assets/images/projectiles/crystal_shard.png"),
 
         // Item icons
-        loadImage("zombie_brains", "assets/images/items/zombie_brains.png"),
-        loadImage("zombie_flesh", "assets/images/items/zombie_flesh.png"),
-        loadImage("broad_sword_icon", "assets/images/items/broad_sword_icon.png"),
-        loadImage("shuriken", "assets/images/items/shuriken.png"),
-        loadImage("bow", "assets/images/items/bow.png"),
-        loadImage("arrow_icon", "assets/images/items/arrow_icon.png"),
-        loadImage("healing_vial", "assets/images/items/healing_vial.png"),
-        loadImage("battle_hammer",  "assets/images/items/battle_hammer.png"),
-        loadImage("crystal_bomb", "assets/images/items/crystal_bomb.png"),
-        loadImage("daggers", "assets/images/items/daggers.png"),
-        loadImage("essence_dripped_dagger", "assets/images/items/essence_dripped_dagger.png"),
-        loadImage("essence_vial", "assets/images/items/essence_vial.png"),
-        loadImage("flame_upgrade", "assets/images/items/flame_upgrade.png"),
-        loadImage("heart_crystal", "assets/images/items/heart_crystal.png"),
-        loadImage("heart", "assets/images/items/heart.png"),
-        loadImage("poison_arrow_icon", "assets/images/items/poison_arrow.png"),
-        loadImage("flame_arrow_icon", "assets/images/items/flame_arrow_icon.png"),
-        loadImage("poison_upgrade", "assets/images/items/poison_upgrade.png"),
-        loadImage("slingshot", "assets/images/items/slingshot.png"),
-        loadImage("strength_upgrade", "assets/images/items/strength_upgrade.png"),
-        loadImage("stun_fiddle", "assets/images/items/stun_fiddle.png"),
-        loadImage("teleportation_rune", "assets/images/items/teleportation_rune.png"),
-        loadImage("root_snare", "assets/images/items/root_snare.png"),
-        loadImage("basic_shield", "assets/images/items/basic_shield.png"),
-        loadImage("quick_bow", "assets/images/items/quick_bow.png"),
+        loadImageAndTexture(gl, "zombie_brains", "assets/images/items/zombie_brains.png"),
+        loadImageAndTexture(gl, "zombie_flesh", "assets/images/items/zombie_flesh.png"),
+        loadImageAndTexture(gl, "broad_sword_icon", "assets/images/items/broad_sword_icon.png"),
+        loadImageAndTexture(gl, "shuriken", "assets/images/items/shuriken.png"),
+        loadImageAndTexture(gl, "bow", "assets/images/items/bow.png"),
+        loadImageAndTexture(gl, "arrow_icon", "assets/images/items/arrow_icon.png"),
+        loadImageAndTexture(gl, "healing_vial", "assets/images/items/healing_vial.png"),
+        loadImageAndTexture(gl, "battle_hammer",  "assets/images/items/battle_hammer.png"),
+        loadImageAndTexture(gl, "crystal_bomb", "assets/images/items/crystal_bomb.png"),
+        loadImageAndTexture(gl, "daggers", "assets/images/items/daggers.png"),
+        loadImageAndTexture(gl, "essence_dripped_dagger", "assets/images/items/essence_dripped_dagger.png"),
+        loadImageAndTexture(gl, "essence_vial", "assets/images/items/essence_vial.png"),
+        loadImageAndTexture(gl, "flame_upgrade", "assets/images/items/flame_upgrade.png"),
+        loadImageAndTexture(gl, "heart_crystal", "assets/images/items/heart_crystal.png"),
+        loadImageAndTexture(gl, "heart", "assets/images/items/heart.png"),
+        loadImageAndTexture(gl, "poison_arrow_icon", "assets/images/items/poison_arrow.png"),
+        loadImageAndTexture(gl, "flame_arrow_icon", "assets/images/items/flame_arrow_icon.png"),
+        loadImageAndTexture(gl, "poison_upgrade", "assets/images/items/poison_upgrade.png"),
+        loadImageAndTexture(gl, "slingshot", "assets/images/items/slingshot.png"),
+        loadImageAndTexture(gl, "strength_upgrade", "assets/images/items/strength_upgrade.png"),
+        loadImageAndTexture(gl, "stun_fiddle", "assets/images/items/stun_fiddle.png"),
+        loadImageAndTexture(gl, "teleportation_rune", "assets/images/items/teleportation_rune.png"),
+        loadImageAndTexture(gl, "root_snare", "assets/images/items/root_snare.png"),
+        loadImageAndTexture(gl, "basic_shield", "assets/images/items/basic_shield.png"),
+        loadImageAndTexture(gl, "quick_bow", "assets/images/items/quick_bow.png"),
 
         // Particle sprites
-        loadImage("portal_particle", "assets/images/particles/portal_particle.png"),
-        loadImage("sword_spark", "assets/images/particles/sword_spark.png"),
-        loadImage("slime_particle", "assets/images/particles/slime_particle.png"),
-        loadImage("poison_particle", "assets/images/particles/poison.png"),
-        loadImage("flame_particle", "assets/images/particles/flame.png"),
+        loadImageAndTexture(gl, "portal_particle", "assets/images/particles/portal_particle.png"),
+        loadImageAndTexture(gl, "sword_spark", "assets/images/particles/sword_spark.png"),
+        loadImageAndTexture(gl, "slime_particle", "assets/images/particles/slime_particle.png"),
+        loadImageAndTexture(gl, "poison_particle", "assets/images/particles/poison.png"),
+        loadImageAndTexture(gl, "flame_particle", "assets/images/particles/flame.png"),
     
         // UI
         loadImage("hotbar_slot", "assets/images/ui/hotbar_slot.png"),
@@ -158,8 +191,8 @@ window.onload = async () => {
         loadImage("attack_reload_9", "assets/images/ui/attack_reload_9.png"),
 
         // Misc.
-        loadImage("square",  "assets/images/square.png"),
-        loadImage("undefined", "assets/images/undefined.png"),
+        loadImageAndTexture(gl, "square",  "assets/images/square.png"),
+        loadImageAndTexture(gl, "undefined", "assets/images/undefined.png"),
 
         // -- SOUNDS --
         loadSound("item_pickup", "assets/sounds/item_pickup.wav", 5),
@@ -171,13 +204,6 @@ window.onload = async () => {
     ]);
     console.log("[FINISHED LOADING ASSETS...]");
 
-    canvas = document.getElementById('game-canvas') as HTMLCanvasElement;    
-    ctx = canvas.getContext('2d');
-
-    if (!ctx) {
-        throw Error("Fatal: failed to get context");
-    }
-
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
@@ -187,7 +213,14 @@ window.onload = async () => {
         canvas.height = window.innerHeight;
     }
 
-    game = new Game(canvas, ctx);
+    shaderProgram = new ShaderProgram(gl, vertexShaderCode, fragmentShaderCode);
+
+    shaderProgram.use();
+    
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);  
+
+    game = new Game(canvas, gl, shaderProgram);
 
     window.requestAnimationFrame(mainLoop);
 }

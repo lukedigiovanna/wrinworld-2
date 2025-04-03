@@ -1,5 +1,15 @@
 import input from "./input";
-import { Vector, MathUtils } from "./utils";
+import { Vector, MathUtils, Color} from "./utils";
+import { ShaderProgram } from "./shader";
+import { getOrthographicProjection, Matrix4 } from "./matrixutils";
+import { Texture, getTexture } from "./imageLoader";
+
+const squareVertices = new Float32Array([
+    -0.5, -0.5,  0, 1, // Bottom-left
+     0.5, -0.5,  1, 1, // Bottom-right
+    -0.5,  0.5,  0, 0, // Top-left
+     0.5,  0.5,  1, 0  // Top-right
+]);
 
 class Camera {
     public position: Vector; // center of camera view
@@ -7,18 +17,34 @@ class Camera {
     public height: number;
 
     private canvas: HTMLCanvasElement;
-    private ctx: CanvasRenderingContext2D;
+    private gl: WebGLRenderingContext;
+    private shaderProgram: ShaderProgram;
+
+    public color: Color = Color.WHITE;
 
     public target: Vector = Vector.zero();
 
     public verticalBoundary: [number, number] = [-99999, 99999];
 
-    constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
+    private squareVBO: WebGLBuffer;
+
+    constructor(canvas: HTMLCanvasElement, gl: WebGLRenderingContext, shaderProgram: ShaderProgram) {
         this.canvas = canvas;
-        this.ctx = ctx;
+        this.gl = gl;
+        this.shaderProgram = shaderProgram;
         this.position = Vector.zero();
         this.alignedPosition = Vector.zero();
         this.height = 18;
+
+        this.squareVBO = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVBO);
+        gl.bufferData(gl.ARRAY_BUFFER, squareVertices, gl.STATIC_DRAW);
+        const posAttribLocation = shaderProgram.getAttribLocation("a_position");
+        gl.enableVertexAttribArray(posAttribLocation);
+        gl.vertexAttribPointer(posAttribLocation, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
+        const texCoordAttribLocation = shaderProgram.getAttribLocation("a_textureCoord");
+        gl.enableVertexAttribArray(texCoordAttribLocation);
+        gl.vertexAttribPointer(texCoordAttribLocation, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
     }
 
     public update(dt: number) {
@@ -42,106 +68,68 @@ class Camera {
         this.height = MathUtils.clamp(this.height, 1, 100);
     }
 
-    // sets the color for future draw operations
-    public setFillColor(color: string) {
-        this.ctx.fillStyle = color;
-    }
-
-    public setStrokeColor(color: string) {
-        this.ctx.strokeStyle = color;
-    }
-
-    public setLineWidth(width: number) {
-        this.ctx.lineWidth = width;
-    }
-
     // clears the camera view
     public clear() {
-        const scale = 64;
+        const scale = 32;
+        const pixelSize = 1 / scale; // Ensure a fixed pixel unit
         this.alignedPosition.setComponents(
-            Math.round(this.position.x * scale) / scale, 
-            Math.round(this.position.y * scale) / scale
+            Math.round(this.position.x / pixelSize) * pixelSize, 
+            Math.round(this.position.y / pixelSize) * pixelSize
         );
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+        this.gl.clearColor(0, 0, 0, 1);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+        // Set the appropriate projection matrix again
+        const width = Math.round(this.width / pixelSize) * pixelSize;
+        const height = Math.round(this.height / pixelSize) * pixelSize;
+        const projection = getOrthographicProjection(
+            this.alignedPosition.x - width / 2, this.alignedPosition.x + width / 2,
+            this.alignedPosition.y - height / 2, this.alignedPosition.y + height / 2,
+            0, 100
+        );
+        this.shaderProgram.setUniformMatrix4("projection", projection);
     }
 
     // Fills a rectangle using the given world coordinates where the x,y denotes the center of the rectangle
     public fillRect(x: number, y: number, w: number, h: number) {
-        this.ctx.fillRect(
-            this.worldXToScreenX(x - w / 2),
-            this.worldYToScreenY(y + h / 2),
-            this.worldWidthToScreenWidth(w),
-            this.worldHeightToScreenHeight(h),
-        );
+        this.drawTexture(getTexture("square"), x, y, w, h);
     }
 
-    public strokeRect(x: number, y: number, w: number, h: number) {
-        this.ctx.strokeRect(
-            this.worldXToScreenX(x - w / 2),
-            this.worldYToScreenY(y + h / 2),
-            this.worldWidthToScreenWidth(w),
-            this.worldHeightToScreenHeight(h),
-        );
+    // public strokeRect(x: number, y: number, w: number, h: number) {
+    //     this.ctx.strokeRect(
+    //         this.worldXToScreenX(x - w / 2),
+    //         this.worldYToScreenY(y + h / 2),
+    //         this.worldWidthToScreenWidth(w),
+    //         this.worldHeightToScreenHeight(h),
+    //     );
+    // }
+
+    // public fillEllipse(x: number, y: number, w: number, h: number) {
+    //     this.ctx.beginPath();
+    //     this.ctx.ellipse(
+    //         this.worldXToScreenX(x), 
+    //         this.worldYToScreenY(y), 
+    //         this.worldWidthToScreenWidth(w / 2), 
+    //         this.worldHeightToScreenHeight(h / 2), 
+    //         0, 0, 2 * Math.PI
+    //     );
+    //     this.ctx.fill();
+    // }
+
+    public drawTexture(texture: Texture, x: number, y: number, w: number, h: number, angle: number=0, rotationPointOffset=Vector.zero()){ 
+        this.shaderProgram.setUniformColor("color", Color.WHITE);
+        const transformation = Matrix4.transformation(x, y, w, h, angle);
+        this.shaderProgram.setUniformMatrix4("model", transformation);
+        this.shaderProgram.setUniformColor("color", this.color);
+        this.shaderProgram.setUniform2f("spriteSize", texture.image.width, texture.image.height);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, texture.texture);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.squareVBO);
+        this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
     }
-
-    public fillEllipse(x: number, y: number, w: number, h: number) {
-        this.ctx.beginPath();
-        this.ctx.ellipse(
-            this.worldXToScreenX(x), 
-            this.worldYToScreenY(y), 
-            this.worldWidthToScreenWidth(w / 2), 
-            this.worldHeightToScreenHeight(h / 2), 
-            0, 0, 2 * Math.PI
-        );
-        this.ctx.fill();
-
-    }
-
-    public drawImage(img: HTMLImageElement, x: number, y: number, w: number, h: number, angle: number=0, rotationPointOffset=Vector.zero()) {
-        this.ctx.imageSmoothingEnabled = false;
-        // this.ctx.translate(this.worldXToScreenX(x - w / 2), this.worldYToScreenY(y + h / 2));
-        // this.ctx.scale(Math.sign(w), 1);
-        this.ctx.translate(this.worldXToScreenX(x + rotationPointOffset.x), this.worldYToScreenY(y + rotationPointOffset.y))
-        this.ctx.rotate(-angle);
-        this.ctx.translate(this.worldWidthToScreenWidth(-w / 2 - rotationPointOffset.x), this.worldHeightToScreenHeight(-h / 2 - rotationPointOffset.y));
-        this.ctx.scale(Math.sign(w), 1);
-        const sw = this.worldWidthToScreenWidth(w);
-        this.ctx.drawImage(img, (Math.sign(w) - 1) * 0.5 * sw, 0, sw, this.worldHeightToScreenHeight(h));
-        // this.ctx.drawImage(img, 0, 0, img.width, img.height / 2,  (Math.sign(w) - 1) * 0.5 * sw, 0, sw, this.worldHeightToScreenHeight(h) / 2)
-        // this.ctx.drawImage(img, 0, 0, sw, this.worldHeightToScreenHeight(h));
-        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
-    }
-
-    // space transformation utilities:
 
     public get width() {
         return this.canvas.width / this.canvas.height * this.height;
-    }
-
-    private worldXToScreenX(x: number): number {
-        const offset = x - (this.alignedPosition.x - this.width / 2);
-        const p = offset / this.width;
-        const screenX = p * this.canvas.width;
-        return Math.round(screenX);
-    }
-
-    private worldYToScreenY(y: number): number {
-        const offset = (this.alignedPosition.y + this.height / 2) - y;
-        const p = offset / this.height;
-        const screenY = p * this.canvas.height;
-        return Math.round(screenY);
-    }
-
-    private worldPosToScreenPos(pos: Vector): Vector {
-        return new Vector(this.worldXToScreenX(pos.x), this.worldYToScreenY(pos.y));
-    }
-
-    private worldWidthToScreenWidth(w: number): number {
-        return Math.ceil(w / this.width * this.canvas.width);
-    }
-
-    private worldHeightToScreenHeight(h: number): number {
-        return Math.ceil(h / (this.canvas.height / this.canvas.width * this.width) * this.canvas.height);
     }
 
     public screenToWorldPosition(pos: Vector) {
