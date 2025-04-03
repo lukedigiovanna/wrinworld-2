@@ -1,5 +1,7 @@
 import input from "./input";
 import { Vector, MathUtils, Color} from "./utils";
+import { ShaderProgram } from "./shader";
+import { getOrthographicProjection } from "matrixutils";
 
 class Camera {
     public position: Vector; // center of camera view
@@ -8,6 +10,7 @@ class Camera {
 
     private canvas: HTMLCanvasElement;
     private gl: WebGLRenderingContext;
+    private shaderProgram: ShaderProgram;
 
     public color: Color = Color.WHITE;
 
@@ -15,9 +18,10 @@ class Camera {
 
     public verticalBoundary: [number, number] = [-99999, 99999];
 
-    constructor(canvas: HTMLCanvasElement, gl: WebGLRenderingContext) {
+    constructor(canvas: HTMLCanvasElement, gl: WebGLRenderingContext, shaderProgram: ShaderProgram) {
         this.canvas = canvas;
         this.gl = gl;
+        this.shaderProgram = shaderProgram;
         this.position = Vector.zero();
         this.alignedPosition = Vector.zero();
         this.height = 18;
@@ -64,40 +68,44 @@ class Camera {
             Math.round(this.position.x * scale) / scale, 
             Math.round(this.position.y * scale) / scale
         );
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+        this.gl.clearColor(0, 0, 0, 1);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+        // Set the appropriate projection matrix again
+        this.shaderProgram.setUniformMatrix4("projection", getOrthographicProjection(0, 10, 0, 10, 100, 0.1));
     }
 
     // Fills a rectangle using the given world coordinates where the x,y denotes the center of the rectangle
-    public fillRect(x: number, y: number, w: number, h: number) {
-        this.ctx.fillRect(
-            this.worldXToScreenX(x - w / 2),
-            this.worldYToScreenY(y + h / 2),
-            this.worldWidthToScreenWidth(w),
-            this.worldHeightToScreenHeight(h),
-        );
-    }
+    // public fillRect(x: number, y: number, w: number, h: number) {
+    //     this.ctx.fillRect(
+    //         this.worldXToScreenX(x - w / 2),
+    //         this.worldYToScreenY(y + h / 2),
+    //         this.worldWidthToScreenWidth(w),
+    //         this.worldHeightToScreenHeight(h),
+    //     );
+    // }
 
-    public strokeRect(x: number, y: number, w: number, h: number) {
-        this.ctx.strokeRect(
-            this.worldXToScreenX(x - w / 2),
-            this.worldYToScreenY(y + h / 2),
-            this.worldWidthToScreenWidth(w),
-            this.worldHeightToScreenHeight(h),
-        );
-    }
+    // public strokeRect(x: number, y: number, w: number, h: number) {
+    //     this.ctx.strokeRect(
+    //         this.worldXToScreenX(x - w / 2),
+    //         this.worldYToScreenY(y + h / 2),
+    //         this.worldWidthToScreenWidth(w),
+    //         this.worldHeightToScreenHeight(h),
+    //     );
+    // }
 
-    public fillEllipse(x: number, y: number, w: number, h: number) {
-        this.ctx.beginPath();
-        this.ctx.ellipse(
-            this.worldXToScreenX(x), 
-            this.worldYToScreenY(y), 
-            this.worldWidthToScreenWidth(w / 2), 
-            this.worldHeightToScreenHeight(h / 2), 
-            0, 0, 2 * Math.PI
-        );
-        this.ctx.fill();
+    // public fillEllipse(x: number, y: number, w: number, h: number) {
+    //     this.ctx.beginPath();
+    //     this.ctx.ellipse(
+    //         this.worldXToScreenX(x), 
+    //         this.worldYToScreenY(y), 
+    //         this.worldWidthToScreenWidth(w / 2), 
+    //         this.worldHeightToScreenHeight(h / 2), 
+    //         0, 0, 2 * Math.PI
+    //     );
+    //     this.ctx.fill();
 
-    }
+    // }
 
     public drawImage(img: HTMLImageElement, x: number, y: number, w: number, h: number, angle: number=0, rotationPointOffset=Vector.zero()) {
         this.ctx.imageSmoothingEnabled = false;

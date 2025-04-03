@@ -1,3 +1,5 @@
+import { Matrix4 } from "./matrixutils";
+
 class ShaderProgram {
     private _program: WebGLProgram;
     private gl: WebGLRenderingContext;
@@ -40,6 +42,10 @@ class ShaderProgram {
 
     public get program() {
         return this._program;
+    }
+
+    public setUniformMatrix4(name: string, matrix: Matrix4) {
+        this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this._program, name), false, matrix.values);
     }
 }
 
