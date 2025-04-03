@@ -13,7 +13,6 @@ const squareVertices = new Float32Array([
 
 class Camera {
     public position: Vector; // center of camera view
-    private alignedPosition: Vector;
     public height: number;
 
     private canvas: HTMLCanvasElement;
@@ -33,8 +32,7 @@ class Camera {
         this.gl = gl;
         this.shaderProgram = shaderProgram;
         this.position = Vector.zero();
-        this.alignedPosition = Vector.zero();
-        this.height = 18;
+        this.height = 320;
 
         this.squareVBO = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVBO);
@@ -48,11 +46,11 @@ class Camera {
     }
 
     public update(dt: number) {
-        const diff = Vector.subtract(this.target, this.position);
+        const diff = Vector.subtract(this.target, Vector.add(this.position, new Vector(this.width / 2, this.height / 2)));
         const threshold = this.height / 4;
         if (diff.magnitude > threshold) {
             diff.subtract(Vector.scaled(Vector.normalized(diff), threshold));
-            diff.scale(dt * 3);
+            diff.scale(dt * 4);
             if (diff.magnitude > 0.025)
                 this.position.add(diff);
         }
@@ -65,27 +63,24 @@ class Camera {
         if (input.isKeyDown("Minus")) {
             this.height *= 1 / 0.95;
         }
-        this.height = MathUtils.clamp(this.height, 1, 100);
+        this.height = MathUtils.clamp(this.height, 1, 3000);
     }
 
     // clears the camera view
     public clear() {
-        const scale = 32;
-        const pixelSize = 1 / scale; // Ensure a fixed pixel unit
-        this.alignedPosition.setComponents(
-            Math.round(this.position.x / pixelSize) * pixelSize, 
-            Math.round(this.position.y / pixelSize) * pixelSize
-        );
-
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-        this.gl.clearColor(0, 0, 0, 1);
+        this.gl.clearColor(1, 0, 0, 1);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-        // Set the appropriate projection matrix again
-        const width = Math.round(this.width / pixelSize) * pixelSize;
-        const height = Math.round(this.height / pixelSize) * pixelSize;
+        // Set the appropriate projection matrix
+        this.height = this.canvas.height;
+        const pixelsPerUnit = this.canvas.height / this.height;
+        const width = Math.round(this.width);
+        const height = Math.round(this.height * 2) / 2;
+        const x = Math.round(this.position.x);
+        const y = Math.round(this.position.y);
         const projection = getOrthographicProjection(
-            this.alignedPosition.x - width / 2, this.alignedPosition.x + width / 2,
-            this.alignedPosition.y - height / 2, this.alignedPosition.y + height / 2,
+            x, x + width,
+            y, y + height,
             0, 100
         );
         this.shaderProgram.setUniformMatrix4("projection", projection);
@@ -119,10 +114,10 @@ class Camera {
 
     public drawTexture(texture: Texture, x: number, y: number, w: number, h: number, angle: number=0, rotationPointOffset=Vector.zero()){ 
         this.shaderProgram.setUniformColor("color", Color.WHITE);
-        const transformation = Matrix4.transformation(x, y, w, h, angle);
+        const transformation = Matrix4.transformation(Math.round(x), Math.round(y), w, h, angle);
         this.shaderProgram.setUniformMatrix4("model", transformation);
         this.shaderProgram.setUniformColor("color", this.color);
-        this.shaderProgram.setUniform2f("spriteSize", texture.image.width, texture.image.height);
+        this.shaderProgram.setUniform2f("spriteSize", w, h);
         this.gl.bindTexture(this.gl.TEXTURE_2D, texture.texture);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.squareVBO);
         this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
@@ -135,9 +130,9 @@ class Camera {
     public screenToWorldPosition(pos: Vector) {
         const p = Vector.divide(pos, new Vector(this.canvas.width, this.canvas.height));
         p.multiply(new Vector(this.width, this.height));
-        p.add(this.alignedPosition);
+        p.add(this.position);
         p.subtract(new Vector(this.width / 2, this.height / 2));
-        p.y = 2 * this.alignedPosition.y - p.y;
+        p.y = 2 * this.position.y - p.y;
         return p;
     }
 }

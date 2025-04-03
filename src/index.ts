@@ -120,7 +120,7 @@ window.onload = async () => {
         loadImageAndTexture(gl, "essence_orb", "assets/images/essence_orb.png"),
 
         // Props
-        loadImageAndTexture(gl, "tree", "assets/images/props/tree.png"),
+        loadImageAndTexture(gl, "tree", "assets/images/props/ugly_tree.png"),
         loadImageAndTexture(gl, "evergreen", "assets/images/props/evergreen.png"),
         
         // Projectiles

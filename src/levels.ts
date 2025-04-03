@@ -285,8 +285,9 @@ const LEVEL_1: Level = {
         const start = new Vector(0, bottom);
         const end = new Vector(0, top);
         const N = 10;
-        const numPortals = 10;
+        const numPortals = 0;
         const minDistance = 8;
+        const TREE_RATE = 0;
 
         // 1. Set Grass Background
         for (let x = left; x <= right; x++) {
@@ -428,7 +429,6 @@ const LEVEL_1: Level = {
         }
 
         // 7. Place trees
-        const TREE_RATE = 0.25;
         for (let x = left; x <= right; x++) {
             for (let y = bottom; y <= top; y++) {
                 if (Math.random() > TREE_RATE) {
@@ -452,7 +452,8 @@ const LEVEL_1: Level = {
                 const tree = new GameObject();
                 tree.tag = "prop";
                 if (Math.random() < 0.9) {
-                    tree.scale.scale(3);
+                    // tree.scale.scale(3);
+                    tree.scale.setComponents(1.5, 3);
                     tree.renderer = spriteRenderer("tree");
                 }
                 else {

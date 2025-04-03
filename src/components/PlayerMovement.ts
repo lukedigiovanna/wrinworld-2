@@ -6,9 +6,9 @@ import { TileIndex } from "../tiles";
 
 const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
-        speed: 5,
-        regularSpeed: 5,
-        waterSpeed: 2,
+        speed: 140,
+        regularSpeed: 140,
+        waterSpeed: 90,
         physics: undefined,
         collider: undefined
     }
@@ -59,6 +59,8 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
                 gameObject.renderer!.data.spriteID = "peach";
                 data.collider.data.castShadow = true;
             }
+
+            console.log(gameObject.position.x, gameObject.position.y);
         },
         data
     }

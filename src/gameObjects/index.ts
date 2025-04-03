@@ -102,17 +102,17 @@ class GameObject {
         });
 
         if (settings.showObjectCenters) {
-            camera.setFillColor("black");
-            camera.fillEllipse(this.position.x, this.position.y, 0.2, 0.2);
-            camera.setFillColor("magenta");
-            camera.fillEllipse(this.position.x, this.position.y, 0.15, 0.15);
+            // camera.setFillColor("black");
+            // camera.fillEllipse(this.position.x, this.position.y, 0.2, 0.2);
+            // camera.setFillColor("magenta");
+            // camera.fillEllipse(this.position.x, this.position.y, 0.15, 0.15);
         }
         if (settings.showRotationPoint) {
-            const point = Vector.add(this.position, this.rotationPointOffset);
-            camera.setFillColor("black");
-            camera.fillEllipse(point.x, point.y, 0.2, 0.2);
-            camera.setFillColor("yellow");
-            camera.fillEllipse(point.x, point.y, 0.15, 0.15);
+            // const point = Vector.add(this.position, this.rotationPointOffset);
+            // camera.setFillColor("black");
+            // camera.fillEllipse(point.x, point.y, 0.2, 0.2);
+            // camera.setFillColor("yellow");
+            // camera.fillEllipse(point.x, point.y, 0.15, 0.15);
         }
     }
 
