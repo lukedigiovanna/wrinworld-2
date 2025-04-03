@@ -1,14 +1,13 @@
 import { GameObjectFactory, GameObject, Team } from "./";
-import { MathUtils, Rectangle, Vector } from "../utils";
+import { Vector } from "../utils";
 import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager, 
          Health, WeaponManager, EssenceManager,
          HealthBarDisplayMode,
          StatusEffectManager} from "../components";
 import { spriteRenderer } from "../renderers";
-import { ItemIndex, itemsCodex } from "../items";
+import { ItemIndex } from "../items";
 import { getImage } from "../imageLoader";
 import input from "../input";
-import { StatusEffectIndex } from "../statusEffects";
 
 const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const player = new GameObject();

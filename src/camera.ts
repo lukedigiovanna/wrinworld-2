@@ -68,21 +68,9 @@ class Camera {
         this.height = MathUtils.clamp(this.height, 1, 100);
     }
 
-    // public setStrokeColor(color: string) {
-    //     this.ctx.strokeStyle = color;
-    // }
-
-    // public setLineWidth(width: number) {
-    //     this.ctx.lineWidth = width;
-    // }
-
     // clears the camera view
     public clear() {
         const scale = 32;
-        // this.alignedPosition.setComponents(
-        //     Math.round(this.position.x * scale) / scale, 
-        //     Math.round(this.position.y * scale) / scale
-        // );
         const pixelSize = 1 / scale; // Ensure a fixed pixel unit
         this.alignedPosition.setComponents(
             Math.round(this.position.x / pixelSize) * pixelSize, 

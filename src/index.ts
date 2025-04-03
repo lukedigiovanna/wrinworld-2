@@ -1,11 +1,9 @@
 import settings from "./settings";
 import { Game } from "./game";
-import { getImage, loadImage, loadImageAndTexture, getTexture, usedTextureIDs } from "./imageLoader";
+import { loadImage, loadImageAndTexture, usedTextureIDs } from "./imageLoader";
 import { loadSound } from "./soundLoader";
-import { MathUtils, Color } from "./utils";
+import { MathUtils } from "./utils";
 import { ShaderProgram } from "./shader";
-import { getOrthographicProjection, Matrix4 } from "./matrixutils";
-import input from "./input";
 
 let lastTime = new Date().getTime();
 let game: Game | undefined = undefined;
@@ -16,8 +14,6 @@ const gameTickPeriod = 1 / gameTickRate;
 const fpsSamples = 5;
 let canvas: HTMLCanvasElement | undefined;
 let gl: WebGLRenderingContext | null = null;
-
-let squareVertexBuffer: WebGLBuffer | null = null;
 let shaderProgram: ShaderProgram | null = null;
 
 const vertexShaderCode = `
@@ -53,14 +49,6 @@ window.addEventListener("click", () => {
     textureID = MathUtils.randomChoice(usedTextureIDs);
 });
 const mainLoop = () => {
-    // if (settings.showFPS) {
-    //     ctx.fillStyle = "red";
-    //     ctx.font = "bold 20px sans-serif";
-    //     ctx.fillText(`FPS: ${Math.round(fpsAverage)}`, 10, 25);
-    //     ctx.fillText(`OBJS: ${game.totalObjects}`, 10, 50);
-    //     ctx.fillText(`ACTIVE: ${game.totalActiveObjects}`, 10, 75);
-    // }
-
     if (!game || !canvas || !gl || !shaderProgram) {
         throw Error("Cannot run mainLoop without canvas or gl context or shaderProgram");
     }
@@ -80,6 +68,14 @@ const mainLoop = () => {
     }
 
     game.draw();
+
+    // if (settings.showFPS) {
+    //     ctx.fillStyle = "red";
+    //     ctx.font = "bold 20px sans-serif";
+    //     ctx.fillText(`FPS: ${Math.round(fpsAverage)}`, 10, 25);
+    //     ctx.fillText(`OBJS: ${game.totalObjects}`, 10, 50);
+    //     ctx.fillText(`ACTIVE: ${game.totalActiveObjects}`, 10, 75);
+    // }
 
     window.requestAnimationFrame(mainLoop);
 }
