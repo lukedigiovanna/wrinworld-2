@@ -38,9 +38,11 @@ precision mediump float;
 varying vec2 texCoord;
 uniform sampler2D texture;
 uniform vec4 color;
+uniform vec2 spriteSize;
 
 void main() {
-    vec4 textureColor = texture2D(texture, texCoord);
+    vec2 off = 0.5 / spriteSize;
+    vec4 textureColor = texture2D(texture, texCoord + off);
     if (textureColor.a < 0.1) discard;
     gl_FragColor = textureColor * color;
 }
@@ -50,31 +52,7 @@ let textureID = "undefined";
 window.addEventListener("click", () => {
     textureID = MathUtils.randomChoice(usedTextureIDs);
 });
-const start = new Date().getTime();
-let x = 0;
-let y = 0;
-let r = 0;
-let s = 1;
 const mainLoop = () => {
-    // if (!game || !canvas || !gl) {
-    //     throw Error("Cannot run main loop without initialized game");
-    // }
-    // const nowTime = new Date().getTime();
-    // const dt = (nowTime - lastTime) / 1000;
-    // fpsAverage = (fpsAverage * (fpsSamples - 1) + (1.0 / dt)) / fpsSamples;
-    // lastTime = nowTime;
-    
-    // accumulator += dt;
-    // Don't allow accumulator to exceed a second of elapsed time -- too much of a jump
-    // accumulator = Math.min(1, accumulator);
-    // while (accumulator >= gameTickPeriod) {
-    //     game.preUpdate();
-    //     game.update(gameTickPeriod);
-    //     accumulator -= gameTickPeriod;
-    // }
-
-    // game.draw();
-
     // if (settings.showFPS) {
     //     ctx.fillStyle = "red";
     //     ctx.font = "bold 20px sans-serif";
@@ -103,51 +81,12 @@ const mainLoop = () => {
 
     game.draw();
 
-    // const elapsed = new Date().getTime() - start;
-
-    // gl.viewport(0, 0, canvas.width, canvas.height);
-    // gl.clearColor(0, 0, 0, 1);
-    // gl.clear(gl.COLOR_BUFFER_BIT);
-
-    // shaderProgram.use();
-
-    // const height = 10 * canvas.height / canvas.width;
-    // shaderProgram.setUniformMatrix4("projection", getOrthographicProjection(-10, 10, -height, height, 0, 100))
-    // shaderProgram.setUniformMatrix4("view", Matrix4.identity());
-    // const transformation = Matrix4.transformation(x, y, s, s, elapsed / 1000);
-    // shaderProgram.setUniformMatrix4("model", transformation);
-
-    // if (input.isKeyDown("KeyD")) {
-    //     x += 0.05;
-    // }
-    // if (input.isKeyDown("KeyA")) {
-    //     x -= 0.05;
-    // }
-    // if (input.isKeyDown("KeyW")) {
-    //     y += 0.05;
-    // }
-    // if (input.isKeyDown("KeyS")) {
-    //     y -= 0.05;
-    // }
-    // if (input.isKeyDown("ArrowLeft")) {
-    //     r -= 0.05;
-    // }
-    // if (input.isKeyDown("ArrowRight")) {
-    //     r += 0.05;
-    // }
-    // if (input.isKeyDown("ArrowUp")) {
-    //     s += 0.05;
-    // }
-    // if (input.isKeyDown("ArrowDown")) {
-    //     s -= 0.05;
-    // }
-
     window.requestAnimationFrame(mainLoop);
 }
 
 window.onload = async () => {
     canvas = document.getElementById('game-canvas') as HTMLCanvasElement;    
-    gl = canvas.getContext('webgl');
+    gl = canvas.getContext('webgl', { antialias: false });
 
     if (!gl) {
         throw Error("Fatal: failed to get context");

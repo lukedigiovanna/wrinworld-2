@@ -13,7 +13,8 @@ import { StatusEffectIndex } from "../statusEffects";
 const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const player = new GameObject();
     player.team = Team.PLAYER;
-    player.scale.setComponents(1.333, 2);
+    player.scale.setComponents(2.666, 4);
+    player.scale.setComponents(1.5, 2.25);
     player.position = position.copy();
     player.addComponent(Physics);
     player.addComponent(PlayerMovement);
@@ -55,9 +56,6 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                     //     }
                     // }
                 }
-
-                gameObject.getComponent("status-effect-manager").data.applyEffect(StatusEffectIndex.POISON, 1, 10);
-                gameObject.getComponent("status-effect-manager").data.applyEffect(StatusEffectIndex.FLAME, 1, 5);
             }
         }
     })

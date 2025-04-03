@@ -78,19 +78,26 @@ class Camera {
 
     // clears the camera view
     public clear() {
-        const scale = 64;
+        const scale = 32;
+        // this.alignedPosition.setComponents(
+        //     Math.round(this.position.x * scale) / scale, 
+        //     Math.round(this.position.y * scale) / scale
+        // );
+        const pixelSize = 1 / scale; // Ensure a fixed pixel unit
         this.alignedPosition.setComponents(
-            Math.round(this.position.x * scale) / scale, 
-            Math.round(this.position.y * scale) / scale
+            Math.round(this.position.x / pixelSize) * pixelSize, 
+            Math.round(this.position.y / pixelSize) * pixelSize
         );
+
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
         this.gl.clearColor(0, 0, 0, 1);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
         // Set the appropriate projection matrix again
-        const width = this.width;
+        const width = Math.round(this.width / pixelSize) * pixelSize;
+        const height = Math.round(this.height / pixelSize) * pixelSize;
         const projection = getOrthographicProjection(
             this.alignedPosition.x - width / 2, this.alignedPosition.x + width / 2,
-            this.alignedPosition.y - this.height / 2, this.alignedPosition.y + this.height / 2,
+            this.alignedPosition.y - height / 2, this.alignedPosition.y + height / 2,
             0, 100
         );
         this.shaderProgram.setUniformMatrix4("projection", projection);
@@ -127,6 +134,7 @@ class Camera {
         const transformation = Matrix4.transformation(x, y, w, h, angle);
         this.shaderProgram.setUniformMatrix4("model", transformation);
         this.shaderProgram.setUniformColor("color", this.color);
+        this.shaderProgram.setUniform2f("spriteSize", texture.image.width, texture.image.height);
         this.gl.bindTexture(this.gl.TEXTURE_2D, texture.texture);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.squareVBO);
         this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
