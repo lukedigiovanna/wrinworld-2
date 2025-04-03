@@ -2,7 +2,7 @@ import settings from "./settings";
 import { Game } from "./game";
 import { getImage, loadImage, loadImageAndTexture, getTexture, usedTextureIDs } from "./imageLoader";
 import { loadSound } from "./soundLoader";
-import { MathUtils } from "./utils";
+import { MathUtils, Color } from "./utils";
 import { ShaderProgram } from "./shader";
 import { getOrthographicProjection, Matrix4 } from "./matrixutils";
 import input from "./input";
@@ -104,19 +104,11 @@ const mainLoop = () => {
 
     shaderProgram.use();
 
-    // const R = elapsed / 1000;
-    // gl.uniformMatrix4fv(gl.getUniformLocation(shaderProgram!, "projection"), false, [
-    //     Math.cos(R), Math.sin(R), 0, 0,
-    //     -Math.sin(R), Math.cos(R), 0, 0,
-    //     0, 0, 1, 0,
-    //     0, 0, 0, 1,
-    // ]);
     const height = 10 * canvas.height / canvas.width;
     shaderProgram.setUniformMatrix4("projection", getOrthographicProjection(-10, 10, -height, height, 0, 100))
-    // shaderProgram.setUniformMatrix4("projection", Matrix4.identity());
     shaderProgram.setUniformMatrix4("view", Matrix4.identity());
     const translation = Matrix4.translation(x, y);
-    const rotation = Matrix4.rotation(r);
+    const rotation = Matrix4.rotation(elapsed / 1000);
     const scale = Matrix4.scale(s, s);
     const transformation = Matrix4.multiply(scale, Matrix4.multiply(rotation, translation));
     shaderProgram.setUniformMatrix4("model", transformation);
@@ -146,11 +138,12 @@ const mainLoop = () => {
         s -= 0.05;
     }
 
-    gl.uniform4f(gl.getUniformLocation(shaderProgram.program, "color"), 1, 1, 1, 1);
+    shaderProgram.setUniformColor("color", Color.WHITE);
     gl.bindTexture(gl.TEXTURE_2D, getTexture("grass").texture);
     gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexBuffer);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-
+    
+    shaderProgram.setUniformColor("color", new Color(1, 1, 1, 0.5));
     gl.bindTexture(gl.TEXTURE_2D, getTexture(textureID).texture);
     gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexBuffer);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -315,5 +308,8 @@ window.onload = async () => {
     gl.enableVertexAttribArray(texCoordAttribLocation);
     gl.vertexAttribPointer(texCoordAttribLocation, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
     
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);  
+
     window.requestAnimationFrame(mainLoop);
 }

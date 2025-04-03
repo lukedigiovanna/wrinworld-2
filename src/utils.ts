@@ -442,16 +442,32 @@ class CatmullRomParametricCurve {
 }
 
 class Color {
-    private r: number;
-    private g: number;
-    private b: number;
-    private a: number;
+    private _r: number;
+    private _g: number;
+    private _b: number;
+    private _a: number;
 
     constructor(r: number, g: number, b: number, a: number) {
-        this.r = r;
-        this.g = g;
-        this.b = b;
-        this.a = a;
+        this._r = r;
+        this._g = g;
+        this._b = b;
+        this._a = a;
+    }
+
+    public get r() {
+        return this._r;
+    }
+
+    public get g() {
+        return this._g;
+    }
+
+    public get b() {
+        return this._b;
+    }
+
+    public get a() {
+        return this._a;
     }
 
     public static WHITE = new Color(1, 1, 1, 1);

@@ -1,3 +1,4 @@
+import { Color } from "./utils";
 import { Matrix4 } from "./matrixutils";
 
 class ShaderProgram {
@@ -44,8 +45,20 @@ class ShaderProgram {
         return this._program;
     }
 
+    private loc(name: string) {
+        return this.gl.getUniformLocation(this._program, name);
+    }
+
     public setUniformMatrix4(name: string, matrix: Matrix4) {
-        this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this._program, name), false, matrix.values);
+        this.gl.uniformMatrix4fv(this.loc(name), false, matrix.values);
+    }
+    
+    public setUniform4f(name: string, v0: number, v1: number, v2: number, v3: number) {
+        this.gl.uniform4f(this.loc(name), v0, v1, v2, v3);
+    }
+
+    public setUniformColor(name: string, color: Color) {
+        this.setUniform4f(name, color.r, color.g, color.b, color.a);
     }
 }
 
