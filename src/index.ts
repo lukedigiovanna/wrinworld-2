@@ -107,10 +107,7 @@ const mainLoop = () => {
     const height = 10 * canvas.height / canvas.width;
     shaderProgram.setUniformMatrix4("projection", getOrthographicProjection(-10, 10, -height, height, 0, 100))
     shaderProgram.setUniformMatrix4("view", Matrix4.identity());
-    const translation = Matrix4.translation(x, y);
-    const rotation = Matrix4.rotation(elapsed / 1000);
-    const scale = Matrix4.scale(s, s);
-    const transformation = Matrix4.multiply(scale, Matrix4.multiply(rotation, translation));
+    const transformation = Matrix4.transformation(x, y, s, s, elapsed / 1000);
     shaderProgram.setUniformMatrix4("model", transformation);
 
     if (input.isKeyDown("KeyD")) {
