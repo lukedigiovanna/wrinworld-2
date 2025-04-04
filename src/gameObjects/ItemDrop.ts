@@ -19,7 +19,7 @@ const ItemDropFactory: GameObjectFactory = (item: Item, position: Vector) => {
         return {
             id: "item-bob-effect",
             update(dt) {
-                gameObject.renderer?.data.offset.setComponents(0, Math.sin(gameObject.age * 3) * 0.1);
+                gameObject.renderer?.data.offset.setComponents(0, Math.sin(gameObject.age * 3) * 1.6);
             }
         }
     });

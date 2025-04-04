@@ -1,4 +1,4 @@
-import { Vector } from "../utils";
+import { Vector, Color } from "../utils";
 import { GameObject } from "../gameObjects/index";
 import { ComponentFactory } from "./index";
 import settings from "../settings";
@@ -20,7 +20,8 @@ const PhysicalCollider: ComponentFactory = (gameObject: GameObject) => {
             if (settings.showPhysicalColliders) {
                 // camera.setStrokeColor("red");
                 // camera.setLineWidth(3);
-                // camera.strokeRect(gameObject.position.x + data.boxOffset.x, gameObject.position.y + data.boxOffset.y, data.boxSize.x, data.boxSize.y);
+                camera.color = Color.RED;
+                camera.strokeRect(gameObject.position.x + data.boxOffset.x, gameObject.position.y + data.boxOffset.y, data.boxSize.x, data.boxSize.y);
             }
         },
         data

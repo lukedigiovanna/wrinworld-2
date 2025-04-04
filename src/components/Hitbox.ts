@@ -1,4 +1,4 @@
-import { Vector } from "../utils";
+import { Vector, Color } from "../utils";
 import { GameObject } from "../gameObjects/index";
 import { ComponentFactory } from "./index";
 import settings from "../settings";
@@ -48,15 +48,14 @@ const Hitbox: ComponentFactory = (gameObject: GameObject) => {
         },
         debugRender(camera) {
             if (settings.showHitboxes) {
-                // camera.setStrokeColor("blue");
-                // camera.setLineWidth(3);
-                // const rotatedOffset = Vector.rotated(this.data.boxOffset, gameObject.rotation);
-                // camera.strokeRect(
-                //     gameObject.position.x + rotatedOffset.x, 
-                //     gameObject.position.y + rotatedOffset.y, 
-                //     boxSize.x,
-                //     boxSize.y
-                // )
+                camera.color = Color.BLUE;
+                const rotatedOffset = Vector.rotated(this.data.boxOffset, gameObject.rotation);
+                camera.strokeRect(
+                    gameObject.position.x + rotatedOffset.x, 
+                    gameObject.position.y + rotatedOffset.y, 
+                    boxSize.x,
+                    boxSize.y
+                )
             }
         },
         data: {

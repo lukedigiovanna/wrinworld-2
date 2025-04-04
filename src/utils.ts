@@ -471,7 +471,14 @@ class Color {
     }
 
     public static WHITE = new Color(1, 1, 1, 1);
+    public static GRAY = new Color(0.5, 0.5, 0.5, 1);
     public static BLACK = new Color(0, 0, 0, 1);
+    public static RED = new Color(1, 0, 0, 1);
+    public static ORANGE = new Color(1, 0.5, 0, 1);
+    public static YELLOW = new Color(1, 1, 0, 1);
+    public static GREEN = new Color(0, 1, 0, 1);
+    public static BLUE = new Color(0, 0, 1, 1);
+    public static MAGENTA = new Color(1, 0, 1, 1);
 }
 
 export { Vector, MathUtils, PerlinNoise, LinearParametricCurve, 

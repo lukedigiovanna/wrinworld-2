@@ -38,7 +38,7 @@ uniform vec2 spriteSize;
 
 void main() {
     vec2 off = 0.5 / spriteSize;
-    vec4 textureColor = texture2D(texture, texCoord + off);
+    vec4 textureColor = texture2D(texture, texCoord);
     if (textureColor.a < 0.1) discard;
     gl_FragColor = textureColor * color;
 }
@@ -118,6 +118,7 @@ window.onload = async () => {
 
         loadImageAndTexture(gl, "portal", "assets/images/portal.png"),
         loadImageAndTexture(gl, "essence_orb", "assets/images/essence_orb.png"),
+        loadImageAndTexture(gl, "essence_orb_small", "assets/images/essence_orb_small.png"),
 
         // Props
         loadImageAndTexture(gl, "tree", "assets/images/props/ugly_tree.png"),

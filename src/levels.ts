@@ -285,8 +285,8 @@ const LEVEL_1: Level = {
         const start = new Vector(0, bottom);
         const end = new Vector(0, top);
         const N = 10;
-        const numPortals = 0;
-        const minDistance = 8;
+        const numPortals = 10;
+        const minDistance = 8 * PIXELS_PER_TILE;
         const TREE_RATE = 0.05;
 
         // 1. Set Grass Background
@@ -381,8 +381,8 @@ const LEVEL_1: Level = {
             let invalid;
             do {
                 position = new Vector(
-                    MathUtils.randomInt(left, right) + 0.5,
-                    MathUtils.randomInt(bottom + marginTrail, top - marginTrail) + 0.5
+                    (MathUtils.randomInt(left, right) + 0.5) * PIXELS_PER_TILE,
+                    (MathUtils.randomInt(bottom + marginTrail, top - marginTrail) + 0.5) * PIXELS_PER_TILE
                 );
                 invalid = game.isTileWithPropertyInArea(position, 2, "canSpawnPortal", false);
                 if (!invalid) {
@@ -394,7 +394,7 @@ const LEVEL_1: Level = {
                     }
                 }
             } while (invalid);
-            const progression = (position.y - marginTrail) / height;
+            const progression = (position.y / PIXELS_PER_TILE - marginTrail) / height;
             const validChoices = level1PortalTypes.filter(type => (type.difficulty ? type.difficulty : 0) <= progression);
             if (validChoices.length === 0) {
                 throw Error("Cannot generate portal for position: " + position + " progressio " + progression + " because no portal has low enough difficulty");
@@ -460,8 +460,8 @@ const LEVEL_1: Level = {
                 //     tree.renderer = spriteRenderer("evergreen");
                 // }
                 const collider = tree.addComponent(PhysicalCollider);
-                collider.data?.boxOffset.setComponents(0, -1.3);
-                collider.data?.boxSize.setComponents(0.2, 0.4);
+                collider.data?.boxOffset.setComponents(-4, -44);
+                collider.data?.boxSize.setComponents(20, 8);
                 tree.position.setComponents(position.x + tree.scale.x / 2, position.y + tree.scale.y / 2);
                 game.addGameObject(tree);
             }

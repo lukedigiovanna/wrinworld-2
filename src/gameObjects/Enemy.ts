@@ -5,6 +5,7 @@ import { Health, Hitbox, Physics, PhysicalCollider, ItemDropper, WeaponManager,
     HealthBarDisplayMode, ParticleEmitter, ParticleLayer, StatusEffectManager } from "../components";
 import { TileIndex } from "../tiles";
 import { enemiesCodex, EnemyIndex } from "../enemies";
+import { getTexture } from "../imageLoader";
 
 const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyIndex) => {
     const enemy = new GameObject();
@@ -12,7 +13,8 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
     enemy.position = position.copy();
     const enemyType = enemiesCodex.get(enemyIndex);
     enemy.renderer = spriteRenderer(enemyType.spriteID);
-    enemy.scale.set(enemyType.scale);
+    const texture = getTexture(enemyType.spriteID);
+    enemy.scale.setComponents(texture.image.width, texture.image.height);
     const health = enemy.addComponent(Health);
     health.data.initializeHealth(enemyType.hp);
     health.data.damageSoundEffectID = "hitmarker";
@@ -24,8 +26,10 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
     enemy.addComponent(WeaponManager);
     enemy.addComponent(StatusEffectManager);
     const collider = enemy.addComponent(PhysicalCollider);
-    collider.data.boxOffset = enemyType.physicalColliderOffset.copy();
-    collider.data.boxSize = enemyType.physicalColliderSize.copy();
+    collider.data.boxSize = new Vector(enemy.scale.x * 0.75, 6);
+    collider.data.boxOffset = new Vector(0, -enemy.scale.y / 2 + 3);
+    // collider.data.boxOffset = enemyType.physicalColliderOffset.copy();
+    // collider.data.boxSize = enemyType.physicalColliderSize.copy();
     enemy.addComponent((gameObject) => {
         const data: any = {
             collider: undefined,

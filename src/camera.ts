@@ -20,6 +20,7 @@ class Camera {
     private shaderProgram: ShaderProgram;
 
     public color: Color = Color.WHITE;
+    public strokeWidth: number = 1;
 
     public target: Vector = Vector.zero();
 
@@ -93,14 +94,13 @@ class Camera {
         this.drawTexture(getTexture("square"), x, y, w, h);
     }
 
-    // public strokeRect(x: number, y: number, w: number, h: number) {
-    //     this.ctx.strokeRect(
-    //         this.worldXToScreenX(x - w / 2),
-    //         this.worldYToScreenY(y + h / 2),
-    //         this.worldWidthToScreenWidth(w),
-    //         this.worldHeightToScreenHeight(h),
-    //     );
-    // }
+    public strokeRect(x: number, y: number, w: number, h: number) {
+        const square = getTexture("square");
+        this.drawTexture(square, x - w / 2, y, this.strokeWidth, h);
+        this.drawTexture(square, x + w / 2, y, this.strokeWidth, h);
+        this.drawTexture(square, x, y - h / 2, w, this.strokeWidth);
+        this.drawTexture(square, x, y + h / 2, w, this.strokeWidth);
+    }
 
     // public fillEllipse(x: number, y: number, w: number, h: number) {
     //     this.ctx.beginPath();

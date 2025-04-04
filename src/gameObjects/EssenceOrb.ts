@@ -3,27 +3,29 @@ import { GameObjectFactory, GameObject } from "./index";
 import { MathUtils, Vector } from "../utils";
 import { Hitbox } from "../components";
 import { getSound } from "../soundLoader";
+import { PIXELS_PER_TILE } from "../game";
 
 const ORB_LIFESPAN = 120;
 
 const EssenceOrbFactory: GameObjectFactory = (value: number, position: Vector) => {
     const orb = new GameObject();
-    const scale = -1 / (2 * Math.exp(0.05 * (value + 20))) + 0.4;
-    orb.scale.setComponents(scale, scale);
+    // const scale = -1 / (2 * Math.exp(0.05 * (value + 20))) + 0.4;
+    // orb.scale.setComponents(scale, scale);
+    orb.scale.setComponents(4, 4);
     // TODO: choose a random essence orb
-    orb.renderer = spriteRenderer("essence_orb");
+    orb.renderer = spriteRenderer("essence_orb_small");
     orb.position.set(position);
     orb.lifespan = ORB_LIFESPAN;
     orb.addComponent(Hitbox)
     orb.addComponent((gameObject: GameObject) => {
         const data: any = {
-            velocity: new Vector(MathUtils.random(-0.8, 0.8),  MathUtils.random(1.5, 3))
+            velocity: new Vector(MathUtils.random(-12, 12),  MathUtils.random(24, 32))
         }
         return {
             id: "essence-movement",
             update(dt) {
                 if (gameObject.age < 0.6) {
-                    data.velocity.y -= 10 * dt;
+                    data.velocity.y -= 160 * dt;
                     gameObject.position.add(
                         Vector.scaled(
                             data.velocity,
@@ -34,11 +36,11 @@ const EssenceOrbFactory: GameObjectFactory = (value: number, position: Vector) =
                 const player = gameObject.game.player;
                 const diff = Vector.subtract(player.position, gameObject.position);
                 const distance = diff.magnitude;
-                if (distance < 3.5) {
+                if (distance < 56) {
                     gameObject.position.add(
                         Vector.scaled(
                             Vector.normalized(diff), 
-                            dt * 0.6 / Math.max(distance - 1, 0.1)
+                            dt * 10 / Math.max(distance / PIXELS_PER_TILE - 1, 2)
                         )
                     );
                 }

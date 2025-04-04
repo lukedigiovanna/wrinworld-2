@@ -1,10 +1,9 @@
-import { GameObject, PlayerFactory, EnemyFactory, EnemyIndex } from "./gameObjects";
-import { Vector, MathUtils, PerlinNoise } from "./utils";
+import { GameObject, PlayerFactory } from "./gameObjects";
+import { Vector, MathUtils, PerlinNoise, Color } from "./utils";
 import input from "./input";
 import { Camera } from "./camera";
-import { getImage, getTexture } from "./imageLoader";
+import { getTexture } from "./imageLoader";
 import { Particle, ParticleLayer } from "./components";
-import settings from "./settings";
 import { Tile, tileCodex, TileIndex } from "./tiles";
 import { Level, LEVEL_1 } from "./levels";
 import { ShaderProgram } from "./shader";
@@ -153,8 +152,6 @@ class Game {
 
         this._gameTime += dt;
 
-        this.setTile(this.player.position, TileIndex.CURSED_PATH);
-
         this.activeObjects.forEach((object: GameObject) => {
             object.update(dt);
         });
@@ -181,6 +178,7 @@ class Game {
         if (particle.useRelativePosition && particle.gameObject) {
             pos.add(particle.gameObject.position);
         }
+        this._camera.color = Color.WHITE;
         this._camera.drawTexture(
             getTexture(particle.spriteID), 
             pos.x,
@@ -200,12 +198,12 @@ class Game {
 
         const playerCI = getChunkIndex(this.player.position);
 
+        this._camera.color = Color.WHITE;
         for (let xo = -RENDER_DISTANCE; xo <= RENDER_DISTANCE; xo++) {
             for (let yo = -RENDER_DISTANCE; yo <= RENDER_DISTANCE; yo++) {
                 const chunkIndex = playerCI + yo + xo * MAX_NUM_CHUNKS;
                 const chunk = this.chunks.get(chunkIndex);
                 const chunkPos = getChunkWorldPosition(chunkIndex);
-                console.log("rendering " + chunkIndex, chunkPos);
                 if (!chunk) continue;
                 for (let i = 0; i < TILES_PER_CHUNK; i++) {
                     const tileIndex = chunk.tiles[i];

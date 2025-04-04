@@ -71,11 +71,11 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
             if (opacity <= 0) {
                 return;
             }
-            const topMargin = 0.2;
+            const topMargin = 3;
             // Includes the width of the border
             const barWidth = Math.abs(gameObject.scale.x);
-            const barHeight = 0.1;
-            const borderWidth = 0.025;
+            const barHeight = 3;
+            const borderWidth = 1;
             camera.color = new Color(0, 0, 0, opacity);
             camera.fillRect(
                 gameObject.position.x, 

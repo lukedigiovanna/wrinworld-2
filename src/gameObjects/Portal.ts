@@ -7,7 +7,7 @@ import { enemiesCodex } from "../enemies";
 import { getSound } from "../soundLoader";
 import { ItemIndex, itemsCodex } from "../items";
 
-const PORTAL_ACTIVE_RADIUS = 6;
+const PORTAL_ACTIVE_RADIUS = 96;
 
 interface PortalSpawnPack {
     packSizeRange: NumberRange; // Range of possible spawn pack sizes
@@ -31,15 +31,15 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, drops: P
     const portal = new GameObject();
     portal.renderer = spriteRenderer("portal");
     portal.position.set(position);
-    portal.scale.scale(4);
+    portal.scale.scale(128);
     portal.addComponent(ParticleEmitter(
         {
             spriteID: () => "portal_particle",
-            rate: () => 16,
-            size: () => new Vector(0.35, 0.35),
+            rate: () => 4,
+            size: () => new Vector(32, 32),
             spawnBoxSize: () => Vector.zero(),
             rotation: () => MathUtils.randomAngle(),
-            velocity: () => MathUtils.randomVector(MathUtils.random(1, 1.5)),
+            velocity: () => MathUtils.randomVector(MathUtils.random(24, 32)),
             lifetime: () => MathUtils.random(0.3, 1.2)
         }
     ));
@@ -48,10 +48,10 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, drops: P
         portal.addComponent(ParticleEmitter(
             {
                 spriteID: () => MathUtils.randomChoice(enemyParticles),
-                size: () => new Vector(0.25, 0.25),
+                size: () => new Vector(8, 8),
                 spawnBoxSize: () => Vector.zero(),
                 rotation: () => MathUtils.randomAngle(),
-                velocity: () => MathUtils.randomVector(MathUtils.random(1, 1.5)),
+                velocity: () => MathUtils.randomVector(MathUtils.random(16, 24)),
                 lifetime: () => MathUtils.random(0.3, 1.2)
             },
             "enemy-particles"

@@ -40,10 +40,10 @@ enemiesCodex.set(EnemyIndex.ZOMBIE, {
     ],
     essenceAmount: 4,
     ai: BasicFollowAndAttackAI({
-        attackRange: 0.5,
+        attackRange: 8,
         followDistance: 16,
-        speed: 0.8,
-        waterSpeed: 0.4,
+        speed: 12.8,
+        waterSpeed: 6.4,
         weaponIndex: WeaponIndex.ZOMBIE_ATTACK,
     }),
 });
@@ -57,10 +57,10 @@ enemiesCodex.set(EnemyIndex.MINION, {
     drops: [],
     essenceAmount: 2,
     ai: BasicFollowAndAttackAI({
-        attackRange: 0.5,
-        followDistance: 10,
-        speed: 1.8,
-        waterSpeed: 1,
+        attackRange: 8,
+        followDistance: 160,
+        speed: 29,
+        waterSpeed: 20,
         weaponIndex: WeaponIndex.MINION_ATTACK,
     })
 });
@@ -75,10 +75,10 @@ enemiesCodex.set(EnemyIndex.SLIME, {
     drops: [],
     essenceAmount: 1,
     ai: BasicFollowAndAttackAI({
-        attackRange: 0.8,
-        followDistance: 12,
-        speed: 1.4,
-        waterSpeed: 1,
+        attackRange: 12,
+        followDistance: 192,
+        speed: 22,
+        waterSpeed: 16,
         weaponIndex: WeaponIndex.SLIME_ATTACK,
         customVelocityFunction(gameObject, direction) {
             return Vector.scaled(direction, Math.sin(gameObject.age * 6) + 1);
@@ -94,10 +94,10 @@ enemiesCodex.set(EnemyIndex.REVENANT_EYE, {
     drops: [],
     essenceAmount: 5,
     ai: BasicFollowAndAttackAI({
-        attackRange: 6,
-        followDistance: 16,
-        speed: 0.8,
-        waterSpeed: 0.8,
+        attackRange: 96,
+        followDistance: 256,
+        speed: 22,
+        waterSpeed: 22,
         weaponIndex: WeaponIndex.REVENANT_EYE_ATTACK,
     }),
 });
@@ -111,10 +111,10 @@ enemiesCodex.set(EnemyIndex.WRETCHED_SKELETON, {
     drops: [],
     essenceAmount: 6,
     ai: BasicFollowAndAttackAI({
-        attackRange: 8,
-        followDistance: 16,
-        speed: 1.2,
-        waterSpeed: 0.6,
+        attackRange: 128,
+        followDistance: 256,
+        speed: 22,
+        waterSpeed: 14,
         weaponIndex: WeaponIndex.WRETCHED_SKELETON_ATTACK,
     })
 });
@@ -127,10 +127,10 @@ enemiesCodex.set(EnemyIndex.WRAITH, {
     drops: [],
     essenceAmount: 8,
     ai: BasicFollowAndAttackAI({
-        attackRange: 6,
-        followDistance: 16,
-        speed: 1.6,
-        waterSpeed: 1.6,
+        attackRange: 96,
+        followDistance: 256,
+        speed: 25,
+        waterSpeed: 25,
         weaponIndex: WeaponIndex.WRAITH_ATTACK
     })
 });

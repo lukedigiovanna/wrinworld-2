@@ -17,10 +17,10 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
     player.addComponent(Physics);
     player.addComponent(PlayerMovement);
     const hitbox = player.addComponent(Hitbox);
-    hitbox.data?.boxSize.setComponents(32, 32);
+    hitbox.data?.boxSize.setComponents(24, 24);
     const collider = player.addComponent(PhysicalCollider);
-    collider.data?.boxOffset.setComponents(0, -12);
-    collider.data?.boxSize.setComponents(32, 16);
+    collider.data?.boxOffset.setComponents(0, -20);
+    collider.data?.boxSize.setComponents(24, 8);
     collider.data.castShadow = false;
 
     const health = player.addComponent(Health);
