@@ -46,7 +46,7 @@ class Camera {
     }
 
     public update(dt: number) {
-        const diff = Vector.subtract(this.target, Vector.add(this.position, new Vector(this.width / 2, this.height / 2)));
+        const diff = Vector.subtract(this.target, this.position);
         const threshold = this.height / 4;
         if (diff.magnitude > threshold) {
             diff.subtract(Vector.scaled(Vector.normalized(diff), threshold));
@@ -54,8 +54,8 @@ class Camera {
             if (diff.magnitude > 0.025)
                 this.position.add(diff);
         }
-        // this.position.set(this.target);
-        this.position.y = MathUtils.clamp(this.position.y, this.verticalBoundary[0], this.verticalBoundary[1]);
+        this.position.set(this.target);
+        // this.position.y = MathUtils.clamp(this.position.y, this.verticalBoundary[0], this.verticalBoundary[1]);
 
         if (input.isKeyDown("Equal")) {
             this.height *= 0.95;
@@ -69,18 +69,20 @@ class Camera {
     // clears the camera view
     public clear() {
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-        this.gl.clearColor(1, 0, 0, 1);
+        this.gl.clearColor(0, 0, 0, 1);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
         // Set the appropriate projection matrix
-        this.height = this.canvas.height;
+        // this.height = this.canvas.height;
         const pixelsPerUnit = this.canvas.height / this.height;
         const width = Math.round(this.width);
-        const height = Math.round(this.height * 2) / 2;
+        const height = Math.round(this.height);
         const x = Math.round(this.position.x);
         const y = Math.round(this.position.y);
+        const lw = Math.floor(width / 2), rw = Math.ceil(width / 2);
+        const bh = Math.floor(height / 2), th = Math.ceil(height / 2);
         const projection = getOrthographicProjection(
-            x, x + width,
-            y, y + height,
+            x - lw, x + rw,
+            y - bh, y + th,
             0, 100
         );
         this.shaderProgram.setUniformMatrix4("projection", projection);
@@ -113,7 +115,6 @@ class Camera {
     // }
 
     public drawTexture(texture: Texture, x: number, y: number, w: number, h: number, angle: number=0, rotationPointOffset=Vector.zero()){ 
-        this.shaderProgram.setUniformColor("color", Color.WHITE);
         const transformation = Matrix4.transformation(Math.round(x), Math.round(y), w, h, angle);
         this.shaderProgram.setUniformMatrix4("model", transformation);
         this.shaderProgram.setUniformColor("color", this.color);

@@ -129,7 +129,7 @@ img {
 
 #hud {
     position: absolute;
-    bottom: 50px;
+    bottom: 15px;
     display: flex;
     flex-direction: column;
 }
@@ -147,7 +147,7 @@ img {
     height: 80px;
     display: flex;
     align-items: flex-end;
-    width: 400px;
+    width: 390px;
 }
 
 #health-bar-frame {

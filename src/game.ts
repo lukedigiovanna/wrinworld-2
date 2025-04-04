@@ -11,14 +11,14 @@ import { ShaderProgram } from "./shader";
 
 const CHUNK_SIZE = 8;
 const TILES_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE;
-const PIXELS_PER_TILE = 32;
+const PIXELS_PER_TILE = 16;
 const MAX_NUM_CHUNKS = 1024; // number of chunks along width and height of the world
 const WORLD_SIZE = CHUNK_SIZE * MAX_NUM_CHUNKS;
 const RENDER_DISTANCE = 3;
 
 const getChunkIndex = (position: Vector) => {
     const c = Vector.add(Vector.scaled(position, 1 / PIXELS_PER_TILE), new Vector(WORLD_SIZE / 2, WORLD_SIZE / 2));
-    c.divide(new Vector(CHUNK_SIZE, CHUNK_SIZE));
+    c.scale(1 / CHUNK_SIZE);
     return Math.floor(c.x) * MAX_NUM_CHUNKS + Math.floor(c.y);
 }
 
@@ -52,7 +52,7 @@ class Game {
 
     constructor(canvas: HTMLCanvasElement, gl: WebGLRenderingContext, shaderProgram: ShaderProgram) {
         this._camera = new Camera(canvas, gl, shaderProgram);
-        this._player = PlayerFactory(new Vector(0, 16 * PIXELS_PER_TILE));
+        this._player = PlayerFactory(new Vector(0, 4 * PIXELS_PER_TILE));
         this.addGameObject(this._player);
         this._camera.target = this._player.position;
 
@@ -119,12 +119,12 @@ class Game {
             this._totalObjects--;
         }
 
-        const cameraChunkIndex = getChunkIndex(this._camera.position);
+        const playerCI = getChunkIndex(this.player.position);
         // get all objects in the (n x n) chunk grid centered around the camera
         const listOfChunks = [];
         for (let i = -RENDER_DISTANCE; i <= RENDER_DISTANCE; i++) {
             for (let j = -RENDER_DISTANCE; j <= RENDER_DISTANCE; j++) {
-                const ind = cameraChunkIndex + j + i * MAX_NUM_CHUNKS;
+                const ind = playerCI + j + i * MAX_NUM_CHUNKS;
                 if (!this.chunks.has(ind)) {
                     this.generateChunk(ind);
                 }
@@ -152,6 +152,8 @@ class Game {
         }
 
         this._gameTime += dt;
+
+        this.setTile(this.player.position, TileIndex.CURSED_PATH);
 
         this.activeObjects.forEach((object: GameObject) => {
             object.update(dt);
@@ -196,13 +198,14 @@ class Game {
 
         this._camera.clear();
 
-        const cameraCI = getChunkIndex(this._camera.position);
+        const playerCI = getChunkIndex(this.player.position);
 
         for (let xo = -RENDER_DISTANCE; xo <= RENDER_DISTANCE; xo++) {
             for (let yo = -RENDER_DISTANCE; yo <= RENDER_DISTANCE; yo++) {
-                const chunkIndex = cameraCI + yo + xo * MAX_NUM_CHUNKS;
+                const chunkIndex = playerCI + yo + xo * MAX_NUM_CHUNKS;
                 const chunk = this.chunks.get(chunkIndex);
                 const chunkPos = getChunkWorldPosition(chunkIndex);
+                console.log("rendering " + chunkIndex, chunkPos);
                 if (!chunk) continue;
                 for (let i = 0; i < TILES_PER_CHUNK; i++) {
                     const tileIndex = chunk.tiles[i];
@@ -210,8 +213,8 @@ class Game {
                     if (tile.spriteID) {
                         let spriteID = tile.spriteID;
                         const tilePosition = new Vector(
-                            (chunkPos.x + Math.floor(i / CHUNK_SIZE)) * PIXELS_PER_TILE + PIXELS_PER_TILE / 2, 
-                            (chunkPos.y + i % CHUNK_SIZE) * PIXELS_PER_TILE + PIXELS_PER_TILE / 2
+                            chunkPos.x + Math.floor(i / CHUNK_SIZE) * PIXELS_PER_TILE + PIXELS_PER_TILE / 2, 
+                            chunkPos.y + (i % CHUNK_SIZE) * PIXELS_PER_TILE + PIXELS_PER_TILE / 2
                         );
                         // if (tileIndex === TileIndex.PATH) {
                         //     const rightTile = this.getTileIndex(Vector.add(tilePosition, Vector.right()));
@@ -219,7 +222,7 @@ class Game {
                         //         spriteID = "edge_merge_path_grass";
                         //     }
                         // }
-                        this._camera.drawTexture(getTexture(spriteID), tilePosition.x, tilePosition.y, 32, 32, 0);
+                        this._camera.drawTexture(getTexture(spriteID), tilePosition.x, tilePosition.y, PIXELS_PER_TILE, PIXELS_PER_TILE, 0);
                     }
                 }
             }
@@ -370,6 +373,10 @@ class Game {
         chunk.tiles[tilePositionIndex] = tileIndex;
     }
 
+    public setTileWithTilemapCoordinate(position: Vector, tileIndex: TileIndex) {
+        this.setTile(Vector.scaled(position, PIXELS_PER_TILE), tileIndex);
+    }
+
     public getTileIndex(position: Vector): TileIndex {
         const { chunkIndex, tilePositionIndex } = this.getTileCoordinate(position);
         if (!this.chunks.has(chunkIndex)) {
@@ -437,4 +444,4 @@ class Game {
     }
 }
 
-export { Game, getChunkIndex };
+export { Game, getChunkIndex, PIXELS_PER_TILE };

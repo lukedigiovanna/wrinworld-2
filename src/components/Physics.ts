@@ -1,6 +1,7 @@
 import { Vector } from "../utils";
 import { GameObject } from "../gameObjects/index";
 import { ComponentFactory } from "./index";
+import { PIXELS_PER_TILE } from "../game";
 
 const Physics: ComponentFactory = (gameObject: GameObject) => {
     const data = {
@@ -75,11 +76,13 @@ const Physics: ComponentFactory = (gameObject: GameObject) => {
                         const tile = gameObject.game.getTile(corner);
                         if (tile.wall) {
                             // correct the collision
+                            const x = Math.floor(corner.x / PIXELS_PER_TILE) * PIXELS_PER_TILE;
+                            const y = Math.floor(corner.y / PIXELS_PER_TILE) * PIXELS_PER_TILE;
                             const [ol, or, ot, ob] = [
-                                Math.floor(corner.x),
-                                Math.floor(corner.x) + 1,
-                                Math.floor(corner.y) + 1,
-                                Math.floor(corner.y)
+                                x,
+                                x + PIXELS_PER_TILE,
+                                y + PIXELS_PER_TILE,
+                                y
                             ];
                             // choose the smallest overlap:
                             const choices: [number, Vector][] = [

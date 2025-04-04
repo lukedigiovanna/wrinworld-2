@@ -1,5 +1,5 @@
 import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange } from "./utils";
-import { Game } from "./game";
+import { Game, PIXELS_PER_TILE } from "./game";
 import { TileIndex } from "./tiles";
 import { EnemyIndex, GameObject, PortalFactory, PortalProperties, PortalDrop } from "./gameObjects";
 import { spriteRenderer } from "./renderers";
@@ -276,8 +276,8 @@ const level1PortalDrops: PortalDropPool[] = [
 const LEVEL_1: Level = {
     regionName: "Corrupted Forest",
     generate(game) {
-        const width = 64;
-        const height = 96;
+        const width = 128;
+        const height = 192;
         const marginTrail = 24;
         const marginSidesRocks = 32;
         const left = -width / 2, right = width / 2 - 1;
@@ -287,12 +287,12 @@ const LEVEL_1: Level = {
         const N = 10;
         const numPortals = 0;
         const minDistance = 8;
-        const TREE_RATE = 0;
+        const TREE_RATE = 0.05;
 
         // 1. Set Grass Background
         for (let x = left; x <= right; x++) {
             for (let y = bottom; y < top; y++) {
-                game.setTile(new Vector(x, y), TileIndex.GRASS);
+                game.setTileWithTilemapCoordinate(new Vector(x, y), TileIndex.GRASS);
             }
         }
         
@@ -301,10 +301,10 @@ const LEVEL_1: Level = {
             for (let y = marginTrail; y <= height + marginTrail; y++) {
                 const noise = game.noise.get(x / 16.32 + 1000, y / 16.543 + 1000);
                 if (noise > 0.6) {
-                    game.setTile(new Vector(x, y), TileIndex.WATER);
+                    game.setTileWithTilemapCoordinate(new Vector(x, y), TileIndex.WATER);
                 }
                 else if (noise > 0.55) {
-                    game.setTile(new Vector(x, y), TileIndex.SAND);
+                    game.setTileWithTilemapCoordinate(new Vector(x, y), TileIndex.SAND);
                 }
             }
         }
@@ -339,7 +339,7 @@ const LEVEL_1: Level = {
                     if (currTile === TileIndex.WATER || currTile === TileIndex.SAND) {
                         tile = TileIndex.PLANKS;
                     }
-                    game.setTile(po, tile);
+                    game.setTileWithTilemapCoordinate(po, tile);
                 }
             }
         }
@@ -352,8 +352,8 @@ const LEVEL_1: Level = {
                 if (Math.abs(x) + xoff <= 7) {
                     continue;
                 }
-                game.setTile(new Vector(x, y), TileIndex.ROCKS);
-                game.setTile(new Vector(x, top - y), TileIndex.ROCKS);
+                game.setTileWithTilemapCoordinate(new Vector(x, y), TileIndex.ROCKS);
+                game.setTileWithTilemapCoordinate(new Vector(x, top - y), TileIndex.ROCKS);
             }
         }
 
@@ -361,8 +361,8 @@ const LEVEL_1: Level = {
         for (let y = bottom; y <= top; y++) {
             const offset = game.noise.get(0.342, y / 4) * 12 - 12;
             for (let x = offset; x <= marginSidesRocks; x++) {
-                game.setTile(new Vector(left - 1 - x, y), TileIndex.ROCKS);
-                game.setTile(new Vector(right + 1 + x, y), TileIndex.ROCKS);
+                game.setTileWithTilemapCoordinate(new Vector(left - 1 - x, y), TileIndex.ROCKS);
+                game.setTileWithTilemapCoordinate(new Vector(right + 1 + x, y), TileIndex.ROCKS);
             }
         }
 
@@ -412,16 +412,16 @@ const LEVEL_1: Level = {
                         const po = Vector.add(new Vector(xo, yo), position);
                         const tile = game.getTileIndex(po);
                         if (tile === TileIndex.GRASS) {
-                            game.setTile(po, TileIndex.CURSED_GRASS);
+                            game.setTileWithTilemapCoordinate(po, TileIndex.CURSED_GRASS);
                         }
                         else if (tile === TileIndex.PATH) {
-                            game.setTile(po, TileIndex.CURSED_PATH);
+                            game.setTileWithTilemapCoordinate(po, TileIndex.CURSED_PATH);
                         }
                         else if (tile === TileIndex.SAND) {
-                            game.setTile(po, TileIndex.CURSED_SAND);
+                            game.setTileWithTilemapCoordinate(po, TileIndex.CURSED_SAND);
                         }
                         else if (tile === TileIndex.PLANKS) {
-                            game.setTile(po, TileIndex.CURSED_PLANKS);
+                            game.setTileWithTilemapCoordinate(po, TileIndex.CURSED_PLANKS);
                         }
                     }
                 }
@@ -434,7 +434,7 @@ const LEVEL_1: Level = {
                 if (Math.random() > TREE_RATE) {
                     continue;
                 }
-                const position = new Vector(x, y);
+                const position = new Vector(x * PIXELS_PER_TILE, y * PIXELS_PER_TILE);
                 let tooCloseToPortal = false;
                 for (let j = 0; j < portalPositions.length; j++) {
                     if (Vector.subtract(portalPositions[j], position).magnitude < 3) {
@@ -451,19 +451,18 @@ const LEVEL_1: Level = {
                 }
                 const tree = new GameObject();
                 tree.tag = "prop";
-                if (Math.random() < 0.9) {
-                    // tree.scale.scale(3);
-                    tree.scale.setComponents(1.5, 3);
+                // if (Math.random() < 0.9) {
+                    tree.scale.setComponents(48, 96);
                     tree.renderer = spriteRenderer("tree");
-                }
-                else {
-                    tree.scale.setComponents(2, 3);
-                    tree.renderer = spriteRenderer("evergreen");
-                }
+                // }
+                // else {
+                //     tree.scale.setComponents(2, 3);
+                //     tree.renderer = spriteRenderer("evergreen");
+                // }
                 const collider = tree.addComponent(PhysicalCollider);
                 collider.data?.boxOffset.setComponents(0, -1.3);
                 collider.data?.boxSize.setComponents(0.2, 0.4);
-                tree.position.setComponents(position.x + 0.5, position.y + 1.5);
+                tree.position.setComponents(position.x + tree.scale.x / 2, position.y + tree.scale.y / 2);
                 game.addGameObject(tree);
             }
         }

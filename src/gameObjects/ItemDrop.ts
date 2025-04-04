@@ -9,7 +9,7 @@ const ITEM_LIFESPAN = 180;
 
 const ItemDropFactory: GameObjectFactory = (item: Item, position: Vector) => {
     const itemDrop = new GameObject();
-    itemDrop.scale.setComponents(0.8, 0.8);
+    itemDrop.scale.setComponents(16, 16);
     itemDrop.renderer = spriteRenderer(item.iconSpriteID);
     itemDrop.position.set(position);
     itemDrop.lifespan = ITEM_LIFESPAN;
