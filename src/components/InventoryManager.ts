@@ -95,8 +95,8 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
             const selected = data.inventory.getSelectedItem() as Item;
             if (selected) {
                 let sign = Math.sign(gameObject.scale.x)
-                const offset = 0.5;
-                camera.drawTexture(getTexture(selected.iconSpriteID), gameObject.position.x + offset * sign, gameObject.position.y, 0.9 * sign, 0.9);
+                const offset = 12;
+                camera.drawTexture(getTexture(selected.iconSpriteID), gameObject.position.x + offset * sign, gameObject.position.y, 32 * sign, 32);
             }
         },
         data

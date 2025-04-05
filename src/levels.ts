@@ -285,7 +285,7 @@ const LEVEL_1: Level = {
         const start = new Vector(0, bottom);
         const end = new Vector(0, top);
         const N = 10;
-        const numPortals = 10;
+        const numPortals = 15;
         const minDistance = 8 * PIXELS_PER_TILE;
         const TREE_RATE = 0.05;
 

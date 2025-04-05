@@ -1,8 +1,6 @@
-import settings from "./settings";
 import { Game } from "./game";
-import { loadImage, loadImageAndTexture, usedTextureIDs } from "./imageLoader";
+import { loadImage, loadImageAndTexture } from "./imageLoader";
 import { loadSound } from "./soundLoader";
-import { MathUtils } from "./utils";
 import { ShaderProgram } from "./shader";
 
 let lastTime = new Date().getTime();
@@ -44,10 +42,6 @@ void main() {
 }
 `
 
-let textureID = "undefined";
-window.addEventListener("click", () => {
-    textureID = MathUtils.randomChoice(usedTextureIDs);
-});
 const mainLoop = () => {
     if (!game || !canvas || !gl || !shaderProgram) {
         throw Error("Cannot run mainLoop without canvas or gl context or shaderProgram");
@@ -205,13 +199,13 @@ window.onload = async () => {
     ]);
     console.log("[FINISHED LOADING ASSETS...]");
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    // canvas.width = window.innerWidth;
+    // canvas.height = window.innerHeight;
 
     window.onresize = () => {
         if (!canvas) return;
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        // canvas.width = window.innerWidth;
+        // canvas.height = window.innerHeight;
     }
 
     shaderProgram = new ShaderProgram(gl, vertexShaderCode, fragmentShaderCode);

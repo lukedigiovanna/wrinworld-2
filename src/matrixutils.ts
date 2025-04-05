@@ -87,6 +87,7 @@ class Matrix4 {
 }
 
 function getOrthographicProjection(left: number, right: number, bottom: number, top: number, near: number, far: number) {
+    // console.log(left, right, bottom, top);
     return new Matrix4([
         2 / (right - left), 0, 0, 0,
         0, 2 / (top - bottom), 0, 0,

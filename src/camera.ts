@@ -3,12 +3,19 @@ import { Vector, MathUtils, Color} from "./utils";
 import { ShaderProgram } from "./shader";
 import { getOrthographicProjection, Matrix4 } from "./matrixutils";
 import { Texture, getTexture } from "./imageLoader";
+import { PIXELS_PER_TILE } from "./game";
 
+// const squareVertices = new Float32Array([
+//     -0.5, -0.5,  0, 1, // Bottom-left
+//      0.5, -0.5,  1, 1, // Bottom-right
+//     -0.5,  0.5,  0, 0, // Top-left
+//      0.5,  0.5,  1, 0  // Top-right
+// ]);
 const squareVertices = new Float32Array([
-    -0.5, -0.5,  0, 1, // Bottom-left
-     0.5, -0.5,  1, 1, // Bottom-right
-    -0.5,  0.5,  0, 0, // Top-left
-     0.5,  0.5,  1, 0  // Top-right
+    0, 0,  0, 1, // Bottom-left
+    1, 0,  1, 1, // Bottom-right
+    0, 1,  0, 0, // Top-left
+    1, 1,  1, 0  // Top-right
 ]);
 
 class Camera {
@@ -70,10 +77,10 @@ class Camera {
     // clears the camera view
     public clear() {
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-        this.gl.clearColor(0, 0, 0, 1);
+        this.gl.clearColor(0, 0, 0.5, 1);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
         // Set the appropriate projection matrix
-        // this.height = this.canvas.height;
+        this.height = 160;
         const pixelsPerUnit = this.canvas.height / this.height;
         const width = Math.round(this.width);
         const height = Math.round(this.height);
@@ -102,20 +109,10 @@ class Camera {
         this.drawTexture(square, x, y + h / 2, w, this.strokeWidth);
     }
 
-    // public fillEllipse(x: number, y: number, w: number, h: number) {
-    //     this.ctx.beginPath();
-    //     this.ctx.ellipse(
-    //         this.worldXToScreenX(x), 
-    //         this.worldYToScreenY(y), 
-    //         this.worldWidthToScreenWidth(w / 2), 
-    //         this.worldHeightToScreenHeight(h / 2), 
-    //         0, 0, 2 * Math.PI
-    //     );
-    //     this.ctx.fill();
-    // }
-
     public drawTexture(texture: Texture, x: number, y: number, w: number, h: number, angle: number=0, rotationPointOffset=Vector.zero()){ 
-        const transformation = Matrix4.transformation(Math.round(x), Math.round(y), w, h, angle);
+        const transformation = Matrix4.transformation(
+            Math.round(x) - Math.floor(w / 2), Math.round(y) - Math.floor(h / 2), 
+            w, h, angle);
         this.shaderProgram.setUniformMatrix4("model", transformation);
         this.shaderProgram.setUniformColor("color", this.color);
         this.shaderProgram.setUniform2f("spriteSize", w, h);

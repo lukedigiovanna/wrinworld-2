@@ -12,7 +12,6 @@ import input from "../input";
 const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const player = new GameObject();
     player.team = Team.PLAYER;
-    player.scale.setComponents(32, 48);
     player.position = position.copy();
     player.addComponent(Physics);
     player.addComponent(PlayerMovement);
@@ -43,10 +42,10 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                     inventoryManager.data.inventory.addItemIndex(ItemIndex.BOW);
                     for (let i = 0; i < 100; i++)
                         inventoryManager.data.inventory.addItemIndex(ItemIndex.ARROW);
-                    for (let i = 0; i < 100; i++)
-                        inventoryManager.data.inventory.addItemIndex(ItemIndex.POISON_ARROW);
-                    for (let i = 0; i < 100; i++)
-                        inventoryManager.data.inventory.addItemIndex(ItemIndex.FLAME_ARROW);
+                    // for (let i = 0; i < 100; i++)
+                    //     inventoryManager.data.inventory.addItemIndex(ItemIndex.POISON_ARROW);
+                    // for (let i = 0; i < 100; i++)
+                    //     inventoryManager.data.inventory.addItemIndex(ItemIndex.FLAME_ARROW);
                     // for (let i = 2; i <= 24; i++) {
                     //     const item = itemsCodex.get(i as ItemIndex);
                     //     for (let j = 0; j < item.maxStack; j++) {
@@ -107,7 +106,8 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
         }
     });
 
-    player.renderer = spriteRenderer("peach_water");
+    player.renderer = spriteRenderer("peach");
+    player.scale.setComponents(32, 48);
     health.data.damageSoundEffectID = "peach_damage";
     health.data.deathSoundEffectID = "peach_die";
 
