@@ -452,7 +452,7 @@ const LEVEL_1: Level = {
                 const tree = new GameObject();
                 tree.tag = "prop";
                 // if (Math.random() < 0.9) {
-                    tree.scale.setComponents(48, 96);
+                    tree.scale.setComponents(48, 71);
                     tree.renderer = spriteRenderer("tree");
                 // }
                 // else {

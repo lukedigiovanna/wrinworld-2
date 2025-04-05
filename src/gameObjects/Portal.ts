@@ -124,7 +124,7 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, drops: P
                         );
                         const physics = enemy.getComponent("physics");
                         if (physics) {
-                            physics.data.impulse.add(MathUtils.randomVector(6));
+                            physics.data.impulse.add(MathUtils.randomVector(120));
                         }
                         const portalTracker = enemy.getComponent("portal-tracker");
                         if (portalTracker) {
