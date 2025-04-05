@@ -199,13 +199,13 @@ window.onload = async () => {
     ]);
     console.log("[FINISHED LOADING ASSETS...]");
 
-    // canvas.width = window.innerWidth;
-    // canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
     window.onresize = () => {
         if (!canvas) return;
-        // canvas.width = window.innerWidth;
-        // canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
     }
 
     shaderProgram = new ShaderProgram(gl, vertexShaderCode, fragmentShaderCode);

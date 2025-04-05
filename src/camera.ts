@@ -80,10 +80,12 @@ class Camera {
         this.gl.clearColor(0, 0, 0.5, 1);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
         // Set the appropriate projection matrix
-        this.height = 160;
+        // this.height = 160;
         const pixelsPerUnit = this.canvas.height / this.height;
-        const width = Math.round(this.width);
-        const height = Math.round(this.height);
+        console.log(pixelsPerUnit); // we need this number to be a whole number!
+        const modifiedPPU = Math.floor(pixelsPerUnit);
+        const height = Math.round(this.canvas.height / modifiedPPU);
+        const width = Math.round(this.canvas.width / modifiedPPU);
         const x = Math.round(this.position.x);
         const y = Math.round(this.position.y);
         const lw = Math.floor(width / 2), rw = Math.ceil(width / 2);
