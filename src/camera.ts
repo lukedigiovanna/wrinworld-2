@@ -114,7 +114,9 @@ class Camera {
     public drawTexture(texture: Texture, x: number, y: number, w: number, h: number, angle: number=0, rotationPointOffset=Vector.zero()){ 
         const transformation = Matrix4.transformation(
             Math.round(x) - Math.floor(w / 2), Math.round(y) - Math.floor(h / 2), 
-            w, h, angle);
+            w, h, 
+            angle, w / 2 + rotationPointOffset.x, h / 2 + rotationPointOffset.y
+        );
         this.shaderProgram.setUniformMatrix4("model", transformation);
         this.shaderProgram.setUniformColor("color", this.color);
         this.shaderProgram.setUniform2f("spriteSize", w, h);
