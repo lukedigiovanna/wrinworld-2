@@ -36,11 +36,11 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, drops: P
         {
             spriteID: () => "portal_particle",
             rate: () => 4,
-            size: () => new Vector(32, 32),
+            size: () => new Vector(13, 13),
             spawnBoxSize: () => Vector.zero(),
             rotation: () => MathUtils.randomAngle(),
-            velocity: () => MathUtils.randomVector(MathUtils.random(24, 32)),
-            lifetime: () => MathUtils.random(0.3, 1.2)
+            velocity: () => MathUtils.randomVector(MathUtils.random(32, 46)),
+            lifetime: () => MathUtils.random(0.4, 1.4)
         }
     ));
     const enemyParticles = properties.packs.map(pack => enemiesCodex.get(pack.enemyIndex).particleID).filter(p => p !== undefined);
@@ -160,7 +160,7 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, drops: P
                         const item = ItemDropFactory(itemsCodex.get(drop.itemIndex), gameObject.position);
                         const physics = item.getComponent("physics");
                         if (physics) {
-                            physics.data.impulse.add(MathUtils.randomVector(MathUtils.random(0, 2)));
+                            physics.data.impulse.add(MathUtils.randomVector(MathUtils.random(0, 48)));
                         }
                         gameObject.game.addGameObject(item);
                     }

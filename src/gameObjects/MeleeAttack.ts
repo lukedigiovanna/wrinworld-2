@@ -1,9 +1,9 @@
 import { GameObject, GameObjectFactory } from "./index";
 import { Vector, MathUtils } from "../utils";
-import { Hitbox, Physics, ParticleEmitter } from "../components";
-import { spriteRenderer } from "../renderers";
+import { Hitbox, ParticleEmitter } from "../components";
 import { MeleeAttack } from "../meleeAttacks";
 import { Team } from "./index";
+import { getTexture } from "../imageLoader";
 
 const MeleeAttackFactory: GameObjectFactory = (properties: MeleeAttack, owner: GameObject, target: Vector) => {
     properties = {...properties};
@@ -16,14 +16,15 @@ const MeleeAttackFactory: GameObjectFactory = (properties: MeleeAttack, owner: G
     meleeAttack.lifespan = properties.duration;
 
     if (properties.particleSpriteID) {
+        const texture = getTexture(properties.particleSpriteID);
         meleeAttack.addComponent(ParticleEmitter({
             lifetime: () => 0.1,
             spriteID: () => properties.particleSpriteID as string,
-            rate: () => 100,
+            rate: () => 20,
             rotation: () => MathUtils.random(0, Math.PI * 2),
-            spawnBoxSize: () => new Vector(0.3, 0.3),
-            size: () => new Vector(0.25, 0.25),
-            velocity: () => MathUtils.randomVector(MathUtils.random(0.2, 0.8))
+            spawnBoxSize: () => new Vector(4, 4),
+            size: () => new Vector(texture.image.width, texture.image.height),
+            velocity: () => MathUtils.randomVector(MathUtils.random(4, 14))
         }));
     }
 
