@@ -437,7 +437,7 @@ const LEVEL_1: Level = {
                 const position = new Vector(x * PIXELS_PER_TILE, y * PIXELS_PER_TILE);
                 let tooCloseToPortal = false;
                 for (let j = 0; j < portalPositions.length; j++) {
-                    if (Vector.subtract(portalPositions[j], position).magnitude < 3) {
+                    if (Vector.subtract(portalPositions[j], position).magnitude < 96) {
                         tooCloseToPortal = true;
                         break;
                     }
@@ -460,8 +460,8 @@ const LEVEL_1: Level = {
                 //     tree.renderer = spriteRenderer("evergreen");
                 // }
                 const collider = tree.addComponent(PhysicalCollider);
-                collider.data?.boxOffset.setComponents(-4, -44);
-                collider.data?.boxSize.setComponents(20, 8);
+                collider.data?.boxOffset.setComponents(0, -36);
+                collider.data?.boxSize.setComponents(16, 8);
                 tree.position.setComponents(position.x + tree.scale.x / 2, position.y + tree.scale.y / 2);
                 game.addGameObject(tree);
             }
