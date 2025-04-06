@@ -13,7 +13,7 @@ const TILES_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE;
 const PIXELS_PER_TILE = 16;
 const MAX_NUM_CHUNKS = 1024; // number of chunks along width and height of the world
 const WORLD_SIZE = CHUNK_SIZE * MAX_NUM_CHUNKS;
-const RENDER_DISTANCE = 3;
+const RENDER_DISTANCE = 4;
 
 const getChunkIndex = (position: Vector) => {
     const c = Vector.add(Vector.scaled(position, 1 / PIXELS_PER_TILE), new Vector(WORLD_SIZE / 2, WORLD_SIZE / 2));

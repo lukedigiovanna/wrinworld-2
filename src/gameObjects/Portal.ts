@@ -7,7 +7,7 @@ import { enemiesCodex } from "../enemies";
 import { getSound } from "../soundLoader";
 import { ItemIndex, itemsCodex } from "../items";
 
-const PORTAL_ACTIVE_RADIUS = 96;
+const PORTAL_ACTIVE_RADIUS = 180;
 
 interface PortalSpawnPack {
     packSizeRange: NumberRange; // Range of possible spawn pack sizes
