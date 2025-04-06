@@ -240,6 +240,7 @@ export * from "./Projectile";
 export * from "./MeleeAttack";
 export * from "./Player";
 export * from "./Portal";
+export * from "./Prop";
 export * from "./Enemy";
 export * from "./ItemDrop";
 export * from "./EssenceOrb";

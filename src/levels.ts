@@ -1,9 +1,7 @@
 import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange } from "./utils";
 import { Game, PIXELS_PER_TILE } from "./game";
 import { TileIndex } from "./tiles";
-import { EnemyIndex, GameObject, PortalFactory, PortalProperties, PortalDrop } from "./gameObjects";
-import { spriteRenderer } from "./renderers";
-import { PhysicalCollider } from "./components";
+import { EnemyIndex, PortalFactory, PortalProperties, PortalDrop, PropFactory } from "./gameObjects";
 import { ItemIndex } from "./items";
 
 interface Level {
@@ -284,10 +282,12 @@ const LEVEL_1: Level = {
         const bottom = 0, top = height + marginTrail * 2;
         const start = new Vector(0, bottom);
         const end = new Vector(0, top);
-        const N = 10;
+        const N = 30;
         const numPortals = 15;
         const minDistance = 8 * PIXELS_PER_TILE;
-        const TREE_RATE = 0.05;
+        const treeRate = 0.05;
+        const grassRate = 0.3;
+        const flowerPatches = 24;
 
         // 1. Set Grass Background
         for (let x = left; x <= right; x++) {
@@ -312,13 +312,16 @@ const LEVEL_1: Level = {
         // 3. Fill a path from the bottom to top of the world
         const pathPoints = [];
         pathPoints.push(start);
-        pathPoints.push(Vector.add(start, new Vector(0, marginTrail)))
+        pathPoints.push(Vector.add(start, new Vector(0, marginTrail)));
+        let lastX = 0;
+        const R = 30;
         for (let i = 0; i < N; i++) {
             const ps = i / N;
             const pt = (i + 1) / N;
-            const x = MathUtils.randomInt(left + 6, right - 6);
+            const x = MathUtils.clamp(lastX + MathUtils.randomInt(-R, R), left + 6, right - 6);
             const y = marginTrail + MathUtils.randomInt(ps * height, pt * height);
             pathPoints.push(new Vector(x, y));
+            lastX = x;
         }
         pathPoints.push(Vector.subtract(end, new Vector(0, marginTrail)));
         pathPoints.push(end);
@@ -431,39 +434,52 @@ const LEVEL_1: Level = {
         // 7. Place trees
         for (let x = left; x <= right; x++) {
             for (let y = bottom; y <= top; y++) {
-                if (Math.random() > TREE_RATE) {
-                    continue;
-                }
-                const position = new Vector(x * PIXELS_PER_TILE, y * PIXELS_PER_TILE);
-                let tooCloseToPortal = false;
-                for (let j = 0; j < portalPositions.length; j++) {
-                    if (Vector.subtract(portalPositions[j], position).magnitude < 96) {
-                        tooCloseToPortal = true;
-                        break;
+                const c = MathUtils.randomWeightedChoice(["tree", "tall_grass", null],[treeRate, grassRate, 1 - treeRate - grassRate])
+                if (c !== null) {
+                    const position = new Vector((x + 0.5) * PIXELS_PER_TILE, (y + 0.5) * PIXELS_PER_TILE);
+                    let tooCloseToPortal = false;
+                    for (let j = 0; j < portalPositions.length; j++) {
+                        if (Vector.subtract(portalPositions[j], position).magnitude < 96) {
+                            tooCloseToPortal = true;
+                            break;
+                        }
+                    }
+                    if (tooCloseToPortal) {
+                        continue;
+                    }
+                    const tile = game.getTile(position); 
+                    if (!tile.canGrowPlants) {
+                        continue;
+                    }
+                    if (c === "tree") {
+                        game.addGameObject(PropFactory(position, c));
+                    }
+                    else {
+                        game.addGameObject(PropFactory(position, c, false));
                     }
                 }
-                if (tooCloseToPortal) {
-                    continue;
+            }
+        }
+
+        // 8. Grow flowers
+        for (let i = 0; i < flowerPatches; i++) {
+            // choose a random location in the world
+            const x = MathUtils.randomInt(left, right);
+            const y = MathUtils.randomInt(bottom, top);
+            const R = 8;
+            for (let dx = -R; dx <= R; dx++) {
+                for (let dy = -R; dy <= R; dy++) {
+                    const p = 1 / (dx * dx + dy * dy + 1);
+                    if (Math.random() < p) {
+                        // place a flower
+                        const position = new Vector((x + dx + 0.5) * PIXELS_PER_TILE, (y + dy + 0.5) * PIXELS_PER_TILE);
+                        const tile = game.getTile(position); 
+                        if (!tile.canGrowPlants) {
+                            continue;
+                        }
+                        game.addGameObject(PropFactory(position, "flower", false));
+                    }
                 }
-                const tile = game.getTile(position); 
-                if (!tile.canGrowPlants) {
-                    continue;
-                }
-                const tree = new GameObject();
-                tree.tag = "prop";
-                // if (Math.random() < 0.9) {
-                    tree.scale.setComponents(64, 80);
-                    tree.renderer = spriteRenderer("tree");
-                // }
-                // else {
-                //     tree.scale.setComponents(2, 3);
-                //     tree.renderer = spriteRenderer("evergreen");
-                // }
-                const collider = tree.addComponent(PhysicalCollider);
-                collider.data?.boxOffset.setComponents(0, -36);
-                collider.data?.boxSize.setComponents(16, 8);
-                tree.position.setComponents(position.x + tree.scale.x / 2, position.y + tree.scale.y / 2);
-                game.addGameObject(tree);
             }
         }
     }

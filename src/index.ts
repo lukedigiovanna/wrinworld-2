@@ -117,6 +117,8 @@ window.onload = async () => {
         // Props
         loadImageAndTexture(gl, "tree", "assets/images/props/tree.png"),
         loadImageAndTexture(gl, "evergreen", "assets/images/props/evergreen.png"),
+        loadImageAndTexture(gl, "flower", "assets/images/props/flower.png"),
+        loadImageAndTexture(gl, "tall_grass", "assets/images/props/tall_grass.png"),
         
         // Projectiles
         loadImageAndTexture(gl, "arrow", "assets/images/projectiles/arrow.png"),
