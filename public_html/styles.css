@@ -152,15 +152,15 @@ img {
 
 #health-bar-frame {
     position: absolute;
-    height: 48px;
+    height: 39px;
 }
 
 #health-bar-fill-container {
     position: absolute;
-    width: 355px;
-    height: 35px;
-    left: 28px;
-    bottom: 8px;
+    width: 342px;
+    height: 33px;
+    left: 24px;
+    bottom: 6px;
 }
 
 #health-bar-fill {

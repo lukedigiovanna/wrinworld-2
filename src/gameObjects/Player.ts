@@ -5,7 +5,7 @@ import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager,
          HealthBarDisplayMode,
          StatusEffectManager} from "../components";
 import { spriteRenderer } from "../renderers";
-import { ItemIndex } from "../items";
+import { ItemIndex, itemsCodex } from "../items";
 import { getImage } from "../imageLoader";
 import input from "../input";
 
@@ -39,19 +39,19 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
             start() {
                 const inventoryManager = gameObject.getComponent("inventory-manager");
                 if (inventoryManager) {
-                    inventoryManager.data.inventory.addItemIndex(ItemIndex.BOW);
-                    for (let i = 0; i < 100; i++)
-                        inventoryManager.data.inventory.addItemIndex(ItemIndex.ARROW);
+                    // inventoryManager.data.inventory.addItemIndex(ItemIndex.BOW);
+                    // for (let i = 0; i < 100; i++)
+                    //     inventoryManager.data.inventory.addItemIndex(ItemIndex.ARROW);
                     // for (let i = 0; i < 100; i++)
                     //     inventoryManager.data.inventory.addItemIndex(ItemIndex.POISON_ARROW);
                     // for (let i = 0; i < 100; i++)
                     //     inventoryManager.data.inventory.addItemIndex(ItemIndex.FLAME_ARROW);
-                    // for (let i = 2; i <= 24; i++) {
-                    //     const item = itemsCodex.get(i as ItemIndex);
-                    //     for (let j = 0; j < item.maxStack; j++) {
-                    //         inventoryManager.data.inventory.addItemIndex(i);
-                    //     }
-                    // }
+                    for (let i = 2; i <= 24; i++) {
+                        const item = itemsCodex.get(i as ItemIndex);
+                        for (let j = 0; j < item.maxStack; j++) {
+                            inventoryManager.data.inventory.addItemIndex(i);
+                        }
+                    }
                 }
             }
         }
