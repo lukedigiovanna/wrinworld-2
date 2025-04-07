@@ -3,8 +3,8 @@ import { GameObject } from "../gameObjects";
 import input, { InputLayer } from "../input";
 import { Item } from "../items";
 import { Inventory } from "../inventory";
-import { getImage, getTexture } from "../imageLoader";
-import { Vector } from "../utils";
+import { getTexture } from "../imageLoader";
+import { Color, Vector } from "../utils";
 
 const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
@@ -96,6 +96,7 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
             if (selected) {
                 let sign = Math.sign(gameObject.scale.x)
                 const offset = 12;
+                camera.color = Color.WHITE;
                 camera.drawTexture(getTexture(selected.iconSpriteID), gameObject.position.x + offset * sign, gameObject.position.y, 16 * sign, 16);
             }
         },

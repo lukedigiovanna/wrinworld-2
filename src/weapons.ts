@@ -47,7 +47,8 @@ const fireProjectile = (projectile: Projectile, gameObject: GameObject, target: 
 }
 
 const fireMelee = (meleeAttack: MeleeAttack, gameObject: GameObject, target: Vector) => {
-    const direction = Vector.subtract(target, gameObject.position);
+    const hitboxCenter = Vector.add(gameObject.position, gameObject.getComponent("hitbox").data.boxOffset);
+    const direction = Vector.subtract(target, hitboxCenter);
     if (direction.x !== 0) {
         gameObject.scale.x = Math.abs(gameObject.scale.x) * Math.sign(direction.x);
     }

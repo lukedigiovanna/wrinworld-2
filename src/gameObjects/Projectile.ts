@@ -12,8 +12,9 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
     projectile.position = position.copy();
     
     const sprite = getImage(properties.spriteID);
+    const scale = properties.scale ? properties.scale : 1;
     projectile.scale.setComponents(
-        properties.size, sprite.height / sprite.width * properties.size
+        sprite.width * scale, sprite.height * scale
     );
     
     projectile.lifespan = properties.lifespan;
@@ -69,26 +70,6 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
             data
         }
     });
-
-    // projectile.addComponent(ParticleEmitter({
-    //     spriteID: () => "spark",
-    //     rate: () => 25,
-    //     size: () => new Vector(0.7, 0.7),
-    //     rotation: () => MathUtils.random(0, Math.PI * 2),
-    //     velocity: () => MathUtils.randomVector(MathUtils.random(0.5, 1.2)),
-    //     angularVelocity: () => MathUtils.random(-4, 4),
-    //     lifetime: () => MathUtils.random(0.1, 0.5)
-    // }, "sparks"));
-
-    // projectile.addComponent(ParticleEmitter({
-    //     spriteID: () => MathUtils.randomChoice(["smoke", "spark"]),
-    //     rate: () => 0,
-    //     size: () => new Vector(0.5, 0.5),
-    //     rotation: () => MathUtils.random(0, 2 * Math.PI),
-    //     velocity: () => MathUtils.randomVector(MathUtils.random(0.2, 2.0)),
-    //     lifetime: () => MathUtils.random(0.4, 0.8),
-    //     spawnBoxSize: () => Vector.zero()
-    // }, "explosion"));
     
     const physics = projectile.addComponent(Physics);
     physics.data.velocity.set(
@@ -102,10 +83,10 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
 
     const hitbox = projectile.addComponent(Hitbox);
     if (properties.hitboxOffset) {
-        hitbox.data.boxOffset.set(properties.hitboxOffset);
+        hitbox.data.boxOffset.set(Vector.multiply(properties.hitboxOffset, projectile.scale));
     }
     if (properties.hitboxSize) {
-        hitbox.data.boxSize.set(properties.hitboxSize);
+        hitbox.data.boxSize.set(Vector.multiply(properties.hitboxSize, projectile.scale));
     }
     
     const collider = projectile.addComponent(PhysicalCollider);
@@ -113,10 +94,10 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
     collider.data?.ignoreCollisionWith.add("enemy");
     collider.data?.ignoreCollisionWith.add("projectile");
     if (properties.colliderOffset) {
-        collider.data.boxOffset.set(properties.colliderOffset);
+        collider.data.boxOffset.set(Vector.multiply(properties.colliderOffset, projectile.scale));
     }
     if (properties.colliderSize) {
-        collider.data.boxSize.set(properties.colliderSize);
+        collider.data.boxSize.set(Vector.multiply(properties.colliderSize, projectile.scale));
     }
     
     physics.data.angularVelocity = properties.angularVelocity;

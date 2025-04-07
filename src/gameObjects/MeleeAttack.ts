@@ -10,7 +10,9 @@ const MeleeAttackFactory: GameObjectFactory = (properties: MeleeAttack, owner: G
 
     const meleeAttack = new GameObject();
     
-    const direction = Vector.normalized(Vector.subtract(target, owner.position));
+    const hitboxCenter = Vector.add(owner.position, owner.getComponent("hitbox").data.boxOffset);
+
+    const direction = Vector.normalized(Vector.subtract(target, hitboxCenter));
     
     meleeAttack.scale.setComponents(properties.size, properties.size);
     meleeAttack.lifespan = properties.duration;
@@ -39,7 +41,7 @@ const MeleeAttackFactory: GameObjectFactory = (properties: MeleeAttack, owner: G
                 const angle = startAngle + sweepLength * gameObject.age / properties.duration;
                 const transformedDirection = Vector.rotated(data.direction, angle);
                 transformedDirection.scale(properties.range);
-                gameObject.position = Vector.add(data.owner.position, transformedDirection);
+                gameObject.position = Vector.add(hitboxCenter, transformedDirection);
             }
         };
         return {

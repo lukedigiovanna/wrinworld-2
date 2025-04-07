@@ -40,7 +40,7 @@ class Camera {
         this.gl = gl;
         this.shaderProgram = shaderProgram;
         this.position = Vector.zero();
-        this.height = 320;
+        this.height = 256;
 
         this.squareVBO = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVBO);

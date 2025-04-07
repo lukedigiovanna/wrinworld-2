@@ -34,7 +34,7 @@ interface Projectile {
     lifespan: number;
     // How large the projectile is -- scales to the aspect ratio of the sprite
     // or is the width/height is no sprite is attached.
-    size: number;
+    scale?: number;
     // how fast the projectile should go
     speed: number;
     // how fast the projectile should rotate
@@ -78,7 +78,6 @@ projectilesCodex.set(ProjectileIndex.ZOMBIE_BRAINS, {
     damageReductionPerHit: 0,
     knockback: 3,
     lifespan: 10,
-    size: 0.8,
     speed: 6,
     angularVelocity: 6,
     rotateToDirectionOfTarget: true,
@@ -99,8 +98,7 @@ projectilesCodex.set(ProjectileIndex.SHURIKEN, {
     damageReductionPerHit: 0,
     knockback: 3,
     lifespan: 999,
-    size: 0.5,
-    speed: 20,
+    speed: 320,
     angularVelocity: 20,
     rotateToDirectionOfTarget: true,
     drag: 0,
@@ -120,7 +118,6 @@ projectilesCodex.set(ProjectileIndex.ARROW, {
     damageReductionPerHit: 0,
     knockback: 3,
     lifespan: 4,
-    size: 24,
     speed: 400,
     angularVelocity: 0,
     rotateToDirectionOfTarget: true,
@@ -141,7 +138,6 @@ projectilesCodex.set(ProjectileIndex.POISON_ARROW, {
     damageReductionPerHit: 0,
     knockback: 3,
     lifespan: 4,
-    size: 1,
     speed: 16,
     angularVelocity: 0,
     rotateToDirectionOfTarget: true,
@@ -167,8 +163,7 @@ projectilesCodex.set(ProjectileIndex.TEAR_DROP, {
     damageReductionPerHit: 0,
     knockback: 4,
     lifespan: 4,
-    size: 0.4,
-    speed: 7,
+    speed: 148,
     angularVelocity: 0,
     rotateToDirectionOfTarget: false,
     drag: 0,
@@ -183,7 +178,6 @@ projectilesCodex.set(ProjectileIndex.WRAITH_ATTACK, {
     damageReductionPerHit: 0,
     knockback: 2,
     lifespan: 4,
-    size: 0.5,
     speed: 9,
     angularVelocity: 0,
     rotateToDirectionOfTarget: true,
@@ -199,8 +193,7 @@ projectilesCodex.set(ProjectileIndex.ROCK, {
     damageReductionPerHit: 0,
     knockback: 1,
     lifespan: 4,
-    size: 0.5,
-    speed: 16,
+    speed: 256,
     rotateToDirectionOfTarget: true,
     drag: 0,
     angularVelocity: 5,
@@ -215,7 +208,6 @@ projectilesCodex.set(ProjectileIndex.CRYSTAL_BOMB, {
     damageReductionPerHit: 0,
     knockback: 0,
     lifespan: 5,
-    size: 1,
     speed: 10,
     angularVelocity: 0,
     rotateToDirectionOfTarget: false,
@@ -229,7 +221,7 @@ projectilesCodex.set(ProjectileIndex.CRYSTAL_BOMB, {
             const projectile = {...projectilesCodex.get(ProjectileIndex.CRYSTAL_SHARD)};
             projectile.speed += MathUtils.random(-5, 5);
             projectile.angularVelocity += MathUtils.random(-10, 10);
-            projectile.size += MathUtils.random(-0.1, 0.1);
+            // projectile.size += MathUtils.random(-0.1, 0.1);
             const shard = ProjectileFactory(projectile, owner, gameObject.position, target);
             gameObject.game.addGameObject(shard);
         }
@@ -243,7 +235,6 @@ projectilesCodex.set(ProjectileIndex.CRYSTAL_SHARD, {
     damageReductionPerHit: 0.2,
     knockback: 0.4,
     lifespan: 3,
-    size: 0.25,
     speed: 10,
     angularVelocity: 0,
     rotateToDirectionOfTarget: true,
