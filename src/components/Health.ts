@@ -15,6 +15,7 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
         maximumHP: 20,
         regenerationRate: 0,
         resistance: 0, // percent damage avoided
+        lastHitTime: -999,
         healthBarDisplayMode: HealthBarDisplayMode.NONE,
         timeLastShowedHealthBar: -999,
         damageSoundEffectID: undefined,
@@ -45,6 +46,7 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
             }
             amount *= (1 - data.resistance);
             this.hp = Math.max(0, this.hp - amount);
+            this.lastHitTime = gameObject.game.time;
             if (this.healthBarDisplayMode !== HealthBarDisplayMode.NONE) {
                 this.timeLastShowedHealthBar = gameObject.game.time;
             }
@@ -62,6 +64,16 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
             this.data.hp = Math.min(this.data.maximumHP, this.data.hp + this.data.regenerationRate * dt);
             if (this.data.healthBarDisplayMode === HealthBarDisplayMode.ACTIVE) {
                 this.data.timeLastShowedHealthBar = gameObject.game.time;
+            }
+
+            const timeSinceLastHit = gameObject.game.time - this.data.lastHitTime;
+            if (timeSinceLastHit < 0.25) {
+                const c = (16 * (timeSinceLastHit - 0.125));
+                const f = 0.8 / (c * c + 1);
+                gameObject.color = new Color(1, 1 - f, 1 - f, 1);
+            }
+            else {
+                gameObject.color = Color.WHITE;
             }
         },
         render(camera) {

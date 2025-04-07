@@ -1,10 +1,10 @@
 import { Camera } from "../camera";
 import { Component, ComponentFactory, ComponentID } from "../components/index";
-import { Vector, Rectangle, MathUtils } from "../utils";
+import { Vector, Rectangle, MathUtils, Color } from "../utils";
 import { Renderer } from "../renderers";
 import { Game, getChunkIndex } from "../game";
 import settings from "../settings";
-import { Tile } from "tiles";
+import { Tile } from "../tiles";
 
 enum Team {
     UNTEAMED,
@@ -29,6 +29,7 @@ class GameObject {
     public renderer: Renderer | undefined = undefined;
     public castsShadow: boolean = false;
     public shadowSize: number = 8;
+    public color: Color = Color.WHITE;
 
     private _game: Game | undefined;
 
