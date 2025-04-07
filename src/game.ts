@@ -13,7 +13,7 @@ const TILES_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE;
 const PIXELS_PER_TILE = 16;
 const MAX_NUM_CHUNKS = 1024; // number of chunks along width and height of the world
 const WORLD_SIZE = CHUNK_SIZE * MAX_NUM_CHUNKS;
-const RENDER_DISTANCE = 2;
+const RENDER_DISTANCE = 3;
 
 const getChunkIndex = (position: Vector) => {
     const c = Vector.add(Vector.scaled(position, 1 / PIXELS_PER_TILE), new Vector(WORLD_SIZE / 2, WORLD_SIZE / 2));
@@ -198,10 +198,11 @@ class Game {
 
         const shadows: ShaderShadow[] = [];
         for (let i = 0; i < this.activeObjects.length; i++) {
-            if (this.activeObjects[i].castsShadow) {
+            const object = this.activeObjects[i];
+            if (object.castsShadow) {
                 shadows.push({
-                    position: this.activeObjects[i].position,
-                    size: 1,
+                    position: Vector.add(object.position, new Vector(0, -object.scale.y/2)),
+                    size: object.shadowSize,
                 });
                 if (shadows.length >= MAX_SHADOWS) break;
             }
@@ -238,6 +239,7 @@ class Game {
             }
         }
 
+        this._camera.setShadows([]);
         
         for (let i = 0; i < this.particles.length; i++) {
             if (this.particles[i].layer === ParticleLayer.BELOW_OBJECTS)

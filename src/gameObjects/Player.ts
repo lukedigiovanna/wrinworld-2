@@ -13,6 +13,7 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const player = new GameObject();
     player.team = Team.PLAYER;
     player.castsShadow = true;
+    player.shadowSize = 2;
     player.position = position.copy();
     player.addComponent(Physics);
     player.addComponent(PlayerMovement);

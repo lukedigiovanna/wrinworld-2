@@ -1,8 +1,10 @@
 const vertexShaderCode = `
 attribute vec2 a_position;
 attribute vec2 a_textureCoord;
+
 varying vec2 texCoord;
 varying vec2 fragPos;
+
 uniform mat4 projection;
 uniform mat4 model;
 
@@ -23,7 +25,7 @@ uniform sampler2D texture;
 uniform vec4 color;
 
 #define MAX_SHADOWS 255
-#define SHADOW_STRENGTH 0.01
+#define SHADOW_STRENGTH 0.5
 struct Shadow {
     vec2 position;
     float size;
@@ -42,7 +44,8 @@ void main() {
         }
         Shadow shadow = shadows[i];
         float distance = length(shadow.position - fragPos);
-        shadowValue += min(shadow.size / distance, 1.0);
+        float value = 1.0 / (1.0 + exp(0.2 * (distance - shadow.size)));
+        shadowValue += value;
     }
 
     float shadowMultiplier = max(1.0 - shadowValue, SHADOW_STRENGTH);

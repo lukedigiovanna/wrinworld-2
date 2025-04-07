@@ -25,8 +25,10 @@ class GameObject {
     private _birthTime: number = 0;
     
     private components: Component[] = [];
+    
     public renderer: Renderer | undefined = undefined;
     public castsShadow: boolean = false;
+    public shadowSize: number = 8;
 
     private _game: Game | undefined;
 
