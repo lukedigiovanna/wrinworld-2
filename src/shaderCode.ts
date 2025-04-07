@@ -24,7 +24,7 @@ varying vec2 fragPos;
 uniform sampler2D texture;
 uniform vec4 color;
 
-#define MAX_SHADOWS 255
+#define MAX_SHADOWS 120
 #define SHADOW_STRENGTH 0.5
 struct Shadow {
     vec2 position;
@@ -32,6 +32,18 @@ struct Shadow {
 };
 uniform int numShadows;
 uniform Shadow shadows[MAX_SHADOWS];
+
+#define MAX_LIGHTS 120
+struct Light {
+    vec2 position;
+    float radius;
+    float intensity;
+    vec3 color;
+};
+uniform int numLights;
+uniform Light lights[MAX_LIGHTS];
+
+uniform float ambientLightIntensity;
 
 void main() {
     vec4 textureColor = texture2D(texture, texCoord);
@@ -48,9 +60,19 @@ void main() {
         shadowValue += value;
     }
 
-    float shadowMultiplier = max(1.0 - shadowValue, SHADOW_STRENGTH);
+    vec3 lightColor = vec3(ambientLightIntensity);
+    for (int i = 0; i < MAX_LIGHTS; i++) {
+        if (i >= numLights) {
+            break;
+        }
+        Light light = lights[i];
+        float dist = distance(fragPos, light.position);
+        float attenuation = clamp(1.0 - dist / light.radius, 0.0, 1.0);
+        lightColor += light.color * attenuation * attenuation * light.intensity; // quadratic falloff 
+    }
 
-    gl_FragColor = textureColor * color * vec4(shadowMultiplier, shadowMultiplier, shadowMultiplier, 1);
+    float shadowMultiplier = max(1.0 - shadowValue, SHADOW_STRENGTH);
+    gl_FragColor = textureColor * color * vec4(shadowMultiplier, shadowMultiplier, shadowMultiplier, 1) * vec4(lightColor, 1);
 }
 `
 

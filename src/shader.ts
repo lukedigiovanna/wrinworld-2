@@ -6,7 +6,15 @@ interface ShaderShadow {
     size: number;
 }
 
-const MAX_SHADOWS = 255;
+interface ShaderLight {
+    position: Vector;
+    radius: number;
+    intensity: number;
+    color: Color;
+}
+
+const MAX_SHADOWS = 120;
+const MAX_LIGHTS = 120;
 
 class ShaderProgram {
     private _program: WebGLProgram;
@@ -58,6 +66,18 @@ class ShaderProgram {
         this.gl.uniformMatrix4fv(this.loc(name), false, matrix.values);
     }
     
+    public setUniformFloat(name: string, f0: number) {
+        this.gl.uniform1f(this.loc(name), f0);
+    }
+
+    public setUniform2f(name: string, v0: number, v1: number) {
+        this.gl.uniform2f(this.loc(name), v0, v1); 
+    }
+
+    public setUniform3f(name: string, v0: number, v1: number, v2: number) {
+        this.gl.uniform3f(this.loc(name), v0, v1, v2);
+    }
+
     public setUniform4f(name: string, v0: number, v1: number, v2: number, v3: number) {
         this.gl.uniform4f(this.loc(name), v0, v1, v2, v3);
     }
@@ -66,8 +86,8 @@ class ShaderProgram {
         this.setUniform4f(name, color.r, color.g, color.b, color.a);
     }
 
-    public setUniform2f(name: string, v0: number, v1: number) {
-        this.gl.uniform2f(this.loc(name), v0, v1); 
+    public setUniformColorRGB(name: string, color: Color) {
+        this.setUniform3f(name, color.r, color.g, color.b);
     }
 
     public setUniformVector(name: string, vector: Vector) {
@@ -78,15 +98,18 @@ class ShaderProgram {
         this.gl.uniform1i(this.loc(name), i0);
     }
 
-    public setUniformFloat(name: string, f0: number) {
-        this.gl.uniform1f(this.loc(name), f0);
-    }
-
     public setUniformShadow(name: string, shadow: ShaderShadow) {
         this.setUniformVector(`${name}.position`, shadow.position);
         this.setUniformFloat(`${name}.size`, shadow.size);
     }
+    
+    public setUniformLight(name: string, light: ShaderLight) {
+        this.setUniformVector(`${name}.position`, light.position);
+        this.setUniformFloat(`${name}.radius`, light.radius);
+        this.setUniformFloat(`${name}.intensity`, light.intensity);
+        this.setUniformColorRGB(`${name}.color`, light.color);
+    }
 }
 
-export { ShaderProgram, MAX_SHADOWS };
-export type { ShaderShadow };
+export { ShaderProgram, MAX_SHADOWS, MAX_LIGHTS };
+export type { ShaderShadow, ShaderLight };

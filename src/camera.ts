@@ -1,16 +1,9 @@
 import input from "./input";
 import { Vector, MathUtils, Color} from "./utils";
-import { MAX_SHADOWS, ShaderProgram, ShaderShadow } from "./shader";
+import { MAX_LIGHTS, MAX_SHADOWS, ShaderLight, ShaderProgram, ShaderShadow } from "./shader";
 import { getOrthographicProjection, Matrix4 } from "./matrixutils";
 import { Texture, getTexture } from "./imageLoader";
-import { PIXELS_PER_TILE } from "./game";
 
-// const squareVertices = new Float32Array([
-//     -0.5, -0.5,  0, 1, // Bottom-left
-//      0.5, -0.5,  1, 1, // Bottom-right
-//     -0.5,  0.5,  0, 0, // Top-left
-//      0.5,  0.5,  1, 0  // Top-right
-// ]);
 const squareVertices = new Float32Array([
     0, 0,  0, 1, // Bottom-left
     1, 0,  1, 1, // Bottom-right
@@ -28,6 +21,7 @@ class Camera {
 
     public color: Color = Color.WHITE;
     public strokeWidth: number = 1;
+    public ambientLightIntensity: number = 0.1;
 
     public target: Vector = Vector.zero();
 
@@ -94,6 +88,7 @@ class Camera {
             0, 100
         );
         this.shaderProgram.setUniformMatrix4("projection", projection);
+        this.shaderProgram.setUniformFloat("ambientLightIntensity", this.ambientLightIntensity);
     }
 
     public setShadows(shadows: ShaderShadow[]) {
@@ -102,6 +97,14 @@ class Camera {
             this.shaderProgram.setUniformShadow(`shadows[${i}]`, shadows[i]);
         }
         this.shaderProgram.setUniformInt("numShadows", numShadows);
+    }
+
+    public setLights(lights: ShaderLight[]) {
+        const numLights = Math.min(MAX_LIGHTS, lights.length);
+        for (let i = 0; i < numLights; i++) {
+            this.shaderProgram.setUniformLight(`lights[${i}]`, lights[i]);
+        }
+        this.shaderProgram.setUniformInt("numLights", numLights);
     }
 
     // Fills a rectangle using the given world coordinates where the x,y denotes the center of the rectangle

@@ -209,6 +209,15 @@ class Game {
         }
         this._camera.setShadows(shadows);
 
+        this._camera.setLights([
+            {
+                position: this.player.position,
+                intensity: 1 + 0.2 * (Math.sin(6 * this.time) * 0.2 + Math.sin(2.4 * this.time) * 0.45 + Math.sin(8 * this.time) * 0.35),
+                radius: 120,
+                color: new Color(0.8, 0.6, 0.2, 1.0),
+            }
+        ])
+
         const playerCI = getChunkIndex(this.player.position);
 
         this._camera.color = Color.WHITE;
