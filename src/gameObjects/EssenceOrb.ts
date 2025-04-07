@@ -1,6 +1,6 @@
 import { spriteRenderer } from "../renderers";
 import { GameObjectFactory, GameObject } from "./index";
-import { MathUtils, Vector } from "../utils";
+import { MathUtils, Vector, Color } from "../utils";
 import { Hitbox } from "../components";
 import { getSound } from "../soundLoader";
 import { PIXELS_PER_TILE } from "../game";
@@ -9,8 +9,6 @@ const ORB_LIFESPAN = 120;
 
 const EssenceOrbFactory: GameObjectFactory = (value: number, position: Vector) => {
     const orb = new GameObject();
-    // const scale = -1 / (2 * Math.exp(0.05 * (value + 20))) + 0.4;
-    // orb.scale.setComponents(scale, scale);
     orb.scale.setComponents(4, 4);
     // TODO: choose a random essence orb
     orb.renderer = spriteRenderer("essence_orb_small");
@@ -44,6 +42,8 @@ const EssenceOrbFactory: GameObjectFactory = (value: number, position: Vector) =
                         )
                     );
                 }
+                const c = (Math.cos(gameObject.age * 6) * 0.5 + 0.5) * 0.5 + 0.75;
+                gameObject.color = new Color(c, c, c, 1);
             }
         }
     });

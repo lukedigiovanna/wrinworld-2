@@ -1,6 +1,6 @@
 import { spriteRenderer } from "../renderers";
 import { GameObjectFactory, GameObject } from "./index";
-import { MathUtils, Vector } from "../utils";
+import { MathUtils, Vector, Color } from "../utils";
 import { getSound } from "../soundLoader";
 
 const EssenceOrbAttackFactory: GameObjectFactory = (value: number, position: Vector, target: GameObject) => {
@@ -37,7 +37,8 @@ const EssenceOrbAttackFactory: GameObjectFactory = (value: number, position: Vec
                         dt * 0.6 / Math.max(distance * 0.02 - 1, 0.1) * 16
                     )
                 );
-                
+                const c = (Math.cos(gameObject.age * 6) * 0.5 + 0.5) * 0.5 + 0.75;
+                gameObject.color = new Color(c, c, c, 1); 
             },
             data
         }
