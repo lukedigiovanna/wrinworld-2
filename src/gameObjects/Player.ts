@@ -12,6 +12,7 @@ import input from "../input";
 const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const player = new GameObject();
     player.team = Team.PLAYER;
+    player.castsShadow = true;
     player.position = position.copy();
     player.addComponent(Physics);
     player.addComponent(PlayerMovement);

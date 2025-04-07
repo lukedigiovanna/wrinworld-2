@@ -1,6 +1,6 @@
 import input from "./input";
 import { Vector, MathUtils, Color} from "./utils";
-import { ShaderProgram } from "./shader";
+import { MAX_SHADOWS, ShaderProgram, ShaderShadow } from "./shader";
 import { getOrthographicProjection, Matrix4 } from "./matrixutils";
 import { Texture, getTexture } from "./imageLoader";
 import { PIXELS_PER_TILE } from "./game";
@@ -96,6 +96,14 @@ class Camera {
         this.shaderProgram.setUniformMatrix4("projection", projection);
     }
 
+    public setShadows(shadows: ShaderShadow[]) {
+        const numShadows = Math.min(MAX_SHADOWS, shadows.length);
+        for (let i = 0; i < numShadows; i++) {
+            this.shaderProgram.setUniformShadow(`shadows[${i}]`, shadows[i]);
+        }
+        this.shaderProgram.setUniformInt("numShadows", numShadows);
+    }
+
     // Fills a rectangle using the given world coordinates where the x,y denotes the center of the rectangle
     public fillRect(x: number, y: number, w: number, h: number) {
         this.drawTexture(getTexture("square"), x, y, w, h);
@@ -117,7 +125,6 @@ class Camera {
         );
         this.shaderProgram.setUniformMatrix4("model", transformation);
         this.shaderProgram.setUniformColor("color", this.color);
-        this.shaderProgram.setUniform2f("spriteSize", w, h);
         this.gl.bindTexture(this.gl.TEXTURE_2D, texture.texture);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.squareVBO);
         this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);

@@ -2,6 +2,7 @@ import { Game } from "./game";
 import { loadImage, loadImageAndTexture } from "./imageLoader";
 import { loadSound } from "./soundLoader";
 import { ShaderProgram } from "./shader";
+import { vertexShaderCode, fragmentShaderCode } from "./shaderCode";
 
 let lastTime = new Date().getTime();
 let game: Game | undefined = undefined;
@@ -13,34 +14,6 @@ const fpsSamples = 5;
 let canvas: HTMLCanvasElement | undefined;
 let gl: WebGLRenderingContext | null = null;
 let shaderProgram: ShaderProgram | null = null;
-
-const vertexShaderCode = `
-attribute vec2 a_position;
-attribute vec2 a_textureCoord;
-varying vec2 texCoord;
-uniform mat4 projection;
-uniform mat4 model;
-
-void main() {
-    gl_Position = projection * model * vec4(a_position, 0.0, 1.0);
-    texCoord = a_textureCoord;
-}
-`
-
-const fragmentShaderCode = `
-precision mediump float;
-varying vec2 texCoord;
-uniform sampler2D texture;
-uniform vec4 color;
-uniform vec2 spriteSize;
-
-void main() {
-    vec2 off = 0.5 / spriteSize;
-    vec4 textureColor = texture2D(texture, texCoord);
-    if (textureColor.a < 0.1) discard;
-    gl_FragColor = textureColor * color;
-}
-`
 
 const mainLoop = () => {
     if (!game || !canvas || !gl || !shaderProgram) {

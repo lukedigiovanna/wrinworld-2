@@ -3,6 +3,7 @@ import { Game, PIXELS_PER_TILE } from "./game";
 import { TileIndex } from "./tiles";
 import { EnemyIndex, PortalFactory, PortalProperties, PortalDrop, PropFactory } from "./gameObjects";
 import { ItemIndex } from "./items";
+import { PropIndex } from "./props";
 
 interface Level {
     regionName: string;
@@ -434,7 +435,7 @@ const LEVEL_1: Level = {
         // 7. Place trees
         for (let x = left; x <= right; x++) {
             for (let y = bottom; y <= top; y++) {
-                const c = MathUtils.randomWeightedChoice(["tree", "tall_grass", null],[treeRate, grassRate, 1 - treeRate - grassRate])
+                const c = MathUtils.randomWeightedChoice([PropIndex.TREE, PropIndex.TALL_GRASS, null],[treeRate, grassRate, 1 - treeRate - grassRate])
                 if (c !== null) {
                     const position = new Vector((x + 0.5) * PIXELS_PER_TILE, (y + 0.5) * PIXELS_PER_TILE);
                     let tooCloseToPortal = false;
@@ -451,12 +452,7 @@ const LEVEL_1: Level = {
                     if (!tile.canGrowPlants) {
                         continue;
                     }
-                    if (c === "tree") {
-                        game.addGameObject(PropFactory(position, c));
-                    }
-                    else {
-                        game.addGameObject(PropFactory(position, c, false));
-                    }
+                    game.addGameObject(PropFactory(c, position));
                 }
             }
         }
@@ -477,7 +473,7 @@ const LEVEL_1: Level = {
                         if (!tile.canGrowPlants) {
                             continue;
                         }
-                        game.addGameObject(PropFactory(position, "flower", false));
+                        game.addGameObject(PropFactory(PropIndex.FLOWER, position));
                     }
                 }
             }

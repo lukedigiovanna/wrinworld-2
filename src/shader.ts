@@ -1,6 +1,13 @@
 import { Color, Vector } from "./utils";
 import { Matrix4 } from "./matrixutils";
 
+interface ShaderShadow {
+    position: Vector;
+    size: number;
+}
+
+const MAX_SHADOWS = 255;
+
 class ShaderProgram {
     private _program: WebGLProgram;
     private gl: WebGLRenderingContext;
@@ -13,7 +20,6 @@ class ShaderProgram {
         gl.shaderSource(vertexShader, vertexShaderSource);
         gl.compileShader(vertexShader);
         if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
-            gl.deleteShader(vertexShader);
             throw Error(gl.getShaderInfoLog(vertexShader) as string);
         } 
 
@@ -22,7 +28,6 @@ class ShaderProgram {
         gl.shaderSource(fragmentShader, fragmentShaderSource);
         gl.compileShader(fragmentShader);
         if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
-            gl.deleteShader(fragmentShader);
             throw Error(gl.getShaderInfoLog(fragmentShader) as string);
         }
 
@@ -68,6 +73,20 @@ class ShaderProgram {
     public setUniformVector(name: string, vector: Vector) {
         this.setUniform2f(name, vector.x, vector.y);
     }
+
+    public setUniformInt(name: string, i0: number) {
+        this.gl.uniform1i(this.loc(name), i0);
+    }
+
+    public setUniformFloat(name: string, f0: number) {
+        this.gl.uniform1f(this.loc(name), f0);
+    }
+
+    public setUniformShadow(name: string, shadow: ShaderShadow) {
+        this.setUniformVector(`${name}.position`, shadow.position);
+        this.setUniformFloat(`${name}.size`, shadow.size);
+    }
 }
 
-export { ShaderProgram };
+export { ShaderProgram, MAX_SHADOWS };
+export type { ShaderShadow };

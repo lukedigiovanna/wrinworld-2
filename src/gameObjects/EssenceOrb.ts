@@ -36,11 +36,11 @@ const EssenceOrbFactory: GameObjectFactory = (value: number, position: Vector) =
                 const player = gameObject.game.player;
                 const diff = Vector.subtract(player.position, gameObject.position);
                 const distance = diff.magnitude;
-                if (distance < 56) {
+                if (distance < 64) {
                     gameObject.position.add(
                         Vector.scaled(
                             Vector.normalized(diff), 
-                            dt * 10 / Math.max(distance / PIXELS_PER_TILE - 1, 2)
+                            dt * 32 / Math.max(distance - PIXELS_PER_TILE, 1)
                         )
                     );
                 }

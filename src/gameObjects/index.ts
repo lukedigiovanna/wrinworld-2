@@ -26,6 +26,7 @@ class GameObject {
     
     private components: Component[] = [];
     public renderer: Renderer | undefined = undefined;
+    public castsShadow: boolean = false;
 
     private _game: Game | undefined;
 

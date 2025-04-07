@@ -6,14 +6,14 @@ import { getTexture } from "./imageLoader";
 import { Particle, ParticleLayer } from "./components";
 import { Tile, tileCodex, TileIndex } from "./tiles";
 import { Level, LEVEL_1 } from "./levels";
-import { ShaderProgram } from "./shader";
+import { ShaderProgram, ShaderShadow, MAX_SHADOWS } from "./shader";
 
 const CHUNK_SIZE = 8;
 const TILES_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE;
 const PIXELS_PER_TILE = 16;
 const MAX_NUM_CHUNKS = 1024; // number of chunks along width and height of the world
 const WORLD_SIZE = CHUNK_SIZE * MAX_NUM_CHUNKS;
-const RENDER_DISTANCE = 4;
+const RENDER_DISTANCE = 2;
 
 const getChunkIndex = (position: Vector) => {
     const c = Vector.add(Vector.scaled(position, 1 / PIXELS_PER_TILE), new Vector(WORLD_SIZE / 2, WORLD_SIZE / 2));
@@ -195,6 +195,18 @@ class Game {
         }
 
         this._camera.clear();
+
+        const shadows: ShaderShadow[] = [];
+        for (let i = 0; i < this.activeObjects.length; i++) {
+            if (this.activeObjects[i].castsShadow) {
+                shadows.push({
+                    position: this.activeObjects[i].position,
+                    size: 1,
+                });
+                if (shadows.length >= MAX_SHADOWS) break;
+            }
+        }
+        this._camera.setShadows(shadows);
 
         const playerCI = getChunkIndex(this.player.position);
 
