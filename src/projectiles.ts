@@ -208,7 +208,7 @@ projectilesCodex.set(ProjectileIndex.CRYSTAL_BOMB, {
     damageReductionPerHit: 0,
     knockback: 0,
     lifespan: 5,
-    speed: 10,
+    speed: 160,
     angularVelocity: 0,
     rotateToDirectionOfTarget: false,
     drag: 1.5,
@@ -219,7 +219,7 @@ projectilesCodex.set(ProjectileIndex.CRYSTAL_BOMB, {
         for (let i = 0; i < 50; i++) {
             const target = Vector.add(gameObject.position, MathUtils.randomVector(1));
             const projectile = {...projectilesCodex.get(ProjectileIndex.CRYSTAL_SHARD)};
-            projectile.speed += MathUtils.random(-5, 5);
+            projectile.speed += MathUtils.random(-40, 40);
             projectile.angularVelocity += MathUtils.random(-10, 10);
             // projectile.size += MathUtils.random(-0.1, 0.1);
             const shard = ProjectileFactory(projectile, owner, gameObject.position, target);
@@ -235,7 +235,7 @@ projectilesCodex.set(ProjectileIndex.CRYSTAL_SHARD, {
     damageReductionPerHit: 0.2,
     knockback: 0.4,
     lifespan: 3,
-    speed: 10,
+    speed: 160,
     angularVelocity: 0,
     rotateToDirectionOfTarget: true,
     drag: 0,
