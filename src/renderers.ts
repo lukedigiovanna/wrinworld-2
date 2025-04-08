@@ -8,19 +8,6 @@ type Renderer = {
     data?: any;
 };
 
-const rectangleRenderer: (color: string) => Renderer = (color: string) => {
-    const data = {
-        color
-    };
-    return {
-        render(camera: Camera, gameObject: GameObject) {
-            // camera.setFillColor(data.color);
-            // camera.fillRect(gameObject.position.x, gameObject.position.y, gameObject.scale.x, gameObject.scale.y);
-        },
-        data
-    }
-}
-
 const spriteRenderer: (id: string) => Renderer = (id: string) => {
     return {
         render(camera: Camera, gameObject: GameObject) {
@@ -35,4 +22,4 @@ const spriteRenderer: (id: string) => Renderer = (id: string) => {
     }
 }
 
-export { Renderer, rectangleRenderer, spriteRenderer };
+export { Renderer, spriteRenderer };

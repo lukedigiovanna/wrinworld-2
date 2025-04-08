@@ -10,7 +10,7 @@ const PropFactory: GameObjectFactory = (propertiesIndex: PropIndex, position: Ve
     const prop = new GameObject();
     prop.tag = "prop";
     const texture = getTexture(properties.spriteID);
-    prop.scale.setComponents(texture.image.width, texture.image.height);
+    prop.scale.setComponents(texture.width, texture.height);
     prop.renderer = spriteRenderer(properties.spriteID);
     prop.position.set(position);
     if (properties.hasCollision) {

@@ -128,6 +128,14 @@ class Camera {
         );
         this.shaderProgram.setUniformMatrix4("model", transformation);
         this.shaderProgram.setUniformColor("color", this.color);
+        if (texture.clipRect) {
+            this.shaderProgram.setUniform2f("clipOffset", texture.clipRect.left, texture.clipRect.bottom);
+            this.shaderProgram.setUniform2f("clipSize", texture.clipRect.right - texture.clipRect.left, texture.clipRect.top - texture.clipRect.bottom);
+        }
+        else {
+            this.shaderProgram.setUniform2f("clipOffset", 0, 0);
+            this.shaderProgram.setUniform2f("clipSize", 1, 1);
+        }
         this.gl.bindTexture(this.gl.TEXTURE_2D, texture.texture);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.squareVBO);
         this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);

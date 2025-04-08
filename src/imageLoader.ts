@@ -1,9 +1,37 @@
-import { Rectangle } from "utils";
+import { Rectangle } from "./utils";
 
-interface Texture {
-    image: HTMLImageElement;
-    texture: WebGLTexture | null;
-    clipRect?: Rectangle;
+class Texture {
+    private _image: HTMLImageElement;
+    private _texture: WebGLTexture | null;
+    private _clipRect?: Rectangle;
+
+    constructor(image: HTMLImageElement, texture: WebGLTexture | null, clipRect?: Rectangle) {
+        this._image = image;
+        this._texture = texture;
+        this._clipRect = clipRect;
+    }
+
+    public get image() {
+        return this._image;
+    }
+
+    public get texture() {
+        return this._texture;
+    }
+
+    public get clipRect() {
+        return this._clipRect;
+    }
+
+    public get width() {
+        const p = this.clipRect ? this.clipRect.right - this.clipRect.left : 1;
+        return this.image.width * p; 
+    }
+
+    public get height() {
+        const p = this.clipRect ? this.clipRect.top - this.clipRect.bottom : 1;
+        return this.image.height * p;
+    }
 }
 
 const images = new Map<string, HTMLImageElement>();
@@ -12,7 +40,7 @@ const textures = new Map<string, Texture>();
 const usedImageIDs: string[] = [];
 const usedTextureIDs: string[] = [];
 
-const loadImage = (id: string, url: string) => {
+function loadImage(id: string, url: string) {
     usedImageIDs.push(id);
     return new Promise((resolve, reject) => {
         const img = new Image();
@@ -23,7 +51,7 @@ const loadImage = (id: string, url: string) => {
     });
 }  
 
-const getImage = (id: string): HTMLImageElement => {
+function getImage(id: string): HTMLImageElement {
     const img = images.get(id);
     if (!img) {
       console.error("Warning: getting an undefined image... returning the undefined sprite")
@@ -32,24 +60,49 @@ const getImage = (id: string): HTMLImageElement => {
     return img;
 }
 
-const imageExists = (id: string): boolean => {
+function imageExists(id: string): boolean {
     return images.has(id);
 }
 
-// Loads a WebGLTexture object from the given source image.
-const loadTexture = (gl: WebGLRenderingContext, id: string) => {
-    usedTextureIDs.push(id);
+function createTexture(gl: WebGLRenderingContext, image: HTMLImageElement) {
     const texture = gl.createTexture();
-    const image = getImage(id);
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    textures.set(id, {
-        texture, image
-    });
+    return texture;
+}
+
+// Loads a WebGLTexture object from the given source image.
+function loadTexture(gl: WebGLRenderingContext, id: string) {
+    usedTextureIDs.push(id)
+    const image = getImage(id);
+    const texture = createTexture(gl, image);
+    textures.set(id, new Texture(image, texture));
+}
+
+function loadTexturesFromSpritesheet(gl: WebGLRenderingContext, id: string, cellWidth: number, cellHeight: number) {
+    const spritesheetImage = getImage(id);
+    const spriteSheetTexture = createTexture(gl, spritesheetImage);
+    const w = spritesheetImage.width;
+    const h = spritesheetImage.height;
+    let i = 0;
+    for (let y = 0; y < h; y += cellHeight) {
+        for (let x = 0; x < w; x += cellWidth) {
+            const clipRect: Rectangle = {
+                left: x / w,
+                right: (x + cellWidth) / w,
+                bottom: y / h,
+                top: (y + cellHeight) / h,
+            }
+            const cellID = `${id}_${i}`;
+            usedTextureIDs.push(cellID);
+            textures.set(cellID, new Texture(spritesheetImage, spriteSheetTexture, clipRect));
+            i++;
+        }
+    }
 }
 
 const getTexture = (id: string) => {
@@ -63,7 +116,7 @@ const getTexture = (id: string) => {
 
 // Loads the given image from the url and creates an image and texture object
 // in the global registry.
-const loadImageAndTexture = (gl: WebGLRenderingContext, id: string, url: string) => {
+function loadImageAndTexture(gl: WebGLRenderingContext, id: string, url: string) {
     return new Promise((resolve, reject) => {
         const img = new Image();
         img.onload = () => {
@@ -76,10 +129,23 @@ const loadImageAndTexture = (gl: WebGLRenderingContext, id: string, url: string)
     });
 }
 
-const textureExists = (id: string) => {
+function loadImageAndTextureSpritesheet(gl: WebGLRenderingContext, id: string, url: string, cellWidth: number, cellHeight: number) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+            loadTexturesFromSpritesheet(gl, id, cellWidth, cellHeight);
+            return resolve(img);
+        }
+        img.onerror = reject;
+        img.src = url;
+        images.set(id, img);
+    });
+}
+
+function textureExists(id: string) {
     return textures.has(id);
 }
 
-export { loadImage, getImage, imageExists, loadTexture, getTexture, 
-         loadImageAndTexture, textureExists, usedImageIDs, usedTextureIDs };
-export type { Texture };
+export { loadImage, getImage, imageExists, loadTexture, loadTexturesFromSpritesheet, getTexture, 
+         loadImageAndTexture, loadImageAndTextureSpritesheet, textureExists, usedImageIDs, usedTextureIDs,
+        Texture };

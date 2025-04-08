@@ -1,5 +1,5 @@
 import { Game } from "./game";
-import { loadImage, loadImageAndTexture } from "./imageLoader";
+import { loadImage, loadImageAndTexture, loadImageAndTextureSpritesheet } from "./imageLoader";
 import { loadSound } from "./soundLoader";
 import { ShaderProgram } from "./shader";
 import { vertexShaderCode, fragmentShaderCode } from "./shaderCode";
@@ -134,6 +134,8 @@ window.onload = async () => {
         loadImageAndTexture(gl, "poison_particle", "assets/images/particles/poison.png"),
         loadImageAndTexture(gl, "flame_particle", "assets/images/particles/flame.png"),
     
+        loadImageAndTextureSpritesheet(gl, "pixel_font", "assets/images/pixel_font.png", 9, 9),
+
         // UI
         loadImage("hotbar_slot", "assets/images/ui/hotbar_slot.png"),
         loadImage("hotbar_slot_selected", "assets/images/ui/hotbar_slot_selected.png"),

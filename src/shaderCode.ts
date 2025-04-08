@@ -22,6 +22,8 @@ varying vec2 texCoord;
 varying vec2 fragPos;
 
 uniform sampler2D texture;
+uniform vec2 clipOffset;
+uniform vec2 clipSize;
 uniform vec4 color;
 
 #define MAX_SHADOWS 120
@@ -52,8 +54,7 @@ float computeLightFalloff(vec2 fragPos, Light light) {
 }
 
 void main() {
-    vec4 textureColor = texture2D(texture, texCoord);
-    // if (textureColor.a < 0.1) discard;
+    vec4 textureColor = texture2D(texture, texCoord * clipSize + clipOffset);
 
     float shadowValue = 0.0;
     for (int i = 0; i < MAX_SHADOWS; i++) {
