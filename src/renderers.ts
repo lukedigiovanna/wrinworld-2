@@ -27,13 +27,13 @@ function textRenderer(fontID: string, text: string): Renderer {
     return {
         render(camera, gameObject) {
             let x = gameObject.position.x;
-            for (const c of text) {
+            for (const c of this.data.text) {
                 if (c === ' ') {
                     x += 5;
                 }
                 if (alphabet.indexOf(c) >= 0) {
                     const texture = getTexture(`${fontID}_${c}`);
-                    camera.color = Color.WHITE;
+                    camera.color = gameObject.color;
                     camera.drawTexture(texture, x, gameObject.position.y, texture.width, texture.height);
                     x += texture.width + 1;
                 }

@@ -7,6 +7,7 @@ const Physics: ComponentFactory = (gameObject: GameObject) => {
     const data = {
         velocity: Vector.zero(),
         impulse: Vector.zero(),
+        gravity: 0,
         angularVelocity: 0,
         drag: 0,
     }
@@ -14,6 +15,7 @@ const Physics: ComponentFactory = (gameObject: GameObject) => {
         id: "physics",
         start() {},
         update(dt) {
+            data.velocity.y -= data.gravity * dt;
             data.impulse.scale(Math.exp(-dt * 2));
             data.velocity.scale(Math.exp(-dt * data.drag));
             gameObject.rotation += data.angularVelocity * dt;

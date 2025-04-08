@@ -17,6 +17,7 @@ class GameObject {
     public scale: Vector;
     public rotation: number = 0;
     public rotationPointOffset: Vector;
+    public zIndex: number = 0;
 
     public lifespan: number | undefined = undefined;
 

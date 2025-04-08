@@ -1,5 +1,5 @@
 import { GameObjectFactory, GameObject, Team } from "./";
-import { Vector } from "../utils";
+import { Vector, Color } from "../utils";
 import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager, 
          Health, WeaponManager, EssenceManager,
          HealthBarDisplayMode,
@@ -12,26 +12,33 @@ import input from "../input";
 const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const player = new GameObject();
     player.team = Team.PLAYER;
+    player.tag = "player";
+    player.position.set(position.copy());
+    player.renderer = spriteRenderer("peach");
+    player.scale.setComponents(32, 48);
     player.castsShadow = true;
     player.shadowSize = 2;
-    player.position = position.copy();
+
     player.addComponent(Physics);
     player.addComponent(PlayerMovement);
+    
     const hitbox = player.addComponent(Hitbox);
-    hitbox.data?.boxSize.setComponents(24, 24);
-    hitbox.data?.boxOffset.setComponents(0, -12)
+    hitbox.data.boxSize.setComponents(24, 24);
+    hitbox.data.boxOffset.setComponents(0, -12)
+    
     const collider = player.addComponent(PhysicalCollider);
-    collider.data?.boxOffset.setComponents(0, -20);
-    collider.data?.boxSize.setComponents(24, 8);
+    collider.data.boxOffset.setComponents(0, -20);
+    collider.data.boxSize.setComponents(24, 8);
     collider.data.castShadow = false;
 
     const health = player.addComponent(Health);
     health.data.initializeHealth(50);
     health.data.regenerationRate = 0.0;
     health.data.healthBarDisplayMode = HealthBarDisplayMode.NONE;
+    health.data.damageSoundEffectID = "peach_damage";
+    health.data.deathSoundEffectID = "peach_die";
 
     player.addComponent(InventoryManager);
-
     player.addComponent(WeaponManager);
     player.addComponent(EssenceManager);
     player.addComponent(StatusEffectManager);
@@ -121,12 +128,6 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
         }
     });
 
-    player.renderer = spriteRenderer("peach");
-    player.scale.setComponents(32, 48);
-    health.data.damageSoundEffectID = "peach_damage";
-    health.data.deathSoundEffectID = "peach_die";
-
-    player.tag = "player";
     return player;
 }
 

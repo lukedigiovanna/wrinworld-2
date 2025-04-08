@@ -71,8 +71,8 @@ class Camera {
     // clears the camera view
     public clear() {
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-        // this.gl.clearColor(0, 0, 0.5, 1);
-        // this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+        this.gl.clearColor(0, 0, 0, 1);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
         // Set the appropriate projection matrix
         const pixelsPerUnit = this.canvas.height / this.height;
         const modifiedPPU = Math.floor(pixelsPerUnit);

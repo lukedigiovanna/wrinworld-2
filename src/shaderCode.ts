@@ -79,7 +79,13 @@ void main() {
     }
 
     float shadowMultiplier = max(1.0 - shadowValue, SHADOW_STRENGTH);
-    gl_FragColor = textureColor * color * vec4(shadowMultiplier, shadowMultiplier, shadowMultiplier, 1) * vec4(lightColor, 1);
+    float alpha = textureColor.a * color.a;
+    vec3 baseColor = textureColor.rgb * color.rgb * color.a;
+
+    baseColor *= shadowMultiplier;
+    // baseColor *= lightColor;
+
+    gl_FragColor = vec4(baseColor, alpha);
 }
 `
 

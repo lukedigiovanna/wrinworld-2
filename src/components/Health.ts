@@ -1,7 +1,8 @@
 import { getSound } from "../soundLoader";
 import { GameObject } from "../gameObjects/index";
-import { ComponentFactory } from "./index";
-import { Color } from "../utils";
+import { ComponentFactory, Physics } from "./index";
+import { Color, MathUtils } from "../utils";
+import { textRenderer } from "../renderers";
 
 enum HealthBarDisplayMode {
     NONE,
@@ -50,6 +51,24 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
             if (this.healthBarDisplayMode !== HealthBarDisplayMode.NONE) {
                 this.timeLastShowedHealthBar = gameObject.game.time;
             }
+            
+            const damageMarker = new GameObject();
+            damageMarker.renderer = textRenderer("pixel_font", `${Math.floor(amount)}`);
+            damageMarker.position.set(gameObject.position);
+            damageMarker.zIndex = 1000;
+            damageMarker.lifespan = 0.8;
+            const physics = damageMarker.addComponent(Physics);
+            physics.data.gravity = 100;
+            physics.data.velocity.setComponents(MathUtils.random(-15, 15), 40);
+            damageMarker.addComponent((gameObject) => {
+                return {
+                    id: "fade",
+                    update(dt) {
+                        gameObject.color = new Color(1, 0.1, 0.1, 1 - gameObject.age / gameObject.lifespan!);
+                    },
+                }
+            });
+            gameObject.game.addGameObject(damageMarker);
         }
     }
     return {

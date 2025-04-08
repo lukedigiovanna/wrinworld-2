@@ -7,7 +7,7 @@ import { Particle, ParticleLayer } from "./components";
 import { Tile, tileCodex, TileIndex } from "./tiles";
 import { Level, LEVEL_1 } from "./levels";
 import { ShaderProgram, ShaderShadow, MAX_SHADOWS } from "./shader";
-import { textRenderer } from "./renderers";
+import { spriteRenderer, textRenderer } from "./renderers";
 
 const CHUNK_SIZE = 8;
 const TILES_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE;
@@ -62,7 +62,32 @@ class Game {
         const text = new GameObject();
         text.position.setComponents(0, 300);
         text.renderer = textRenderer("pixel_font", "hello world");
+        text.color = Color.YELLOW;
         this.addGameObject(text);
+
+        const square = new GameObject();
+        square.position.setComponents(0, 350);
+        square.renderer = spriteRenderer("square");
+        square.scale.setComponents(32, 32);
+        square.color = new Color(1, 0, 0, 0.5);
+        square.addComponent((gameObject) => {
+            return {
+                id: "oaiwejfoaw",
+                data: {
+                    b: 1,
+                },
+                update(dt) {
+                    if (input.isKeyDown("KeyF")) {
+                        this.data.b = MathUtils.clamp(this.data.b + 0.01, 0, 1);
+                    }
+                    if (input.isKeyDown("KeyG")) {
+                        this.data.b = MathUtils.clamp(this.data.b - 0.01, 0, 1);
+                    }
+                    gameObject.color = new Color(1, 0, 0, this.data.b);
+                }
+            }
+        })
+        this.addGameObject(square);
 
         // this.addGameObject(EnemyFactory(new Vector(0, 20), EnemyIndex.SLIME));
     }
@@ -261,7 +286,7 @@ class Game {
                 this.drawParticle(this.particles[i]);
         }
 
-        [...this.activeObjects].sort((a: GameObject, b: GameObject) => (b.position.y - b.scale.y / 2) - (a.position.y - a.scale.y / 2))
+        [...this.activeObjects].sort((a: GameObject, b: GameObject) => (b.position.y - b.scale.y / 2 - b.zIndex) - (a.position.y - a.scale.y / 2 - a.zIndex))
             .forEach((gameObject: GameObject) => {
                 gameObject.render(this._camera);
             });
