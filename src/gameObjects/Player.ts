@@ -90,14 +90,26 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
 
                 const equipped = data.weaponManager.data.equippedWeapon;
                 if (equipped) {
-                    const elapsed = gameObject.game.time - data.weaponManager.data.timeLastFired;
-                    const cooldown = equipped.cooldown;
-                    const percent = elapsed / cooldown;
-                    const index = Math.floor(percent * 10);
+                    let elapsed = gameObject.game.time - data.weaponManager.data.timeLastFired;
+                    let percent = elapsed / equipped.cooldown;
+                    let index = Math.floor(percent * 10);
                     const attackReloadIcon = $("#attack-reload-icon");
+                    let follow = false;
                     if (percent <= 1) {
-                        attackReloadIcon.show();
+                        follow = true;
                         attackReloadIcon.attr("src", getImage(`attack_reload_${index}`).src);
+                    }
+                    else {
+                        if (data.weaponManager.data.charging) {
+                            follow = true;
+                            elapsed = gameObject.game.time - data.weaponManager.data.timeChargeStart;
+                            percent = elapsed /  (equipped.maxCharge ? equipped.maxCharge : 1);
+                            index = Math.min(9, Math.floor(percent * 10));
+                            attackReloadIcon.attr("src", getImage(`attack_charge_${index}`).src);
+                        }
+                    }
+                    if (follow) {
+                        attackReloadIcon.show();
                         attackReloadIcon.css("left", input.mousePosition.x);
                         attackReloadIcon.css("top", input.mousePosition.y);
                     }

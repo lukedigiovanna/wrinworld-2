@@ -75,21 +75,24 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
             }
             
             if (input.mousePressed()) {
-                data.inventory.useSelectedItem(gameObject.game.camera.screenToWorldPosition(input.mousePosition));
+                data.inventory.pressSelectedItem(gameObject.game.camera.screenToWorldPosition(input.mousePosition));
+            }
+            if (input.mouseReleased()) {
+                data.inventory.releaseSelectedItem(gameObject.game.camera.screenToWorldPosition(input.mousePosition), 0);
             }
 
-            if (input.isKeyPressed("ArrowLeft")) {
-                data.inventory.useSelectedItem(Vector.add(gameObject.position, Vector.left()));
-            }
-            if (input.isKeyPressed("ArrowRight")) {
-                data.inventory.useSelectedItem(Vector.add(gameObject.position, Vector.right()));
-            }
-            if (input.isKeyPressed("ArrowDown")) {
-                data.inventory.useSelectedItem(Vector.add(gameObject.position, Vector.down()));
-            }
-            if (input.isKeyPressed("ArrowUp")) {
-                data.inventory.useSelectedItem(Vector.add(gameObject.position, Vector.up()));
-            }
+            // if (input.isKeyPressed("ArrowLeft")) {
+            //     data.inventory.useSelectedItem(Vector.add(gameObject.position, Vector.left()));
+            // }
+            // if (input.isKeyPressed("ArrowRight")) {
+            //     data.inventory.useSelectedItem(Vector.add(gameObject.position, Vector.right()));
+            // }
+            // if (input.isKeyPressed("ArrowDown")) {
+            //     data.inventory.useSelectedItem(Vector.add(gameObject.position, Vector.down()));
+            // }
+            // if (input.isKeyPressed("ArrowUp")) {
+            //     data.inventory.useSelectedItem(Vector.add(gameObject.position, Vector.up()));
+            // }
         },
         render(camera) {
             const selected = data.inventory.getSelectedItem() as Item;

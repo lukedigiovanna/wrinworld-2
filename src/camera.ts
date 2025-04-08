@@ -21,7 +21,7 @@ class Camera {
 
     public color: Color = Color.WHITE;
     public strokeWidth: number = 1;
-    public ambientLightIntensity: number = 0.1;
+    public ambientLightIntensity: number = 0.9;
 
     public target: Vector = Vector.zero();
 

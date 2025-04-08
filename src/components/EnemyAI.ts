@@ -65,7 +65,8 @@ const BasicFollowAndAttackAI: (props: BasicFollowAndAttackProperties) => Compone
                 }
 
                 if (distance <= props.attackRange) {
-                    data.weaponManager.data.fire(props.weaponIndex, targetPosition);
+                    data.weaponManager.data.press(props.weaponIndex, targetPosition);
+                    data.weaponManager.data.release(props.weaponIndex, targetPosition);
                     data.physics.data.velocity.set(Vector.zero());
                 }
                 else {

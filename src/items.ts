@@ -169,9 +169,10 @@ interface Item {
     essenceCost: number;
     // ex. Bow uses Arrow type
     usesItem?: ItemIndex[];
-    use?: UseItemFunction;
-    equip?: EquipItemFunction;
-    unequip?: EquipItemFunction;
+    pressItem?: UseItemFunction;
+    releaseItem?: UseItemFunction;
+    equipItem?: EquipItemFunction;
+    unequipItem?: EquipItemFunction;
     getStats?: () => ItemStat[];
 }
 
@@ -180,11 +181,14 @@ interface ItemDropChance {
     itemIndex: ItemIndex;
 }
 
-function fireWeapon(player: GameObject, weapon: WeaponIndex, target: Vector, uses?: Item) {
+function pressWeapon(player: GameObject, weapon: WeaponIndex, target: Vector, uses?: Item) {
     const weaponManager = player.getComponent("weapon-manager");
-    return weaponManager.data.fire(
-        weapon, target, uses
-    );
+    return weaponManager.data.press(weapon, target, uses);
+}
+
+function releaseWeapon(player: GameObject, weapon: WeaponIndex, target: Vector, uses?: Item) {
+    const weaponManager = player.getComponent("weapon-manager");
+    return weaponManager.data.release(weapon, target, uses);
 }
 
 function equipWeapon(player: GameObject, weapon: WeaponIndex) {
@@ -222,6 +226,24 @@ function generateStatsForWeapon(weaponIndex: WeaponIndex): ItemStat[] {
     return stats;
 }
 
+// Shorthand for filling out basic item use functions for weapons.
+function weaponItem(index: WeaponIndex) {
+    return {
+        pressItem(player: GameObject, target: Vector, uses?: Item) {
+            return pressWeapon(player, index, target, uses);
+        },
+        releaseItem(player: GameObject, target: Vector, uses?: Item) {
+            return releaseWeapon(player, index, target, uses);
+        },
+        equipItem(player: GameObject) {
+            equipWeapon(player, index);
+        },
+        getStats() {
+            return generateStatsForWeapon(index);
+        }
+    }
+}
+
 const itemsCodex = new Codex<ItemIndex, Item>();
 itemsCodex.set(ItemIndex.BROAD_SWORD, {
     itemIndex: ItemIndex.BROAD_SWORD,
@@ -232,15 +254,7 @@ itemsCodex.set(ItemIndex.BROAD_SWORD, {
     maxStack: 1,
     consumable: false,
     essenceCost: 0,
-    use(player, target) {
-        return fireWeapon(player, WeaponIndex.BROAD_SWORD, target);
-    },
-    equip(player) {
-        equipWeapon(player, WeaponIndex.BROAD_SWORD);
-    },
-    getStats() {
-        return generateStatsForWeapon(WeaponIndex.BROAD_SWORD);
-    }
+    ...weaponItem(WeaponIndex.BROAD_SWORD),
 });
 itemsCodex.set(ItemIndex.ZOMBIE_BRAINS, {
     itemIndex: ItemIndex.ZOMBIE_BRAINS,
@@ -251,15 +265,7 @@ itemsCodex.set(ItemIndex.ZOMBIE_BRAINS, {
     maxStack: 99,
     consumable: true,
     essenceCost: 0,
-    use(player, target) {
-        return fireWeapon(player, WeaponIndex.ZOMBIE_BRAINS, target);
-    },
-    equip(player) {
-        equipWeapon(player, WeaponIndex.ZOMBIE_BRAINS);
-    },
-    getStats() {
-        return generateStatsForWeapon(WeaponIndex.ZOMBIE_BRAINS);
-    },
+    ...weaponItem(WeaponIndex.ZOMBIE_BRAINS),
 });
 itemsCodex.set(ItemIndex.ZOMBIE_FLESH, {
     itemIndex: ItemIndex.ZOMBIE_FLESH,
@@ -280,15 +286,7 @@ itemsCodex.set(ItemIndex.SHURIKEN, {
     maxStack: 20,
     consumable: true,
     essenceCost: 0,
-    use(player, target) {
-        return fireWeapon(player, WeaponIndex.SHURIKEN, target);
-    },
-    equip(player) {
-        equipWeapon(player, WeaponIndex.SHURIKEN);
-    },
-    getStats() {
-        return generateStatsForWeapon(WeaponIndex.SHURIKEN);
-    },
+    ...weaponItem(WeaponIndex.SHURIKEN),
 });
 itemsCodex.set(ItemIndex.BOW, {
     itemIndex: ItemIndex.BOW,
@@ -300,15 +298,7 @@ itemsCodex.set(ItemIndex.BOW, {
     usesItem: [ItemIndex.ARROW, ItemIndex.POISON_ARROW, ItemIndex.FLAME_ARROW],
     consumable: false,
     essenceCost: 0,
-    use(player, target, uses) {
-        return fireWeapon(player, WeaponIndex.BOW, target, uses);
-    },
-    equip(player) {
-        equipWeapon(player, WeaponIndex.BOW);
-    },
-    getStats() {
-        return generateStatsForWeapon(WeaponIndex.BOW);
-    },
+    ...weaponItem(WeaponIndex.BOW),
 });
 itemsCodex.set(ItemIndex.ARROW, {
     itemIndex: ItemIndex.ARROW,
@@ -329,7 +319,7 @@ itemsCodex.set(ItemIndex.HEALING_VIAL, {
     consumable: true,
     essenceCost: 0,
     maxStack: 20,
-    use(player) {
+    pressItem(player) {
         const health = player.getComponent("health");
         return health.data.heal(10) > 0;
     },
@@ -351,15 +341,7 @@ itemsCodex.set(ItemIndex.DAGGERS, {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-    use(player, target) {
-        return fireWeapon(player, WeaponIndex.DAGGERS, target);
-    },
-    equip(player) {
-        equipWeapon(player, WeaponIndex.DAGGERS);
-    },
-    getStats() {
-        return generateStatsForWeapon(WeaponIndex.DAGGERS);
-    },
+    ...weaponItem(WeaponIndex.DAGGERS)
 });
 itemsCodex.set(ItemIndex.ESSENCE_VIAL, {
     itemIndex: ItemIndex.ESSENCE_VIAL,
@@ -370,7 +352,7 @@ itemsCodex.set(ItemIndex.ESSENCE_VIAL, {
     consumable: true,
     essenceCost: 0,
     maxStack: 20,
-    use(player) {
+    pressItem(player) {
         // TODO: add 20 essence (or something like that) to the player
         const essenceManager = player.getComponent("essence-manager");
         return essenceManager.data.addEssence(20) > 0;
@@ -423,11 +405,11 @@ itemsCodex.set(ItemIndex.HEART, {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-    equip(player) {
+    equipItem(player) {
         const health = player.getComponent("health");
         health.data.setMaximumHP(health.data.maximumHP + 10);
     },
-    unequip(player) {
+    unequipItem(player) {
         const health = player.getComponent("health");
         health.data.setMaximumHP(health.data.maximumHP - 10);
     },
@@ -459,15 +441,7 @@ itemsCodex.set(ItemIndex.SLINGSHOT, {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-    use(player, target) {
-        return fireWeapon(player, WeaponIndex.SLINGSHOT, target); // TODO: fireprojectile
-    },
-    equip(player) {
-        equipWeapon(player, WeaponIndex.SLINGSHOT);
-    },
-    getStats() {
-        return generateStatsForWeapon(WeaponIndex.SLINGSHOT);
-    },
+    ...weaponItem(WeaponIndex.SLINGSHOT)
 });
 itemsCodex.set(ItemIndex.TELEPORTATION_RUNE, {
     itemIndex: ItemIndex.TELEPORTATION_RUNE,
@@ -478,7 +452,7 @@ itemsCodex.set(ItemIndex.TELEPORTATION_RUNE, {
     consumable: false,
     essenceCost: 5,
     maxStack: 1,
-    use(player, target) {
+    pressItem(player, target) {
         player.position.set(target);
         // TODO: spawn particles
         return true;
@@ -493,15 +467,7 @@ itemsCodex.set(ItemIndex.BATTLE_HAMMER, {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-    use(player, target) {
-        return fireWeapon(player, WeaponIndex.BATTLE_HAMMER, target);
-    },
-    equip(player) {
-        equipWeapon(player, WeaponIndex.BATTLE_HAMMER);
-    },
-    getStats() {
-        return generateStatsForWeapon(WeaponIndex.BATTLE_HAMMER);
-    },
+    ...weaponItem(WeaponIndex.BATTLE_HAMMER)
 });
 itemsCodex.set(ItemIndex.CRYSTAL_BOMB, {
     itemIndex: ItemIndex.CRYSTAL_BOMB,
@@ -512,12 +478,7 @@ itemsCodex.set(ItemIndex.CRYSTAL_BOMB, {
     consumable: true,
     essenceCost: 10,
     maxStack: 20,
-    use(player, target) {
-        return fireWeapon(player, WeaponIndex.CRYSTAL_BOMB, target);
-    },
-    equip(player) {
-        equipWeapon(player, WeaponIndex.CRYSTAL_BOMB);
-    }
+    ...weaponItem(WeaponIndex.CRYSTAL_BOMB)
 });
 itemsCodex.set(ItemIndex.HEART_CRYSTAL, {
     itemIndex: ItemIndex.HEART_CRYSTAL,
@@ -528,11 +489,11 @@ itemsCodex.set(ItemIndex.HEART_CRYSTAL, {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-    equip(player) {
+    equipItem(player) {
         const health = player.getComponent("health");
         health.data.regenerationRate += 1;
     },
-    unequip(player) {
+    unequipItem(player) {
         const health = player.getComponent("health");
         health.data.regenerationRate -= 1;
     },
@@ -554,7 +515,7 @@ itemsCodex.set(ItemIndex.STUN_FIDDLE, {
     consumable: false,
     essenceCost: 10,
     maxStack: 1,
-    use(player) {
+    pressItem(player) {
         return false; // TODO: stun all enemies in radius and play the melody
     }
 });
@@ -567,15 +528,7 @@ itemsCodex.set(ItemIndex.ESSENCE_DRIPPED_DAGGER, {
     consumable: false,
     essenceCost: 2,
     maxStack: 1,
-    use(player, target) {
-        return fireWeapon(player, WeaponIndex.ESSENCE_DRIPPED_DAGGER, target);
-    },
-    equip(player) {
-        equipWeapon(player, WeaponIndex.ESSENCE_DRIPPED_DAGGER);
-    },
-    getStats() {
-        return generateStatsForWeapon(WeaponIndex.ESSENCE_DRIPPED_DAGGER);
-    },
+    ...weaponItem(WeaponIndex.ESSENCE_DRIPPED_DAGGER)
 });
 itemsCodex.set(ItemIndex.ROOT_SNARE, {
     itemIndex: ItemIndex.ROOT_SNARE,
@@ -586,7 +539,7 @@ itemsCodex.set(ItemIndex.ROOT_SNARE, {
     consumable: true,
     essenceCost: 0,
     maxStack: 20,
-    use(player) {
+    pressItem(player) {
         return false; // TODO: add projectile
     }
 });
@@ -599,10 +552,10 @@ itemsCodex.set(ItemIndex.BASIC_SHIELD, {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-    equip(player) {
+    equipItem(player) {
         player.getComponent("health").data.resistance += 0.1;
     },
-    unequip(player) {
+    unequipItem(player) {
         player.getComponent("health").data.resistance -= 0.1;
     },
     getStats() {
@@ -624,15 +577,7 @@ itemsCodex.set(ItemIndex.QUICK_BOW, {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-    use(player, target) {
-        return fireWeapon(player, WeaponIndex.QUICK_BOW, target);
-    },
-    equip(player) {
-        equipWeapon(player, WeaponIndex.QUICK_BOW);
-    },
-    getStats() {
-        return generateStatsForWeapon(WeaponIndex.QUICK_BOW);
-    },
+    ...weaponItem(WeaponIndex.QUICK_BOW)
 });
 itemsCodex.set(ItemIndex.FLAME_ARROW,  {
     itemIndex: ItemIndex.FLAME_ARROW,

@@ -34,7 +34,7 @@ meleeAttacksCodex.set(MeleeAttackIndex.BROAD_SWORD, {
     damage: 5,
     sweepDamage: 2,
     maxHits: 3,
-    knockback: 12,
+    knockback: 32,
     size: 8,
     range: 20,
     duration: 0.25,
@@ -61,14 +61,14 @@ meleeAttacksCodex.set(MeleeAttackIndex.BATTLE_HAMMER, {
     range: 24,
     duration: 0.2,
     particleSpriteID: "sword_spark",
-})
+});
 meleeAttacksCodex.set(MeleeAttackIndex.BASIC, {
     damage: 1,
     sweepDamage: 0,
     maxHits: 1,
-    knockback: 1,
-    size: 0.25,
-    range: 0.5,
+    knockback: 16,
+    size: 4,
+    range: 16,
     duration: 0.1,
     particleSpriteID: "sword_spark"
 });

@@ -19,8 +19,6 @@ interface Enemy {
     waterSpriteID?: string; // No water effects when undefined
     particleID?: string; // No particles when undefined
     scale: Vector;
-    physicalColliderOffset: Vector;
-    physicalColliderSize: Vector;
     hp: number;
     drops: ItemDropChance[];
     essenceAmount: number;
@@ -32,8 +30,6 @@ enemiesCodex.set(EnemyIndex.ZOMBIE, {
     spriteID: "zombie",
     waterSpriteID: "zombie_water",
     scale: new Vector(1, 2.33),
-    physicalColliderOffset: new Vector(0, -1),
-    physicalColliderSize: new Vector(0.8, 0.3),
     hp: 25,
     drops: [
         {chance: 0.05, itemIndex: ItemIndex.ZOMBIE_BRAINS},
@@ -51,8 +47,6 @@ enemiesCodex.set(EnemyIndex.MINION, {
     spriteID: "minion",
     waterSpriteID: "minion_water",
     scale: new Vector(1, 1),
-    physicalColliderOffset: new Vector(0, -0.4),
-    physicalColliderSize: new Vector(0.8, 0.2),
     hp: 16,
     drops: [],
     essenceAmount: 2,
@@ -69,8 +63,6 @@ enemiesCodex.set(EnemyIndex.SLIME, {
     waterSpriteID: "slime",
     particleID: "slime_particle",
     scale: new Vector(0.75, 0.5),
-    physicalColliderOffset: new Vector(0, -0.1),
-    physicalColliderSize: new Vector(0.5, 0.1),
     hp: 10,
     drops: [],
     essenceAmount: 1,
@@ -88,8 +80,6 @@ enemiesCodex.set(EnemyIndex.SLIME, {
 enemiesCodex.set(EnemyIndex.REVENANT_EYE, {
     spriteID: "revenant_eye",
     scale: new Vector(1, 1),
-    physicalColliderOffset: new Vector(0, -0.4),
-    physicalColliderSize: new Vector(0.8, 0.2),
     hp: 25,
     drops: [],
     essenceAmount: 5,
@@ -105,8 +95,6 @@ enemiesCodex.set(EnemyIndex.WRETCHED_SKELETON, {
     spriteID: "wretched_skeleton",
     waterSpriteID: "wretched_skeleton_water",
     scale: new Vector(1, 2),
-    physicalColliderOffset: new Vector(0, -0.9),
-    physicalColliderSize: new Vector(0.8, 0.2),
     hp: 30,
     drops: [],
     essenceAmount: 6,
@@ -121,8 +109,6 @@ enemiesCodex.set(EnemyIndex.WRETCHED_SKELETON, {
 enemiesCodex.set(EnemyIndex.WRAITH, {
     spriteID: "wraith",
     scale: new Vector(0.75, 1.5),
-    physicalColliderOffset: new Vector(0, -0.65),
-    physicalColliderSize: new Vector(0.5, 0.2),
     hp: 35,
     drops: [],
     essenceAmount: 8,

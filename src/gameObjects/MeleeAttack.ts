@@ -56,19 +56,15 @@ const MeleeAttackFactory: GameObjectFactory = (properties: MeleeAttack, owner: G
                 if (collision.team !== Team.UNTEAMED &&
                     data.owner.team !== collision.team) {
                     const health = collision.getComponent("health");
-                    if (health) {
-                        const damage = data.hitCount === 0 ? properties.damage : properties.sweepDamage;
-                        health.data.damage(damage);
-                    }
+                    const damage = data.hitCount === 0 ? properties.damage : properties.sweepDamage;
+                    health.data.damage(damage);
                     const physics = collision.getComponent("physics");
-                    if (physics) {
-                        physics.data.impulse.add(
-                            Vector.scaled(
-                                data.direction, 
-                                properties.knockback
-                            )
-                        );
-                    }
+                    physics.data.impulse.add(
+                        Vector.scaled(
+                            data.direction, 
+                            properties.knockback
+                        )
+                    );
                     data.hitCount++;
                     if (data.hitCount >= properties.maxHits) {
                         gameObject.destroy();

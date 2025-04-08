@@ -12,6 +12,7 @@ enum InputLayer {
 // to be used as singleton
 class Input {
     private _mouseDown = false; // true as long as mouse is pressed
+    private _mouseReleased = false; // turns true when mouse released, false when the event is queried
     private _mousePressed = false; // turns true when mouse pressed, false when the event is queried.
     private _mousePosition = Vector.zero();
     private _keyDownMap = new Map<string, boolean>(); 
@@ -26,10 +27,12 @@ class Input {
         window.addEventListener("mousedown", (e: MouseEvent) => {
             this._mouseDown = true;
             this._mousePressed = true;
+            this._mouseReleased = false;
         }, true);
         const releaseMouse = (e: MouseEvent) => {
             this._mouseDown = false;
             this._mousePressed = false;
+            this._mouseReleased = true;
         }   
         window.addEventListener("mouseup", releaseMouse, true);
         window.addEventListener("mouseleave", releaseMouse, true);
@@ -80,6 +83,15 @@ class Input {
         }
         const ret = this._mousePressed;
         this._mousePressed = false;
+        return ret;
+    }
+
+    public mouseReleased(fromLayer: InputLayer=InputLayer.GAME) {
+        if (fromLayer !== this._layer) {
+            return false;
+        }
+        const ret = this._mouseReleased;
+        this._mouseReleased = false;
         return ret;
     }
 

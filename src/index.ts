@@ -159,6 +159,17 @@ window.onload = async () => {
         loadImage("attack_reload_8", "assets/images/ui/attack_reload_8.png"),
         loadImage("attack_reload_9", "assets/images/ui/attack_reload_9.png"),
 
+        loadImage("attack_charge_0", "assets/images/ui/attack_charge_0.png"),
+        loadImage("attack_charge_1", "assets/images/ui/attack_charge_1.png"),
+        loadImage("attack_charge_2", "assets/images/ui/attack_charge_2.png"),
+        loadImage("attack_charge_3", "assets/images/ui/attack_charge_3.png"),
+        loadImage("attack_charge_4", "assets/images/ui/attack_charge_4.png"),
+        loadImage("attack_charge_5", "assets/images/ui/attack_charge_5.png"),
+        loadImage("attack_charge_6", "assets/images/ui/attack_charge_6.png"),
+        loadImage("attack_charge_7", "assets/images/ui/attack_charge_7.png"),
+        loadImage("attack_charge_8", "assets/images/ui/attack_charge_8.png"),
+        loadImage("attack_charge_9", "assets/images/ui/attack_charge_9.png"),
+
         // Misc.
         loadImageAndTexture(gl, "square",  "assets/images/square.png"),
         loadImageAndTexture(gl, "undefined", "assets/images/undefined.png"),

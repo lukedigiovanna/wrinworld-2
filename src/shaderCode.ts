@@ -45,6 +45,12 @@ uniform Light lights[MAX_LIGHTS];
 
 uniform float ambientLightIntensity;
 
+float computeLightFalloff(vec2 fragPos, Light light) {
+    float dist = distance(fragPos, light.position);
+    float attenuation = clamp(1.0 - dist / light.radius, 0.0, 1.0);
+    return attenuation * attenuation * light.intensity; // quadratic falloff 
+}
+
 void main() {
     vec4 textureColor = texture2D(texture, texCoord);
     // if (textureColor.a < 0.1) discard;
@@ -66,9 +72,9 @@ void main() {
             break;
         }
         Light light = lights[i];
-        float dist = distance(fragPos, light.position);
-        float attenuation = clamp(1.0 - dist / light.radius, 0.0, 1.0);
-        lightColor += light.color * attenuation * attenuation * light.intensity; // quadratic falloff 
+        float falloff = computeLightFalloff(fragPos, light);
+        vec3 lightEffect = light.color * falloff;
+        lightColor += clamp(lightEffect, 0.0, 1.0);
     }
 
     float shadowMultiplier = max(1.0 - shadowValue, SHADOW_STRENGTH);

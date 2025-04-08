@@ -136,8 +136,8 @@ class Inventory {
                         // "pick up" the item in the slot.
                         this.heldSlot = slot;
                         if (slotArray === this.buffSlots) {
-                            if (slot.item.unequip) {
-                                slot.item.unequip(this.player);
+                            if (slot.item.unequipItem) {
+                                slot.item.unequipItem(this.player);
                             }
                         }
                         slotArray[index] = null;
@@ -164,11 +164,11 @@ class Inventory {
                         // can only place in an upgrade slot if the item is an upgrade!
                         if (slotArray !== this.buffSlots || this.heldSlot.item.category === "Buff") {
                             if (slotArray === this.buffSlots) {
-                                if (this.heldSlot.item.equip) {
-                                    this.heldSlot.item.equip(this.player);
+                                if (this.heldSlot.item.equipItem) {
+                                    this.heldSlot.item.equipItem(this.player);
                                 }
-                                if (slotArray[index] !== null && slotArray[index].item.unequip) {
-                                    slotArray[index].item.unequip(player);
+                                if (slotArray[index] !== null && slotArray[index].item.unequipItem) {
+                                    slotArray[index].item.unequipItem(player);
                                 }
                             }
 
@@ -267,8 +267,8 @@ class Inventory {
                 count: 1
             };
             this.updateUI();
-            if (empty === this._selectedSlot && item.equip) {
-                item.equip(this.player);
+            if (empty === this._selectedSlot && item.equipItem) {
+                item.equipItem(this.player);
             }
             return true;
         }
@@ -307,8 +307,8 @@ class Inventory {
         
         const slot = this.slots[this._selectedSlot];
         if (slot) {
-            if (slot.item.equip) {
-                slot.item.equip(this.player);
+            if (slot.item.equipItem) {
+                slot.item.equipItem(this.player);
             }
         }
     }
@@ -318,48 +318,86 @@ class Inventory {
         return slot ? slot.item : null;
     }
 
-    public useSelectedItem(target: Vector) {
+    private pressedIndex = -1;
+    private pressedItem: Item | null = null;
+
+    private useSelectedItem(item: Item, target: Vector, func: "pressItem" | "releaseItem"): boolean {
+        if (!item[func]) {
+            throw Error("Cannot use item with " + func + " function because it does not exist");
+        }
+
+        let useIndex = -1;
+        if (item.usesItem) {
+            // Iterate up from selected slot
+            for (let i = 1; i < this.slots.length; i++) {
+                const index = (i + this._selectedSlot) % this.slots.length;
+                for (const useItem of item.usesItem) {
+                    if (this.slots[index]?.item.itemIndex === useItem) {
+                        useIndex = index;
+                        break;
+                    }
+                }
+                if (useIndex >= 0) {
+                    break;
+                }
+            }
+            if (useIndex < 0) {
+                return false;
+            }
+        }
+        // Check if the player has enough essence to use the item
+        const essenceManager = this.player.getComponent("essence-manager");
+        if (essenceManager.data.essence >= item.essenceCost) {
+            const useSlot = this.slots[useIndex];
+            const useItem = (useIndex >= 0 && useSlot) ? useSlot.item : undefined;
+            const success = item[func](this.player, target, useItem);
+            if (success) {
+                if (useIndex >= 0) {
+                    this.decreaseItemCount(useIndex);
+                }
+                if (item.consumable) {
+                    this.decreaseItemCount(this._selectedSlot);
+                }
+                essenceManager.data.useEssence(item.essenceCost);
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    public pressSelectedItem(target: Vector) {
+        this.pressedIndex = this._selectedSlot;
         const slot = this.slots[this._selectedSlot];
         const item = slot?.item;
         if (!item) {
             return;
         }
-        if (item.use !== undefined) {
-            let useIndex = -1;
-            if (item.usesItem) {
-                // Iterate up from selected slot
-                for (let i = 1; i < this.slots.length; i++) {
-                    const index = (i + this._selectedSlot) % this.slots.length;
-                    for (const useItem of item.usesItem) {
-                        if (this.slots[index]?.item.itemIndex === useItem) {
-                            useIndex = index;
-                            break;
-                        }
-                    }
-                    if (useIndex >= 0) {
-                        break;
-                    }
-                }
-                if (useIndex < 0) {
-                    return;
-                }
+        this.pressedItem = item;
+        if (item.pressItem !== undefined) {
+            if (this.useSelectedItem(item, target, "pressItem")) {
+                this.pressedIndex = -1;
             }
-            // Check if the player has enough essence to use the item
-            const essenceManager = this.player.getComponent("essence-manager");
-            if (essenceManager.data.essence >= item.essenceCost) {
-                const useSlot = this.slots[useIndex];
-                const useItem = (useIndex >= 0 && useSlot) ? useSlot.item : undefined;
-                const success = item.use(this.player, target, useItem);
-                if (success) {
-                    if (useIndex >= 0) {
-                        this.decreaseItemCount(useIndex);
-                    }
-                    if (item.consumable) {
-                        this.decreaseItemCount(this._selectedSlot);
-                    }
-                    essenceManager.data.useEssence(item.essenceCost);
-                }
-            }
+        }
+    }
+
+    public releaseSelectedItem(target: Vector) {
+        // Ensure that if the player changes their slot we ignore a release.
+        if (this.pressedIndex !== this._selectedSlot) {
+            return;
+        }
+        const slot = this.slots[this._selectedSlot];
+        const item = slot?.item;
+        // If theres no item in the slot or the item somehow changed from a press, then ignore
+        if (!item || item !== this.pressedItem) {
+            return;
+        }
+        if (item.releaseItem) {
+            this.useSelectedItem(item, target, "releaseItem");
         }
     }
 
