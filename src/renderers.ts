@@ -8,7 +8,7 @@ type Renderer = {
     data?: any;
 };
 
-const spriteRenderer: (id: string) => Renderer = (id: string) => {
+function spriteRenderer(id: string): Renderer {
     return {
         render(camera: Camera, gameObject: GameObject) {
             const pos = Vector.add(gameObject.position, this.data.offset);
@@ -22,4 +22,27 @@ const spriteRenderer: (id: string) => Renderer = (id: string) => {
     }
 }
 
-export { Renderer, spriteRenderer };
+const alphabet = "abcdefghijklmnopqrstuvwxyz1234567890";
+function textRenderer(fontID: string, text: string): Renderer {
+    return {
+        render(camera, gameObject) {
+            let x = gameObject.position.x;
+            for (const c of text) {
+                if (c === ' ') {
+                    x += 5;
+                }
+                if (alphabet.indexOf(c) >= 0) {
+                    const texture = getTexture(`${fontID}_${c}`);
+                    camera.color = Color.WHITE;
+                    camera.drawTexture(texture, x, gameObject.position.y, texture.width, texture.height);
+                    x += texture.width + 1;
+                }
+            }
+        },
+        data: {
+            text
+        }
+    }
+}
+
+export { Renderer, spriteRenderer, textRenderer };

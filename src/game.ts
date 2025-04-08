@@ -7,6 +7,7 @@ import { Particle, ParticleLayer } from "./components";
 import { Tile, tileCodex, TileIndex } from "./tiles";
 import { Level, LEVEL_1 } from "./levels";
 import { ShaderProgram, ShaderShadow, MAX_SHADOWS } from "./shader";
+import { textRenderer } from "./renderers";
 
 const CHUNK_SIZE = 8;
 const TILES_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE;
@@ -57,6 +58,11 @@ class Game {
 
         this.level.generate(this);
         this._camera.verticalBoundary = [2 * PIXELS_PER_TILE, (24 + 8 + 96) * PIXELS_PER_TILE];
+
+        const text = new GameObject();
+        text.position.setComponents(0, 300);
+        text.renderer = textRenderer("pixel_font", "hello world");
+        this.addGameObject(text);
 
         // this.addGameObject(EnemyFactory(new Vector(0, 20), EnemyIndex.SLIME));
     }
