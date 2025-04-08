@@ -175,6 +175,7 @@ window.onload = async () => {
         // Misc.
         loadImageAndTexture(gl, "square",  "assets/images/square.png"),
         loadImageAndTexture(gl, "undefined", "assets/images/undefined.png"),
+        loadImageAndTexture(gl, "right_arrow", "assets/images/right_arrow.png"),
 
         // -- SOUNDS --
         loadSound("item_pickup", "assets/sounds/item_pickup.wav", 5),

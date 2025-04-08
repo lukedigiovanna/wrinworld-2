@@ -121,7 +121,7 @@ projectilesCodex.set(ProjectileIndex.ARROW, {
     speed: 400,
     angularVelocity: 0,
     rotateToDirectionOfTarget: true,
-    drag: 0.2,
+    drag: 0.9,
     hitboxSize: new Vector(0.25, 0.25),
     colliderSize: new Vector(0.2, 0.2),
     chanceOfBreaking: 0.2,

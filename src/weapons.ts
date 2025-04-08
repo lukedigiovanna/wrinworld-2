@@ -47,12 +47,13 @@ enum WeaponIndex {
 }
 
 const fireProjectile = (projectile: Projectile, gameObject: GameObject, target: Vector) => {
-    const direction = Vector.subtract(target, gameObject.position);
+    const hitboxCenter = Vector.add(gameObject.position, gameObject.getComponent("hitbox").data.boxOffset);
+    const direction = Vector.subtract(target, hitboxCenter);
     if (direction.x !== 0) {
         gameObject.scale.x = Math.abs(gameObject.scale.x) * Math.sign(direction.x);
     }
     gameObject.game.addGameObject(
-        ProjectileFactory(projectile, gameObject, gameObject.position, target)
+        ProjectileFactory(projectile, gameObject, hitboxCenter, target)
     );
 }
 
@@ -93,8 +94,8 @@ weaponsCodex.set(WeaponIndex.SHURIKEN, {
     }
 });
 weaponsCodex.set(WeaponIndex.BOW, {
-    cooldown: 1,
-    maxCharge: 3,
+    cooldown: 0.5,
+    maxCharge: 1.2,
     chargeable: true,
     attack(props) {
         let projectile;
@@ -124,8 +125,8 @@ weaponsCodex.set(WeaponIndex.DAGGERS, {
     }
 });
 weaponsCodex.set(WeaponIndex.BATTLE_HAMMER, {
-    cooldown: 1.2,
-    maxCharge: 1,
+    cooldown: 1.6,
+    maxCharge: 1.6,
     chargeable: true,
     attack: () => meleeAttacksCodex.get(MeleeAttackIndex.BATTLE_HAMMER),
     fire(gameObject, target) {
@@ -146,7 +147,7 @@ weaponsCodex.set(WeaponIndex.ESSENCE_DRIPPED_DAGGER, {
 weaponsCodex.set(WeaponIndex.SLINGSHOT, {
     cooldown: 0.8,
     chargeable: true,
-    maxCharge: 2,
+    maxCharge: 1.2,
     attack: () => projectilesCodex.get(ProjectileIndex.ROCK),
     fire(gameObject, target) {
         fireProjectile(this.attack() as Projectile, gameObject, target);
