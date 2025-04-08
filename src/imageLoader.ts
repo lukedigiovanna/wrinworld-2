@@ -83,7 +83,7 @@ function loadTexture(gl: WebGLRenderingContext, id: string) {
     textures.set(id, new Texture(image, texture));
 }
 
-function loadTexturesFromSpritesheet(gl: WebGLRenderingContext, id: string, cellWidth: number, cellHeight: number) {
+function loadTexturesFromSpritesheet(gl: WebGLRenderingContext, id: string, cellWidth: number, cellHeight: number, customIDs?: string[]) {
     const spritesheetImage = getImage(id);
     const spriteSheetTexture = createTexture(gl, spritesheetImage);
     const w = spritesheetImage.width;
@@ -97,7 +97,13 @@ function loadTexturesFromSpritesheet(gl: WebGLRenderingContext, id: string, cell
                 bottom: y / h,
                 top: (y + cellHeight) / h,
             }
-            const cellID = `${id}_${i}`;
+            let cellID;
+            if (customIDs && i < customIDs.length) {
+                cellID = `${id}_${customIDs[i]}`;   
+            }
+            else {
+                cellID = `${id}_${i}`;
+            }
             usedTextureIDs.push(cellID);
             textures.set(cellID, new Texture(spritesheetImage, spriteSheetTexture, clipRect));
             i++;
@@ -129,11 +135,11 @@ function loadImageAndTexture(gl: WebGLRenderingContext, id: string, url: string)
     });
 }
 
-function loadImageAndTextureSpritesheet(gl: WebGLRenderingContext, id: string, url: string, cellWidth: number, cellHeight: number) {
+function loadImageAndTextureSpritesheet(gl: WebGLRenderingContext, id: string, url: string, cellWidth: number, cellHeight: number, customIDs?: string[]) {
     return new Promise((resolve, reject) => {
         const img = new Image();
         img.onload = () => {
-            loadTexturesFromSpritesheet(gl, id, cellWidth, cellHeight);
+            loadTexturesFromSpritesheet(gl, id, cellWidth, cellHeight, customIDs);
             return resolve(img);
         }
         img.onerror = reject;

@@ -20,7 +20,7 @@ propsCodex.set(PropIndex.TREE, {
 });
 propsCodex.set(PropIndex.TALL_GRASS, {
     // spriteID: "tall_grass",
-    spriteID: "pixel_font_0",
+    spriteID: "pixel_font_3",
     hasCollision: false,
     castsShadow: false,
 });

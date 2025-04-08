@@ -134,7 +134,7 @@ window.onload = async () => {
         loadImageAndTexture(gl, "poison_particle", "assets/images/particles/poison.png"),
         loadImageAndTexture(gl, "flame_particle", "assets/images/particles/flame.png"),
     
-        loadImageAndTextureSpritesheet(gl, "pixel_font", "assets/images/pixel_font.png", 9, 9),
+        loadImageAndTextureSpritesheet(gl, "pixel_font", "assets/images/font_small.png", 5, 5, ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]),
 
         // UI
         loadImage("hotbar_slot", "assets/images/ui/hotbar_slot.png"),
