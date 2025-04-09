@@ -6,6 +6,7 @@ import { Vector } from "./utils";
 import { GameObject } from "./gameObjects";
 import { WeaponIndex, weaponsCodex } from "./weapons";
 import { Codex } from "./codex";
+import { addNotification } from "./notifications";
 
 type ItemCategory = "Weapon" | "Misc." | "Projectile" | "Consumable" | "Upgrade" | "Buff" | "Mystic Arts";
 
@@ -229,13 +230,18 @@ function generateStatsForWeapon(weaponIndex: WeaponIndex): ItemStat[] {
 
 // Shorthand for filling out basic item use functions for weapons.
 function weaponItem(index: WeaponIndex) {
+    let releaseItem = undefined;
+    const weapon = weaponsCodex.get(index);
+    if (weapon.chargeable) {
+        releaseItem = (player: GameObject, target: Vector, uses?: Item) => {
+            return releaseWeapon(player, index, target, uses);
+        }
+    }
     return {
         pressItem(player: GameObject, target: Vector, uses?: Item) {
             return pressWeapon(player, index, target, uses);
         },
-        releaseItem(player: GameObject, target: Vector, uses?: Item) {
-            return releaseWeapon(player, index, target, uses);
-        },
+        releaseItem,
         equipItem(player: GameObject) {
             equipWeapon(player, index);
         },
@@ -322,7 +328,17 @@ itemsCodex.set(ItemIndex.HEALING_VIAL, {
     maxStack: 20,
     pressItem(player) {
         const health = player.getComponent("health");
-        return health.data.heal(10) > 0;
+        const amountHealed = health.data.heal(10);
+        if (amountHealed > 0) {
+            addNotification({
+                text: `+${amountHealed} HP`,
+                color: "#06cf28"
+            })
+            return true;
+        }
+        else {
+            return false;
+        }
     },
     getStats() {
         return [
@@ -356,7 +372,17 @@ itemsCodex.set(ItemIndex.ESSENCE_VIAL, {
     pressItem(player) {
         // TODO: add 20 essence (or something like that) to the player
         const essenceManager = player.getComponent("essence-manager");
-        return essenceManager.data.addEssence(20) > 0;
+        const amountAdded = essenceManager.data.addEssence(20);
+        if (amountAdded > 0) {
+            addNotification({
+                text: `+${amountAdded} Essence`,
+                color: "#00d6d3"
+            });
+            return true;
+        }
+        else {
+            return false;
+        }
     },
     getStats() {
         return [

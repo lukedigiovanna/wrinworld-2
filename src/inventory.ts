@@ -3,6 +3,7 @@ import { getImage } from "./imageLoader";
 import { GameObject } from "./gameObjects";
 import input, { InputLayer } from "./input";
 import { Vector } from "./utils";
+import { addNotification } from "./notifications";
 
 interface InventorySlot {
     item: Item;
@@ -366,6 +367,10 @@ class Inventory {
             }
         }
         else {
+            addNotification({
+                text: "Not enough essence!",
+                color: "rgb(255, 31, 31)"
+            })
             return false;
         }
     }

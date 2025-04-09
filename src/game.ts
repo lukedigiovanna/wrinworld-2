@@ -58,38 +58,6 @@ class Game {
 
         this.level.generate(this);
         this._camera.verticalBoundary = [2 * PIXELS_PER_TILE, (24 + 8 + 96) * PIXELS_PER_TILE];
-
-        const text = new GameObject();
-        text.position.setComponents(0, 300);
-        text.renderer = textRenderer("pixel_font", "hello world");
-        text.color = Color.YELLOW;
-        this.addGameObject(text);
-
-        const square = new GameObject();
-        square.position.setComponents(0, 350);
-        square.renderer = spriteRenderer("square");
-        square.scale.setComponents(32, 32);
-        square.color = new Color(1, 0, 0, 0.5);
-        square.addComponent((gameObject) => {
-            return {
-                id: "oaiwejfoaw",
-                data: {
-                    b: 1,
-                },
-                update(dt) {
-                    if (input.isKeyDown("KeyF")) {
-                        this.data.b = MathUtils.clamp(this.data.b + 0.01, 0, 1);
-                    }
-                    if (input.isKeyDown("KeyG")) {
-                        this.data.b = MathUtils.clamp(this.data.b - 0.01, 0, 1);
-                    }
-                    gameObject.color = new Color(1, 0, 0, this.data.b);
-                }
-            }
-        })
-        this.addGameObject(square);
-
-        // this.addGameObject(EnemyFactory(new Vector(0, 20), EnemyIndex.SLIME));
     }
 
     private generateChunk(chunkIndex: number): void {
