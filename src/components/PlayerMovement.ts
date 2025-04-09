@@ -1,7 +1,7 @@
 import { ComponentFactory } from "./index";
 import { GameObject } from "../gameObjects";
 import input from "../input";
-import { Vector } from "../utils";
+import { Color, MathUtils, Vector } from "../utils";
 import { tileCodex, TileIndex } from "../tiles";
 
 const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
@@ -66,8 +66,14 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
 
             const tile = tileCodex.get(tileIndex);
             if (tile.trailColor && !movement.isZero()) {
-                data.trailParticleEmitter.data.color = () => tile.trailColor; 
-                data.trailParticleEmitter.data.rate = () => realSpeed / 16;
+                data.trailParticleEmitter.data.color = () => {
+                    const f = MathUtils.random(-0.25, 0.25);
+                    if (tile.trailColor) {
+                        return new Color(tile.trailColor.r + f, tile.trailColor.g + f, tile.trailColor.b + f, 1);
+                    }
+                    return Color.WHITE;
+                }; 
+                data.trailParticleEmitter.data.rate = () => realSpeed / 12;
                 data.trailParticleEmitter.data.enabled = true;
             }
             else {

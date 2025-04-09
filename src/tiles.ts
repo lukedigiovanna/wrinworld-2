@@ -35,14 +35,14 @@ tileCodex.set(TileIndex.GRASS, {
     canGrowPlants: true,
     canSpawnPortal: true,
     wall: false,
-    trailColor: Color.RED,
+    trailColor: Color.hex("#058600"),
 });
 tileCodex.set(TileIndex.CURSED_GRASS, {
     spriteID: "cursed_grass",
     canGrowPlants: false,
     canSpawnPortal: true,
     wall: false,
-    trailColor: Color.RED,
+    trailColor: Color.hex("#058600"),
 });
 tileCodex.set(TileIndex.WATER, {
     spriteID: "water",
@@ -61,28 +61,28 @@ tileCodex.set(TileIndex.PATH, {
     canGrowPlants: false,
     canSpawnPortal: true,
     wall: false,
-    trailColor: Color.ORANGE,
+    trailColor: Color.hex("#886e2a"),
 });
 tileCodex.set(TileIndex.CURSED_PATH, {
     spriteID: "cursed_path",
     canGrowPlants: false,
     canSpawnPortal: true,
     wall: false,
-    trailColor: Color.ORANGE,
+    trailColor: Color.hex("#886e2a"),
 });
 tileCodex.set(TileIndex.SAND, {
     spriteID: "sand",
     canGrowPlants: false,
     canSpawnPortal: true,
     wall: false,
-    trailColor: Color.YELLOW,
+    trailColor: Color.hex("#d9cb4c"),
 });
 tileCodex.set(TileIndex.CURSED_SAND, {
     spriteID: "cursed_sand",
     canGrowPlants: false,
     canSpawnPortal: true,
     wall: false,
-    trailColor: Color.YELLOW,
+    trailColor: Color.hex("#d9cb4c"),
 });
 tileCodex.set(TileIndex.PLANKS, {
     spriteID: "planks",

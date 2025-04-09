@@ -4,7 +4,8 @@ import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager,
          Health, WeaponManager, EssenceManager,
          HealthBarDisplayMode,
          StatusEffectManager,
-         ParticleEmitter} from "../components";
+         ParticleEmitter,
+         ParticleLayer} from "../components";
 import { spriteRenderer } from "../renderers";
 import { ItemIndex, itemsCodex } from "../items";
 import { getImage } from "../imageLoader";
@@ -45,7 +46,9 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
         velocity: () => MathUtils.randomVector(MathUtils.random(3, 22)),
         angularVelocity: () => MathUtils.random(-1, 1),
         spawnBoxOffset: () => collider.data.boxOffset,
-        lifetime: () => MathUtils.random(0.2, 0.5),
+        spawnBoxSize: () => new Vector(5, 2),
+        lifetime: () => MathUtils.random(0.3, 0.8),
+        layer: () => ParticleLayer.BELOW_OBJECTS
     }, "trail"));
     trailEmitter.data.enabled = false;
 

@@ -100,7 +100,11 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
                 let sign = Math.sign(gameObject.scale.x)
                 const offset = 12;
                 camera.color = Color.WHITE;
-                camera.drawTexture(getTexture(selected.iconSpriteID), gameObject.position.x + offset * sign, gameObject.position.y, 16 * sign, 16);
+                camera.drawTexture(
+                    getTexture(selected.iconSpriteID), 
+                    gameObject.position.x + offset * sign, gameObject.position.y - 6, 
+                    16 * sign, 16
+                );
             }
             const weaponManager = gameObject.getComponent("weapon-manager");
             if (weaponManager.data.charging) {
