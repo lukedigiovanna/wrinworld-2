@@ -161,9 +161,9 @@ weaponsCodex.set(WeaponIndex.QUICK_BOW, {
     chargeable: false,
     attack: () => ({
         ...projectilesCodex.get(ProjectileIndex.ARROW),
-        damage: 4,
-        knockback: 2,
-        speed: 20,
+        damage: 6,
+        knockback: 16,
+        speed: 480,
     }),
     fire(gameObject, target) {
         fireProjectile(this.attack() as Projectile, gameObject, target);

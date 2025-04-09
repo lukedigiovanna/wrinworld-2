@@ -199,6 +199,7 @@ function equipWeapon(player: GameObject, weapon: WeaponIndex) {
 function generateStatsForWeapon(weaponIndex: WeaponIndex): ItemStat[] {
     const weapon = weaponsCodex.get(weaponIndex);
     const attack = weapon.attack();
+    const maxCharge = weapon.maxCharge ? weapon.maxCharge : 0;
     const stats = [
         {
             statIndex: ItemStatIndex.COOLDOWN,
@@ -210,7 +211,7 @@ function generateStatsForWeapon(weaponIndex: WeaponIndex): ItemStat[] {
         },
         {
             statIndex: ItemStatIndex.DAMAGE_PER_SECOND,
-            value: attack.damage / weapon.cooldown,
+            value: attack.damage / (weapon.cooldown + maxCharge),
         },
         {
             statIndex: ItemStatIndex.KNOCKBACK,

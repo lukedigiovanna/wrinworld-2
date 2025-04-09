@@ -117,7 +117,7 @@ window.onload = async () => {
         loadImageAndTexture(gl, "heart_crystal", "assets/images/items/heart_crystal.png"),
         loadImageAndTexture(gl, "heart", "assets/images/items/heart.png"),
         loadImageAndTexture(gl, "poison_arrow_icon", "assets/images/items/poison_arrow.png"),
-        loadImageAndTexture(gl, "flame_arrow_icon", "assets/images/items/flame_arrow_icon.png"),
+        loadImageAndTexture(gl, "flame_arrow_icon", "assets/images/items/flame_arrow.png"),
         loadImageAndTexture(gl, "poison_upgrade", "assets/images/items/poison_upgrade.png"),
         loadImageAndTexture(gl, "slingshot", "assets/images/items/slingshot.png"),
         loadImageAndTexture(gl, "strength_upgrade", "assets/images/items/strength_upgrade.png"),
