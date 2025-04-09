@@ -68,6 +68,16 @@ const fireMelee = (meleeAttack: MeleeAttack, gameObject: GameObject, target: Vec
     );
 }
 
+// Linearly scales the given fields by the charge and returns the new result
+function scaleProjectileByCharge(projectile: Projectile, charge: number | undefined, fields: (keyof Projectile)[]=["damage", "lifespan", "speed", "knockback"]) {
+    const chargeValue = charge ? charge : 1;
+    const result = {...projectile};
+    for (const key of fields) {
+        (result[key] as number) *= chargeValue;
+    }
+    return result;
+}
+
 const weaponsCodex = new Codex<WeaponIndex, Weapon>();
 weaponsCodex.set(WeaponIndex.BROAD_SWORD, {
     cooldown: 0.5,
@@ -107,13 +117,7 @@ weaponsCodex.set(WeaponIndex.BOW, {
         if (!projectile) {
             projectile = projectilesCodex.get(ProjectileIndex.ARROW);
         }
-        const charge = (props?.charge ? props.charge : 1);
-        return {
-            ...projectile,
-            lifespan: projectile.lifespan * charge,
-            damage: projectile.damage * charge,
-            speed: projectile.speed * charge, 
-        };
+        return scaleProjectileByCharge(projectile, props?.charge);
     },
     fire(gameObject, target, props) {
         fireProjectile(this.attack(props) as Projectile, gameObject, target);
@@ -151,9 +155,9 @@ weaponsCodex.set(WeaponIndex.SLINGSHOT, {
     cooldown: 0.8,
     chargeable: true,
     maxCharge: 1.2,
-    attack: () => projectilesCodex.get(ProjectileIndex.ROCK),
-    fire(gameObject, target) {
-        fireProjectile(this.attack() as Projectile, gameObject, target);
+    attack: (props) => scaleProjectileByCharge(projectilesCodex.get(ProjectileIndex.ROCK), props?.charge),
+    fire(gameObject, target, props) {
+        fireProjectile(this.attack(props) as Projectile, gameObject, target);
     }
 });
 weaponsCodex.set(WeaponIndex.QUICK_BOW, {

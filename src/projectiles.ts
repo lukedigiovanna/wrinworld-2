@@ -191,6 +191,25 @@ projectilesCodex.set(ProjectileIndex.TEAR_DROP, {
     drag: 0,
     colliderSize: new Vector(0.3, 0.3),
     destroyOnPhysicalCollision: true,
+    particleEmitter: ParticleEmitter(
+        {
+            spriteID: () => "square",
+            color: () => {
+                const f = MathUtils.random(0.3, 0.6);
+                return new Color(f, f, f + 0.4, 1);
+            },
+            rate: () => 0,
+            scale: () => MathUtils.random(1, 2),
+            rotation: () => MathUtils.randomAngle(),
+            velocity: () => MathUtils.randomVector(MathUtils.random(4, 32)),
+            lifetime: () => MathUtils.random(0.4, 0.6)
+        },
+        "explosion"
+    ),
+    onDestroy(gameObject) {
+        for (let i = 0; i < 35; i++)
+            gameObject.getComponent("particle-emitter-explosion").data.emit();
+    },
 });
 projectilesCodex.set(ProjectileIndex.WRAITH_ATTACK, {
     homingSkill: 0,
@@ -211,7 +230,7 @@ projectilesCodex.set(ProjectileIndex.ROCK, {
     homingSkill: 0,
     maxHits: 1,
     spriteID: "rock",
-    damage: 4,
+    damage: 6,
     damageReductionPerHit: 0,
     knockback: 1,
     lifespan: 4,
@@ -219,6 +238,8 @@ projectilesCodex.set(ProjectileIndex.ROCK, {
     rotateToDirectionOfTarget: true,
     drag: 0,
     angularVelocity: 5,
+    colliderSize: new Vector(0.25, 0.25),
+    destroyOnPhysicalCollision: true,
     particleEmitter: ParticleEmitter(
         {
             spriteID: () => "square",
@@ -234,8 +255,6 @@ projectilesCodex.set(ProjectileIndex.ROCK, {
         },
         "explosion"
     ),
-    colliderSize: new Vector(0.25, 0.25),
-    destroyOnPhysicalCollision: true,
     onDestroy(gameObject) {
         for (let i = 0; i < 35; i++)
             gameObject.getComponent("particle-emitter-explosion").data.emit();

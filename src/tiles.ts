@@ -1,3 +1,4 @@
+import { Color } from "utils";
 import { Codex } from "./codex";
 
 interface Tile {

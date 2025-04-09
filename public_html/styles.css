@@ -90,10 +90,10 @@ img {
 
 .inventory-slot .item {
     position: absolute;
-    width: 70%;
-    height: 70%;
-    left: 15%;
-    top: 15%;
+    width: 48px;
+    height: 48px;
+    left: 8px;
+    top: 8px;
     display: none;
 }
 
@@ -263,7 +263,7 @@ img {
 }
 
 #item-display #item-icon {
-    width: 35px;
+    width: 32px;
 }
 
 #item-display #item-description {
