@@ -78,8 +78,8 @@ img {
 .inventory-slot {
     position: relative;
     display: inline-block;
-    flex: 0 0 64px;
-    height: 64px;
+    flex: 0 0 72px;
+    height: 72px;
 }
 
 .inventory-slot .slot-icon {
@@ -92,8 +92,8 @@ img {
     position: absolute;
     width: 48px;
     height: 48px;
-    left: 8px;
-    top: 8px;
+    left: 12px;
+    top: 12px;
     display: none;
 }
 
