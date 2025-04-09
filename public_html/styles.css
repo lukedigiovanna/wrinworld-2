@@ -137,7 +137,7 @@ img {
 }
 
 #fps-display {
-    color: black;
+    color: red;
     font-family: sans-serif;
     font-weight: bold;
     margin-left: 12px;

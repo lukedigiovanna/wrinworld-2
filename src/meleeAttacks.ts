@@ -46,9 +46,9 @@ meleeAttacksCodex.set(MeleeAttackIndex.DAGGER, {
     damage: 4,
     sweepDamage: 0,
     maxHits: 1,
-    knockback: 8,
+    knockback: 24,
     size: 8,
-    range: 20,
+    range: 24,
     duration: 0.1,
     particleSpriteID: "sword_spark"
 });
