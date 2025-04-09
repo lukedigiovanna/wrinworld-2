@@ -36,7 +36,6 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, drops: P
         {
             spriteID: () => "portal_particle",
             rate: () => 4,
-            size: () => new Vector(13, 13),
             spawnBoxSize: () => Vector.zero(),
             rotation: () => MathUtils.randomAngle(),
             velocity: () => MathUtils.randomVector(MathUtils.random(32, 46)),
@@ -48,7 +47,6 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, drops: P
         portal.addComponent(ParticleEmitter(
             {
                 spriteID: () => MathUtils.randomChoice(enemyParticles),
-                size: () => new Vector(8, 8),
                 spawnBoxSize: () => Vector.zero(),
                 rotation: () => MathUtils.randomAngle(),
                 velocity: () => MathUtils.randomVector(MathUtils.random(16, 24)),

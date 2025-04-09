@@ -209,7 +209,7 @@ class Game {
         if (particle.useRelativePosition && particle.gameObject) {
             pos.add(particle.gameObject.position);
         }
-        this._camera.color = Color.WHITE;
+        this._camera.color = particle.color;
         this._camera.drawTexture(
             getTexture(particle.spriteID), 
             pos.x,

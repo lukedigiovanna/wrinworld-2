@@ -1,9 +1,12 @@
 import { ItemDropFactory, ProjectileFactory } from "./gameObjects";
 import { GameObject } from "./gameObjects";
-import { Vector, MathUtils } from "./utils";
+import { Vector, MathUtils, Color } from "./utils";
 import { Item, ItemIndex, itemsCodex } from "./items";
 import { Codex } from "./codex";
 import { StatusEffectIndex } from "./statusEffects";
+import { ComponentFactory } from "./components";
+// For some webpack reason this needs to be a separate import or we get a bizzare error only detected upon javascript execution.
+import { ParticleEmitter } from "./components/ParticleEmitter";
 
 enum ProjectileIndex {
     ZOMBIE_BRAINS,
@@ -52,7 +55,7 @@ interface Projectile {
     colliderOffset?: Vector,
     colliderSize?: Vector,
 
-
+    particleEmitter?: ComponentFactory,
     chanceOfBreaking?: number;
     // Any logic that should happen when this object dies (including after lifespan)
     onDestroy?: (gameObject: GameObject) => void;
@@ -123,9 +126,18 @@ projectilesCodex.set(ProjectileIndex.ARROW, {
     rotateToDirectionOfTarget: true,
     drag: 0.9,
     hitboxSize: new Vector(0.25, 0.25),
-    colliderSize: new Vector(0.2, 0.2),
+    colliderSize: new Vector(0.25, 0.25),
     chanceOfBreaking: 0.2,
     destroyOnPhysicalCollision: true,
+    particleEmitter: ParticleEmitter(
+        {
+            spriteID: () => "square",
+            rate: () => MathUtils.random(2, 6),
+            rotation: () => MathUtils.randomAngle(),
+            velocity: () => MathUtils.randomVector(MathUtils.random(24, 32)),
+            lifetime: () => MathUtils.random(0.4, 0.6)
+        }
+    ),
     onDestroy(gameObject) {
         chanceDropItem(gameObject, itemsCodex.get(ItemIndex.ARROW), this.chanceOfBreaking);
     }
@@ -146,6 +158,16 @@ projectilesCodex.set(ProjectileIndex.POISON_ARROW, {
     colliderSize: new Vector(0.2, 0.2),
     chanceOfBreaking: 0.2,
     destroyOnPhysicalCollision: true,
+    particleEmitter: ParticleEmitter(
+        {
+            spriteID: () => "square",
+            color: () => Color.GREEN,
+            rate: () => MathUtils.random(2, 6),
+            rotation: () => MathUtils.randomAngle(),
+            velocity: () => MathUtils.randomVector(MathUtils.random(24, 32)),
+            lifetime: () => MathUtils.random(0.4, 0.6)
+        }
+    ),
     onDestroy(gameObject) {
         chanceDropItem(gameObject, itemsCodex.get(ItemIndex.POISON_ARROW), this.chanceOfBreaking);
     },
@@ -197,8 +219,27 @@ projectilesCodex.set(ProjectileIndex.ROCK, {
     rotateToDirectionOfTarget: true,
     drag: 0,
     angularVelocity: 5,
+    particleEmitter: ParticleEmitter(
+        {
+            spriteID: () => "square",
+            color: () => {
+                const f = MathUtils.random(0.3, 0.6);
+                return new Color(f, f, f, 1);
+            },
+            rate: () => 0,
+            scale: () => MathUtils.random(1, 2),
+            rotation: () => MathUtils.randomAngle(),
+            velocity: () => MathUtils.randomVector(MathUtils.random(4, 32)),
+            lifetime: () => MathUtils.random(0.4, 0.6)
+        },
+        "explosion"
+    ),
     colliderSize: new Vector(0.25, 0.25),
     destroyOnPhysicalCollision: true,
+    onDestroy(gameObject) {
+        for (let i = 0; i < 35; i++)
+            gameObject.getComponent("particle-emitter-explosion").data.emit();
+    },
 });
 projectilesCodex.set(ProjectileIndex.CRYSTAL_BOMB, {
     homingSkill: 0,

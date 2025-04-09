@@ -91,7 +91,6 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
     if (enemyType.particleID) {
         enemy.addComponent(ParticleEmitter({
             spriteID: () => enemyType.particleID as string,
-            size: () => new Vector(0.25, 0.25),
             rotation: () => MathUtils.random(0, 2 * Math.PI),
             spawnBoxSize: () => enemy.scale,
             rate: () => 5,

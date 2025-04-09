@@ -18,14 +18,12 @@ const MeleeAttackFactory: GameObjectFactory = (properties: MeleeAttack, owner: G
     meleeAttack.lifespan = properties.duration;
 
     if (properties.particleSpriteID) {
-        const texture = getTexture(properties.particleSpriteID);
         meleeAttack.addComponent(ParticleEmitter({
             lifetime: () => 0.1,
             spriteID: () => properties.particleSpriteID as string,
             rate: () => 20,
             rotation: () => MathUtils.random(0, Math.PI * 2),
             spawnBoxSize: () => new Vector(4, 4),
-            size: () => new Vector(texture.image.width, texture.image.height),
             velocity: () => MathUtils.randomVector(MathUtils.random(4, 14))
         }));
     }

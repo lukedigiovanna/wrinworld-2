@@ -1,9 +1,9 @@
 import { GameObject, GameObjectFactory, Team } from "./index";
-import { Vector, MathUtils } from "../utils";
-import { Hitbox, Physics, ParticleEmitter, PhysicalCollider } from "../components";
+import { Vector } from "../utils";
+import { Hitbox, Physics, PhysicalCollider } from "../components";
 import { spriteRenderer } from "../renderers";
 import { Projectile } from "../projectiles";
-import { getImage } from "../imageLoader";
+import { getTexture } from "../imageLoader";
 
 const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: GameObject, position: Vector, target: Vector) => {
     properties = {...properties};
@@ -11,7 +11,7 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
     const projectile = new GameObject();
     projectile.position = position.copy();
     
-    const sprite = getImage(properties.spriteID);
+    const sprite = getTexture(properties.spriteID);
     const scale = properties.scale ? properties.scale : 1;
     projectile.scale.setComponents(
         sprite.width * scale, sprite.height * scale
@@ -71,6 +71,10 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
         }
     });
     
+    if (properties.particleEmitter) {
+        projectile.addComponent(properties.particleEmitter);
+    }
+
     const physics = projectile.addComponent(Physics);
     physics.data.velocity.set(
         Vector.scaled(

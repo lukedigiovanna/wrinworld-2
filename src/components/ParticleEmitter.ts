@@ -3,7 +3,8 @@
 
 import { ComponentFactory } from "./index";
 import { GameObject } from "../gameObjects";
-import { Vector, MathUtils } from "../utils";
+import { Vector, MathUtils, Color } from "../utils";
+import { getTexture } from "../imageLoader";
 
 enum ParticleLayer {
     ABOVE_OBJECTS,
@@ -16,6 +17,7 @@ interface Particle {
     velocity: Vector;
     angularVelocity: number;
     rotation: number;
+    color: Color;
 
     useRelativePosition: boolean;
     gameObject?: GameObject;
@@ -32,12 +34,13 @@ interface Particle {
 interface ParticleEmitterData {
     enabled: boolean;
     spriteID: () => string;
+    color: () => Color;
     layer: () => ParticleLayer;
     rate: () => number; // particles per second
     spawnBoxOffset: () => Vector;
     spawnBoxSize: () => Vector;
     rotation: () => number;
-    size: () => Vector;
+    scale: () => number;
     velocity: () => Vector;
     angularVelocity: () => number;
     lifetime: () => number;
@@ -51,30 +54,34 @@ const ParticleEmitter: (data: Partial<ParticleEmitterData>, altID?: string) => C
         const data: ParticleEmitterData = {
             enabled: true,
             spriteID: () => "square",
+            color: () => Color.WHITE,
             layer: () => ParticleLayer.ABOVE_OBJECTS,
             rate: () => 1.0, 
             spawnBoxOffset: () => Vector.zero(),
-            spawnBoxSize: () => new Vector(1, 1),
+            spawnBoxSize: () => Vector.zero(),
             rotation: () => 0.0,
-            size: () => new Vector(0.5, 0.5),
+            scale: () => 1.0,
             velocity: () => Vector.zero(),
             angularVelocity: () => 0.0,
             lifetime: () => 1.0,
             particleUpdate(dt) {},
             emit() {
                 const boxSize = data.spawnBoxSize();
+                const spriteID = data.spriteID();
+                const sprite = getTexture(spriteID);
                 gameObject.game.addParticle({
+                    gameObject,
                     position: Vector.add(
                         Vector.add(gameObject.position, data.spawnBoxOffset()), 
                         new Vector(MathUtils.random(-boxSize.x / 2, boxSize.x / 2), MathUtils.random(-boxSize.y / 2, boxSize.y / 2))
                     ),
+                    spriteID: spriteID,
+                    color: data.color(),
                     useRelativePosition: false,
-                    gameObject,
-                    size: data.size(),
+                    size: Vector.scaled(new Vector(sprite.width, sprite.height), data.scale()),
                     rotation: data.rotation(),
                     velocity: data.velocity(),
                     angularVelocity: data.angularVelocity(),
-                    spriteID: data.spriteID(),
                     birthTime: gameObject.game.time,
                     lifetime: data.lifetime(),
                     update(particle, dt) {
