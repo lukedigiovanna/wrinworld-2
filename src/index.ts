@@ -37,6 +37,8 @@ const mainLoop = () => {
     game.draw();
 
     $("#fps").text(Math.round(fpsAverage));
+    $("#objs").text(game.totalObjects);
+    $("#active-objs").text(game.totalActiveObjects);
 
     window.requestAnimationFrame(mainLoop);
 }
