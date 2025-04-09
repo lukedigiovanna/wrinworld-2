@@ -94,7 +94,7 @@ weaponsCodex.set(WeaponIndex.SHURIKEN, {
     }
 });
 weaponsCodex.set(WeaponIndex.BOW, {
-    cooldown: 0.5,
+    cooldown: 0.0,
     maxCharge: 1.2,
     chargeable: true,
     attack(props) {
@@ -107,9 +107,12 @@ weaponsCodex.set(WeaponIndex.BOW, {
         if (!projectile) {
             projectile = projectilesCodex.get(ProjectileIndex.ARROW);
         }
+        const charge = (props?.charge ? props.charge : 1);
         return {
             ...projectile,
-            speed: projectile.speed * (props?.charge ? props.charge : 1), 
+            lifespan: projectile.lifespan * charge,
+            damage: projectile.damage * charge,
+            speed: projectile.speed * charge, 
         };
     },
     fire(gameObject, target, props) {

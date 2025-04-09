@@ -112,9 +112,9 @@ projectilesCodex.set(ProjectileIndex.SHURIKEN, {
 });
 projectilesCodex.set(ProjectileIndex.ARROW, {
     homingSkill: 0,
-    maxHits: 10,
+    maxHits: 1,
     spriteID: "arrow",
-    damage: 8,
+    damage: 10,
     damageReductionPerHit: 0,
     knockback: 3,
     lifespan: 4,

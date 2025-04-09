@@ -64,7 +64,7 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
                 return {
                     id: "fade",
                     update(dt) {
-                        gameObject.color = new Color(1, 0.1, 0.1, 1 - gameObject.age / gameObject.lifespan!);
+                        gameObject.color = new Color(1, 0.1, 0.1, 1 - Math.pow(gameObject.age / gameObject.lifespan!, 6));
                     },
                 }
             });

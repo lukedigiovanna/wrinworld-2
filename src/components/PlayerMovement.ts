@@ -17,6 +17,7 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
         start() {
             data.physics = gameObject.getComponent("physics");
             data.collider = gameObject.getComponent("physical-collider");
+            data.weaponManager = gameObject.getComponent("weapon-manager");
         },
         update(dt: number) {
             const movement = Vector.zero();
@@ -33,7 +34,8 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
                 movement.add(new Vector(1, 0));
             }
             movement.normalize();
-            movement.scale(data.speed);
+            const chargeScale = data.weaponManager.data.charging ? 0.3 : 1;
+            movement.scale(data.speed * chargeScale);
             if (input.isKeyDown("ShiftLeft")) {
                 movement.scale(4);
             }
