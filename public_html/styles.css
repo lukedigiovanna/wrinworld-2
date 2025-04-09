@@ -136,6 +136,14 @@ img {
     flex-direction: column;
 }
 
+#fps-display {
+    color: black;
+    font-family: sans-serif;
+    font-weight: bold;
+    margin-left: 12px;
+    font-size: 20px;
+}
+
 #hud-row {
     display: flex;
     flex-direction: row;

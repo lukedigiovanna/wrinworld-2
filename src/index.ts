@@ -36,13 +36,7 @@ const mainLoop = () => {
 
     game.draw();
 
-    // if (settings.showFPS) {
-    //     ctx.fillStyle = "red";
-    //     ctx.font = "bold 20px sans-serif";
-    //     ctx.fillText(`FPS: ${Math.round(fpsAverage)}`, 10, 25);
-    //     ctx.fillText(`OBJS: ${game.totalObjects}`, 10, 50);
-    //     ctx.fillText(`ACTIVE: ${game.totalActiveObjects}`, 10, 75);
-    // }
+    $("#fps").text(Math.round(fpsAverage));
 
     window.requestAnimationFrame(mainLoop);
 }
