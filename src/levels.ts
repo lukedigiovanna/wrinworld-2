@@ -407,25 +407,25 @@ const LEVEL_1: Level = {
             const dropPool = MathUtils.randomWeightedChoice(level1PortalDrops, dropChances);
             game.addGameObject(PortalFactory(properties, dropPool.drops, position));
             portalPositions.push(position);
-            const R = 3;
+            const R = 5;
             for (let xo = -R; xo <= R; xo++) {
                 for (let yo = -R; yo <= R; yo++) {
                     const dist = Math.sqrt(xo * xo + yo * yo);
                     const chance = 1 - dist / 4;
                     if (Math.random() < chance) {
-                        const po = Vector.add(new Vector(xo, yo), position);
+                        const po = Vector.add(new Vector(xo * PIXELS_PER_TILE, yo * PIXELS_PER_TILE), position);
                         const tile = game.getTileIndex(po);
                         if (tile === TileIndex.GRASS) {
-                            game.setTileWithTilemapCoordinate(po, TileIndex.CURSED_GRASS);
+                            game.setTile(po, TileIndex.CURSED_GRASS);
                         }
                         else if (tile === TileIndex.PATH) {
-                            game.setTileWithTilemapCoordinate(po, TileIndex.CURSED_PATH);
+                            game.setTile(po, TileIndex.CURSED_PATH);
                         }
                         else if (tile === TileIndex.SAND) {
-                            game.setTileWithTilemapCoordinate(po, TileIndex.CURSED_SAND);
+                            game.setTile(po, TileIndex.CURSED_SAND);
                         }
                         else if (tile === TileIndex.PLANKS) {
-                            game.setTileWithTilemapCoordinate(po, TileIndex.CURSED_PLANKS);
+                            game.setTile(po, TileIndex.CURSED_PLANKS);
                         }
                     }
                 }
