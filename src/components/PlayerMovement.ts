@@ -2,7 +2,7 @@ import { ComponentFactory } from "./index";
 import { GameObject } from "../gameObjects";
 import input from "../input";
 import { Vector } from "../utils";
-import { TileIndex } from "../tiles";
+import { tileCodex, TileIndex } from "../tiles";
 
 const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
@@ -18,6 +18,7 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
             data.physics = gameObject.getComponent("physics");
             data.collider = gameObject.getComponent("physical-collider");
             data.weaponManager = gameObject.getComponent("weapon-manager");
+            data.trailParticleEmitter = gameObject.getComponent("particle-emitter-trail");
         },
         update(dt: number) {
             const movement = Vector.zero();
@@ -35,10 +36,11 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
             }
             movement.normalize();
             const chargeScale = data.weaponManager.data.charging ? 0.3 : 1;
-            movement.scale(data.speed * chargeScale);
+            let realSpeed = data.speed * chargeScale;
             if (input.isKeyDown("ShiftLeft")) {
-                movement.scale(4);
+                realSpeed *= 2;
             }
+            movement.scale(realSpeed);
             data.physics.data.velocity.set(movement);
 
             const mousePos = gameObject.game.camera.screenToWorldPosition(input.mousePosition);
@@ -49,10 +51,10 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
                 gameObject.scale.x = -Math.abs(gameObject.scale.x);
             }
 
-            const tileIndex = gameObject.game.getTileIndex(gameObject.position);
+            const tileIndex = gameObject.game.getTileIndex(Vector.add(gameObject.position, data.collider.data.boxOffset));
             if (tileIndex === TileIndex.WATER) {
                 gameObject.renderer!.data.spriteID = "peach_water";
-                gameObject.renderer!.data.offset = new Vector(0, Math.sin(gameObject.age * 6) * 0.04);
+                gameObject.renderer!.data.offset = new Vector(0, Math.sin(gameObject.age * 4) * 1.5);
                 gameObject.castsShadow = false;
                 data.speed = data.waterSpeed;
             }
@@ -60,6 +62,16 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
                 data.speed = data.regularSpeed;
                 gameObject.renderer!.data.spriteID = "peach";
                 gameObject.castsShadow = true;
+            }
+
+            const tile = tileCodex.get(tileIndex);
+            if (tile.trailColor && !movement.isZero()) {
+                data.trailParticleEmitter.data.color = () => tile.trailColor; 
+                data.trailParticleEmitter.data.rate = () => realSpeed / 16;
+                data.trailParticleEmitter.data.enabled = true;
+            }
+            else {
+                data.trailParticleEmitter.data.enabled = false;
             }
         },
         data

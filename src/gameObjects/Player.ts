@@ -1,9 +1,10 @@
 import { GameObjectFactory, GameObject, Team } from "./";
-import { Vector, Color } from "../utils";
+import { Vector, Color, MathUtils } from "../utils";
 import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager, 
          Health, WeaponManager, EssenceManager,
          HealthBarDisplayMode,
-         StatusEffectManager} from "../components";
+         StatusEffectManager,
+         ParticleEmitter} from "../components";
 import { spriteRenderer } from "../renderers";
 import { ItemIndex, itemsCodex } from "../items";
 import { getImage } from "../imageLoader";
@@ -38,11 +39,22 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
     health.data.damageSoundEffectID = "peach_damage";
     health.data.deathSoundEffectID = "peach_die";
 
+    const trailEmitter = player.addComponent(ParticleEmitter({
+        rate: () => 30,
+        scale: () => MathUtils.random(1, 1.5),
+        velocity: () => MathUtils.randomVector(MathUtils.random(3, 22)),
+        angularVelocity: () => MathUtils.random(-1, 1),
+        spawnBoxOffset: () => collider.data.boxOffset,
+        lifetime: () => MathUtils.random(0.2, 0.5),
+    }, "trail"));
+    trailEmitter.data.enabled = false;
+
     player.addComponent(InventoryManager);
     player.addComponent(WeaponManager);
     player.addComponent(EssenceManager);
     player.addComponent(StatusEffectManager);
 
+    // Starter items
     player.addComponent((gameObject) => {
         return {
             id: "add-starter-items",
@@ -67,6 +79,7 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
         }
     })
 
+    // UI Manager
     player.addComponent((gameObject) => {
         const data: any = {
             health: undefined,
