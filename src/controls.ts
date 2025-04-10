@@ -39,4 +39,5 @@ const controls: Controls = {
     }
 }
 
+export type { Controls };
 export default controls;

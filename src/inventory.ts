@@ -4,6 +4,7 @@ import { GameObject } from "./gameObjects";
 import input, { InputLayer } from "./input";
 import { Vector } from "./utils";
 import { addNotification } from "./notifications";
+import controls, { Controls } from "./controls";
 
 interface InventorySlot {
     item: Item;
@@ -17,6 +18,7 @@ interface SlotProps {
     iconID: string;
     selectedIconID?: string;
     acceptItemCategory: ItemCategory[] | null; // Null to accept all
+    controlKeys?: (keyof Controls)[];
 }
 
 const slotTypeProperties: {[key in SlotType]: SlotProps} = {
@@ -28,6 +30,7 @@ const slotTypeProperties: {[key in SlotType]: SlotProps} = {
         iconID: "weapon_slot",
         selectedIconID: "selected_weapon_slot",
         acceptItemCategory: ["Weapon"],
+        controlKeys: ["selectWeapon1", "selectWeapon2"]
     },
     quiver: {
         iconID: "quiver_slot",
@@ -35,11 +38,13 @@ const slotTypeProperties: {[key in SlotType]: SlotProps} = {
     },
     utility: {
         iconID: "utility_slot",
-        acceptItemCategory: ["Utility", "Mystic Arts"]
+        acceptItemCategory: ["Utility", "Mystic Arts"],
+        controlKeys: ["utility"]
     },
     consumable: {
         iconID: "consumable_slot",
-        acceptItemCategory: ["Consumable"]
+        acceptItemCategory: ["Consumable"],
+        controlKeys: ["consumable"]
     },
     buff: {
         iconID: "buff_slot",
@@ -81,6 +86,7 @@ function inventorySlotHTML(type: SlotType) {
             <img class="slot-icon" src="${image.src}" />
             <img class="item" />
             <span class="count"></span>
+            <span class="control"></span>
         </div>
     `   
 }
@@ -506,9 +512,19 @@ class Inventory {
         for (const type of this.hotbarSlotRowOrder) {
             for (let i = 0; i < this.reference[type].slots.length; i++) {
                 const element = $(inventorySlotHTML(type));
-                if (i === this.reference[type].slots.length - 1) {
-                    element.css("margin-right", "8px");
+                // Add control marker
+                const controlsKeys = slotTypeProperties[type].controlKeys;
+                if (controlsKeys && i < controlsKeys.length) {
+                    const control = element.find(".control");
+                    control.text(controls[controlsKeys[i]].display);
+                    control.css("visibility", "visible");
                 }
+
+                // Add gap between sections
+                if (i === this.reference[type].slots.length - 1) {
+                    element.css("margin-right", "10px");
+                }
+                
                 $("#hotbar").append(element);
                 this.hotbarSlotDivs.push(element);
                 this.hotbarSlots.push({
