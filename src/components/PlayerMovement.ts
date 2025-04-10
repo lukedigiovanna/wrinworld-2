@@ -60,6 +60,7 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
             }
             else {
                 data.speed = data.regularSpeed;
+                gameObject.renderer!.data.offset = Vector.zero();
                 gameObject.renderer!.data.spriteID = "peach";
                 gameObject.castsShadow = true;
             }

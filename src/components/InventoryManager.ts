@@ -9,35 +9,48 @@ import { Color, Vector } from "../utils";
 const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
         inventory: undefined,
-        inventoryDisplayed: false
+        selectedWeaponIndex: 0,
+        inventoryDisplayed: false,
+        setSelectedWeaponIndex(i: number) {
+            this.inventory.unselectSlot({
+                type: "weapon",
+                index: this.selectedWeaponIndex
+            });
+            this.inventory.selectSlot({
+                type: "weapon",
+                index: i
+            });
+            this.selectedWeaponIndex = i;
+        }
     }
     return {
         id: "inventory-manager",
         start() {
             data.inventory = new Inventory(gameObject);
+            data.setSelectedWeaponIndex(0);
             input.registerScrollCallback((deltaY: number) => {
-                const currIndex = data.inventory.selectedHotbarIndex;
+                const currIndex = data.selectedWeaponIndex;
                 let newIndex;
                 if (deltaY < 0) {
-                    newIndex = (currIndex + 1) % data.inventory.hotbarSize; 
+                    newIndex = (currIndex + 1) % 2; 
                 }
                 else {
                     if (currIndex === 0) {
-                        newIndex = data.inventory.hotbarSize - 1;
+                        newIndex = 2 - 1;
                     }
                     else {
                         newIndex = currIndex - 1;
                     }
                 }
-                data.inventory.setSelectedHotbarSlot(newIndex);
+                data.setSelectedWeaponIndex(newIndex);
             });
         },
         update(dt: number) {
             if (input.isKeyPressed("Digit1")) {
-                data.inventory.setSelectedHotbarSlot(0);
+                data.setSelectedWeaponIndex(0);
             }
             if (input.isKeyPressed("Digit2")) {
-                data.inventory.setSelectedHotbarSlot(1);
+                data.setSelectedWeaponIndex(1);
             }
 
             if (input.isKeyPressed("KeyE")) {
@@ -51,31 +64,41 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
             }
             
             if (input.mousePressed()) {
-                data.inventory.pressSelectedItem(gameObject.game.camera.screenToWorldPosition(input.mousePosition));
+                data.inventory.pressItem({
+                    type: "weapon",
+                    index: data.selectedWeaponIndex
+                }, gameObject.game.camera.screenToWorldPosition(input.mousePosition));
             }
             if (input.mouseReleased()) {
-                data.inventory.releaseSelectedItem(gameObject.game.camera.screenToWorldPosition(input.mousePosition), 0);
+                data.inventory.releaseItem({
+                    type: "weapon",
+                    index: data.selectedWeaponIndex
+                }, gameObject.game.camera.screenToWorldPosition(input.mousePosition), 0);
             }
         },
         render(camera) {
-            // const selected = data.inventory.getSelectedItem() as Item;
-            // if (selected) {
-            //     let sign = Math.sign(gameObject.scale.x)
-            //     const offset = 12;
-            //     camera.color = Color.WHITE;
-            //     camera.drawTexture(
-            //         getTexture(selected.iconSpriteID), 
-            //         gameObject.position.x + offset * sign, gameObject.position.y - 6, 
-            //         16 * sign, 16
-            //     );
-            // }
-            // const weaponManager = gameObject.getComponent("weapon-manager");
-            // if (weaponManager.data.charging) {
-            //     const hitboxCenter = Vector.add(gameObject.position, gameObject.getComponent("hitbox").data.boxOffset);
-            //     const mousePos = gameObject.game.camera.screenToWorldPosition(input.mousePosition);
-            //     const angle = Vector.subtract(mousePos, hitboxCenter).angle;
-            //     camera.drawTexture(getTexture("right_arrow"), hitboxCenter.x + 10, hitboxCenter.y, 20, 13, angle, new Vector(-10, 0));
-            // }
+            const selectedWeaponSlot = data.inventory.getSlot({
+                type: "weapon",
+                index: data.selectedWeaponIndex
+            });
+            if (selectedWeaponSlot) {
+                const selected = selectedWeaponSlot.item;
+                let sign = Math.sign(gameObject.scale.x)
+                const offset = 12;
+                camera.color = Color.WHITE;
+                camera.drawTexture(
+                    getTexture(selected.iconSpriteID), 
+                    gameObject.position.x + offset * sign, gameObject.position.y - 6, 
+                    16 * sign, 16
+                );
+            }
+            const weaponManager = gameObject.getComponent("weapon-manager");
+            if (weaponManager.data.charging) {
+                const hitboxCenter = Vector.add(gameObject.position, gameObject.getComponent("hitbox").data.boxOffset);
+                const mousePos = gameObject.game.camera.screenToWorldPosition(input.mousePosition);
+                const angle = Vector.subtract(mousePos, hitboxCenter).angle;
+                camera.drawTexture(getTexture("right_arrow"), hitboxCenter.x + 10, hitboxCenter.y, 20, 13, angle, new Vector(-10, 0));
+            }
         },
         data
     }

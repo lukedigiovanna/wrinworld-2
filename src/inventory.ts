@@ -15,6 +15,7 @@ type SlotType = typeof slotTypes[number];
 
 interface SlotProps {
     iconID: string;
+    selectedIconID?: string;
     acceptItemCategory: ItemCategory[] | null; // Null to accept all
 }
 
@@ -25,6 +26,7 @@ const slotTypeProperties: {[key in SlotType]: SlotProps} = {
     },
     weapon: {
         iconID: "weapon_slot",
+        selectedIconID: "selected_weapon_slot",
         acceptItemCategory: ["Weapon"],
     },
     quiver: {
@@ -33,7 +35,7 @@ const slotTypeProperties: {[key in SlotType]: SlotProps} = {
     },
     utility: {
         iconID: "utility_slot",
-        acceptItemCategory: ["Utility"]
+        acceptItemCategory: ["Utility", "Mystic Arts"]
     },
     consumable: {
         iconID: "consumable_slot",
@@ -96,6 +98,8 @@ class Inventory {
     
     private heldSlot: InventorySlot | null = null;
     private inventoryDisplayed: boolean = false;
+
+    private hotbarSlotRowOrder: SlotType[] = ["weapon", "quiver", "utility", "consumable", "buff"];
 
     constructor(player: GameObject, counts: InventoryCounts=defaultInventoryCounts) {
         this.player = player;
@@ -191,8 +195,9 @@ class Inventory {
         return null;
     }
 
-    private pressedIndex = -1;
-    private pressedItem: Item | null = null;
+    public getSlot(slotIndex: SlotIndex): InventorySlot | null {
+        return this.reference[slotIndex.type].slots[slotIndex.index];
+    }
 
     private decreaseItemCount(slotIndex: SlotIndex) {
         const type = this.reference[slotIndex.type];
@@ -204,91 +209,98 @@ class Inventory {
             type.slots[slotIndex.index] = null;
         }
         this.setSlotUIByIndex(slotIndex);
+        this.updateHotbarUI();
     }
 
-    private useItem(item: Item, target: Vector, func: "pressItem" | "releaseItem"): boolean {
+    private useItem(slotIndex: SlotIndex, target: Vector, func: "pressItem" | "releaseItem"): boolean {
+        const item = this.getSlot(slotIndex)?.item;
+        if (!item) {
+            return false;
+        }
         if (!item[func]) {
             throw Error("Cannot use item with " + func + " function because it does not exist");
         }
-        return false;
 
-        // let useIndex = -1;
-        // if (item.usesItem) {
-        //     // Iterate up from selected slot
-        //     for (let i = 1; i < this.slots.length; i++) {
-        //         const index = (i + this._selectedSlot) % this.slots.length;
-        //         for (const useItem of item.usesItem) {
-        //             if (this.slots[index]?.item.itemIndex === useItem) {
-        //                 useIndex = index;
-        //                 break;
-        //             }
-        //         }
-        //         if (useIndex >= 0) {
-        //             break;
-        //         }
-        //     }
-        //     if (useIndex < 0) {
-        //         return false;
-        //     }
-        // }
+        let useIndex: SlotIndex | null = null;
+        if (item.usesItem) {
+            for (let i = 0; i < this.reference.quiver.slots.length; i++) {
+                for (const useItem of item.usesItem) {
+                    if (this.reference.quiver.slots[i]?.item.itemIndex === useItem) {
+                        useIndex = {
+                            type: "quiver",
+                            index: i
+                        };
+                        break;
+                    }
+                }
+                if (useIndex !== null) {
+                    break;
+                }
+            }
+            if (useIndex === null) {
+                return false; // We don't have the necessary item in the quiver.
+            }
+        }
         // // Check if the player has enough essence to use the item
-        // const essenceManager = this.player.getComponent("essence-manager");
-        // if (essenceManager.data.essence >= item.essenceCost) {
-        //     const useSlot = this.slots[useIndex];
-        //     const useItem = (useIndex >= 0 && useSlot) ? useSlot.item : undefined;
-        //     const success = item[func](this.player, target, useItem);
-        //     if (success) {
-        //         if (useIndex >= 0) {
-        //             this.decreaseItemCount(useIndex);
-        //         }
-        //         if (item.consumable) {
-        //             this.decreaseItemCount(this._selectedSlot);
-        //         }
-        //         essenceManager.data.useEssence(item.essenceCost);
-        //         return true;
-        //     }
-        //     else {
-        //         return false;
-        //     }
-        // }
-        // else {
-        //     addNotification({
-        //         text: "Not enough essence!",
-        //         color: "rgb(255, 31, 31)"
-        //     })
-        //     return false;
-        // }
+        const essenceManager = this.player.getComponent("essence-manager");
+        if (essenceManager.data.essence >= item.essenceCost) {
+            const useItem = useIndex !== null ? this.getSlot(useIndex)?.item : undefined; 
+            const success = item[func](this.player, target, useItem);
+            if (success) {
+                if (useIndex !== null) {
+                    this.decreaseItemCount(useIndex);
+                }
+                if (item.consumable) {
+                    this.decreaseItemCount(slotIndex);
+                }
+                essenceManager.data.useEssence(item.essenceCost);
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            addNotification({
+                text: "Not enough essence!",
+                color: "rgb(255, 31, 31)"
+            })
+            return false;
+        }
     }
 
-    public pressSelectedItem(target: Vector) {
-        // this.pressedIndex = this._selectedSlot;
-        // const slot = this.slots[this._selectedSlot];
-        // const item = slot?.item;
-        // if (!item) {
-        //     return;
-        // }
-        // this.pressedItem = item;
-        // if (item.pressItem !== undefined) {
-        //     if (this.useItem(item, target, "pressItem")) {
-        //         this.pressedIndex = -1;
-        //     }
-        // }
+    private pressedIndex: SlotIndex | null = null;
+    private pressedItem: Item | null = null;
+
+    public pressItem(slotIndex: SlotIndex, target: Vector) {
+        this.pressedIndex = slotIndex;
+        const slot = this.getSlot(slotIndex);
+        const item = slot?.item;
+        if (!item) {
+            return;
+        }
+        this.pressedItem = item;
+        if (item.pressItem !== undefined) {
+            if (this.useItem(slotIndex, target, "pressItem")) {
+                this.pressedIndex = null;
+            }
+        }
     }
 
-    public releaseSelectedItem(target: Vector) {
+    public releaseItem(slotIndex: SlotIndex, target: Vector) {
         // // Ensure that if the player changes their slot we ignore a release.
-        // if (this.pressedIndex !== this._selectedSlot) {
-        //     return;
-        // }
-        // const slot = this.slots[this._selectedSlot];
-        // const item = slot?.item;
+        if (this.pressedIndex === null || this.pressedIndex.type !== slotIndex.type || this.pressedIndex.index !== slotIndex.index) {
+            return;
+        }
+        const slot = this.getSlot(slotIndex);
+        const item = slot?.item;
         // // If theres no item in the slot or the item somehow changed from a press, then ignore
-        // if (!item || item !== this.pressedItem) {
-        //     return;
-        // }
-        // if (item.releaseItem) {
-        //     this.useItem(item, target, "releaseItem");
-        // }
+        if (!item || item !== this.pressedItem) {
+            return;
+        }
+        if (item.releaseItem) {
+            this.useItem(slotIndex, target, "releaseItem");
+        }
     }
 
     // --- UI functions ---
@@ -476,8 +488,7 @@ class Inventory {
         
 
         const activeBarRow = $(inventoryRowHTML());
-        const types: SlotType[] = ["weapon", "quiver", "utility", "consumable", "buff"];
-        for (const type of types) {
+        for (const type of this.hotbarSlotRowOrder) {
             for (let i = 0; i < this.reference[type].slots.length; i++) {
                 const element = this.createAndAddSlotUI(type);
                 if (i === this.reference[type].slots.length - 1) {
@@ -492,7 +503,7 @@ class Inventory {
         // Create the regular hotbar UI
         this.hotbarSlotDivs = [];
         $("#hotbar").empty();
-        for (const type of types) {
+        for (const type of this.hotbarSlotRowOrder) {
             for (let i = 0; i < this.reference[type].slots.length; i++) {
                 const element = $(inventorySlotHTML(type));
                 if (i === this.reference[type].slots.length - 1) {
@@ -531,7 +542,7 @@ class Inventory {
         this.setSlotUI(type.slots[slotIndex.index], type.slotDivs[slotIndex.index]);
     }
 
-    public updateHotbarUI() {
+    private updateHotbarUI() {
         let i = 0;
         for (const slotIndex of this.hotbarSlots) {
             this.setSlotUI(this.reference[slotIndex.type].slots[slotIndex.index], this.hotbarSlotDivs[i]);
@@ -563,6 +574,51 @@ class Inventory {
             input.layer = InputLayer.INVENTORY;
         }
         this.inventoryDisplayed = !this.inventoryDisplayed;
+    }
+
+    // Get the slot div of the given slotIndex. 
+    private hotbarSlotDiv(slotIndex: SlotIndex): JQuery<HTMLElement> | null {
+        let i = 0;
+        for (const type of this.hotbarSlotRowOrder) {
+            if (slotIndex.type === type) {
+                return this.hotbarSlotDivs[i + slotIndex.index];
+            }
+            else {
+                i += this.reference[slotIndex.type].slots.length;
+            }
+        }
+        return null;
+    }
+
+    public unselectSlot(slotIndex: SlotIndex) {
+        const div = this.hotbarSlotDiv(slotIndex);
+        if (div === null) {
+            throw Error("Trying to unselect a slotIndex which is not on the hotbar");
+        }
+        div.find(".slot-icon").attr("src", getImage(slotTypeProperties[slotIndex.type].iconID).src);
+        const slot = this.getSlot(slotIndex);
+        if (slot) {
+            if (slot.item.unequipItem) {
+                slot.item.unequipItem(this.player);
+            }
+        }
+    }
+
+    public selectSlot(slotIndex: SlotIndex) {
+        const { selectedIconID, iconID } = slotTypeProperties[slotIndex.type]
+        const id = selectedIconID ? selectedIconID : iconID;
+        const src = getImage(id).src;
+        const div = this.hotbarSlotDiv(slotIndex);
+        if (div === null) {
+            throw Error("Trying to select a slotIndex which is not on the hotbar");
+        }
+        div.find(".slot-icon").attr("src", src);
+        const slot = this.getSlot(slotIndex);
+        if (slot) {
+            if (slot.item.equipItem) {
+                slot.item.equipItem(this.player);
+            }
+        }
     }
 };
 
