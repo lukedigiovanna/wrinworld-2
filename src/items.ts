@@ -310,7 +310,7 @@ itemsCodex.set(ItemIndex.HEALING_VIAL, {
         const amountHealed = health.data.heal(10);
         if (amountHealed > 0) {
             addNotification({
-                text: `+${amountHealed} HP`,
+                text: `+${Math.round(amountHealed * 10) / 10} HP`,
                 color: "#06cf28"
             })
             return true;

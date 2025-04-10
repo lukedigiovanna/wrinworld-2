@@ -53,6 +53,19 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
                 data.setSelectedWeaponIndex(1);
             }
 
+            if (input.isKeyPressed("KeyQ")) {
+                data.inventory.pressItem({
+                    type: "utility",
+                    index: 0
+                }, gameObject.game.camera.screenToWorldPosition(input.mousePosition));
+            }
+            if (input.isKeyPressed("KeyR")) {
+                data.inventory.pressItem({
+                    type: "consumable",
+                    index: 0
+                }, gameObject.game.camera.screenToWorldPosition(input.mousePosition));
+            }
+
             if (input.isKeyPressed("KeyE")) {
                 data.inventory.toggleUI();
             }

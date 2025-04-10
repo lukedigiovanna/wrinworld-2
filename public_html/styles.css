@@ -22,6 +22,11 @@
     src: url("assets/fonts/Nexa-Heavy.ttf") format("truetype");
 }
 
+@font-face {
+    font-family: "Matrix-Mono";
+    src: url("assets/fonts/Matrix_Mono.ttf") format("truetype");
+}
+
 .primary-font {
     font-family: "Enchanted Land";
 }
@@ -99,15 +104,14 @@ img {
 
 .inventory-slot .count {
     position: absolute;
-    right: 15%;
-    bottom: 8%;
+    right: 9px;
+    bottom: 9px;
     text-align: right;
     font-weight: bold;
+    text-shadow: 0px 0px 4px white;
     color: #111;
-    font-size: 18px;
-    font-family: "Heavitas";
-    -webkit-text-stroke: 0.1px white;
-    text-stroke: 0.1px white;
+    font-size: 10px;
+    font-family: "Matrix-Mono";
 }
 
 #held-item-display {
@@ -141,13 +145,14 @@ img {
 }
 
 .notification {
-    font-family: "Nexa-Heavy";
+    font-family: "Matrix-Mono";
     color: rgb(255, 31, 31);
     font-weight: bold;
-    font-size: 20px;
-    line-height: 1.05em;
-    -webkit-text-stroke: 1px black;
+    font-size: 16px;
+    line-height: 1.35em;
+    text-shadow: 0px 0px 4px black;
     transition: opacity 0.5s linear;
+    text-align: center;
 }
 
 #hud-container {
