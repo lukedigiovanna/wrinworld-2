@@ -4,9 +4,10 @@
 
 import { Vector } from "./utils";
 import { GameObject } from "./gameObjects";
-import { WeaponIndex, weaponsCodex } from "./weapons";
+import { fireProjectile, WeaponIndex, weaponsCodex } from "./weapons";
 import { Codex } from "./codex";
 import { addNotification } from "./notifications";
+import { ProjectileIndex, projectilesCodex } from "./projectiles";
 
 enum ItemStatIndex {
     // Weapon based
@@ -492,7 +493,10 @@ itemsCodex.set(ItemIndex.CRYSTAL_BOMB, {
     consumable: true,
     essenceCost: 10,
     maxStack: 20,
-    ...weaponItem(WeaponIndex.CRYSTAL_BOMB)
+    pressItem(player, target) {
+        fireProjectile(projectilesCodex.get(ProjectileIndex.CRYSTAL_BOMB), player, target);
+        return true;
+    }
 });
 itemsCodex.set(ItemIndex.HEART_CRYSTAL, {
     itemIndex: ItemIndex.HEART_CRYSTAL,

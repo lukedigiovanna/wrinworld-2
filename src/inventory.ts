@@ -608,21 +608,23 @@ class Inventory {
         return null;
     }
 
-    public unselectSlot(slotIndex: SlotIndex) {
+    public unselectSlot(slotIndex: SlotIndex, unequip=false) {
         const div = this.hotbarSlotDiv(slotIndex);
         if (div === null) {
             throw Error("Trying to unselect a slotIndex which is not on the hotbar");
         }
         div.find(".slot-icon").attr("src", getImage(slotTypeProperties[slotIndex.type].iconID).src);
-        const slot = this.getSlot(slotIndex);
-        if (slot) {
-            if (slot.item.unequipItem) {
-                slot.item.unequipItem(this.player);
+        if (unequip) {
+            const slot = this.getSlot(slotIndex);
+            if (slot) {
+                if (slot.item.unequipItem) {
+                    slot.item.unequipItem(this.player);
+                }
             }
         }
     }
 
-    public selectSlot(slotIndex: SlotIndex) {
+    public selectSlot(slotIndex: SlotIndex, equip=false) {
         const { selectedIconID, iconID } = slotTypeProperties[slotIndex.type]
         const id = selectedIconID ? selectedIconID : iconID;
         const src = getImage(id).src;
@@ -631,10 +633,12 @@ class Inventory {
             throw Error("Trying to select a slotIndex which is not on the hotbar");
         }
         div.find(".slot-icon").attr("src", src);
-        const slot = this.getSlot(slotIndex);
-        if (slot) {
-            if (slot.item.equipItem) {
-                slot.item.equipItem(this.player);
+        if (equip) {
+            const slot = this.getSlot(slotIndex);
+            if (slot) {
+                if (slot.item.equipItem) {
+                    slot.item.equipItem(this.player);
+                }
             }
         }
     }

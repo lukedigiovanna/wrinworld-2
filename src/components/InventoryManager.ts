@@ -15,11 +15,11 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
             this.inventory.unselectSlot({
                 type: "weapon",
                 index: this.selectedWeaponIndex
-            });
+            }, true);
             this.inventory.selectSlot({
                 type: "weapon",
                 index: i
-            });
+            }, true);
             this.selectedWeaponIndex = i;
         }
     }

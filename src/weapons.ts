@@ -36,7 +36,6 @@ enum WeaponIndex {
     BOW,
     SLINGSHOT,
     QUICK_BOW,
-    CRYSTAL_BOMB,
 
     ZOMBIE_ATTACK,
     MINION_ATTACK,
@@ -173,15 +172,6 @@ weaponsCodex.set(WeaponIndex.QUICK_BOW, {
         fireProjectile(this.attack() as Projectile, gameObject, target);
     }
 });
-weaponsCodex.set(WeaponIndex.CRYSTAL_BOMB, {
-    cooldown: 1,
-    chargeable: true,
-    maxCharge: 2,
-    attack: () => projectilesCodex.get(ProjectileIndex.CRYSTAL_BOMB),
-    fire(gameObject, target) {
-        fireProjectile(this.attack() as Projectile, gameObject, target);
-    }
-})
 
 // Enemy attacks
 weaponsCodex.set(WeaponIndex.ZOMBIE_ATTACK, {
@@ -247,5 +237,5 @@ weaponsCodex.set(WeaponIndex.WRAITH_ATTACK, {
     }
 });
 
-export { WeaponIndex, weaponsCodex };
+export { WeaponIndex, weaponsCodex, fireProjectile, fireMelee };
 export type { Weapon };
