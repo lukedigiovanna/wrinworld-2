@@ -395,8 +395,8 @@ class Inventory {
                 }
                 else {
                     // Swap the slots
-                    // can only place in an upgrade slot if the item is an upgrade!
-                    if (type !== "buff" || this.heldSlot.item.category === "Buff") {
+                    if (slotTypeProperties[type].acceptItemCategory === null || 
+                        slotTypeProperties[type].acceptItemCategory.indexOf(this.heldSlot.item.category) >= 0) {
                         if (type === "buff") {
                             if (this.heldSlot.item.equipItem) {
                                 this.heldSlot.item.equipItem(this.player);
@@ -476,7 +476,7 @@ class Inventory {
         
 
         const activeBarRow = $(inventoryRowHTML());
-        const types: SlotType[] = ["weapon", "quiver", "consumable", "utility", "buff"];
+        const types: SlotType[] = ["weapon", "quiver", "utility", "consumable", "buff"];
         for (const type of types) {
             for (let i = 0; i < this.reference[type].slots.length; i++) {
                 const element = this.createAndAddSlotUI(type);
