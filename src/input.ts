@@ -42,12 +42,12 @@ class Input {
         }, true);
 
         window.addEventListener("keydown", (ev: KeyboardEvent) => {
-            // console.log("Key down", ev.code);
+            ev.preventDefault();
             this._keyDownMap.set(ev.code, true);
             this._keyPressedMap.set(ev.code, true);         
         }, true);
         window.addEventListener("keyup", (ev: KeyboardEvent) => {
-            // console.log("Key up", ev.code);
+            ev.preventDefault();
             this._keyDownMap.set(ev.code, false);
             this._keyPressedMap.set(ev.code, false);         
         }), true;

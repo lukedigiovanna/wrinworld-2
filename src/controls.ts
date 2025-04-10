@@ -6,7 +6,8 @@ interface ControlProps {
 interface Controls {
     selectWeapon1: ControlProps;
     selectWeapon2: ControlProps;
-    utility: ControlProps;
+    utility1: ControlProps;
+    utility2: ControlProps;
     consumable: ControlProps;
     attackPortal: ControlProps;
     toggleInventory: ControlProps;
@@ -21,9 +22,13 @@ const controls: Controls = {
         code: "Digit2",
         display: "2",
     },
-    utility: {
+    utility1: {
         code: "KeyQ",
         display: "Q"
+    },
+    utility2: {
+        code: "KeyE",
+        display: "E",
     },
     consumable: {
         code: "KeyR",
@@ -31,11 +36,11 @@ const controls: Controls = {
     },
     attackPortal: {
         code: "Space",
-        display: "SPACE"
+        display: "Space"
     },
     toggleInventory: {
-        code: "KeyE",
-        display: "E"
+        code: "Tab",
+        display: "TAB"
     }
 }
 

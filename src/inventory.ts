@@ -44,7 +44,7 @@ const slotTypeProperties: {[key in SlotType]: SlotProps} = {
         iconID: "utility_slot",
         selectedIconID: "selected_utility_slot",
         acceptItemCategory: ["Utility", "Mystic Arts"],
-        controlKeys: ["utility"],
+        controlKeys: ["utility1", "utility2"],
         equipOnAdd: false,
     },
     consumable: {
@@ -83,7 +83,7 @@ const defaultInventoryCounts: InventoryCounts = {
     free: 18,
     weapon: 2,
     quiver: 1,
-    utility: 1,
+    utility: 2,
     consumable: 1,
     buff: 2,
 }
@@ -512,7 +512,7 @@ class Inventory {
             for (let i = 0; i < this.reference[type].slots.length; i++) {
                 const element = this.createAndAddSlotUI(type);
                 if (i === this.reference[type].slots.length - 1) {
-                    element.css("margin-right", "8px");
+                    element.css("margin-right", "10px");
                 }
                 activeBarRow.append(element);
             }
@@ -536,7 +536,7 @@ class Inventory {
 
                 // Add gap between sections
                 if (i === this.reference[type].slots.length - 1) {
-                    element.css("margin-right", "10px");
+                    element.css("margin-right", "12px");
                 }
                 
                 $("#hotbar").append(element);
@@ -657,3 +657,4 @@ class Inventory {
 };
 
 export { Inventory };
+export type { SlotIndex };

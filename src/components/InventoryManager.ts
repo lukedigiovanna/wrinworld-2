@@ -1,7 +1,7 @@
 import { ComponentFactory } from "./index";
 import { GameObject } from "../gameObjects";
 import input, { InputLayer } from "../input";
-import { Inventory } from "../inventory";
+import { Inventory, SlotIndex } from "../inventory";
 import { getTexture } from "../imageLoader";
 import { Color, Vector } from "../utils";
 import controls from "../controls";
@@ -21,6 +21,13 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
                 index: i
             }, true);
             this.selectedWeaponIndex = i;
+        },
+        useItem(slotIndex: SlotIndex) {
+            this.inventory.pressItem(slotIndex, gameObject.game.camera.screenToWorldPosition(input.mousePosition));
+            this.inventory.selectSlot(slotIndex);
+            setTimeout(() => {
+                this.inventory.unselectSlot(slotIndex);
+            }, 75);
         }
     }
     return {
@@ -53,27 +60,23 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
                 data.setSelectedWeaponIndex(1);
             }
 
-            if (input.isKeyPressed(controls.utility.code)) {
-                const slotIndex = {
+            if (input.isKeyPressed(controls.utility1.code)) {
+                data.useItem({
                     type: "utility",
                     index: 0,
-                }
-                data.inventory.pressItem(slotIndex, gameObject.game.camera.screenToWorldPosition(input.mousePosition));
-                data.inventory.selectSlot(slotIndex);
-                setTimeout(() => {
-                    data.inventory.unselectSlot(slotIndex);
-                }, 75);
+                });
+            }
+            if (input.isKeyPressed(controls.utility2.code)) {
+                data.useItem({
+                    type: "utility",
+                    index: 1,
+                });
             }
             if (input.isKeyPressed(controls.consumable.code)) {
-                const slotIndex = {
+                data.useItem({
                     type: "consumable",
-                    index: 0
-                };
-                data.inventory.pressItem(slotIndex, gameObject.game.camera.screenToWorldPosition(input.mousePosition));
-                data.inventory.selectSlot(slotIndex);
-                setTimeout(() => {
-                    data.inventory.unselectSlot(slotIndex);
-                }, 75);
+                    index: 0,
+                });
             }
 
             if (input.isKeyPressed(controls.toggleInventory.code)) {
