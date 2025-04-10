@@ -12,7 +12,7 @@ interface InventorySlot {
 
 const INVENTORY_SLOT_HTML = `
 <div class="inventory-slot">
-    <img class="slot-icon" src="assets/images/ui/hotbar_slot.png" />
+    <img class="slot-icon" src="assets/images/ui/inventory_slot.png" />
     <img class="item" />
     <span class="count"></span>
 </div>
@@ -301,10 +301,10 @@ class Inventory {
             return;
         }
         if (this._selectedSlot !== -1) {
-            this.hotbarSlotDivs[this._selectedSlot].find(".slot-icon").attr("src", getImage("hotbar_slot").src);
+            this.hotbarSlotDivs[this._selectedSlot].find(".slot-icon").attr("src", getImage("inventory_slot").src);
         }
         this._selectedSlot = index;
-        this.hotbarSlotDivs[this._selectedSlot].find(".slot-icon").attr("src", getImage("hotbar_slot_selected").src);
+        this.hotbarSlotDivs[this._selectedSlot].find(".slot-icon").attr("src", getImage("selected_slot").src);
         
         const slot = this.slots[this._selectedSlot];
         if (slot) {

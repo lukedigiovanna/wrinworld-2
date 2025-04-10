@@ -133,8 +133,8 @@ window.onload = async () => {
         loadImageAndTextureSpritesheet(gl, "pixel_font", "assets/images/font_small.png", 5, 5, ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]),
 
         // UI
-        loadImage("hotbar_slot", "assets/images/ui/hotbar_slot.png"),
-        loadImage("hotbar_slot_selected", "assets/images/ui/hotbar_slot_selected.png"),
+        loadImage("inventory_slot", "assets/images/ui/inventory_slot.png"),
+        loadImage("selected_slot", "assets/images/ui/selected_slot.png"),
         
         loadImage("essence_jar_small_0", "assets/images/ui/essence_jar_small_0.png"),
         loadImage("essence_jar_small_1", "assets/images/ui/essence_jar_small_1.png"),
