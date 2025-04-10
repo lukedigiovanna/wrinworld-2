@@ -90,7 +90,10 @@ function inventoryRowHTML() {
 class Inventory {
     private reference: SlotReference;
     private hotbarSlotDivs: JQuery<HTMLElement>[];
+    private hotbarSlots: SlotIndex[];
+
     private player: GameObject;
+    
     private heldSlot: InventorySlot | null = null;
     private inventoryDisplayed: boolean = false;
 
@@ -107,6 +110,7 @@ class Inventory {
             ])
         ) as SlotReference;
 
+        this.hotbarSlots = [];
         this.hotbarSlotDivs = [];
 
         this.createUI();
@@ -130,6 +134,7 @@ class Inventory {
                         type: slotType,
                         index: i
                     }
+                    break;
                 }
                 else if (emptyIndex === null && slot === null &&
                          (slotTypeProperties[slotType].acceptItemCategory === null ||
@@ -140,10 +145,14 @@ class Inventory {
                     }
                 }
             }
+            if (foundIndex !== null) {
+                break;
+            }
         }
         if (foundIndex !== null) {
             this.reference[foundIndex.type].slots[foundIndex.index]!.count++;
             this.setSlotUIByIndex(foundIndex);
+            this.updateHotbarUI();
             return true;
         }
         else if (emptyIndex !== null) {
@@ -152,6 +161,7 @@ class Inventory {
                 count: 1
             };
             this.setSlotUIByIndex(emptyIndex);
+            this.updateHotbarUI();
             // TODO: Equip item if it went into an appropriate slot to be equipped
             return true;
         }
@@ -408,7 +418,7 @@ class Inventory {
             if (this.heldSlot === null) {
                 this.showItemDisplay(slotIndex);
             }
-            // this.updateUI();
+            this.updateHotbarUI();
             this.updateDisplayPositions(ev);
     }
 
@@ -490,6 +500,10 @@ class Inventory {
                 }
                 $("#hotbar").append(element);
                 this.hotbarSlotDivs.push(element);
+                this.hotbarSlots.push({
+                    type: type,
+                    index: i
+                });
             }
         }
     }
@@ -517,17 +531,12 @@ class Inventory {
         this.setSlotUI(type.slots[slotIndex.index], type.slotDivs[slotIndex.index]);
     }
 
-    public updateUI() {
-        for (const slotType of slotTypes) {
-            const ref = this.reference[slotType];
-            for (let i = 0; i < ref.slots.length; i++) {
-                this.setSlotUI(ref.slots[i], ref.slotDivs[i]);
-            }
-        }
-    }
-
     public updateHotbarUI() {
-
+        let i = 0;
+        for (const slotIndex of this.hotbarSlots) {
+            this.setSlotUI(this.reference[slotIndex.type].slots[slotIndex.index], this.hotbarSlotDivs[i]);
+            i++;
+        }
     }
 
     public toggleUI() {
