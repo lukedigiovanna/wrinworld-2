@@ -8,8 +8,6 @@ import { WeaponIndex, weaponsCodex } from "./weapons";
 import { Codex } from "./codex";
 import { addNotification } from "./notifications";
 
-type ItemCategory = "Weapon" | "Misc." | "Projectile" | "Consumable" | "Upgrade" | "Buff" | "Mystic Arts";
-
 enum ItemStatIndex {
     // Weapon based
     DAMAGE, // How much damage a hit does
@@ -155,6 +153,8 @@ enum ItemIndex {
     STUN_FIDDLE, // not implemented
 }
 
+type ItemCategory = "Weapon" | "Ammo" | "Consumable" | "Upgrade" | "Buff" | "Utility" | "Mystic Arts";
+
 // Return true if successfully used.
 type UseItemFunction = (player: GameObject, target: Vector, uses?: Item) => boolean;
 type EquipItemFunction = (player: GameObject) => void;
@@ -263,27 +263,6 @@ itemsCodex.set(ItemIndex.BROAD_SWORD, {
     essenceCost: 0,
     ...weaponItem(WeaponIndex.BROAD_SWORD),
 });
-itemsCodex.set(ItemIndex.ZOMBIE_BRAINS, {
-    itemIndex: ItemIndex.ZOMBIE_BRAINS,
-    displayName: "Zombie Brains",
-    description: "Braiiinnnsssss",
-    category: "Weapon",
-    iconSpriteID: "zombie_brains",
-    maxStack: 99,
-    consumable: true,
-    essenceCost: 0,
-    ...weaponItem(WeaponIndex.ZOMBIE_BRAINS),
-});
-itemsCodex.set(ItemIndex.ZOMBIE_FLESH, {
-    itemIndex: ItemIndex.ZOMBIE_FLESH,
-    displayName: "Zombie Flesh",
-    description: "Tasty!",
-    category: "Misc.",
-    iconSpriteID: "zombie_flesh",
-    maxStack: 100,
-    consumable: false,
-    essenceCost: 0,
-});
 itemsCodex.set(ItemIndex.SHURIKEN, {
     itemIndex: ItemIndex.SHURIKEN,
     category: "Weapon",
@@ -311,7 +290,7 @@ itemsCodex.set(ItemIndex.ARROW, {
     itemIndex: ItemIndex.ARROW,
     displayName: "Arrow",
     description: "Basic arrow",
-    category: "Projectile",
+    category: "Ammo",
     iconSpriteID: "arrow_icon",
     maxStack: 100,
     consumable: false,
@@ -453,7 +432,7 @@ itemsCodex.set(ItemIndex.POISON_ARROW, {
     itemIndex: ItemIndex.POISON_ARROW,
     displayName: "Poison Arrow",
     description: "Poison tipped arrows leave a stuck foe with more problems than a wound",
-    category: "Projectile",
+    category: "Ammo",
     iconSpriteID: "poison_arrow_icon",
     consumable: false,
     essenceCost: 0,
@@ -500,7 +479,7 @@ itemsCodex.set(ItemIndex.CRYSTAL_BOMB, {
     itemIndex: ItemIndex.CRYSTAL_BOMB,
     displayName: "Crystal Bomb",
     description: "Toss this in a horde and let it do the rest",
-    category: "Projectile",
+    category: "Utility",
     iconSpriteID: "crystal_bomb",
     consumable: true,
     essenceCost: 10,
@@ -561,7 +540,7 @@ itemsCodex.set(ItemIndex.ROOT_SNARE, {
     itemIndex: ItemIndex.ROOT_SNARE,
     displayName: "Root Snare",
     description: "Send out a groveling root to tangle up any enemies in its path",
-    category: "Projectile",
+    category: "Utility",
     iconSpriteID: "root_snare",
     consumable: true,
     essenceCost: 0,
@@ -610,7 +589,7 @@ itemsCodex.set(ItemIndex.FLAME_ARROW,  {
     itemIndex: ItemIndex.FLAME_ARROW,
     displayName: "Flame Arrow",
     description: "A fiery tip is sure to leave a burn",
-    category: "Projectile",
+    category: "Ammo",
     iconSpriteID: "flame_arrow_icon",
     consumable: false,
     essenceCost: 0,
@@ -618,4 +597,4 @@ itemsCodex.set(ItemIndex.FLAME_ARROW,  {
 });
 
 export { itemsCodex, ItemIndex, ItemStatIndex, itemStatPropertiesCodex };
-export type { Item, ItemDropChance, ItemStat, ItemStatProperty };
+export type { Item, ItemDropChance, ItemStat, ItemStatProperty, ItemCategory };

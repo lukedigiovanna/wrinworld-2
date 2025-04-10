@@ -95,24 +95,24 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
             // }
         },
         render(camera) {
-            const selected = data.inventory.getSelectedItem() as Item;
-            if (selected) {
-                let sign = Math.sign(gameObject.scale.x)
-                const offset = 12;
-                camera.color = Color.WHITE;
-                camera.drawTexture(
-                    getTexture(selected.iconSpriteID), 
-                    gameObject.position.x + offset * sign, gameObject.position.y - 6, 
-                    16 * sign, 16
-                );
-            }
-            const weaponManager = gameObject.getComponent("weapon-manager");
-            if (weaponManager.data.charging) {
-                const hitboxCenter = Vector.add(gameObject.position, gameObject.getComponent("hitbox").data.boxOffset);
-                const mousePos = gameObject.game.camera.screenToWorldPosition(input.mousePosition);
-                const angle = Vector.subtract(mousePos, hitboxCenter).angle;
-                camera.drawTexture(getTexture("right_arrow"), hitboxCenter.x + 10, hitboxCenter.y, 20, 13, angle, new Vector(-10, 0));
-            }
+            // const selected = data.inventory.getSelectedItem() as Item;
+            // if (selected) {
+            //     let sign = Math.sign(gameObject.scale.x)
+            //     const offset = 12;
+            //     camera.color = Color.WHITE;
+            //     camera.drawTexture(
+            //         getTexture(selected.iconSpriteID), 
+            //         gameObject.position.x + offset * sign, gameObject.position.y - 6, 
+            //         16 * sign, 16
+            //     );
+            // }
+            // const weaponManager = gameObject.getComponent("weapon-manager");
+            // if (weaponManager.data.charging) {
+            //     const hitboxCenter = Vector.add(gameObject.position, gameObject.getComponent("hitbox").data.boxOffset);
+            //     const mousePos = gameObject.game.camera.screenToWorldPosition(input.mousePosition);
+            //     const angle = Vector.subtract(mousePos, hitboxCenter).angle;
+            //     camera.drawTexture(getTexture("right_arrow"), hitboxCenter.x + 10, hitboxCenter.y, 20, 13, angle, new Vector(-10, 0));
+            // }
         },
         data
     }
