@@ -134,7 +134,7 @@ img {
 }
 
 #notifications {
-    width: 400px;
+    width: 500px;
     position: absolute;
     height: 250px;
     top: 0px;
@@ -149,7 +149,7 @@ img {
     color: rgb(255, 31, 31);
     font-weight: bold;
     font-size: 16px;
-    line-height: 1.35em;
+    line-height: 1.45em;
     text-shadow: 0px 0px 4px black;
     transition: opacity 0.5s linear;
     text-align: center;

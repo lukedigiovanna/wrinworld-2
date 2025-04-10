@@ -1,10 +1,10 @@
 import { ComponentFactory } from "./index";
 import { GameObject } from "../gameObjects";
 import input, { InputLayer } from "../input";
-import { Item } from "../items";
 import { Inventory } from "../inventory";
 import { getTexture } from "../imageLoader";
 import { Color, Vector } from "../utils";
+import controls from "../controls";
 
 const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
@@ -46,30 +46,30 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
             });
         },
         update(dt: number) {
-            if (input.isKeyPressed("Digit1")) {
+            if (input.isKeyPressed(controls.selectWeapon1.code)) {
                 data.setSelectedWeaponIndex(0);
             }
-            if (input.isKeyPressed("Digit2")) {
+            if (input.isKeyPressed(controls.selectWeapon2.code)) {
                 data.setSelectedWeaponIndex(1);
             }
 
-            if (input.isKeyPressed("KeyQ")) {
+            if (input.isKeyPressed(controls.utility.code)) {
                 data.inventory.pressItem({
                     type: "utility",
                     index: 0
                 }, gameObject.game.camera.screenToWorldPosition(input.mousePosition));
             }
-            if (input.isKeyPressed("KeyR")) {
+            if (input.isKeyPressed(controls.consumable.code)) {
                 data.inventory.pressItem({
                     type: "consumable",
                     index: 0
                 }, gameObject.game.camera.screenToWorldPosition(input.mousePosition));
             }
 
-            if (input.isKeyPressed("KeyE")) {
+            if (input.isKeyPressed(controls.toggleInventory.code)) {
                 data.inventory.toggleUI();
             }
-            if (input.isKeyPressed("KeyE", InputLayer.INVENTORY)) {
+            if (input.isKeyPressed(controls.toggleInventory.code, InputLayer.INVENTORY)) {
                 data.inventory.toggleUI();
             }
             if (input.isKeyPressed("Escape", InputLayer.INVENTORY)) {

@@ -312,10 +312,14 @@ itemsCodex.set(ItemIndex.HEALING_VIAL, {
             addNotification({
                 text: `+${Math.round(amountHealed * 10) / 10} HP`,
                 color: "#06cf28"
-            })
+            });
             return true;
         }
         else {
+            addNotification({
+                text: `HP already full!`,
+                color: "#ddd"
+            });
             return false;
         }
     },
@@ -360,6 +364,10 @@ itemsCodex.set(ItemIndex.ESSENCE_VIAL, {
             return true;
         }
         else {
+            addNotification({
+                text: `Essence already full!`,
+                color: "#ddd"
+            });
             return false;
         }
     },

@@ -37,6 +37,7 @@ const MeleeAttackFactory: GameObjectFactory = (properties: MeleeAttack, owner: G
                 const startAngle = properties.sweepArcStart ? properties.sweepArcStart : 0;
                 const sweepLength = properties.sweepArcLength ? properties.sweepArcLength : 0;
                 const angle = startAngle + sweepLength * gameObject.age / properties.duration;
+                const hitboxCenter = Vector.add(owner.position, owner.getComponent("hitbox").data.boxOffset);
                 const transformedDirection = Vector.rotated(data.direction, angle);
                 transformedDirection.scale(properties.range);
                 gameObject.position = Vector.add(hitboxCenter, transformedDirection);

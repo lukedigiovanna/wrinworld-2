@@ -2,6 +2,7 @@ import { EssenceOrbAttackFactory, GameObject, PORTAL_ACTIVE_RADIUS } from "../ga
 import { getImage } from "../imageLoader";
 import { ComponentFactory } from "./";
 import input from "../input";
+import controls from "../controls";
 
 function updateEssenceUI(essenceAmount: number, essenceMax: number) {
     // TODO: change this to be different jars based on the maxEssence amount
@@ -47,7 +48,7 @@ const EssenceManager: ComponentFactory = (gameObject: GameObject) => {
         },
         update(dt) {
             let attacking = false;
-            if (data.essence >= 1 && input.isKeyDown("Space")) {
+            if (data.essence >= 1 && input.isKeyDown(controls.attackPortal.code)) {
                 const nearest = gameObject.game.getNearestGameObjectWithTag(gameObject.position, "portal");
                 if (nearest) {
                     const { object, distance } = nearest;
