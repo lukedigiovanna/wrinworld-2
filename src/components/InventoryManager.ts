@@ -54,16 +54,26 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
             }
 
             if (input.isKeyPressed(controls.utility.code)) {
-                data.inventory.pressItem({
+                const slotIndex = {
                     type: "utility",
-                    index: 0
-                }, gameObject.game.camera.screenToWorldPosition(input.mousePosition));
+                    index: 0,
+                }
+                data.inventory.pressItem(slotIndex, gameObject.game.camera.screenToWorldPosition(input.mousePosition));
+                data.inventory.selectSlot(slotIndex);
+                setTimeout(() => {
+                    data.inventory.unselectSlot(slotIndex);
+                }, 75);
             }
             if (input.isKeyPressed(controls.consumable.code)) {
-                data.inventory.pressItem({
+                const slotIndex = {
                     type: "consumable",
                     index: 0
-                }, gameObject.game.camera.screenToWorldPosition(input.mousePosition));
+                };
+                data.inventory.pressItem(slotIndex, gameObject.game.camera.screenToWorldPosition(input.mousePosition));
+                data.inventory.selectSlot(slotIndex);
+                setTimeout(() => {
+                    data.inventory.unselectSlot(slotIndex);
+                }, 75);
             }
 
             if (input.isKeyPressed(controls.toggleInventory.code)) {

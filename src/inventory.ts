@@ -38,11 +38,13 @@ const slotTypeProperties: {[key in SlotType]: SlotProps} = {
     },
     utility: {
         iconID: "utility_slot",
+        selectedIconID: "selected_utility_slot",
         acceptItemCategory: ["Utility", "Mystic Arts"],
         controlKeys: ["utility"]
     },
     consumable: {
         iconID: "consumable_slot",
+        selectedIconID: "selected_consumable_slot",
         acceptItemCategory: ["Consumable"],
         controlKeys: ["consumable"]
     },
@@ -600,7 +602,7 @@ class Inventory {
                 return this.hotbarSlotDivs[i + slotIndex.index];
             }
             else {
-                i += this.reference[slotIndex.type].slots.length;
+                i += this.reference[type].slots.length;
             }
         }
         return null;
