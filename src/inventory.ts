@@ -19,38 +19,45 @@ interface SlotProps {
     selectedIconID?: string;
     acceptItemCategory: ItemCategory[] | null; // Null to accept all
     controlKeys?: (keyof Controls)[];
+    equipOnAdd: boolean;
 }
 
 const slotTypeProperties: {[key in SlotType]: SlotProps} = {
     free: {
         iconID: "inventory_slot",
         acceptItemCategory: null,
+        equipOnAdd: false,
     },
     weapon: {
         iconID: "weapon_slot",
         selectedIconID: "selected_weapon_slot",
         acceptItemCategory: ["Weapon"],
-        controlKeys: ["selectWeapon1", "selectWeapon2"]
+        controlKeys: ["selectWeapon1", "selectWeapon2"],
+        equipOnAdd: true,
     },
     quiver: {
         iconID: "quiver_slot",
         acceptItemCategory: ["Ammo"],
+        equipOnAdd: false,
     },
     utility: {
         iconID: "utility_slot",
         selectedIconID: "selected_utility_slot",
         acceptItemCategory: ["Utility", "Mystic Arts"],
-        controlKeys: ["utility"]
+        controlKeys: ["utility"],
+        equipOnAdd: false,
     },
     consumable: {
         iconID: "consumable_slot",
         selectedIconID: "selected_consumable_slot",
         acceptItemCategory: ["Consumable"],
-        controlKeys: ["consumable"]
+        controlKeys: ["consumable"],
+        equipOnAdd: false,
     },
     buff: {
         iconID: "buff_slot",
-        acceptItemCategory: ["Buff"]
+        acceptItemCategory: ["Buff"],
+        equipOnAdd: true,
     }
 } as const;
 
@@ -175,6 +182,11 @@ class Inventory {
             this.setSlotUIByIndex(emptyIndex);
             this.updateHotbarUI();
             // TODO: Equip item if it went into an appropriate slot to be equipped
+            if (slotTypeProperties[emptyIndex.type].equipOnAdd) {
+                if (item.equipItem) {
+                    item.equipItem(this.player);
+                }
+            }
             return true;
         }
         else {
