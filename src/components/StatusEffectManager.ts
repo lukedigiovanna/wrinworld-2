@@ -23,7 +23,8 @@ const StatusEffectManager: ComponentFactory = (gameObject: GameObject) => {
                 timer: 0,
                 startTime: gameObject.game.time,
             };
-            statusEffect.apply(gameObject, level);
+            statusEffect.apply?.(gameObject, level);
+            statusEffect.start?.(gameObject, level);
             this.effects.push(effect);
         },
         statusEffectParticles: undefined,
@@ -36,11 +37,12 @@ const StatusEffectManager: ComponentFactory = (gameObject: GameObject) => {
                 effect.timer += dt;
                 const period = 1.0 / effect.statusEffect.rate;
                 while (effect.timer >= period) {
-                    effect.statusEffect.apply(gameObject, effect.level);
+                    effect.statusEffect.apply?.(gameObject, effect.level);
                     effect.timer -= period;
                 }
                 const totalElapsed = gameObject.game.time - effect.startTime;
                 if (totalElapsed >= effect.duration) {
+                    effect.statusEffect.end?.(gameObject, effect.level);
                     this.data.effects.splice(i, 1);
                     i--;
                 }

@@ -20,15 +20,16 @@ type Component = {
 type ComponentFactory = (gameObject: GameObject) => Component;
 
 export { Component, ComponentFactory, ComponentID};
+export * from "./EnemyAI";
+export * from "./EssenceManager";
+export * from "./Health";
+export * from "./Hitbox";
+export * from "./InventoryManager";
+export * from "./ItemDropper";
+export * from "./MovementData";
+export * from "./ParticleEmitter";
+export * from "./PhysicalCollider";
 export * from "./Physics";
 export * from "./PlayerMovement";
-export * from "./PhysicalCollider";
-export * from "./Hitbox";
-export * from "./Health";
-export * from "./ItemDropper";
-export * from "./ParticleEmitter";
-export * from "./EnemyAI";
-export * from "./InventoryManager";
-export * from "./WeaponManager";
-export * from "./EssenceManager";
 export * from "./StatusEffectManager";
+export * from "./WeaponManager";

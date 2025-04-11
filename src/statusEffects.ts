@@ -4,6 +4,7 @@ import { GameObject } from "./gameObjects";
 enum StatusEffectIndex {
     POISON,
     FLAME,
+    STUN
 }
 
 interface StatusEffect {
@@ -11,7 +12,9 @@ interface StatusEffect {
     iconSpriteID: string;
     particleID: string;
     rate: number; // How many times per second to apply the effect
-    apply: (gameObject: GameObject, level: number) => void;
+    apply?: (gameObject: GameObject, level: number) => void; // Run based on rate
+    start?: (gameObject: GameObject, level: number) => void; // Run when effect is added
+    end?: (gameObject: GameObject, level: number) => void; // Run when effect is removed.
 }
 
 const statusEffectsCodex = new Codex<StatusEffectIndex, StatusEffect>();
@@ -34,6 +37,27 @@ statusEffectsCodex.set(StatusEffectIndex.FLAME, {
     apply(gameObject, level) {
         if (gameObject.hasComponent("health")) {
             gameObject.getComponent("health").data.damage(level * 1.2);
+        }
+    },
+});
+statusEffectsCodex.set(StatusEffectIndex.STUN, {
+    displayName: "Stun",
+    iconSpriteID: "stun_effect_icon",
+    particleID: "stun_particle",
+    rate: 1,
+    apply(gameObject, level) {
+        if (gameObject.hasComponent("health")) {
+            gameObject.getComponent("health").data.damage(level);
+        }
+    },
+    start(gameObject, level) {
+        if (gameObject.hasComponent("movement-data")) {
+            gameObject.getComponent("movement-data").data.modifier -= 1.0;
+        }
+    },
+    end(gameObject, level) {
+        if (gameObject.hasComponent("movement-data")) {
+            gameObject.getComponent("movement-data").data.modifier += 1.0;
         }
     },
 });

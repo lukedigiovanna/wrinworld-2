@@ -19,16 +19,12 @@ enum EnemyAIState {
 interface BasicFollowAndAttackProperties {
     // How close the target must be before we can start attacking
     followDistance: number;
-    // Movement speed
-    speed: number;
-    // Movement speed in water
-    waterSpeed: number;
     // How close the target must be to start attacking
     attackRange: number;
     // The weapon to use on attack
     weaponIndex: WeaponIndex;
     //
-    customVelocityFunction?: (gameObject: GameObject, direction: Vector) => Vector;
+    customSpeedModifier?: (gameObject: GameObject, direction: Vector) => number;
 }
 
 const BasicFollowAndAttackAI: (props: BasicFollowAndAttackProperties) => ComponentFactory = 
@@ -38,6 +34,7 @@ const BasicFollowAndAttackAI: (props: BasicFollowAndAttackProperties) => Compone
             target: undefined,
             physics: undefined,
             weaponManager: undefined,
+            movementData: undefined,
         }
         return {
             id: "basic-follow-and-attack-ai",
@@ -45,6 +42,7 @@ const BasicFollowAndAttackAI: (props: BasicFollowAndAttackProperties) => Compone
                 data.target = gameObject.game.player;
                 data.physics = gameObject.getComponent("physics");
                 data.weaponManager = gameObject.getComponent("weapon-manager");
+                data.movementData = gameObject.getComponent("movement-data");
             },
             update(dt) {
                 if (gameObject.age < 1.5) {
@@ -59,25 +57,17 @@ const BasicFollowAndAttackAI: (props: BasicFollowAndAttackProperties) => Compone
                     return;
                 }
 
-                let speed = props.speed;
-                if (gameObject.game.getTileIndex(gameObject.position) === TileIndex.WATER) {
-                    speed = props.waterSpeed;
-                }
-
+                
                 if (distance <= props.attackRange) {
                     data.weaponManager.data.press(props.weaponIndex, targetPosition);
                     data.weaponManager.data.release(props.weaponIndex, targetPosition);
                     data.physics.data.velocity.set(Vector.zero());
                 }
                 else {
+                    const modifier = props.customSpeedModifier ? props.customSpeedModifier(gameObject, direction) : 1.0; 
                     direction.normalize()
-                    direction.scale(speed);
-                    if (props.customVelocityFunction) {
-                        data.physics.data.velocity.set(props.customVelocityFunction(gameObject, direction));
-                    }
-                    else {
-                        data.physics.data.velocity.set(direction);
-                    }
+                    direction.scale(this.data.movementData.data.getSpeed() * modifier);
+                    data.physics.data.velocity.set(direction);
                 }   
             },
             data

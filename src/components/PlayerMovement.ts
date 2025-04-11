@@ -6,11 +6,11 @@ import { tileCodex, TileIndex } from "../tiles";
 
 const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
-        speed: 140,
-        regularSpeed: 140,
-        waterSpeed: 90,
         physics: undefined,
-        collider: undefined
+        collider: undefined,
+        weaponManager: undefined,
+        trailParticleEmitter: undefined,
+        movementData: undefined,
     }
     return {
         id: "player-movement",
@@ -19,6 +19,7 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
             data.collider = gameObject.getComponent("physical-collider");
             data.weaponManager = gameObject.getComponent("weapon-manager");
             data.trailParticleEmitter = gameObject.getComponent("particle-emitter-trail");
+            data.movementData = gameObject.getComponent("movement-data");
         },
         update(dt: number) {
             const movement = Vector.zero();
@@ -35,12 +36,15 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
                 movement.add(new Vector(1, 0));
             }
             movement.normalize();
-            const chargeScale = data.weaponManager.data.charging ? 0.3 : 1;
-            let realSpeed = data.speed * chargeScale;
             if (input.isKeyDown("ShiftLeft")) {
-                realSpeed *= 2;
+                this.data.movementData.data.sprinting = true;
             }
-            movement.scale(realSpeed);
+            else {
+                this.data.movementData.data.sprinting = false;
+            }
+            this.data.movementData.data.charging = data.weaponManager.data.charging;
+            const speed = this.data.movementData.data.getSpeed();
+            movement.scale(speed);
             data.physics.data.velocity.set(movement);
 
             const mousePos = gameObject.game.camera.screenToWorldPosition(input.mousePosition);
@@ -56,10 +60,8 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
                 gameObject.renderer!.data.spriteID = "peach_water";
                 gameObject.renderer!.data.offset = new Vector(0, Math.sin(gameObject.age * 4) * 1.5);
                 gameObject.castsShadow = false;
-                data.speed = data.waterSpeed;
             }
             else {
-                data.speed = data.regularSpeed;
                 gameObject.renderer!.data.offset = Vector.zero();
                 gameObject.renderer!.data.spriteID = "peach";
                 gameObject.castsShadow = true;
@@ -74,7 +76,7 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
                     }
                     return Color.WHITE;
                 }; 
-                data.trailParticleEmitter.data.rate = () => realSpeed / 12;
+                data.trailParticleEmitter.data.rate = () => speed / 12;
                 data.trailParticleEmitter.data.enabled = true;
             }
             else {

@@ -2,7 +2,8 @@ import { GameObject, GameObjectFactory, EssenceOrbFactory, Team } from "./";
 import { spriteRenderer } from "../renderers";
 import { Vector, MathUtils } from "../utils";
 import { Health, Hitbox, Physics, PhysicalCollider, ItemDropper, WeaponManager, 
-    HealthBarDisplayMode, ParticleEmitter, ParticleLayer, StatusEffectManager } from "../components";
+    HealthBarDisplayMode, ParticleEmitter, ParticleLayer, StatusEffectManager, 
+    MovementData} from "../components";
 import { TileIndex } from "../tiles";
 import { enemiesCodex, EnemyIndex } from "../enemies";
 import { getTexture } from "../imageLoader";
@@ -21,6 +22,9 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
     health.data.healthBarDisplayMode = HealthBarDisplayMode.ON_HIT;
     enemy.addComponent(Hitbox);
     enemy.addComponent(Physics);
+    const movementData = enemy.addComponent(MovementData);
+    movementData.data.baseSpeed = enemyType.speed;
+    movementData.data.waterModifier = enemyType.waterSpeedModifier;
     enemy.addComponent(ItemDropper(enemyType.drops));
     enemy.addComponent(enemyType.ai);
     enemy.addComponent(WeaponManager);

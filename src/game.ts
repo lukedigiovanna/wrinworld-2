@@ -7,6 +7,7 @@ import { Particle, ParticleLayer } from "./components";
 import { Tile, tileCodex, TileIndex } from "./tiles";
 import { Level, LEVEL_1 } from "./levels";
 import { ShaderProgram, ShaderShadow, MAX_SHADOWS } from "./shader";
+import settings from "./settings";
 
 const CHUNK_SIZE = 8;
 const TILES_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE;
@@ -37,11 +38,15 @@ class Game {
     private objectQueue: GameObject[] = []; // Queue of objects to add on the next frame
     private objectDeleteQueue: GameObject[] = [];
     private _totalObjects = 0;
+    private activeObjects: GameObject[] = [];
+
+    private particles: Particle[] = [];
+    
     private chunks = new Map<number, Chunk>();
+    
     private _camera: Camera;
     private _player: GameObject;
     private _gameTime: number = 0;
-    private particles: Particle[] = [];
 
     public noise = new PerlinNoise(MathUtils.randomInt(1000, 100000));
 
@@ -81,8 +86,6 @@ class Game {
     public get totalActiveObjects() {
         return this.activeObjects.length;
     }
-
-    private activeObjects: GameObject[] = [];
 
     // Performs any boilerplate updates to the game such as removing dead objects
     // adding new objects, updating active chunks, and generating new chunks.
@@ -263,24 +266,27 @@ class Game {
                 this.drawParticle(this.particles[i]);
         }
         
-        // if (settings.showChunks) {
-        //     this._camera.setStrokeColor("lime");
-        //     const chunkPos = getChunkWorldPosition(getChunkIndex(this._camera.position));
-        //     for (let xo = -RENDER_DISTANCE; xo <= RENDER_DISTANCE; xo++) {
-        //         for (let yo = -RENDER_DISTANCE; yo <= RENDER_DISTANCE; yo++) {
-        //             const chunkIndex = getChunkIndex(new Vector(chunkPos.x + xo * CHUNK_SIZE, chunkPos.y + yo * CHUNK_SIZE));
-        //             if (this.chunks.has(chunkIndex)) {
-        //                 this._camera.strokeRect(chunkPos.x + xo * CHUNK_SIZE + CHUNK_SIZE / 2, chunkPos.y + yo * CHUNK_SIZE + CHUNK_SIZE / 2, CHUNK_SIZE, CHUNK_SIZE);
-        //                 this._camera.setFillColor("red");
-        //                 this._camera.fillRect(chunkPos.x + xo * CHUNK_SIZE, chunkPos.y + yo * CHUNK_SIZE, 0.5, 0.5);
-        //             }
-        //         }
-        //     }
-        // }
-        // if (settings.showCameraPosition) {
-        //     this._camera.setFillColor("orange");
-        //     this._camera.fillEllipse(this._camera.position.x, this._camera.position.y, 0.5, 0.5);
-        // }
+        if (settings.showChunks) {
+            this._camera.color = Color.GREEN;
+            const chunkPos = getChunkWorldPosition(getChunkIndex(this._camera.position));
+            for (let xo = -RENDER_DISTANCE; xo <= RENDER_DISTANCE; xo++) {
+                for (let yo = -RENDER_DISTANCE; yo <= RENDER_DISTANCE; yo++) {
+                    const chunkIndex = getChunkIndex(new Vector(chunkPos.x + xo * CHUNK_SIZE, chunkPos.y + yo * CHUNK_SIZE));
+                    if (this.chunks.has(chunkIndex)) {
+                        this._camera.strokeRect(
+                            chunkPos.x + (xo * CHUNK_SIZE + CHUNK_SIZE / 2) * PIXELS_PER_TILE, 
+                            chunkPos.y + (yo * CHUNK_SIZE + CHUNK_SIZE / 2) * PIXELS_PER_TILE, 
+                            CHUNK_SIZE * PIXELS_PER_TILE, 
+                            CHUNK_SIZE * PIXELS_PER_TILE
+                        );
+                    }
+                }
+            }
+        }
+        if (settings.showCameraPosition) {
+            this._camera.color = Color.ORANGE;
+            this._camera.fillRect(this._camera.position.x, this._camera.position.y, 8, 8);
+        }
     }
 
     public addGameObject(obj: GameObject) {
@@ -351,6 +357,10 @@ class Game {
         };
     }
 
+    public getGameObjectsByFilter(predicate: (gameObject: GameObject) => boolean) {
+        return this.activeObjects.filter(predicate);
+    }
+
     public addParticle(particle: Particle) {
         this.particles.push(particle);
     }
@@ -362,18 +372,6 @@ class Game {
         const offsetX = Math.max(0, Math.floor(offset.x));
         const offsetY = Math.max(0, Math.floor(offset.y));
         const tilePositionIndex = offsetX * CHUNK_SIZE + offsetY;
-        if (tilePositionIndex < 0) {
-            console.error(`
-                Bug report:
-                position: ${position.x}, ${position.y}
-                chunkIndex: ${chunkIndex}
-                offset: ${offset.x}, ${offset.y}
-                offsetX: ${offsetX}
-                offsetY: ${offsetY}
-                tilePositionIndex: ${tilePositionIndex}
-            `)
-            throw Error("Some bug occurred");
-        }
         return {
             chunkIndex,
             tilePositionIndex

@@ -3,11 +3,12 @@
 // NOTE: items are exclusively used by the player
 
 import { Vector } from "./utils";
-import { GameObject } from "./gameObjects";
+import { GameObject, Team } from "./gameObjects";
 import { fireProjectile, WeaponIndex, weaponsCodex } from "./weapons";
 import { Codex } from "./codex";
 import { addNotification } from "./notifications";
 import { ProjectileIndex, projectilesCodex } from "./projectiles";
+import { StatusEffectIndex } from "./statusEffects";
 
 enum ItemStatIndex {
     // Weapon based
@@ -534,7 +535,21 @@ itemsCodex.set(ItemIndex.STUN_FIDDLE, {
     essenceCost: 10,
     maxStack: 1,
     pressItem(player) {
-        return false; // TODO: stun all enemies in radius and play the melody
+        const targets = player.game.getGameObjectsByFilter((gameObject) => {
+            if (gameObject.team !== Team.ENEMY) {
+                return false;
+            }
+            const distance = gameObject.position.distanceTo(player.position);
+            return distance < 150;
+        });
+        for (let i = 0; i < targets.length; i++) {
+            const target = targets[i];
+            if (target.hasComponent("status-effect-manager")) {
+                const effectManager = target.getComponent("status-effect-manager");
+                effectManager.data.applyEffect(StatusEffectIndex.STUN, 1, 6);
+            }
+        }
+        return true; // TODO: stun all enemies in radius and play the melody
     }
 });
 itemsCodex.set(ItemIndex.ESSENCE_DRIPPED_DAGGER, {
