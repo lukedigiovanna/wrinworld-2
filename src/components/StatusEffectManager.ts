@@ -5,6 +5,7 @@ import { MathUtils, Vector } from "../utils";
 
 interface Effect {
     statusEffect: StatusEffect;
+    index: StatusEffectIndex;
     level: number;
     duration: number;
     timer: number;
@@ -15,9 +16,20 @@ const StatusEffectManager: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
         effects: [],
         applyEffect(effectIndex: StatusEffectIndex, level: number, duration: number) {
+            // Check if we have already applied this effect.
+            for (let i = 0; i < this.effects.length; i++) {
+                const effect = this.effects[i];
+                if (effect.index === effectIndex) {
+                    // Remove the old version
+                    effect.statusEffect.end?.(gameObject, effect.level);
+                    this.effects.splice(i, 1);
+                    break;
+                }
+            }
             const statusEffect = statusEffectsCodex.get(effectIndex);
             const effect: Effect = {
                 statusEffect,
+                index: effectIndex,
                 level,
                 duration,
                 timer: 0,
