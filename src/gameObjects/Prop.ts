@@ -1,6 +1,6 @@
 import { spriteRenderer } from "../renderers";
 import { GameObjectFactory, GameObject } from "./index";
-import { Vector, Color } from "../utils";
+import { Vector } from "../utils";
 import { PhysicalCollider } from "../components";
 import { getTexture } from "../imageLoader";
 import { PropIndex, propsCodex } from "../props";

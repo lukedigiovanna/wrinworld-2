@@ -3,7 +3,6 @@ import { Vector, MathUtils } from "../utils";
 import { Hitbox, ParticleEmitter } from "../components";
 import { MeleeAttack } from "../meleeAttacks";
 import { Team } from "./index";
-import { getTexture } from "../imageLoader";
 
 const MeleeAttackFactory: GameObjectFactory = (properties: MeleeAttack, owner: GameObject, target: Vector) => {
     properties = {...properties};

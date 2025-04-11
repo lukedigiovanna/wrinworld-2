@@ -23,6 +23,9 @@ class Input {
     private _layer: InputLayer = InputLayer.GAME;
 
     constructor() {
+        window.addEventListener("gamepadconnected", (ev) => {
+            console.log(ev);
+        })
         // initialize listeners
         window.addEventListener("mousedown", (e: MouseEvent) => {
             this._mouseDown = true;

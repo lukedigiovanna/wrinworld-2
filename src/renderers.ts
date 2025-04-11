@@ -1,7 +1,7 @@
-import { getImage, getTexture } from "./imageLoader";
+import { getTexture } from "./imageLoader";
 import { Camera } from "./camera";
 import { GameObject } from "./gameObjects";
-import { Color, Vector } from "./utils";
+import { Vector } from "./utils";
 
 type Renderer = {
     render: (camera: Camera, gameObject: GameObject) => void

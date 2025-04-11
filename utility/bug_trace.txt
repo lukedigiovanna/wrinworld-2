@@ -1,0 +1,13 @@
+Description: Occasionally occurs when attacking with a melee weapon
+
+Uncaught Error: No component found with ID hitbox. Hint: if existence is conditional use hasComponent first
+    at GameObject.getComponent (index.ts:140:15)
+    at fireMelee (weapons.ts:47:105)
+    at Object.fire (weapons.ts:198:9)
+    at Object.press (WeaponManager.ts:21:24)
+    at Object.update (EnemyAI.ts:50:45)
+    at eval (index.ts:154:27)
+    at Array.forEach (<anonymous>)
+    at GameObject.update (index.ts:152:25)
+    at eval (game.ts:143:20)
+    at Array.forEach (<anonymous>)

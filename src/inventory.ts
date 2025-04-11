@@ -1,4 +1,5 @@
-import { Item, ItemCategory, ItemIndex, itemsCodex, ItemStat, ItemStatIndex, itemStatPropertiesCodex } from "./items";
+import { Item, ItemCategory, ItemIndex, itemsCodex, ItemStat, ItemStatIndex, 
+         itemStatPropertiesCodex } from "./items";
 import { getImage } from "./imageLoader";
 import { GameObject } from "./gameObjects";
 import input, { InputLayer } from "./input";

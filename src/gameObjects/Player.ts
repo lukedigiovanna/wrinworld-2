@@ -1,13 +1,10 @@
 import { GameObjectFactory, GameObject, Team } from "./";
-import { Vector, Color, MathUtils } from "../utils";
+import { Vector, MathUtils } from "../utils";
 import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager, 
-         Health, WeaponManager, EssenceManager,
-         HealthBarDisplayMode,
-         StatusEffectManager,
-         ParticleEmitter,
-         ParticleLayer} from "../components";
+         Health, WeaponManager, EssenceManager, HealthBarDisplayMode,
+         StatusEffectManager, ParticleEmitter, ParticleLayer} from "../components";
 import { spriteRenderer } from "../renderers";
-import { ItemIndex, itemsCodex } from "../items";
+import { ItemIndex } from "../items";
 import { getImage } from "../imageLoader";
 import input from "../input";
 
@@ -63,13 +60,13 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
             id: "add-starter-items",
             start() {
                 const inventoryManager = gameObject.getComponent("inventory-manager");
-                for (let i = 2; i <= 24; i++) {
-                    const item = itemsCodex.get(i as ItemIndex);
-                    for (let j = 0; j < item.maxStack; j++) {
-                        inventoryManager.data.inventory.addItemIndex(i);
-                    }
-                }
-                // inventoryManager.data.inventory.addItemIndex(ItemIndex.BROAD_SWORD);
+                // for (let i = 2; i <= 24; i++) {
+                //     const item = itemsCodex.get(i as ItemIndex);
+                //     for (let j = 0; j < item.maxStack; j++) {
+                //         inventoryManager.data.inventory.addItemIndex(i);
+                //     }
+                // }
+                inventoryManager.data.inventory.addItemIndex(ItemIndex.BROAD_SWORD);
             }
         }
     })
