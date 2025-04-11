@@ -25,6 +25,8 @@ interface Projectile {
     homingSkill: number;
     // How many distinct mobs this projectile can hit
     maxHits: number;
+    // How direction changes after a hit
+    ricochetFactor: number;
     // The sprite this projectile should represent as (invisible if undefined)
     spriteID: string;
     // Amount of HP to deal upon hit
@@ -73,29 +75,10 @@ function chanceDropItem(gameObject: GameObject, item: Item, chanceOfBreaking: nu
 }
 
 const projectilesCodex = new Codex<ProjectileIndex, Projectile>();
-projectilesCodex.set(ProjectileIndex.ZOMBIE_BRAINS, {
-    homingSkill: 0,
-    maxHits: 1,
-    spriteID: "zombie_brains",
-    damage: 1,
-    damageReductionPerHit: 0,
-    knockback: 3,
-    lifespan: 10,
-    speed: 6,
-    angularVelocity: 6,
-    rotateToDirectionOfTarget: true,
-    drag: 0,
-    hitboxSize: new Vector(0.25, 0.25),
-    colliderOffset: new Vector(0.25, 0),
-    colliderSize: new Vector(0.5, 0.5),
-    destroyOnPhysicalCollision: true,
-    onDestroy(gameObject) {
-        // chanceDropItem(gameObject, itemsCodex.get(ItemIndex.ZOMBIE_BRAINS), this.chanceOfBreaking);
-    }
-});
 projectilesCodex.set(ProjectileIndex.SHURIKEN, {
     homingSkill: 0,
     maxHits: 1,
+    ricochetFactor: 0,
     spriteID: "shuriken",
     damage: 16,
     damageReductionPerHit: 0,
@@ -115,7 +98,8 @@ projectilesCodex.set(ProjectileIndex.SHURIKEN, {
 });
 projectilesCodex.set(ProjectileIndex.ARROW, {
     homingSkill: 0,
-    maxHits: 1,
+    maxHits: 5,
+    ricochetFactor: 0.8,
     spriteID: "arrow",
     damage: 10,
     damageReductionPerHit: 0,
@@ -145,6 +129,7 @@ projectilesCodex.set(ProjectileIndex.ARROW, {
 projectilesCodex.set(ProjectileIndex.POISON_ARROW, {
     homingSkill: 0,
     maxHits: 1,
+    ricochetFactor: 0.2,
     spriteID: "poison_arrow",
     damage: 10,
     damageReductionPerHit: 0,
@@ -180,6 +165,7 @@ projectilesCodex.set(ProjectileIndex.POISON_ARROW, {
 projectilesCodex.set(ProjectileIndex.TEAR_DROP, {
     homingSkill: 0,
     maxHits: 1,
+    ricochetFactor: 0,
     spriteID: "tear_drop",
     damage: 4,
     damageReductionPerHit: 0,
@@ -214,6 +200,7 @@ projectilesCodex.set(ProjectileIndex.TEAR_DROP, {
 projectilesCodex.set(ProjectileIndex.WRAITH_ATTACK, {
     homingSkill: 0,
     maxHits: 1,
+    ricochetFactor: 0,
     spriteID: "wraith_attack",
     damage: 8,
     damageReductionPerHit: 0,
@@ -229,6 +216,7 @@ projectilesCodex.set(ProjectileIndex.WRAITH_ATTACK, {
 projectilesCodex.set(ProjectileIndex.ROCK, {
     homingSkill: 0,
     maxHits: 1,
+    ricochetFactor: 0,
     spriteID: "rock",
     damage: 6,
     damageReductionPerHit: 0,
@@ -263,6 +251,7 @@ projectilesCodex.set(ProjectileIndex.ROCK, {
 projectilesCodex.set(ProjectileIndex.CRYSTAL_BOMB, {
     homingSkill: 0,
     maxHits: 999,
+    ricochetFactor: 0,
     spriteID: "crystal_bomb",
     damage: 0,
     damageReductionPerHit: 0,
@@ -290,6 +279,7 @@ projectilesCodex.set(ProjectileIndex.CRYSTAL_BOMB, {
 projectilesCodex.set(ProjectileIndex.CRYSTAL_SHARD, {
     homingSkill: 0,
     maxHits: 3,
+    ricochetFactor: 0.1,
     spriteID: "crystal_shard",
     damage: 8,
     damageReductionPerHit: 0.2,

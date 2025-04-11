@@ -1,5 +1,5 @@
 import { GameObject, GameObjectFactory, Team } from "./index";
-import { Vector } from "../utils";
+import { MathUtils, Vector } from "../utils";
 import { Hitbox, Physics, PhysicalCollider } from "../components";
 import { spriteRenderer } from "../renderers";
 import { Projectile } from "../projectiles";
@@ -32,6 +32,11 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
             start() {
                 data.physics = gameObject.getComponent("physics");
             },
+            update(dt) {
+                if (properties.rotateToDirectionOfTarget) {
+                    projectile.rotation = physics.data.velocity.angle;
+                }
+            },
             onHitboxCollisionEnter(collision) {
                 if (collision.team !== Team.UNTEAMED && 
                     data.owner.team !== collision.team) {
@@ -50,6 +55,8 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
                         properties.onHit(collision);
                     }
                     data.hitCount++;
+                    const rotationAngle = MathUtils.random(-Math.PI / 2 * properties.ricochetFactor, Math.PI / 2 * properties.ricochetFactor);
+                    data.physics.data.velocity.rotate(rotationAngle);
                     properties.damage *= (1 - properties.damageReductionPerHit);
                     properties.knockback *= (1 - properties.damageReductionPerHit);
                     if (data.hitCount >= properties.maxHits) {

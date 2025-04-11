@@ -67,6 +67,10 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                 //     }
                 // }
                 inventoryManager.data.inventory.addItemIndex(ItemIndex.BROAD_SWORD);
+                inventoryManager.data.inventory.addItemIndex(ItemIndex.BOW);
+                for (let i = 0; i < 100; i++) {
+                    inventoryManager.data.inventory.addItemIndex(ItemIndex.ARROW);
+                }
             }
         }
     })

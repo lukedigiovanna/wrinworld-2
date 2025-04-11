@@ -87,6 +87,15 @@ class Vector {
         return this.x === 0 && this.y === 0;
     }
 
+    public rotate(angle: number) {
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
+        const newX = this.x * cos - this.y * sin;
+        const newY = this.x * sin + this.y * cos;
+        this.x = newX;
+        this.y = newY;
+    }
+
     public get angle(): number {
         return Math.atan2(this.y, this.x);
     }
