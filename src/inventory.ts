@@ -562,18 +562,40 @@ class Inventory {
 
     // Update the slotDiv's content to match the given slot object.
     private setSlotUI(slot: InventorySlot | null, slotDiv: JQuery<HTMLElement>) {
+        const item = slotDiv.find(".item");
+        const cooldown = slotDiv.find(".cooldown-overlay");
+        const count = slotDiv.find(".count");
         if (slot === null) {
-            slotDiv.find(".item").css("display", "none");
-            slotDiv.find(".count").text("");
+            item.css("visibility", "hidden");
+            cooldown.css("visibility", "hidden");
+            count.text("");
         }
         else {
-            slotDiv.find(".item").css("display", "block");
-            slotDiv.find(".item").attr("src", getImage(slot.item.iconSpriteID).src);
+            item.css("visibility", "visible");
+            item.attr("src", getImage(slot.item.iconSpriteID).src);
             if (slot.count === 1) {
-                slotDiv.find(".count").text("");
+                count.text("");
             }
             else {
-                slotDiv.find(".count").text(slot.count);
+                count.text(slot.count);
+            }
+            if (slot.lastTimeUsed && slot.item.cooldown) {
+                const elapsed = this.player.game.time - slot.lastTimeUsed;
+                // console.log(elapsed, slot.item.cooldown);
+                if (elapsed < slot.item.cooldown) {
+                    const p = elapsed / slot.item.cooldown;
+                    const index = Math.floor(p * 16);
+                    const id = `cooldown_${index}`;
+                    const image = getImage(id);
+                    cooldown.attr("src", image.src);
+                    cooldown.css("visibility", "visible");
+                }
+                else {
+                    cooldown.css("visibility", "hidden");
+                }
+            }
+            else {
+                cooldown.css("visibility", "hidden");
             }
         }
     }
@@ -588,6 +610,18 @@ class Inventory {
         for (const slotIndex of this.hotbarSlots) {
             this.setSlotUI(this.reference[slotIndex.type].slots[slotIndex.index], this.hotbarSlotDivs[i]);
             i++;
+        }
+    }
+
+    public updateUI() {
+        this.updateHotbarUI();
+        for (const type of slotTypes) {
+            for (let i = 0; i < this.reference[type].slots.length; i++) {
+                this.setSlotUIByIndex({
+                    index: i,
+                    type
+                })
+            }
         }
     }
 
@@ -660,35 +694,8 @@ class Inventory {
             const slot = this.getSlot(slotIndex);
             if (slot) {
                 if (slot.item.equipItem) {
+                    slot.lastTimeUsed = this.player.game.time;
                     slot.item.equipItem(this.player);
-                }
-            }
-        }
-    }
-
-    public updateCooldownUI() {
-        for (const type of this.hotbarSlotRowOrder) {
-            for (let i = 0; i < this.reference[type].slotDivs.length; i++) {
-                const slot = this.reference[type].slots[i];
-                const div = this.hotbarSlotDiv({index: i, type})?.find(".cooldown-overlay");
-                if (!div) continue;
-                if (slot?.lastTimeUsed && slot.item.cooldown) {
-                    const elapsed = this.player.game.time - slot.lastTimeUsed;
-                    // console.log(elapsed, slot.item.cooldown);
-                    if (elapsed < slot.item.cooldown) {
-                        const p = elapsed / slot.item.cooldown;
-                        const index = Math.floor(p * 16);
-                        const id = `cooldown_${index}`;
-                        const image = getImage(id);
-                        div.attr("src", image.src);
-                        div.css("visibility", "visible");
-                    }
-                    else {
-                        div.css("visibility", "hidden");
-                    }
-                }
-                else {
-                    div.css("visibility", "hidden");
                 }
             }
         }

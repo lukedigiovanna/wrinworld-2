@@ -355,7 +355,7 @@ itemsCodex.set(ItemIndex.ESSENCE_VIAL, {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-    cooldown: 1,
+    cooldown: 60,
     pressItem(player) {
         // TODO: add 20 essence (or something like that) to the player
         const essenceManager = player.getComponent("essence-manager");
@@ -538,7 +538,7 @@ itemsCodex.set(ItemIndex.STUN_FIDDLE, {
     consumable: false,
     essenceCost: 10,
     maxStack: 1,
-    cooldown: 3,
+    cooldown: 45,
     pressItem(player) {
         const targets = player.game.getGameObjectsByFilter((gameObject) => {
             if (gameObject.team !== Team.ENEMY) {

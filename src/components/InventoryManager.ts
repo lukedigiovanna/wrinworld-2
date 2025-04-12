@@ -11,7 +11,10 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
         inventory: undefined,
         selectedWeaponIndex: 0,
         inventoryDisplayed: false,
-        setSelectedWeaponIndex(i: number) {
+        setSelectedWeaponIndex(i: number, force=false) {
+            if (!force && i === this.selectedWeaponIndex) {
+                return;
+            }
             this.inventory.unselectSlot({
                 type: "weapon",
                 index: this.selectedWeaponIndex
@@ -34,7 +37,7 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
         id: "inventory-manager",
         start() {
             data.inventory = new Inventory(gameObject);
-            data.setSelectedWeaponIndex(0);
+            data.setSelectedWeaponIndex(0, true);
             input.registerScrollCallback((deltaY: number) => {
                 const currIndex = data.selectedWeaponIndex;
                 let newIndex;
@@ -102,7 +105,7 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
                 }, gameObject.game.camera.screenToWorldPosition(input.mousePosition), 0);
             }
 
-            data.inventory.updateCooldownUI();
+            data.inventory.updateUI();
         },
         render(camera) {
             const selectedWeaponSlot = data.inventory.getSlot({
