@@ -1,10 +1,10 @@
 class Vector {
-    public x: number;
-    public y: number;
+    private _x: number;
+    private _y: number;
 
     constructor(x: number, y: number) {
-        this.x = x;
-        this.y = y;
+        this._x = x;
+        this._y = y;
     }
 
     public static zero() {
@@ -27,6 +27,14 @@ class Vector {
         return new Vector(0, -1);
     }
 
+    public get x() {
+        return this._x;
+    }
+
+    public get y() {
+        return this._y;
+    }
+
     public set(other: Vector): void {
         this.x = other.x;
         this.y = other.y;
@@ -35,6 +43,20 @@ class Vector {
     public setComponents(x: number, y: number): void {
         this.x = x;
         this.y = y;
+    }
+
+    public set x(num: number) {
+        if (isNaN(num)) {
+            throw Error("Vector x component cannot be NaN");
+        }
+        this._x = num;
+    }
+    
+    public set y(num: number) {
+        if (isNaN(num)) {
+            throw Error("Vector y component cannot be NaN");
+        }
+        this._y = num;
     }
 
     // Adds the other vector to this one.
@@ -80,24 +102,28 @@ class Vector {
     }
 
     public copy(): Vector {
-        return new Vector(this.x, this.y);
+        return new Vector(this._x, this._y);
     }
 
     public isZero(): boolean {
-        return this.x === 0 && this.y === 0;
+        return this._x === 0 && this._y === 0;
     }
 
     public rotate(angle: number) {
         const cos = Math.cos(angle);
         const sin = Math.sin(angle);
-        const newX = this.x * cos - this.y * sin;
-        const newY = this.x * sin + this.y * cos;
+        const newX = this._x * cos - this._y * sin;
+        const newY = this._x * sin + this._y * cos;
         this.x = newX;
         this.y = newY;
     }
 
     public get angle(): number {
-        return Math.atan2(this.y, this.x);
+        return Math.atan2(this._y, this._x);
+    }
+
+    public toString(): string {
+        return `(${this._x}, ${this._y})`;
     }
 
     public distanceTo(other: Vector): number {
@@ -105,31 +131,31 @@ class Vector {
     }
 
     public static add(vec1: Vector, vec2: Vector): Vector {
-        return new Vector(vec1.x + vec2.x, vec1.y + vec2.y);
+        return new Vector(vec1._x + vec2._x, vec1._y + vec2._y);
     }
 
     public static subtract(vec1: Vector, vec2: Vector): Vector {
-        return new Vector(vec1.x - vec2.x, vec1.y - vec2.y);
+        return new Vector(vec1._x - vec2._x, vec1._y - vec2._y);
     }
 
     public static multiply(vec1: Vector, vec2: Vector) {
-        return new Vector(vec1.x * vec2.x, vec1.y * vec2.y);
+        return new Vector(vec1._x * vec2._x, vec1._y * vec2._y);
     }
 
     public static divide(vec1: Vector, vec2: Vector) {
-        return new Vector(vec1.x / vec2.x, vec1.y / vec2.y);
+        return new Vector(vec1._x / vec2._x, vec1._y / vec2._y);
     }
 
     public static scaled(vec: Vector, num: number): Vector {
-        return new Vector(vec.x * num, vec.y * num);
+        return new Vector(vec._x * num, vec._y * num);
     }
 
     public static rotated(vec: Vector, angle: number): Vector {
         const cos = Math.cos(angle);
         const sin = Math.sin(angle);
         return new Vector(
-            vec.x * cos - vec.y * sin, 
-            vec.x * sin + vec.y * cos
+            vec._x * cos - vec._y * sin, 
+            vec._x * sin + vec._y * cos
         );
     }
 

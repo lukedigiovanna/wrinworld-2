@@ -372,6 +372,18 @@ class Game {
         const offsetX = Math.max(0, Math.floor(offset.x));
         const offsetY = Math.max(0, Math.floor(offset.y));
         const tilePositionIndex = offsetX * CHUNK_SIZE + offsetY;
+        if (tilePositionIndex < 0) {
+            console.error(`
+                Bug report:
+                position: ${position.x}, ${position.y}
+                chunkIndex: ${chunkIndex}
+                offset: ${offset.x}, ${offset.y}
+                offsetX: ${offsetX}
+                offsetY: ${offsetY}
+                tilePositionIndex: ${tilePositionIndex}
+            `)
+            throw Error("Some bug occurred");
+        }
         return {
             chunkIndex,
             tilePositionIndex

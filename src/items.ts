@@ -121,8 +121,6 @@ interface ItemStat {
 }
 
 enum ItemIndex {
-    ZOMBIE_BRAINS,
-    ZOMBIE_FLESH,
     // Melee weapons
     BROAD_SWORD,
     DAGGERS,
@@ -241,6 +239,7 @@ function weaponItem(index: WeaponIndex) {
         }
     }
     return {
+        cooldown: weapon.cooldown,
         pressItem(player: GameObject, target: Vector, uses?: Item) {
             return pressWeapon(player, index, target, uses);
         },

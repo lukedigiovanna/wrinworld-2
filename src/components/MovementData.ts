@@ -10,7 +10,7 @@ const MovementData: ComponentFactory = (gameObject: GameObject) => {
         data: {
             baseSpeed: 100,
             sprintModifier: 1.5,
-            chargeModifier: 0.3,
+            chargingModifier: 0.3,
             waterModifier: 0.5,
             modifier: 1.0,
             sprinting: false,

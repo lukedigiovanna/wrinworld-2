@@ -250,12 +250,12 @@ class Inventory {
             return false;
         }
 
-
         let useIndex: SlotIndex | null = null;
         if (item.usesItem) {
-            for (let i = 0; i < this.reference.quiver.slots.length; i++) {
+            const quiver = this.reference.quiver.slots;
+            for (let i = 0; i < quiver.length; i++) {
                 for (const useItem of item.usesItem) {
-                    if (this.reference.quiver.slots[i]?.item.itemIndex === useItem) {
+                    if (quiver[i]?.item.itemIndex === useItem) {
                         useIndex = {
                             type: "quiver",
                             index: i
@@ -667,19 +667,18 @@ class Inventory {
     }
 
     public updateCooldownUI() {
-        console.log("update");
         for (const type of this.hotbarSlotRowOrder) {
             for (let i = 0; i < this.reference[type].slotDivs.length; i++) {
                 const slot = this.reference[type].slots[i];
                 const div = this.hotbarSlotDiv({index: i, type})?.find(".cooldown-overlay");
-                if (div && slot?.lastTimeUsed && slot.item.cooldown) {
+                if (!div) continue;
+                if (slot?.lastTimeUsed && slot.item.cooldown) {
                     const elapsed = this.player.game.time - slot.lastTimeUsed;
                     // console.log(elapsed, slot.item.cooldown);
                     if (elapsed < slot.item.cooldown) {
                         const p = elapsed / slot.item.cooldown;
                         const index = Math.floor(p * 16);
                         const id = `cooldown_${index}`;
-                        console.log(id);
                         const image = getImage(id);
                         div.attr("src", image.src);
                         div.css("visibility", "visible");

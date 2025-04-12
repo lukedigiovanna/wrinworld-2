@@ -151,8 +151,18 @@ class GameObject {
     public update(dt: number) {
         // check if we changed chunk indexes
         this.components.forEach((component: Component) => {
-            if (component.update) {
-                component.update(dt);
+            try {
+                component.update?.(dt);
+            }
+            catch (e) {
+                console.log(e);
+                throw Error(`
+message: ${e}
+component id: ${component.id}
+object tag: ${this.tag}
+age: ${this.age}
+position: ${this.position.x}, ${this.position.y}
+stack trace:`)
             }
         });
         

@@ -63,11 +63,11 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
             id: "add-starter-items",
             start() {
                 const inventoryManager = gameObject.getComponent("inventory-manager");
-                const items = [ItemIndex.STUN_FIDDLE, ItemIndex.ROOT_SNARE, ItemIndex.ESSENCE_VIAL];
-                for (const itemIndex of items) {
-                    const item = itemsCodex.get(itemIndex as ItemIndex);
+                const items = [ItemIndex.BATTLE_HAMMER, ItemIndex.BOW, ItemIndex.ARROW];
+                for (const i of items) {
+                    const item = itemsCodex.get(i as ItemIndex);
                     for (let j = 0; j < item.maxStack; j++) {
-                        inventoryManager.data.inventory.addItemIndex(itemIndex);
+                        inventoryManager.data.inventory.addItemIndex(i);
                     }
                 }
                 // inventoryManager.data.inventory.addItemIndex(ItemIndex.BROAD_SWORD);
