@@ -247,6 +247,11 @@ class Inventory {
         }
         if (item.cooldown && slot.lastTimeUsed && 
             this.player.game.time - slot.lastTimeUsed < item.cooldown) {
+            const remaining = item.cooldown - (this.player.game.time - slot.lastTimeUsed);
+            addNotification({
+                text: `Available in ${Math.round(remaining * 10) / 10}s`,
+                color: "rgb(255, 31, 31)"
+            })
             return false;
         }
 
