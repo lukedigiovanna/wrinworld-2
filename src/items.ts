@@ -170,6 +170,7 @@ interface Item {
     maxStack: number;
     consumable: boolean;
     essenceCost: number;
+    cooldown?: number; // Minimum time between uses
     // ex. Bow uses Arrow type
     usesItem?: ItemIndex[];
     pressItem?: UseItemFunction;
@@ -304,9 +305,10 @@ itemsCodex.set(ItemIndex.HEALING_VIAL, {
     description: "Quickly recovers some HP after or during a tough battle",
     category: "Consumable",
     iconSpriteID: "healing_vial",
-    consumable: true,
+    consumable: false,
     essenceCost: 0,
-    maxStack: 20,
+    maxStack: 1,
+    cooldown: 1,
     pressItem(player) {
         const health = player.getComponent("health");
         const amountHealed = health.data.heal(10);
@@ -351,9 +353,10 @@ itemsCodex.set(ItemIndex.ESSENCE_VIAL, {
     description: "Shatter when you need a bit of essence in a jif",
     category: "Consumable",
     iconSpriteID: "essence_vial",
-    consumable: true,
+    consumable: false,
     essenceCost: 0,
-    maxStack: 20,
+    maxStack: 1,
+    cooldown: 1,
     pressItem(player) {
         // TODO: add 20 essence (or something like that) to the player
         const essenceManager = player.getComponent("essence-manager");
@@ -468,6 +471,7 @@ itemsCodex.set(ItemIndex.TELEPORTATION_RUNE, {
     consumable: false,
     essenceCost: 5,
     maxStack: 1,
+    cooldown: 1,
     pressItem(player, target) {
         player.position.set(target);
         // TODO: spawn particles
@@ -491,9 +495,10 @@ itemsCodex.set(ItemIndex.CRYSTAL_BOMB, {
     description: "Toss this in a horde and let it do the rest",
     category: "Utility",
     iconSpriteID: "crystal_bomb",
-    consumable: true,
+    consumable: false,
     essenceCost: 10,
-    maxStack: 20,
+    maxStack: 1,
+    cooldown: 1,
     pressItem(player, target) {
         fireProjectile(projectilesCodex.get(ProjectileIndex.CRYSTAL_BOMB), player, target);
         return true;
@@ -534,6 +539,7 @@ itemsCodex.set(ItemIndex.STUN_FIDDLE, {
     consumable: false,
     essenceCost: 10,
     maxStack: 1,
+    cooldown: 3,
     pressItem(player) {
         const targets = player.game.getGameObjectsByFilter((gameObject) => {
             if (gameObject.team !== Team.ENEMY) {
@@ -569,9 +575,10 @@ itemsCodex.set(ItemIndex.ROOT_SNARE, {
     description: "Send out a groveling root to tangle up any enemies in its path",
     category: "Utility",
     iconSpriteID: "root_snare",
-    consumable: true,
+    consumable: false,
     essenceCost: 0,
-    maxStack: 20,
+    maxStack: 1,
+    cooldown: 1,
     pressItem(player) {
         return false; // TODO: add projectile
     }

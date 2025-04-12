@@ -11,3 +11,20 @@ Uncaught Error: No component found with ID hitbox. Hint: if existence is conditi
     at GameObject.update (index.ts:152:25)
     at eval (game.ts:143:20)
     at Array.forEach (<anonymous>)
+
+
+
+
+Description: Unknown. Happened after implementing stun effect. 
+Date: 4/11/2025 2:14 PM
+codex.ts:18 Uncaught Error: Tried getting from a codex with an invalid key: undefined
+    at Codex.get (codex.ts:18:19)
+    at Game.getTile (game.ts:361:62)
+    at Object.update (Physics.ts:81:54)
+    at eval (index.ts:154:27)
+    at Array.forEach (<anonymous>)
+    at GameObject.update (index.ts:152:25)
+    at eval (game.ts:145:20)
+    at Array.forEach (<anonymous>)
+    at Game.update (game.ts:144:28)
+    at mainLoop (index.ts:35:14)

@@ -101,6 +101,8 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
                     index: data.selectedWeaponIndex
                 }, gameObject.game.camera.screenToWorldPosition(input.mousePosition), 0);
             }
+
+            data.inventory.updateCooldownUI();
         },
         render(camera) {
             const selectedWeaponSlot = data.inventory.getSlot({

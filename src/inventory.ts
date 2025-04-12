@@ -10,6 +10,7 @@ import controls, { Controls } from "./controls";
 interface InventorySlot {
     item: Item;
     count: number;
+    lastTimeUsed?: number;
 }
 
 const slotTypes = ["free", "weapon", "quiver", "utility", "consumable", "buff"] as const;
@@ -95,6 +96,7 @@ function inventorySlotHTML(type: SlotType) {
         <div class="inventory-slot">
             <img class="slot-icon" src="${image.src}" />
             <img class="item" />
+            <img class="cooldown-overlay" src="assets/images/ui/cooldown_8.png" />
             <span class="count"></span>
             <span class="control"></span>
         </div>
@@ -178,7 +180,8 @@ class Inventory {
         else if (emptyIndex !== null) {
             this.reference[emptyIndex.type].slots[emptyIndex.index] = {
                 item,
-                count: 1
+                count: 1,
+                lastTimeUsed: undefined,
             };
             this.setSlotUIByIndex(emptyIndex);
             this.updateHotbarUI();
@@ -234,13 +237,19 @@ class Inventory {
     }
 
     private useItem(slotIndex: SlotIndex, target: Vector, func: "pressItem" | "releaseItem"): boolean {
-        const item = this.getSlot(slotIndex)?.item;
-        if (!item) {
+        const slot = this.getSlot(slotIndex);
+        if (slot === null) { 
             return false;
         }
+        const item = slot.item;
         if (!item[func]) {
             throw Error("Cannot use item with " + func + " function because it does not exist");
         }
+        if (item.cooldown && slot.lastTimeUsed && 
+            this.player.game.time - slot.lastTimeUsed < item.cooldown) {
+            return false;
+        }
+
 
         let useIndex: SlotIndex | null = null;
         if (item.usesItem) {
@@ -275,6 +284,7 @@ class Inventory {
                     this.decreaseItemCount(slotIndex);
                 }
                 essenceManager.data.useEssence(item.essenceCost);
+                slot.lastTimeUsed = this.player.game.time;
                 return true;
             }
             else {
@@ -651,6 +661,35 @@ class Inventory {
             if (slot) {
                 if (slot.item.equipItem) {
                     slot.item.equipItem(this.player);
+                }
+            }
+        }
+    }
+
+    public updateCooldownUI() {
+        console.log("update");
+        for (const type of this.hotbarSlotRowOrder) {
+            for (let i = 0; i < this.reference[type].slotDivs.length; i++) {
+                const slot = this.reference[type].slots[i];
+                const div = this.hotbarSlotDiv({index: i, type})?.find(".cooldown-overlay");
+                if (div && slot?.lastTimeUsed && slot.item.cooldown) {
+                    const elapsed = this.player.game.time - slot.lastTimeUsed;
+                    // console.log(elapsed, slot.item.cooldown);
+                    if (elapsed < slot.item.cooldown) {
+                        const p = elapsed / slot.item.cooldown;
+                        const index = Math.floor(p * 16);
+                        const id = `cooldown_${index}`;
+                        console.log(id);
+                        const image = getImage(id);
+                        div.attr("src", image.src);
+                        div.css("visibility", "visible");
+                    }
+                    else {
+                        div.css("visibility", "hidden");
+                    }
+                }
+                else {
+                    div.css("visibility", "hidden");
                 }
             }
         }

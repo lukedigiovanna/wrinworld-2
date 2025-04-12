@@ -177,6 +177,23 @@ window.onload = async () => {
         loadImage("attack_charge_8", "assets/images/ui/attack_charge_8.png"),
         loadImage("attack_charge_9", "assets/images/ui/attack_charge_9.png"),
 
+        loadImage("cooldown_0", "assets/images/ui/cooldown_0.png"),
+        loadImage("cooldown_1", "assets/images/ui/cooldown_1.png"),
+        loadImage("cooldown_2", "assets/images/ui/cooldown_2.png"),
+        loadImage("cooldown_3", "assets/images/ui/cooldown_3.png"),
+        loadImage("cooldown_4", "assets/images/ui/cooldown_4.png"),
+        loadImage("cooldown_5", "assets/images/ui/cooldown_5.png"),
+        loadImage("cooldown_6", "assets/images/ui/cooldown_6.png"),
+        loadImage("cooldown_7", "assets/images/ui/cooldown_7.png"),
+        loadImage("cooldown_8", "assets/images/ui/cooldown_8.png"),
+        loadImage("cooldown_9", "assets/images/ui/cooldown_9.png"),
+        loadImage("cooldown_10", "assets/images/ui/cooldown_10.png"),
+        loadImage("cooldown_11", "assets/images/ui/cooldown_11.png"),
+        loadImage("cooldown_12", "assets/images/ui/cooldown_12.png"),
+        loadImage("cooldown_13", "assets/images/ui/cooldown_13.png"),
+        loadImage("cooldown_14", "assets/images/ui/cooldown_14.png"),
+        loadImage("cooldown_15", "assets/images/ui/cooldown_15.png"),
+        
         // Misc.
         loadImageAndTexture(gl, "square",  "assets/images/square.png"),
         loadImageAndTexture(gl, "undefined", "assets/images/undefined.png"),

@@ -102,6 +102,16 @@ img {
     display: none;
 }
 
+.inventory-slot .cooldown-overlay {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    left: 12px;
+    top: 12px;
+    opacity: 75%;
+    visibility: hidden;
+}
+
 .inventory-slot .count {
     position: absolute;
     right: 9px;
