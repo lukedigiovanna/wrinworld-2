@@ -308,6 +308,7 @@ class Inventory {
     private pressedIndex: SlotIndex | null = null;
     private pressedItem: Item | null = null;
 
+    // Called when firing key is pressed down
     public pressItem(slotIndex: SlotIndex, target: Vector) {
         this.pressedIndex = slotIndex;
         const slot = this.getSlot(slotIndex);
@@ -323,6 +324,7 @@ class Inventory {
         }
     }
 
+    // Called when firing key is released
     public releaseItem(slotIndex: SlotIndex, target: Vector) {
         // // Ensure that if the player changes their slot we ignore a release.
         if (this.pressedIndex === null || this.pressedIndex.type !== slotIndex.type || this.pressedIndex.index !== slotIndex.index) {

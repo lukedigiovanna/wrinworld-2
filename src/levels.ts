@@ -1,9 +1,11 @@
-import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange } from "./utils";
+import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Color } from "./utils";
 import { Game, PIXELS_PER_TILE } from "./game";
 import { TileIndex } from "./tiles";
-import { EnemyIndex, PortalFactory, PortalProperties, PortalDrop, PropFactory } from "./gameObjects";
+import { EnemyIndex, PortalFactory, PortalProperties, PortalDrop, PropFactory, GameObject } from "./gameObjects";
 import { ItemIndex } from "./items";
-import { PropIndex } from "./props";
+import { PropIndex, propsCodex } from "./props";
+import { getTexture } from "./imageLoader";
+import { spriteRenderer } from "./renderers";
 
 interface Level {
     regionName: string;
@@ -81,7 +83,6 @@ const level1PortalDrops: PortalDropPool[] = [
             },
             {
                 itemIndex: ItemIndex.BOW,
-                count: new NumberRange(1, 1)
             }
         ],
         rarity: 1
@@ -99,7 +100,6 @@ const level1PortalDrops: PortalDropPool[] = [
         drops: [
             {
                 itemIndex: ItemIndex.HEALING_VIAL,
-                count: new NumberRange(1, 4)
             }
         ],
         rarity: 1,
@@ -108,7 +108,6 @@ const level1PortalDrops: PortalDropPool[] = [
         drops: [
             {
                 itemIndex: ItemIndex.SLINGSHOT,
-                count: new NumberRange(1, 1)
             }
         ],
         rarity: 1
@@ -117,7 +116,6 @@ const level1PortalDrops: PortalDropPool[] = [
         drops: [
             {
                 itemIndex: ItemIndex.QUICK_BOW,
-                count: new NumberRange(1, 1)
             },
             {
                 itemIndex: ItemIndex.ARROW,
@@ -130,7 +128,6 @@ const level1PortalDrops: PortalDropPool[] = [
         drops: [
             {
                 itemIndex: ItemIndex.DAGGERS,
-                count: new NumberRange(1, 1)
             }
         ],
         rarity: 1
@@ -139,21 +136,15 @@ const level1PortalDrops: PortalDropPool[] = [
         drops: [
             {
                 itemIndex: ItemIndex.BATTLE_HAMMER,
-                count: new NumberRange(1, 1)
             }
         ],
         rarity: 1
     },
-    { // Essence Dripped Dagger and Essence Vial
+    { // Essence Dripped Dagger
         drops: [
             {
                 itemIndex: ItemIndex.ESSENCE_DRIPPED_DAGGER,
-                count: new NumberRange(1, 1)
             },
-            {
-                itemIndex: ItemIndex.ESSENCE_VIAL,
-                count: new NumberRange(1, 4)
-            }
         ],
         rarity: 1
     },
@@ -179,11 +170,6 @@ const level1PortalDrops: PortalDropPool[] = [
         drops: [
             {
                 itemIndex: ItemIndex.CRYSTAL_BOMB,
-                count: new NumberRange(1, 4)
-            },
-            {
-                itemIndex: ItemIndex.ESSENCE_VIAL,
-                count: new NumberRange(1, 4)
             }
         ],
         rarity: 1
@@ -192,7 +178,6 @@ const level1PortalDrops: PortalDropPool[] = [
         drops: [
             {
                 itemIndex: ItemIndex.ROOT_SNARE,
-                count: new NumberRange(2, 5),
             }
         ],
         rarity: 1
@@ -201,7 +186,6 @@ const level1PortalDrops: PortalDropPool[] = [
         drops: [
             {
                 itemIndex: ItemIndex.FLAME_UPGRADE,
-                count: new NumberRange(1, 1)
             }
         ],
         rarity: 1
@@ -210,7 +194,6 @@ const level1PortalDrops: PortalDropPool[] = [
         drops: [
             {
                 itemIndex: ItemIndex.POISON_UPGRADE,
-                count: new NumberRange(1, 1)
             }
         ],
         rarity: 1
@@ -219,7 +202,6 @@ const level1PortalDrops: PortalDropPool[] = [
         drops: [
             {
                 itemIndex: ItemIndex.STRENGTH_UPGRADE,
-                count: new NumberRange(1, 1)
             }
         ],
         rarity: 1
@@ -228,7 +210,6 @@ const level1PortalDrops: PortalDropPool[] = [
         drops: [
             {
                 itemIndex: ItemIndex.HEART,
-                count: new NumberRange(1, 1)
             }
         ],
         rarity: 1
@@ -237,7 +218,6 @@ const level1PortalDrops: PortalDropPool[] = [
         drops: [
             {
                 itemIndex: ItemIndex.HEART_CRYSTAL,
-                count: new NumberRange(1, 1)
             }
         ],
         rarity: 1
@@ -246,7 +226,6 @@ const level1PortalDrops: PortalDropPool[] = [
         drops: [
             {
                 itemIndex: ItemIndex.BASIC_SHIELD,
-                count: new NumberRange(1, 1)
             }
         ],
         rarity: 1
@@ -255,7 +234,6 @@ const level1PortalDrops: PortalDropPool[] = [
         drops: [
             {
                 itemIndex: ItemIndex.TELEPORTATION_RUNE,
-                count: new NumberRange(1, 1)
             }
         ],
         rarity: 1
@@ -264,7 +242,6 @@ const level1PortalDrops: PortalDropPool[] = [
         drops: [
             {
                 itemIndex: ItemIndex.STUN_FIDDLE,
-                count: new NumberRange(1, 1)
             }
         ],
         rarity: 1
@@ -275,6 +252,7 @@ const level1PortalDrops: PortalDropPool[] = [
 const LEVEL_1: Level = {
     regionName: "Corrupted Forest",
     generate(game) {
+        // this desperately needs an overhaul!
         const width = 128;
         const height = 192;
         const marginTrail = 24;
@@ -437,7 +415,8 @@ const LEVEL_1: Level = {
             for (let y = bottom; y <= top; y++) {
                 const c = MathUtils.randomWeightedChoice([PropIndex.TREE, PropIndex.TALL_GRASS, null],[treeRate, grassRate, 1 - treeRate - grassRate])
                 if (c !== null) {
-                    const position = new Vector((x + 0.5) * PIXELS_PER_TILE, (y + 0.5) * PIXELS_PER_TILE);
+                    const texture = getTexture(propsCodex.get(c).spriteID);
+                    const position = new Vector((x + 0.5) * PIXELS_PER_TILE, y * PIXELS_PER_TILE + texture.height / 2);
                     let tooCloseToPortal = false;
                     for (let j = 0; j < portalPositions.length; j++) {
                         if (Vector.subtract(portalPositions[j], position).magnitude < 96) {
@@ -448,7 +427,7 @@ const LEVEL_1: Level = {
                     if (tooCloseToPortal) {
                         continue;
                     }
-                    const tile = game.getTile(position); 
+                    const tile = game.getTile(new Vector((x + 0.5) * PIXELS_PER_TILE, (y + 0.5) * PIXELS_PER_TILE)); 
                     if (!tile.canGrowPlants) {
                         continue;
                     }

@@ -98,8 +98,8 @@ projectilesCodex.set(ProjectileIndex.SHURIKEN, {
 });
 projectilesCodex.set(ProjectileIndex.ARROW, {
     homingSkill: 0,
-    maxHits: 5,
-    ricochetFactor: 0.8,
+    maxHits: 1,
+    ricochetFactor: 0,
     spriteID: "arrow",
     damage: 10,
     damageReductionPerHit: 0,

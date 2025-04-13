@@ -202,6 +202,14 @@ class NumberRange {
     public randomInt(): number {
         return MathUtils.randomInt(this.low, this.high);
     }
+
+    public static single(n: number) {
+        return new NumberRange(n, n);
+    }
+
+    public static one() {
+        return NumberRange.single(1);
+    }
 }
 
 class MathUtils {

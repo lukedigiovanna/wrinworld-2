@@ -24,7 +24,7 @@ interface PortalProperties {
 
 interface PortalDrop {
     itemIndex: ItemIndex;
-    count: NumberRange;
+    count?: NumberRange;
 }
 
 const PortalFactory: GameObjectFactory = (properties: PortalProperties, drops: PortalDrop[],  position: Vector) => {
@@ -153,7 +153,7 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, drops: P
             destroy() {
                 for (let i = 0; i < drops.length; i++) {
                     const drop = drops[i];
-                    const count = drop.count.randomInt();
+                    const count = drop.count ? drop.count.randomInt() : 1;
                     for (let j = 0; j < count; j++) {
                         const item = ItemDropFactory(itemsCodex.get(drop.itemIndex), gameObject.position);
                         const physics = item.getComponent("physics");

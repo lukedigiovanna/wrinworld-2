@@ -26,8 +26,6 @@ interface Weapon {
 }
 
 enum WeaponIndex {
-    ZOMBIE_BRAINS,
-
     BROAD_SWORD,
     DAGGERS,
     BATTLE_HAMMER,
@@ -77,6 +75,15 @@ function scaleProjectileByCharge(projectile: Projectile, charge: number | undefi
     return result;
 }
 
+function scaleMeleeByCharge(melee: MeleeAttack, charge: number | undefined, fields: (keyof MeleeAttack)[]=["damage", "knockback", "sweepDamage"]) {
+    const chargeValue = charge ? charge : 1;
+    const result = {...melee};
+    for (const key of fields) {
+        (result[key] as number) *= chargeValue;
+    }
+    return result;
+}
+
 const weaponsCodex = new Codex<WeaponIndex, Weapon>();
 weaponsCodex.set(WeaponIndex.BROAD_SWORD, {
     cooldown: 0.5,
@@ -84,14 +91,6 @@ weaponsCodex.set(WeaponIndex.BROAD_SWORD, {
     attack: () => meleeAttacksCodex.get(MeleeAttackIndex.BROAD_SWORD),
     fire(gameObject, target) {
         fireMelee(this.attack() as MeleeAttack, gameObject, target);
-    }
-});
-weaponsCodex.set(WeaponIndex.ZOMBIE_BRAINS, {
-    cooldown: 6,
-    chargeable: false,
-    attack: () => projectilesCodex.get(ProjectileIndex.ZOMBIE_BRAINS),
-    fire(gameObject, target) {
-        fireProjectile(this.attack() as Projectile, gameObject, target);
     }
 });
 weaponsCodex.set(WeaponIndex.SHURIKEN, {
@@ -134,9 +133,9 @@ weaponsCodex.set(WeaponIndex.BATTLE_HAMMER, {
     cooldown: 1.6,
     maxCharge: 1.6,
     chargeable: true,
-    attack: () => meleeAttacksCodex.get(MeleeAttackIndex.BATTLE_HAMMER),
-    fire(gameObject, target) {
-        fireMelee(this.attack() as MeleeAttack, gameObject, target);
+    attack: (props) => scaleMeleeByCharge(meleeAttacksCodex.get(MeleeAttackIndex.BATTLE_HAMMER), props?.charge),
+    fire(gameObject, target, props) {
+        fireMelee(this.attack(props) as MeleeAttack, gameObject, target);
     }
 });
 weaponsCodex.set(WeaponIndex.ESSENCE_DRIPPED_DAGGER, {
