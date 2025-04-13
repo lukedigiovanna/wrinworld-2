@@ -17,7 +17,7 @@ interface InventorySlot {
 const slotTypes = ["free", "weapon", "quiver", "utility", "consumable", "buff"] as const;
 type SlotType = typeof slotTypes[number];
 
-interface SlotProps {
+interface SlotTypeConfig {
     iconID: string;
     selectedIconID?: string;
     acceptItemCategory: ItemCategory[] | null; // Null to accept all
@@ -25,7 +25,7 @@ interface SlotProps {
     equipOnAdd: boolean;
 }
 
-const slotTypeProperties: {[key in SlotType]: SlotProps} = {
+const slotConfigs: Record<SlotType, SlotTypeConfig> = {
     free: {
         iconID: "inventory_slot",
         acceptItemCategory: null,
@@ -64,25 +64,21 @@ const slotTypeProperties: {[key in SlotType]: SlotProps} = {
     }
 } as const;
 
-type InventoryCounts = {
+type InventorySlotCounts = {
     [key in SlotType]: number;
 }
 
-interface SlotTypeSlots {
+interface SlotGroup {
     slots: (InventorySlot | null)[];
     slotDivs: JQuery<HTMLElement>[];
 }
 
-type SlotReference = {
-    [key in SlotType]: SlotTypeSlots;
-}
-
-interface SlotIndex {
+interface SlotLocator {
     type: SlotType;
     index: number;
 }
 
-const defaultInventoryCounts: InventoryCounts = {
+const defaultInventoryCounts: InventorySlotCounts = {
     free: 18,
     weapon: 2,
     quiver: 1,
@@ -92,7 +88,7 @@ const defaultInventoryCounts: InventoryCounts = {
 }
 
 function inventorySlotHTML(type: SlotType) {
-    const image = getImage(slotTypeProperties[type].iconID);
+    const image = getImage(slotConfigs[type].iconID);
     return `
         <div class="inventory-slot">
             <img class="slot-icon" src="${image.src}" />
@@ -109,31 +105,32 @@ function inventoryRowHTML() {
 }
 
 class Inventory {
-    private reference: SlotReference;
-    private hotbarSlotDivs: JQuery<HTMLElement>[];
-    private hotbarSlots: SlotIndex[];
-
-    private player: GameObject;
-    
-    private heldSlot: InventorySlot | null = null;
-    private inventoryDisplayed: boolean = false;
+    private reference: Record<SlotType, SlotGroup>;
 
     private hotbarSlotRowOrder: SlotType[] = ["weapon", "quiver", "utility", "consumable", "buff"];
+    private hotbarSlotLocators: SlotLocator[];
+    private hotbarSlotDivs: JQuery<HTMLElement>[];
+    
+    private heldSlot: InventorySlot | null = null;
 
-    constructor(player: GameObject, counts: InventoryCounts=defaultInventoryCounts) {
+    private inventoryDisplayed: boolean = false;
+
+    private player: GameObject;
+
+    constructor(player: GameObject, counts: InventorySlotCounts=defaultInventoryCounts) {
         this.player = player;
 
         this.reference = Object.fromEntries(
-            slotTypes.map((slotType): [SlotType, SlotTypeSlots] => [
+            slotTypes.map((slotType): [SlotType, SlotGroup] => [
                 slotType, 
                 {
                     slots: Array.from({ length: counts[slotType] }, () => null),
                     slotDivs: []
                 }
             ])
-        ) as SlotReference;
+        ) as Record<SlotType, SlotGroup>;
 
-        this.hotbarSlots = [];
+        this.hotbarSlotLocators = [];
         this.hotbarSlotDivs = [];
 
         this.createUI();
@@ -144,8 +141,8 @@ class Inventory {
     public addItem(item: Item): boolean {
         const types: SlotType[] = ["weapon", "quiver", "consumable", "utility", "free"];
         // First check if we can stack it anywhere
-        let foundIndex: SlotIndex | null = null; // First index of matching item with available space.
-        let emptyIndex: SlotIndex | null = null; // First empty valid index.
+        let foundIndex: SlotLocator | null = null; // First index of matching item with available space.
+        let emptyIndex: SlotLocator | null = null; // First empty valid index.
         for (const slotType of types) {
             const type = this.reference[slotType];
             for (let i = 0; i < type.slots.length; i++) {
@@ -160,8 +157,8 @@ class Inventory {
                     break;
                 }
                 else if (emptyIndex === null && slot === null &&
-                         (slotTypeProperties[slotType].acceptItemCategory === null ||
-                         slotTypeProperties[slotType].acceptItemCategory?.indexOf(item.category) >= 0)) {
+                         (slotConfigs[slotType].acceptItemCategory === null ||
+                         slotConfigs[slotType].acceptItemCategory?.indexOf(item.category) >= 0)) {
                     emptyIndex = {
                         type: slotType,
                         index: i,
@@ -187,7 +184,7 @@ class Inventory {
             this.setSlotUIByIndex(emptyIndex);
             this.updateHotbarUI();
             // TODO: Equip item if it went into an appropriate slot to be equipped
-            if (slotTypeProperties[emptyIndex.type].equipOnAdd) {
+            if (slotConfigs[emptyIndex.type].equipOnAdd) {
                 if (item.equipItem) {
                     item.equipItem(this.player);
                 }
@@ -205,7 +202,7 @@ class Inventory {
 
     // Returns the first index containing an item with the given index.
     // returns -1 if there is no such match.
-    public indexOf(itemIndex: ItemIndex): SlotIndex | null {
+    public indexOf(itemIndex: ItemIndex): SlotLocator | null {
         for (const slotType of slotTypes) {
             const type = this.reference[slotType];
             for (let i = 0; i < type.slots.length; i++) {
@@ -220,11 +217,11 @@ class Inventory {
         return null;
     }
 
-    public getSlot(slotIndex: SlotIndex): InventorySlot | null {
+    public getSlot(slotIndex: SlotLocator): InventorySlot | null {
         return this.reference[slotIndex.type].slots[slotIndex.index];
     }
 
-    private decreaseItemCount(slotIndex: SlotIndex) {
+    private decreaseItemCount(slotIndex: SlotLocator) {
         const type = this.reference[slotIndex.type];
         if (type.slots[slotIndex.index] === null) {
             return;
@@ -237,7 +234,7 @@ class Inventory {
         this.updateHotbarUI();
     }
 
-    private useItem(slotIndex: SlotIndex, target: Vector, func: "pressItem" | "releaseItem"): boolean {
+    private useItem(slotIndex: SlotLocator, target: Vector, func: "pressItem" | "releaseItem"): boolean {
         const slot = this.getSlot(slotIndex);
         if (slot === null) { 
             return false;
@@ -256,7 +253,7 @@ class Inventory {
             return false;
         }
 
-        let useIndex: SlotIndex | null = null;
+        let useIndex: SlotLocator | null = null;
         if (item.usesItem) {
             const quiver = this.reference.quiver.slots;
             for (let i = 0; i < quiver.length; i++) {
@@ -306,11 +303,11 @@ class Inventory {
         }
     }
 
-    private pressedIndex: SlotIndex | null = null;
+    private pressedIndex: SlotLocator | null = null;
     private pressedItem: Item | null = null;
 
     // Called when firing key is pressed down
-    public pressItem(slotIndex: SlotIndex, target: Vector) {
+    public pressItem(slotIndex: SlotLocator, target: Vector) {
         this.pressedIndex = slotIndex;
         const slot = this.getSlot(slotIndex);
         const item = slot?.item;
@@ -326,7 +323,7 @@ class Inventory {
     }
 
     // Called when firing key is released
-    public releaseItem(slotIndex: SlotIndex, target: Vector) {
+    public releaseItem(slotIndex: SlotLocator, target: Vector) {
         // // Ensure that if the player changes their slot we ignore a release.
         if (this.pressedIndex === null || this.pressedIndex.type !== slotIndex.type || this.pressedIndex.index !== slotIndex.index) {
             return;
@@ -369,7 +366,7 @@ class Inventory {
         }
     }
 
-    private showItemDisplay(slotIndex: SlotIndex) {
+    private showItemDisplay(slotIndex: SlotLocator) {
         const itemDisplay = $("#item-display");
         const slot = this.reference[slotIndex.type].slots[slotIndex.index];
         if (slot) {
@@ -412,7 +409,7 @@ class Inventory {
         $("#item-display").hide();
     }
 
-    private clickSlot(slotIndex: SlotIndex, ev: any) {
+    private clickSlot(slotIndex: SlotLocator, ev: any) {
         const {index, type} = slotIndex;
         const typeSlots = this.reference[type];
         const slot = typeSlots.slots[slotIndex.index];
@@ -446,8 +443,8 @@ class Inventory {
                 }
                 else {
                     // Swap the slots
-                    if (slotTypeProperties[type].acceptItemCategory === null || 
-                        slotTypeProperties[type].acceptItemCategory.indexOf(this.heldSlot.item.category) >= 0) {
+                    if (slotConfigs[type].acceptItemCategory === null || 
+                        slotConfigs[type].acceptItemCategory.indexOf(this.heldSlot.item.category) >= 0) {
                         if (type === "buff") {
                             if (this.heldSlot.item.equipItem) {
                                 this.heldSlot.item.equipItem(this.player);
@@ -546,7 +543,7 @@ class Inventory {
             for (let i = 0; i < this.reference[type].slots.length; i++) {
                 const element = $(inventorySlotHTML(type));
                 // Add control marker
-                const controlsKeys = slotTypeProperties[type].controlKeys;
+                const controlsKeys = slotConfigs[type].controlKeys;
                 if (controlsKeys && i < controlsKeys.length) {
                     const control = element.find(".control");
                     control.text(controls[controlsKeys[i]].display);
@@ -560,7 +557,7 @@ class Inventory {
                 
                 $("#hotbar").append(element);
                 this.hotbarSlotDivs.push(element);
-                this.hotbarSlots.push({
+                this.hotbarSlotLocators.push({
                     type: type,
                     index: i
                 });
@@ -608,14 +605,14 @@ class Inventory {
         }
     }
 
-    private setSlotUIByIndex(slotIndex: SlotIndex) {
+    private setSlotUIByIndex(slotIndex: SlotLocator) {
         const type = this.reference[slotIndex.type];
         this.setSlotUI(type.slots[slotIndex.index], type.slotDivs[slotIndex.index]);
     }
 
     private updateHotbarUI() {
         let i = 0;
-        for (const slotIndex of this.hotbarSlots) {
+        for (const slotIndex of this.hotbarSlotLocators) {
             this.setSlotUI(this.reference[slotIndex.type].slots[slotIndex.index], this.hotbarSlotDivs[i]);
             i++;
         }
@@ -660,7 +657,7 @@ class Inventory {
     }
 
     // Get the slot div of the given slotIndex. 
-    private hotbarSlotDiv(slotIndex: SlotIndex): JQuery<HTMLElement> | null {
+    private hotbarSlotDiv(slotIndex: SlotLocator): JQuery<HTMLElement> | null {
         let i = 0;
         for (const type of this.hotbarSlotRowOrder) {
             if (slotIndex.type === type) {
@@ -673,12 +670,12 @@ class Inventory {
         return null;
     }
 
-    public unselectSlot(slotIndex: SlotIndex, unequip=false) {
+    public unselectSlot(slotIndex: SlotLocator, unequip=false) {
         const div = this.hotbarSlotDiv(slotIndex);
         if (div === null) {
             throw Error("Trying to unselect a slotIndex which is not on the hotbar");
         }
-        div.find(".slot-icon").attr("src", getImage(slotTypeProperties[slotIndex.type].iconID).src);
+        div.find(".slot-icon").attr("src", getImage(slotConfigs[slotIndex.type].iconID).src);
         if (unequip) {
             const slot = this.getSlot(slotIndex);
             if (slot) {
@@ -689,8 +686,8 @@ class Inventory {
         }
     }
 
-    public selectSlot(slotIndex: SlotIndex, equip=false) {
-        const { selectedIconID, iconID } = slotTypeProperties[slotIndex.type]
+    public selectSlot(slotIndex: SlotLocator, equip=false) {
+        const { selectedIconID, iconID } = slotConfigs[slotIndex.type]
         const id = selectedIconID ? selectedIconID : iconID;
         const src = getImage(id).src;
         const div = this.hotbarSlotDiv(slotIndex);
@@ -711,4 +708,4 @@ class Inventory {
 };
 
 export { Inventory };
-export type { SlotIndex };
+export type { SlotLocator as SlotIndex };
