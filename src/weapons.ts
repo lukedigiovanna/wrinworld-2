@@ -19,8 +19,7 @@ interface Weapon {
     cooldown: number;
     // Maximum amount of charge this weapon can accumulate.
     // If it is defined then does not attack until attack key is released.
-    maxCharge?: number;
-    chargeable: boolean;
+    charge?: number;
     attack: (props?: AttackProperties) => MeleeAttack | Projectile;
     fire: WeaponFireFunction;
 }
@@ -87,7 +86,6 @@ function scaleMeleeByCharge(melee: MeleeAttack, charge: number | undefined, fiel
 const weaponsCodex = new Codex<WeaponIndex, Weapon>();
 weaponsCodex.set(WeaponIndex.BROAD_SWORD, {
     cooldown: 0.5,
-    chargeable: false,
     attack: () => meleeAttacksCodex.get(MeleeAttackIndex.BROAD_SWORD),
     fire(gameObject, target) {
         fireMelee(this.attack() as MeleeAttack, gameObject, target);
@@ -95,7 +93,6 @@ weaponsCodex.set(WeaponIndex.BROAD_SWORD, {
 });
 weaponsCodex.set(WeaponIndex.SHURIKEN, {
     cooldown: 0.25,
-    chargeable: false,
     attack: () => projectilesCodex.get(ProjectileIndex.SHURIKEN),
     fire(gameObject, target) {
         fireProjectile(this.attack() as Projectile, gameObject, target);
@@ -103,8 +100,7 @@ weaponsCodex.set(WeaponIndex.SHURIKEN, {
 });
 weaponsCodex.set(WeaponIndex.BOW, {
     cooldown: 0.0,
-    maxCharge: 1.2,
-    chargeable: true,
+    charge: 1.2,
     attack(props) {
         let projectile;
         if (props?.uses) {
@@ -123,7 +119,6 @@ weaponsCodex.set(WeaponIndex.BOW, {
 });
 weaponsCodex.set(WeaponIndex.DAGGERS, {
     cooldown: 0.2,
-    chargeable: false,
     attack: () => meleeAttacksCodex.get(MeleeAttackIndex.DAGGER),
     fire(gameObject, target) {
         fireMelee(this.attack() as MeleeAttack, gameObject, target);
@@ -131,8 +126,7 @@ weaponsCodex.set(WeaponIndex.DAGGERS, {
 });
 weaponsCodex.set(WeaponIndex.BATTLE_HAMMER, {
     cooldown: 1.6,
-    maxCharge: 1.6,
-    chargeable: true,
+    charge: 1.6,
     attack: (props) => scaleMeleeByCharge(meleeAttacksCodex.get(MeleeAttackIndex.BATTLE_HAMMER), props?.charge),
     fire(gameObject, target, props) {
         fireMelee(this.attack(props) as MeleeAttack, gameObject, target);
@@ -140,7 +134,6 @@ weaponsCodex.set(WeaponIndex.BATTLE_HAMMER, {
 });
 weaponsCodex.set(WeaponIndex.ESSENCE_DRIPPED_DAGGER, {
     cooldown: 0.4,
-    chargeable: false,
     attack: () => ({
         ...meleeAttacksCodex.get(MeleeAttackIndex.DAGGER),
         damage: 16
@@ -151,8 +144,7 @@ weaponsCodex.set(WeaponIndex.ESSENCE_DRIPPED_DAGGER, {
 });
 weaponsCodex.set(WeaponIndex.SLINGSHOT, {
     cooldown: 0.8,
-    chargeable: true,
-    maxCharge: 1.2,
+    charge: 1.2,
     attack: (props) => scaleProjectileByCharge(projectilesCodex.get(ProjectileIndex.ROCK), props?.charge),
     fire(gameObject, target, props) {
         fireProjectile(this.attack(props) as Projectile, gameObject, target);
@@ -160,7 +152,6 @@ weaponsCodex.set(WeaponIndex.SLINGSHOT, {
 });
 weaponsCodex.set(WeaponIndex.QUICK_BOW, {
     cooldown: 0.25,
-    chargeable: false,
     attack: () => ({
         ...projectilesCodex.get(ProjectileIndex.ARROW),
         damage: 6,
@@ -175,7 +166,6 @@ weaponsCodex.set(WeaponIndex.QUICK_BOW, {
 // Enemy attacks
 weaponsCodex.set(WeaponIndex.ZOMBIE_ATTACK, {
     cooldown: 1,
-    chargeable: false,
     attack: () => ({
         ...meleeAttacksCodex.get(MeleeAttackIndex.BASIC),
         damage: 4,
@@ -186,7 +176,6 @@ weaponsCodex.set(WeaponIndex.ZOMBIE_ATTACK, {
 });
 weaponsCodex.set(WeaponIndex.MINION_ATTACK, {
     cooldown: 0.7,
-    chargeable: false,
     attack: () => ({
         ...meleeAttacksCodex.get(MeleeAttackIndex.BASIC),
         damage: 2,
@@ -197,7 +186,6 @@ weaponsCodex.set(WeaponIndex.MINION_ATTACK, {
 });
 weaponsCodex.set(WeaponIndex.REVENANT_EYE_ATTACK, {
     cooldown: 4,
-    chargeable: false,
     attack: () => projectilesCodex.get(ProjectileIndex.TEAR_DROP),
     fire(gameObject, target) {
         fireProjectile(this.attack() as Projectile, gameObject, target);
@@ -205,7 +193,6 @@ weaponsCodex.set(WeaponIndex.REVENANT_EYE_ATTACK, {
 });
 weaponsCodex.set(WeaponIndex.SLIME_ATTACK, {
     cooldown: 2,
-    chargeable: false,
     attack: () => ({
         ...meleeAttacksCodex.get(MeleeAttackIndex.BASIC),
         damage: 1,
@@ -217,7 +204,6 @@ weaponsCodex.set(WeaponIndex.SLIME_ATTACK, {
 });
 weaponsCodex.set(WeaponIndex.WRETCHED_SKELETON_ATTACK, {
     cooldown: 3.5,
-    chargeable: false,
     attack: () => ({
         ...projectilesCodex.get(ProjectileIndex.ARROW),
         chanceOfBreaking: 1,
@@ -229,7 +215,6 @@ weaponsCodex.set(WeaponIndex.WRETCHED_SKELETON_ATTACK, {
 });
 weaponsCodex.set(WeaponIndex.WRAITH_ATTACK, {
     cooldown: 2,
-    chargeable: false,
     attack: () => projectilesCodex.get(ProjectileIndex.WRAITH_ATTACK),
     fire(gameObject, target) {
         fireProjectile(this.attack() as Projectile, gameObject, target);

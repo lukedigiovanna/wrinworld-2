@@ -1,5 +1,6 @@
-import { Item, ItemCategory, ItemIndex, itemsCodex, ItemStat, ItemStatIndex, 
-         itemStatPropertiesCodex } from "./items";
+import { Item, ItemCategory, ItemIndex, itemsCodex, ItemStat, 
+         itemStats, 
+         ItemStatValue} from "./items";
 import { getImage } from "./imageLoader";
 import { GameObject } from "./gameObjects";
 import input, { InputLayer } from "./input";
@@ -379,10 +380,10 @@ class Inventory {
             const statsList = itemDisplay.find("#item-stats-list");
             statsList.empty();
             itemDisplay.find("#item-stats-title").hide();
-            let stats: ItemStat[] = [];
+            let stats: ItemStatValue[] = [];
             if (slot.item.essenceCost > 0) {
                 stats.push({
-                    statIndex: ItemStatIndex.ESSENCE_COST,
+                    stat: ItemStat.ESSENCE_COST,
                     value: slot.item.essenceCost,
                 });
             }
@@ -394,9 +395,9 @@ class Inventory {
                 itemDisplay.find("#item-stats-title").show();
             }
             for (let i = 0; i < stats.length; i++) {
-                const stat = stats[i];
-                const statProperties = itemStatPropertiesCodex.get(stat.statIndex);
-                const value = statProperties.isPercent ? Math.round(stat.value * 100) : Math.round(stat.value * 10) / 10;
+                const statValue = stats[i];
+                const statProperties = itemStats[statValue.stat];
+                const value = statProperties.isPercent ? Math.round(statValue.value * 100) : Math.round(statValue.value * 10) / 10;
                 const sign = statProperties.showSign ? (value >= 0 ? "+" : "-") : "";
                 statsList.append($(`
                     <li>${statProperties.displayName}: ${sign}${value}${statProperties.unit}</li>

@@ -8,7 +8,6 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
         physics: undefined,
         collider: undefined,
-        weaponManager: undefined,
         trailParticleEmitter: undefined,
         movementData: undefined,
     }
@@ -17,7 +16,6 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
         start() {
             data.physics = gameObject.getComponent("physics");
             data.collider = gameObject.getComponent("physical-collider");
-            data.weaponManager = gameObject.getComponent("weapon-manager");
             data.trailParticleEmitter = gameObject.getComponent("particle-emitter-trail");
             data.movementData = gameObject.getComponent("movement-data");
         },
@@ -42,7 +40,7 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
             else {
                 this.data.movementData.data.sprinting = false;
             }
-            this.data.movementData.data.charging = data.weaponManager.data.charging;
+            // this.data.movementData.data.charging = data.weaponManager.data.charging;
             const speed = this.data.movementData.data.getSpeed();
             movement.scale(speed);
             data.physics.data.velocity.set(movement);

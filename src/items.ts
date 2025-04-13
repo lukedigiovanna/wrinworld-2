@@ -10,7 +10,7 @@ import { addNotification } from "./notifications";
 import { ProjectileIndex, projectilesCodex } from "./projectiles";
 import { StatusEffectIndex } from "./statusEffects";
 
-enum ItemStatIndex {
+enum ItemStat {
     // Weapon based
     DAMAGE, // How much damage a hit does
     COOLDOWN, // How long to wait between attacks
@@ -28,7 +28,7 @@ enum ItemStatIndex {
     MAX_ESSENCE_BOOST, // How much the item boosts the max essence (i.e. for buffs)
 }
 
-interface ItemStatProperty {
+interface ItemStatData {
     displayName: string;
     iconID: string;
     unit: string;
@@ -36,87 +36,95 @@ interface ItemStatProperty {
     showSign: boolean;
 }
 
-const itemStatPropertiesCodex = new Codex<ItemStatIndex, ItemStatProperty>();
-itemStatPropertiesCodex.set(ItemStatIndex.DAMAGE, {
-    displayName: "Damage",
-    iconID: "damage_stat_icon",
-    unit: "",
-    isPercent: false,
-    showSign: false,
-});
-itemStatPropertiesCodex.set(ItemStatIndex.COOLDOWN, {
-    displayName: "Cooldown",
-    iconID: "cooldown_stat_icon",
-    unit: "s",
-    isPercent: false,
-    showSign: false,
-});
-itemStatPropertiesCodex.set(ItemStatIndex.DAMAGE_PER_SECOND, {
-    displayName: "DPS",
-    iconID: "damage_per_second_stat_icon",
-    unit: "",
-    isPercent: false,
-    showSign: false,
-});
-itemStatPropertiesCodex.set(ItemStatIndex.KNOCKBACK, {
-    displayName: "Knockback",
-    iconID: "knockback_stat_icon",
-    unit: "",
-    isPercent: false,
-    showSign: false,
-});
-itemStatPropertiesCodex.set(ItemStatIndex.ESSENCE_COST, {
-    displayName: "Essence Cost",
-    iconID: "essence_cost_stat_icon",
-    unit: "",
-    isPercent: false,
-    showSign: false,
-});
-itemStatPropertiesCodex.set(ItemStatIndex.RESISTANCE, {
-    displayName: "Resistance",
-    iconID: "resistance_stat_icon",
-    unit: "%",
-    isPercent: true,
-    showSign: true,
-});
-itemStatPropertiesCodex.set(ItemStatIndex.CHANCE_OF_BREAKING, {
-    displayName: "Break Chance",
-    iconID: "chance_of_breaking_stat_icon",
-    unit: "%",
-    isPercent: true,
-    showSign: false,
-});
-itemStatPropertiesCodex.set(ItemStatIndex.HEAL, {
-    displayName: "Heal",
-    iconID: "heal_stat_icon",
-    unit: " HP",
-    isPercent: false,
-    showSign: true,
-});
-itemStatPropertiesCodex.set(ItemStatIndex.REGENERATION, {
-    displayName: "Regeneration",
-    iconID: "regeneration_stat_icon",
-    unit: " HP/s",
-    isPercent: false,
-    showSign: true,
-});
-itemStatPropertiesCodex.set(ItemStatIndex.MAX_HP_BOOST, {
-    displayName: "Max HP Boost",
-    iconID: "max_hp_boost_stat_icon",
-    unit: " HP",
-    isPercent: false,
-    showSign: true,
-});
-itemStatPropertiesCodex.set(ItemStatIndex.ESSENCE, {
-    displayName: "Essence",
-    iconID: "essence_stat_icon",
-    unit: "",
-    isPercent: false,
-    showSign: true,
-});
+const itemStats: Record<ItemStat, ItemStatData> = {
+    [ItemStat.DAMAGE]: {
+        displayName: "Damage",
+        iconID: "damage_stat_icon",
+        unit: "",
+        isPercent: false,
+        showSign: false,
+    },
+    [ItemStat.COOLDOWN]: {
+        displayName: "Cooldown",
+        iconID: "cooldown_stat_icon",
+        unit: "s",
+        isPercent: false,
+        showSign: false,
+    },
+    [ItemStat.DAMAGE_PER_SECOND]: {
+        displayName: "DPS",
+        iconID: "damage_per_second_stat_icon",
+        unit: "",
+        isPercent: false,
+        showSign: false,
+    },
+    [ItemStat.KNOCKBACK]: {
+        displayName: "Knockback",
+        iconID: "knockback_stat_icon",
+        unit: "",
+        isPercent: false,
+        showSign: false,
+    },
+    [ItemStat.ESSENCE_COST]: {
+        displayName: "Essence Cost",
+        iconID: "essence_cost_stat_icon",
+        unit: "",
+        isPercent: false,
+        showSign: false,
+    },
+    [ItemStat.RESISTANCE]: {
+        displayName: "Resistance",
+        iconID: "resistance_stat_icon",
+        unit: "%",
+        isPercent: true,
+        showSign: true,
+    },
+    [ItemStat.CHANCE_OF_BREAKING]: {
+        displayName: "Break Chance",
+        iconID: "chance_of_breaking_stat_icon",
+        unit: "%",
+        isPercent: true,
+        showSign: false,
+    },
+    [ItemStat.HEAL]: {
+        displayName: "Heal",
+        iconID: "heal_stat_icon",
+        unit: " HP",
+        isPercent: false,
+        showSign: true,
+    },
+    [ItemStat.REGENERATION]: {
+        displayName: "Regeneration",
+        iconID: "regeneration_stat_icon",
+        unit: " HP/s",
+        isPercent: false,
+        showSign: true,
+    },
+    [ItemStat.MAX_HP_BOOST]: {
+        displayName: "Max HP Boost",
+        iconID: "max_hp_boost_stat_icon",
+        unit: " HP",
+        isPercent: false,
+        showSign: true,
+    },
+    [ItemStat.ESSENCE]: {
+        displayName: "Essence",
+        iconID: "essence_stat_icon",
+        unit: "",
+        isPercent: false,
+        showSign: true,
+    },
+    [ItemStat.MAX_ESSENCE_BOOST]: {
+        displayName: "Max Essence Boost",
+        iconID: "max_essence_boost_stat_icon",
+        unit: "",
+        isPercent: false,
+        showSign: true,
+    }
+}
 
-interface ItemStat {
-    statIndex: ItemStatIndex;
+interface ItemStatValue {
+    stat: ItemStat;
     value: number;
 }
 
@@ -168,14 +176,15 @@ interface Item {
     maxStack: number;
     consumable: boolean;
     essenceCost: number;
-    cooldown?: number; // Minimum time between uses
+    cooldown?: number; // Minimum time between uses (none if undefined)
+    charge?: number; // Max time to charge up to (none if undefined -- i.e. instant use)
     // ex. Bow uses Arrow type
     usesItem?: ItemIndex[];
     pressItem?: UseItemFunction;
     releaseItem?: UseItemFunction;
     equipItem?: EquipItemFunction;
     unequipItem?: EquipItemFunction;
-    getStats?: () => ItemStat[];
+    getStats?: () => ItemStatValue[];
 }
 
 interface ItemDropChance {
@@ -183,46 +192,31 @@ interface ItemDropChance {
     itemIndex: ItemIndex;
 }
 
-function pressWeapon(player: GameObject, weapon: WeaponIndex, target: Vector, uses?: Item) {
-    const weaponManager = player.getComponent("weapon-manager");
-    return weaponManager.data.press(weapon, target, uses);
-}
-
-function releaseWeapon(player: GameObject, weapon: WeaponIndex, target: Vector, uses?: Item) {
-    const weaponManager = player.getComponent("weapon-manager");
-    return weaponManager.data.release(weapon, target, uses);
-}
-
-function equipWeapon(player: GameObject, weapon: WeaponIndex) {
-    const weaponManager = player.getComponent("weapon-manager");
-    weaponManager.data.equip(weapon);
-}
-
-function generateStatsForWeapon(weaponIndex: WeaponIndex): ItemStat[] {
+function generateStatsForWeapon(weaponIndex: WeaponIndex): ItemStatValue[] {
     const weapon = weaponsCodex.get(weaponIndex);
     const attack = weapon.attack();
-    const maxCharge = weapon.maxCharge ? weapon.maxCharge : 0;
+    const maxCharge = weapon.charge ? weapon.charge : 0;
     const stats = [
         {
-            statIndex: ItemStatIndex.COOLDOWN,
+            stat: ItemStat.COOLDOWN,
             value: weapon.cooldown,
         },
         {
-            statIndex: ItemStatIndex.DAMAGE,
+            stat: ItemStat.DAMAGE,
             value: attack.damage,
         },
         {
-            statIndex: ItemStatIndex.DAMAGE_PER_SECOND,
+            stat: ItemStat.DAMAGE_PER_SECOND,
             value: attack.damage / (weapon.cooldown + maxCharge),
         },
         {
-            statIndex: ItemStatIndex.KNOCKBACK,
+            stat: ItemStat.KNOCKBACK,
             value: attack.knockback,
         }
     ];
     if (attack.hasOwnProperty("chanceOfBreaking")) {
         stats.push({
-            statIndex: ItemStatIndex.CHANCE_OF_BREAKING,
+            stat: ItemStat.CHANCE_OF_BREAKING,
             value: (attack as any).chanceOfBreaking
         });
     }
@@ -230,22 +224,19 @@ function generateStatsForWeapon(weaponIndex: WeaponIndex): ItemStat[] {
 }
 
 // Shorthand for filling out basic item use functions for weapons.
-function weaponItem(index: WeaponIndex) {
-    let releaseItem = undefined;
+function weaponItem(index: WeaponIndex): Partial<Item> {
     const weapon = weaponsCodex.get(index);
-    if (weapon.chargeable) {
-        releaseItem = (player: GameObject, target: Vector, uses?: Item) => {
-            return releaseWeapon(player, index, target, uses);
-        }
-    }
     return {
         cooldown: weapon.cooldown,
+        charge: weapon.charge,
         pressItem(player: GameObject, target: Vector, uses?: Item) {
-            return pressWeapon(player, index, target, uses);
+            return false;
         },
-        releaseItem,
+        releaseItem(player: GameObject, target: Vector, uses?: Item) {
+            return false;
+        },
         equipItem(player: GameObject) {
-            equipWeapon(player, index);
+            
         },
         getStats() {
             return generateStatsForWeapon(index);
@@ -264,6 +255,39 @@ itemsCodex.set(ItemIndex.BROAD_SWORD, {
     consumable: false,
     essenceCost: 0,
     ...weaponItem(WeaponIndex.BROAD_SWORD),
+});
+itemsCodex.set(ItemIndex.DAGGERS, {
+    itemIndex: ItemIndex.DAGGERS,
+    displayName: "Daggers",
+    description: "With two of these you can really quickly jab a foe",
+    category: "Weapon",
+    iconSpriteID: "daggers",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+    ...weaponItem(WeaponIndex.DAGGERS)
+});
+itemsCodex.set(ItemIndex.BATTLE_HAMMER, {
+    itemIndex: ItemIndex.BATTLE_HAMMER,
+    displayName: "Battle Hammer",
+    description: "This heavy weighted weapon does a lot of damage in a small area",
+    category: "Weapon",
+    iconSpriteID: "battle_hammer",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+    ...weaponItem(WeaponIndex.BATTLE_HAMMER)
+});
+itemsCodex.set(ItemIndex.ESSENCE_DRIPPED_DAGGER, {
+    itemIndex: ItemIndex.ESSENCE_DRIPPED_DAGGER,
+    displayName: "Essence Dripped Dagger",
+    description: "Dripping essence on a weapon really increases the power!",
+    category: "Weapon",
+    iconSpriteID: "essence_dripped_dagger",
+    consumable: false,
+    essenceCost: 2,
+    maxStack: 1,
+    ...weaponItem(WeaponIndex.ESSENCE_DRIPPED_DAGGER)
 });
 itemsCodex.set(ItemIndex.SHURIKEN, {
     itemIndex: ItemIndex.SHURIKEN,
@@ -288,6 +312,29 @@ itemsCodex.set(ItemIndex.BOW, {
     essenceCost: 0,
     ...weaponItem(WeaponIndex.BOW),
 });
+itemsCodex.set(ItemIndex.QUICK_BOW, {
+    itemIndex: ItemIndex.QUICK_BOW,
+    displayName: "Quick Bow",
+    description: "Crafted from a hyper-elastic material this bow can shoot much faster, but at a cost to effectiveness",
+    category: "Weapon",
+    iconSpriteID: "quick_bow",
+    usesItem: [ItemIndex.ARROW, ItemIndex.POISON_ARROW, ItemIndex.FLAME_ARROW],
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+    ...weaponItem(WeaponIndex.QUICK_BOW)
+});
+itemsCodex.set(ItemIndex.SLINGSHOT, {
+    itemIndex: ItemIndex.SLINGSHOT,
+    displayName: "Slingshot",
+    description: "Use nearby rocks to hurl a bit of hurt from a distance",
+    category: "Weapon",
+    iconSpriteID: "slingshot",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+    ...weaponItem(WeaponIndex.SLINGSHOT)
+});
 itemsCodex.set(ItemIndex.ARROW, {
     itemIndex: ItemIndex.ARROW,
     displayName: "Arrow",
@@ -297,6 +344,26 @@ itemsCodex.set(ItemIndex.ARROW, {
     maxStack: 100,
     consumable: false,
     essenceCost: 0,
+});
+itemsCodex.set(ItemIndex.POISON_ARROW, {
+    itemIndex: ItemIndex.POISON_ARROW,
+    displayName: "Poison Arrow",
+    description: "Poison tipped arrows leave a stuck foe with more problems than a wound",
+    category: "Ammo",
+    iconSpriteID: "poison_arrow_icon",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 100,
+});
+itemsCodex.set(ItemIndex.FLAME_ARROW,  {
+    itemIndex: ItemIndex.FLAME_ARROW,
+    displayName: "Flame Arrow",
+    description: "A fiery tip is sure to leave a burn",
+    category: "Ammo",
+    iconSpriteID: "flame_arrow_icon",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 100,
 });
 itemsCodex.set(ItemIndex.HEALING_VIAL, {
     itemIndex: ItemIndex.HEALING_VIAL,
@@ -329,22 +396,11 @@ itemsCodex.set(ItemIndex.HEALING_VIAL, {
     getStats() {
         return [
             {
-                statIndex: ItemStatIndex.HEAL,
+                stat: ItemStat.HEAL,
                 value: 10
             }
         ]
     },
-});
-itemsCodex.set(ItemIndex.DAGGERS, {
-    itemIndex: ItemIndex.DAGGERS,
-    displayName: "Daggers",
-    description: "With two of these you can really quickly jab a foe",
-    category: "Weapon",
-    iconSpriteID: "daggers",
-    consumable: false,
-    essenceCost: 0,
-    maxStack: 1,
-    ...weaponItem(WeaponIndex.DAGGERS)
 });
 itemsCodex.set(ItemIndex.ESSENCE_VIAL, {
     itemIndex: ItemIndex.ESSENCE_VIAL,
@@ -378,7 +434,7 @@ itemsCodex.set(ItemIndex.ESSENCE_VIAL, {
     getStats() {
         return [
             {
-                statIndex: ItemStatIndex.ESSENCE,
+                stat: ItemStat.ESSENCE,
                 value: 20,
             }
         ]
@@ -434,32 +490,11 @@ itemsCodex.set(ItemIndex.HEART, {
     getStats() {
         return [
             {
-                statIndex: ItemStatIndex.MAX_HP_BOOST,
+                stat: ItemStat.MAX_HP_BOOST,
                 value: 10,
             }
         ]
     },
-});
-itemsCodex.set(ItemIndex.POISON_ARROW, {
-    itemIndex: ItemIndex.POISON_ARROW,
-    displayName: "Poison Arrow",
-    description: "Poison tipped arrows leave a stuck foe with more problems than a wound",
-    category: "Ammo",
-    iconSpriteID: "poison_arrow_icon",
-    consumable: false,
-    essenceCost: 0,
-    maxStack: 100,
-});
-itemsCodex.set(ItemIndex.SLINGSHOT, {
-    itemIndex: ItemIndex.SLINGSHOT,
-    displayName: "Slingshot",
-    description: "Use nearby rocks to hurl a bit of hurt from a distance",
-    category: "Weapon",
-    iconSpriteID: "slingshot",
-    consumable: false,
-    essenceCost: 0,
-    maxStack: 1,
-    ...weaponItem(WeaponIndex.SLINGSHOT)
 });
 itemsCodex.set(ItemIndex.TELEPORTATION_RUNE, {
     itemIndex: ItemIndex.TELEPORTATION_RUNE,
@@ -476,17 +511,6 @@ itemsCodex.set(ItemIndex.TELEPORTATION_RUNE, {
         // TODO: spawn particles
         return true;
     }
-});
-itemsCodex.set(ItemIndex.BATTLE_HAMMER, {
-    itemIndex: ItemIndex.BATTLE_HAMMER,
-    displayName: "Battle Hammer",
-    description: "This heavy weighted weapon does a lot of damage in a small area",
-    category: "Weapon",
-    iconSpriteID: "battle_hammer",
-    consumable: false,
-    essenceCost: 0,
-    maxStack: 1,
-    ...weaponItem(WeaponIndex.BATTLE_HAMMER)
 });
 itemsCodex.set(ItemIndex.CRYSTAL_BOMB, {
     itemIndex: ItemIndex.CRYSTAL_BOMB,
@@ -523,7 +547,7 @@ itemsCodex.set(ItemIndex.HEART_CRYSTAL, {
     getStats() {
         return [
             {
-                statIndex: ItemStatIndex.REGENERATION,
+                stat: ItemStat.REGENERATION,
                 value: 1
             }
         ]
@@ -557,17 +581,6 @@ itemsCodex.set(ItemIndex.STUN_FIDDLE, {
         return true; // TODO: stun all enemies in radius and play the melody
     }
 });
-itemsCodex.set(ItemIndex.ESSENCE_DRIPPED_DAGGER, {
-    itemIndex: ItemIndex.ESSENCE_DRIPPED_DAGGER,
-    displayName: "Essence Dripped Dagger",
-    description: "Dripping essence on a weapon really increases the power!",
-    category: "Weapon",
-    iconSpriteID: "essence_dripped_dagger",
-    consumable: false,
-    essenceCost: 2,
-    maxStack: 1,
-    ...weaponItem(WeaponIndex.ESSENCE_DRIPPED_DAGGER)
-});
 itemsCodex.set(ItemIndex.ROOT_SNARE, {
     itemIndex: ItemIndex.ROOT_SNARE,
     displayName: "Root Snare",
@@ -600,34 +613,12 @@ itemsCodex.set(ItemIndex.BASIC_SHIELD, {
     getStats() {
         return [
             {
-                statIndex: ItemStatIndex.RESISTANCE,
+                stat: ItemStat.RESISTANCE,
                 value: 0.1
             }
         ];
     }
 });
-itemsCodex.set(ItemIndex.QUICK_BOW, {
-    itemIndex: ItemIndex.QUICK_BOW,
-    displayName: "Quick Bow",
-    description: "Crafted from a hyper-elastic material this bow can shoot much faster, but at a cost to effectiveness",
-    category: "Weapon",
-    iconSpriteID: "quick_bow",
-    usesItem: [ItemIndex.ARROW, ItemIndex.POISON_ARROW, ItemIndex.FLAME_ARROW],
-    consumable: false,
-    essenceCost: 0,
-    maxStack: 1,
-    ...weaponItem(WeaponIndex.QUICK_BOW)
-});
-itemsCodex.set(ItemIndex.FLAME_ARROW,  {
-    itemIndex: ItemIndex.FLAME_ARROW,
-    displayName: "Flame Arrow",
-    description: "A fiery tip is sure to leave a burn",
-    category: "Ammo",
-    iconSpriteID: "flame_arrow_icon",
-    consumable: false,
-    essenceCost: 0,
-    maxStack: 100,
-});
 
-export { itemsCodex, ItemIndex, ItemStatIndex, itemStatPropertiesCodex };
-export type { Item, ItemDropChance, ItemStat, ItemStatProperty, ItemCategory };
+export { itemsCodex, ItemIndex, ItemStat, itemStats };
+export type { Item, ItemDropChance, ItemStatData, ItemStatValue, ItemCategory };

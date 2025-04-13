@@ -17,17 +17,17 @@ const WeaponManager: ComponentFactory = (gameObject: GameObject) => {
             if (timeSinceLastFired < weapon.cooldown) {
                 return false;
             }
-            if (!weapon.chargeable) {
+            // if (!weapon.chargeable) {
                 weapon.fire(gameObject, target, {uses});
                 this.timeLastFired = gameObject.game.time;
                 return true;
-            }
-            else {
-                // Start a charge up.
-                this.timeChargeStart = gameObject.game.time;
-                this.charging = true;
-                return false;
-            }
+            // }
+            // else {
+            //     // Start a charge up.
+            //     this.timeChargeStart = gameObject.game.time;
+            //     this.charging = true;
+            //     return false;
+            // }
         },
         release(weaponIndex: WeaponIndex, target: Vector, uses?: Item) {
             const weapon = weaponsCodex.get(weaponIndex);
@@ -36,7 +36,7 @@ const WeaponManager: ComponentFactory = (gameObject: GameObject) => {
                 return false;
             }
             if (this.charging) {
-                const maxCharge = weapon.maxCharge ? weapon.maxCharge : 1;
+                const maxCharge = weapon.charge ? weapon.charge : 1;
                 const charge = gameObject.game.time - this.timeChargeStart;
                 weapon.fire(gameObject, target, {uses, charge: Math.min(charge / maxCharge, 1)});
                 this.timeLastFired = gameObject.game.time;
