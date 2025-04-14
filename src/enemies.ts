@@ -45,7 +45,7 @@ enemiesCodex.set(EnemyIndex.MINION, {
 });
 enemiesCodex.set(EnemyIndex.SLIME, {
     spriteID: "slime",
-    waterSpriteID: "slime",
+    waterSpriteID: "slime_water",
     deadSpriteID: "slime_dead",
     particleID: "slime_particle",
     scale: new Vector(0.75, 0.5),

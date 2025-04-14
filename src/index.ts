@@ -69,11 +69,10 @@ window.onload = async () => {
         loadImageAndTexture(gl, "peach", "assets/images/peach.png"),
         loadImageAndTexture(gl, "peach_water", "assets/images/peach_water.png"),
 
-        loadImageAndTexture(gl, "zombie", "assets/images/enemies/zombie.png"),
-        loadImageAndTexture(gl, "zombie_water", "assets/images/enemies/zombie_water.png"),
         loadImageAndTexture(gl, "minion", "assets/images/enemies/minion.png"),
         loadImageAndTexture(gl, "minion_water", "assets/images/enemies/minion_water.png"),
         loadImageAndTexture(gl, "slime", "assets/images/enemies/slime.png"),
+        loadImageAndTexture(gl, "slime_water", "assets/images/enemies/slime_water.png"),
         loadImageAndTexture(gl, "slime_dead", "assets/images/enemies/slime_dead.png"),
         loadImageAndTexture(gl, "revenant_eye", "assets/images/enemies/revenant_eye.png"),
         loadImageAndTexture(gl, "wraith", "assets/images/enemies/wraith.png"),
