@@ -17,6 +17,7 @@ class Input {
     private _mousePosition = Vector.zero();
     private _keyDownMap = new Map<string, boolean>(); 
     private _keyPressedMap = new Map<string, boolean>();
+    private _keyReleasedMap = new Map<string, boolean>();
 
     private scrollListeners: ScrollCallback[] = [];
 
@@ -45,14 +46,20 @@ class Input {
         }, true);
 
         window.addEventListener("keydown", (ev: KeyboardEvent) => {
+            // Prevent repeat calls (when key is held)
+            if (ev.repeat) {
+                return;
+            }
             ev.preventDefault();
             this._keyDownMap.set(ev.code, true);
-            this._keyPressedMap.set(ev.code, true);         
+            this._keyPressedMap.set(ev.code, true); 
+            this._keyReleasedMap.set(ev.code, false);            
         }, true);
         window.addEventListener("keyup", (ev: KeyboardEvent) => {
             ev.preventDefault();
             this._keyDownMap.set(ev.code, false);
             this._keyPressedMap.set(ev.code, false);         
+            this._keyReleasedMap.set(ev.code, true);            
         }), true;
         window.onwheel = (ev: WheelEvent) => {
             this.scrollListeners.forEach(callback => {
@@ -111,6 +118,15 @@ class Input {
         }
         const returnValue = !!this._keyPressedMap.get(code);
         this._keyPressedMap.set(code, false);
+        return returnValue;
+    }
+
+    public isKeyReleased(code: string, fromLayer: InputLayer=InputLayer.GAME): boolean {
+        if (fromLayer !== this._layer) {
+            return false;
+        }
+        const returnValue = !!this._keyReleasedMap.get(code);
+        this._keyReleasedMap.set(code, false);
         return returnValue;
     }
 

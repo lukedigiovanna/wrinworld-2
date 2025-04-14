@@ -115,6 +115,13 @@ class Inventory {
 
     private inventoryDisplayed: boolean = false;
 
+    // For tracking charged items:
+    // When charging, all other items become disabled.
+    private charging: boolean = false;
+    private chargeStartTime?: number;
+    private chargeIndex?: SlotLocator;
+    private chargeItem?: Item;
+
     private player: GameObject;
 
     constructor(player: GameObject, counts: InventorySlotCounts=defaultInventoryCounts) {
@@ -171,8 +178,6 @@ class Inventory {
         }
         if (foundIndex !== null) {
             this.reference[foundIndex.type].slots[foundIndex.index]!.count++;
-            this.setSlotUIByIndex(foundIndex);
-            this.updateHotbarUI();
             return true;
         }
         else if (emptyIndex !== null) {
@@ -181,8 +186,6 @@ class Inventory {
                 count: 1,
                 lastTimeUsed: undefined,
             };
-            this.setSlotUIByIndex(emptyIndex);
-            this.updateHotbarUI();
             // TODO: Equip item if it went into an appropriate slot to be equipped
             if (slotConfigs[emptyIndex.type].equipOnAdd) {
                 if (item.equipItem) {
@@ -230,26 +233,16 @@ class Inventory {
         if (type.slots[slotIndex.index]!.count === 0) {
             type.slots[slotIndex.index] = null;
         }
-        this.setSlotUIByIndex(slotIndex);
-        this.updateHotbarUI();
     }
 
-    private useItem(slotIndex: SlotLocator, target: Vector, func: "pressItem" | "releaseItem"): boolean {
+    private useItem(slotIndex: SlotLocator, target: Vector, charge?: number): boolean {
+        console.log(`Inventory.useItem(${JSON.stringify(slotIndex)})`)
         const slot = this.getSlot(slotIndex);
         if (slot === null) { 
             return false;
         }
         const item = slot.item;
-        if (!item[func]) {
-            throw Error("Cannot use item with " + func + " function because it does not exist");
-        }
-        if (item.cooldown && slot.lastTimeUsed && 
-            this.player.game.time - slot.lastTimeUsed < item.cooldown) {
-            const remaining = item.cooldown - (this.player.game.time - slot.lastTimeUsed);
-            addNotification({
-                text: `Available in ${Math.round(remaining * 10) / 10}s`,
-                color: "rgb(255, 31, 31)"
-            })
+        if (!item.useItem) {
             return false;
         }
 
@@ -276,9 +269,16 @@ class Inventory {
         }
         // // Check if the player has enough essence to use the item
         const essenceManager = this.player.getComponent("essence-manager");
-        if (essenceManager.data.essence >= item.essenceCost) {
+        if (essenceManager.data.essence < item.essenceCost) {
+            addNotification({
+                text: "Not enough essence!",
+                color: "rgb(255, 31, 31)"
+            })
+            return false;
+        }
+        else {
             const useItem = useIndex !== null ? this.getSlot(useIndex)?.item : undefined; 
-            const success = item[func](this.player, target, useItem);
+            const success = item.useItem(this.player, target, useItem, charge);
             if (success) {
                 if (useIndex !== null) {
                     this.decreaseItemCount(useIndex);
@@ -294,49 +294,86 @@ class Inventory {
                 return false;
             }
         }
-        else {
-            addNotification({
-                text: "Not enough essence!",
-                color: "rgb(255, 31, 31)"
-            })
-            return false;
-        }
     }
-
-    private pressedIndex: SlotLocator | null = null;
-    private pressedItem: Item | null = null;
 
     // Called when firing key is pressed down
     public pressItem(slotIndex: SlotLocator, target: Vector) {
-        this.pressedIndex = slotIndex;
+        console.log(`Inventory.pressItem(${JSON.stringify(slotIndex)})`)
+        // Ignore request if already charging another item
+        if (this.charging) {
+            console.log("FAIL: charging");
+            return false;
+        }
+        
         const slot = this.getSlot(slotIndex);
-        const item = slot?.item;
-        if (!item) {
+        if (slot === null) {
+            console.log("FAIL: no slot at index")
             return;
         }
-        this.pressedItem = item;
-        if (item.pressItem !== undefined) {
-            if (this.useItem(slotIndex, target, "pressItem")) {
-                this.pressedIndex = null;
-            }
+        const item = slot.item;
+
+        // Ignore request if the item is still on cooldown 
+        if (item.cooldown && slot.lastTimeUsed && 
+            this.player.game.time - slot.lastTimeUsed < item.cooldown) {
+            const remaining = item.cooldown - (this.player.game.time - slot.lastTimeUsed);
+            addNotification({
+                text: `Available in ${Math.round(remaining * 10) / 10}s`,
+                color: "rgb(255, 31, 31)"
+            });
+            return;
+        }
+
+        // Use item instantly if the item is not chargeable
+        if (item.charge === undefined) {
+            this.useItem(slotIndex, target);
+        }
+        else { // Enter charge mode
+            this.charging = true;
+            this.chargeStartTime = this.player.game.time;
+            this.chargeIndex = slotIndex;
+            this.chargeItem = item;
         }
     }
 
     // Called when firing key is released
     public releaseItem(slotIndex: SlotLocator, target: Vector) {
-        // // Ensure that if the player changes their slot we ignore a release.
-        if (this.pressedIndex === null || this.pressedIndex.type !== slotIndex.type || this.pressedIndex.index !== slotIndex.index) {
-            return;
+        if (!this.charging) {
+            return false;
         }
         const slot = this.getSlot(slotIndex);
-        const item = slot?.item;
-        // // If theres no item in the slot or the item somehow changed from a press, then ignore
-        if (!item || item !== this.pressedItem) {
-            return;
+        if (slot === null) {
+            throw Error("Somehow was charging on an empty slot. (Make sure a charge is cancelled if modifying a charging slot)");
         }
-        if (item.releaseItem) {
-            this.useItem(slotIndex, target, "releaseItem");
+
+        if (slot.item.charge === undefined) {
+            throw Error("Somehow was charging an item that doesn't charge");
         }
+
+        console.log(`Inventory.releaseItem(${JSON.stringify(slotIndex)})`)
+
+        if (!this.chargeStartTime || !this.chargeItem || !this.chargeIndex) {
+            throw Error("Somehow was charging without settings the chargeTime, chargeIndex, or chargeItem");
+        }
+
+        const chargePeriod = this.player.game.time - this.chargeStartTime;
+        const charge = Math.min(slot.item.charge, chargePeriod);
+        this.useItem(slotIndex, target, charge);
+
+        this.charging = false;
+
+        // // Ensure that if the player changes their slot we ignore a release.
+        // if (this.pressedIndex === null || this.pressedIndex.type !== slotIndex.type || this.pressedIndex.index !== slotIndex.index) {
+        //     return;
+        // }
+        // const slot = this.getSlot(slotIndex);
+        // const item = slot?.item;
+        // // // If theres no item in the slot or the item somehow changed from a press, then ignore
+        // if (!item || item !== this.pressedItem) {
+        //     return;
+        // }
+        // if (item.releaseItem) {
+        //     this.useItem(slotIndex, target, "releaseItem");
+        // }
     }
 
     // --- UI functions ---
@@ -423,7 +460,6 @@ class Inventory {
                         }
                     }
                     typeSlots.slots[index] = null;
-                    this.setSlotUIByIndex(slotIndex);
                 }
                 this.hideItemDisplay();
             }
@@ -459,14 +495,12 @@ class Inventory {
                         this.heldSlot = temp;
                     }
                 }
-                this.setSlotUI(typeSlots.slots[index], typeSlots.slotDivs[index]);
             }
 
             this.setSlotUI(this.heldSlot, $("#held-item-display"));
             if (this.heldSlot === null) {
                 this.showItemDisplay(slotIndex);
             }
-            this.updateHotbarUI();
             this.updateDisplayPositions(ev);
     }
 
@@ -610,16 +644,7 @@ class Inventory {
         this.setSlotUI(type.slots[slotIndex.index], type.slotDivs[slotIndex.index]);
     }
 
-    private updateHotbarUI() {
-        let i = 0;
-        for (const slotIndex of this.hotbarSlotLocators) {
-            this.setSlotUI(this.reference[slotIndex.type].slots[slotIndex.index], this.hotbarSlotDivs[i]);
-            i++;
-        }
-    }
-
     public updateUI() {
-        this.updateHotbarUI();
         for (const type of slotTypes) {
             for (let i = 0; i < this.reference[type].slots.length; i++) {
                 this.setSlotUIByIndex({
@@ -627,6 +652,11 @@ class Inventory {
                     type
                 })
             }
+        }
+        let i = 0;
+        for (const slotIndex of this.hotbarSlotLocators) {
+            this.setSlotUI(this.reference[slotIndex.type].slots[slotIndex.index], this.hotbarSlotDivs[i]);
+            i++;
         }
     }
 
@@ -708,4 +738,4 @@ class Inventory {
 };
 
 export { Inventory };
-export type { SlotLocator as SlotIndex };
+export type { SlotLocator };

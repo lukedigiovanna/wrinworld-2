@@ -164,7 +164,7 @@ enum ItemIndex {
 type ItemCategory = "Weapon" | "Ammo" | "Consumable" | "Upgrade" | "Buff" | "Utility" | "Mystic Arts";
 
 // Return true if successfully used.
-type UseItemFunction = (player: GameObject, target: Vector, uses?: Item) => boolean;
+type UseItemFunction = (player: GameObject, target: Vector, uses?: Item, charge?: number) => boolean;
 type EquipItemFunction = (player: GameObject) => void;
 
 interface Item {
@@ -180,8 +180,7 @@ interface Item {
     charge?: number; // Max time to charge up to (none if undefined -- i.e. instant use)
     // ex. Bow uses Arrow type
     usesItem?: ItemIndex[];
-    pressItem?: UseItemFunction;
-    releaseItem?: UseItemFunction;
+    useItem?: UseItemFunction;
     equipItem?: EquipItemFunction;
     unequipItem?: EquipItemFunction;
     getStats?: () => ItemStatValue[];
@@ -229,11 +228,10 @@ function weaponItem(index: WeaponIndex): Partial<Item> {
     return {
         cooldown: weapon.cooldown,
         charge: weapon.charge,
-        pressItem(player: GameObject, target: Vector, uses?: Item) {
-            return false;
-        },
-        releaseItem(player: GameObject, target: Vector, uses?: Item) {
-            return false;
+        useItem(player: GameObject, target: Vector, uses?: Item, charge?: number) {
+            console.log(`weaponItem.useItem(charge=${charge})`);
+            weaponsCodex.get(index).fire(player, target, {uses, charge});
+            return true;
         },
         equipItem(player: GameObject) {
             
@@ -375,7 +373,7 @@ itemsCodex.set(ItemIndex.HEALING_VIAL, {
     essenceCost: 0,
     maxStack: 1,
     cooldown: 1,
-    pressItem(player) {
+    useItem(player) {
         const health = player.getComponent("health");
         const amountHealed = health.data.heal(10);
         if (amountHealed > 0) {
@@ -412,7 +410,7 @@ itemsCodex.set(ItemIndex.ESSENCE_VIAL, {
     essenceCost: 0,
     maxStack: 1,
     cooldown: 60,
-    pressItem(player) {
+    useItem(player) {
         // TODO: add 20 essence (or something like that) to the player
         const essenceManager = player.getComponent("essence-manager");
         const amountAdded = essenceManager.data.addEssence(20);
@@ -506,7 +504,7 @@ itemsCodex.set(ItemIndex.TELEPORTATION_RUNE, {
     essenceCost: 5,
     maxStack: 1,
     cooldown: 1,
-    pressItem(player, target) {
+    useItem(player, target) {
         player.position.set(target);
         // TODO: spawn particles
         return true;
@@ -522,7 +520,7 @@ itemsCodex.set(ItemIndex.CRYSTAL_BOMB, {
     essenceCost: 10,
     maxStack: 1,
     cooldown: 1,
-    pressItem(player, target) {
+    useItem(player, target) {
         fireProjectile(projectilesCodex.get(ProjectileIndex.CRYSTAL_BOMB), player, target);
         return true;
     }
@@ -563,7 +561,7 @@ itemsCodex.set(ItemIndex.STUN_FIDDLE, {
     essenceCost: 10,
     maxStack: 1,
     cooldown: 45,
-    pressItem(player) {
+    useItem(player) {
         const targets = player.game.getGameObjectsByFilter((gameObject) => {
             if (gameObject.team !== Team.ENEMY) {
                 return false;
@@ -591,7 +589,7 @@ itemsCodex.set(ItemIndex.ROOT_SNARE, {
     essenceCost: 0,
     maxStack: 1,
     cooldown: 1,
-    pressItem(player) {
+    useItem(player) {
         return false; // TODO: add projectile
     }
 });

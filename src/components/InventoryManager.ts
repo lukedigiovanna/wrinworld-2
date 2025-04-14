@@ -1,10 +1,10 @@
 import { ComponentFactory } from "./index";
 import { GameObject } from "../gameObjects";
 import input, { InputLayer } from "../input";
-import { Inventory, SlotIndex } from "../inventory";
+import { Inventory, SlotLocator } from "../inventory";
 import { getTexture } from "../imageLoader";
 import { Color, Vector } from "../utils";
-import controls from "../controls";
+import controls, { Controls } from "../controls";
 
 const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
@@ -25,12 +25,19 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
             }, true);
             this.selectedWeaponIndex = i;
         },
-        useItem(slotIndex: SlotIndex) {
-            this.inventory.pressItem(slotIndex, gameObject.game.camera.screenToWorldPosition(input.mousePosition));
-            this.inventory.selectSlot(slotIndex);
-            setTimeout(() => {
-                this.inventory.unselectSlot(slotIndex);
-            }, 75);
+        checkInput(control: keyof Controls, slotIndex: SlotLocator) {
+            if (input.isKeyPressed(controls[control].code)) {
+                this.inventory.pressItem(
+                    slotIndex,
+                    gameObject.game.camera.screenToWorldPosition(input.mousePosition)
+                );
+            }
+            if (input.isKeyReleased(controls[control].code)) {
+                this.inventory.releaseItem(
+                    slotIndex,
+                    gameObject.game.camera.screenToWorldPosition(input.mousePosition)
+                );
+            }
         }
     }
     return {
@@ -63,24 +70,18 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
                 data.setSelectedWeaponIndex(1);
             }
 
-            if (input.isKeyPressed(controls.utility1.code)) {
-                data.useItem({
-                    type: "utility",
-                    index: 0,
-                });
-            }
-            if (input.isKeyPressed(controls.utility2.code)) {
-                data.useItem({
-                    type: "utility",
-                    index: 1,
-                });
-            }
-            if (input.isKeyPressed(controls.consumable.code)) {
-                data.useItem({
-                    type: "consumable",
-                    index: 0,
-                });
-            }
+            data.checkInput("utility1", {
+                type: "utility",
+                index: 0,
+            });
+            data.checkInput("utility2", {
+                type: "utility",
+                index: 1,
+            });
+            data.checkInput("consumable", {
+                type: "consumable",
+                index: 0,
+            });
 
             if (input.isKeyPressed(controls.toggleInventory.code)) {
                 data.inventory.toggleUI();
