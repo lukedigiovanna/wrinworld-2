@@ -52,7 +52,7 @@ const slotConfigs: Record<SlotType, SlotTypeConfig> = {
     },
     utility: {
         iconID: "utility_slot",
-        selectedIconID: "selected_utility_slot",
+        chargeIconID: "selected_utility_slot",
         acceptItemCategory: ["Utility", "Mystic Arts"],
         controlKeys: ["utility1", "utility2"],
         equipOnAdd: false,
@@ -60,7 +60,7 @@ const slotConfigs: Record<SlotType, SlotTypeConfig> = {
     },
     consumable: {
         iconID: "consumable_slot",
-        selectedIconID: "selected_consumable_slot",
+        chargeIconID: "selected_consumable_slot",
         acceptItemCategory: ["Consumable"],
         controlKeys: ["consumable"],
         equipOnAdd: false,
@@ -672,13 +672,19 @@ class Inventory {
         let i = 0;
         for (const slotIndex of this.hotbarSlotLocators) {
             this.setSlotUI(this.reference[slotIndex.type].slots[slotIndex.index], this.hotbarSlotDivs[i]);
+            const config = slotConfigs[slotIndex.type];
+            let iconID = config.iconID;
+            if (this._charging && this.chargeIndex && config.chargeIconID && 
+                this.chargeIndex.index === slotIndex.index && 
+                this.chargeIndex.type === slotIndex.type) {
+                iconID = config.chargeIconID;
+            }
+            else if (config.selectedIconID && slotIndex.index === this.reference[slotIndex.type].selectedIndex) {
+                iconID = config.selectedIconID;
+            }
             this.hotbarSlotDivs[i]
                 .find(".slot-icon")
-                .attr("src", getImage(
-                    slotIndex.index === this.reference[slotIndex.type].selectedIndex ?
-                    slotConfigs[slotIndex.type].selectedIconID as string :
-                    slotConfigs[slotIndex.type].iconID
-                ).src);
+                .attr("src", getImage(iconID).src);
             i++;
         }
 
