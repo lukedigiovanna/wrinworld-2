@@ -1,10 +1,12 @@
+import { Color } from "./utils";
 import { Codex } from "./codex";
 import { GameObject } from "./gameObjects";
 
 enum StatusEffectIndex {
     POISON,
     FLAME,
-    STUN
+    STUN,
+    ROOT_SNARE,
 }
 
 interface StatusEffect {
@@ -46,6 +48,24 @@ statusEffectsCodex.set(StatusEffectIndex.STUN, {
     particleID: "stun_particle",
     rate: 1,
     apply(gameObject, level) {
+    },
+    start(gameObject, level) {
+        if (gameObject.hasComponent("movement-data")) {
+            gameObject.getComponent("movement-data").data.modifier -= 1.0;
+        }
+    },
+    end(gameObject, level) {
+        if (gameObject.hasComponent("movement-data")) {
+            gameObject.getComponent("movement-data").data.modifier += 1.0;
+        }
+    },
+});
+statusEffectsCodex.set(StatusEffectIndex.ROOT_SNARE, {
+    displayName: "Root Snare",
+    iconSpriteID: "root_snare_icon",
+    particleID: "square",
+    rate: 1,
+    apply(gameObject, level) {
         if (gameObject.hasComponent("health")) {
             gameObject.getComponent("health").data.damage(level);
         }
@@ -60,7 +80,7 @@ statusEffectsCodex.set(StatusEffectIndex.STUN, {
             gameObject.getComponent("movement-data").data.modifier += 1.0;
         }
     },
-});
+})
 
 export { StatusEffectIndex, statusEffectsCodex };
 export type { StatusEffect };

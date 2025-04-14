@@ -18,6 +18,7 @@ enum ProjectileIndex {
     ROCK,
     CRYSTAL_BOMB,
     CRYSTAL_SHARD,
+    ROOT_SNARE,
 }
 
 interface Projectile {
@@ -290,6 +291,26 @@ projectilesCodex.set(ProjectileIndex.CRYSTAL_SHARD, {
     rotateToDirectionOfTarget: true,
     drag: 0,
     destroyOnPhysicalCollision: true,
+});
+projectilesCodex.set(ProjectileIndex.ROOT_SNARE, {
+    homingSkill: 0,
+    maxHits: 1,
+    ricochetFactor: 0,
+    spriteID: "root_snare",
+    damage: 5,
+    damageReductionPerHit: 0,
+    knockback: 0,
+    lifespan: 3,
+    speed: 160,
+    angularVelocity: 0,
+    rotateToDirectionOfTarget: false,
+    drag: 1.2,
+    destroyOnPhysicalCollision: false,
+    onHit(hit) {
+        if (hit.hasComponent("status-effect-manager")) {
+            hit.getComponent("status-effect-manager").data.applyEffect(StatusEffectIndex.ROOT_SNARE, 1, 5);
+        }
+    },
 });
 
 export { ProjectileIndex, projectilesCodex };

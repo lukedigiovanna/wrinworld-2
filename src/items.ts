@@ -375,7 +375,8 @@ itemsCodex.set(ItemIndex.HEALING_VIAL, {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-    cooldown: 1,
+    cooldown: 90,
+    charge: 1,
     useItem(player) {
         const health = player.getComponent("health");
         const amountHealed = health.data.heal(10);
@@ -593,9 +594,10 @@ itemsCodex.set(ItemIndex.ROOT_SNARE, {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-    cooldown: 1,
-    useItem(player) {
-        return false; // TODO: add projectile
+    cooldown: 10,
+    useItem(player, target) {
+        fireProjectile(projectilesCodex.get(ProjectileIndex.ROOT_SNARE), player, target);
+        return true;
     }
 });
 itemsCodex.set(ItemIndex.BASIC_SHIELD, {

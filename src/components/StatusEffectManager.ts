@@ -70,11 +70,11 @@ const StatusEffectManager: ComponentFactory = (gameObject: GameObject) => {
             data.statusEffectParticles = gameObject.addComponent(ParticleEmitter(
                 {
                     rate: () => MathUtils.random(2.5, 3.5),
-                    velocity: () => new Vector(0, MathUtils.random(8, 16)),
-                    spawnBoxSize: () => new Vector(0.5, 0.5),
+                    velocity: () => new Vector(MathUtils.random(-4, 4), MathUtils.random(8, 16)),
+                    spawnBoxSize: () => new Vector(8, 8),
                     spriteID: () => MathUtils.randomChoice(
                         this.data.effects.map((effect: Effect) => effect.statusEffect.particleID)
-                    )
+                    ),
                 },
                 "status-effects"
             ))
