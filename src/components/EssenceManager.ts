@@ -21,6 +21,7 @@ function updateEssenceUI(essenceAmount: number, essenceMax: number) {
 
 const EssenceManager: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
+        movementData: undefined,
         essence: 0,
         maxEssence: 100,
         startingRate: 0.5,
@@ -45,6 +46,7 @@ const EssenceManager: ComponentFactory = (gameObject: GameObject) => {
         id: "essence-manager",
         start() {
             updateEssenceUI(data.essence, data.maxEssence);
+            data.movementData = gameObject.getComponent("movement-data");
         },
         update(dt) {
             let attacking = false;
@@ -83,6 +85,7 @@ const EssenceManager: ComponentFactory = (gameObject: GameObject) => {
                 this.data.rate = this.data.startingRate;
                 this.data.multiplier = 1;
             }
+            this.data.movementData.data.attackingPortal = attacking;
         },
         data
     }

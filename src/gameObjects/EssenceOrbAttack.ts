@@ -22,7 +22,7 @@ const EssenceOrbAttackFactory: GameObjectFactory = (value: number, position: Vec
                 const diff = Vector.subtract(target.position, gameObject.position);
                 const distance = diff.magnitude;
                 if (distance < 8) {
-                    target.getComponent("health")?.data.damage(value);
+                    target.getComponentOptional("health")?.data.damage(value);
                     gameObject.destroy();
                     getSound("essence_pickup").play();
                 }

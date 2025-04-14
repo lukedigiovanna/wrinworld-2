@@ -130,14 +130,23 @@ class GameObject {
         return newComponent;
     }
 
-    public getComponent(componentID: ComponentID): Component {
+    public getComponentOptional(componentID: ComponentID): Component | undefined {
         for (let i = 0; i < this.components.length; i++) {
             if (componentID === this.components[i].id) {
                 return this.components[i];
             }
         }
-        throw new Error("No component found with ID " + componentID + ". Hint: if existence is conditional use hasComponent first");
+        return undefined;
     }
+
+    public getComponent(componentID: ComponentID): Component {
+        const component = this.getComponentOptional(componentID);
+        if (!component) {
+            throw new Error("No component found with ID " + componentID + ". Hint: if existence is conditional use hasComponent first");
+        }    
+        return component;
+    }
+
 
     public hasComponent(componentID: ComponentID): boolean {
         for (let i = 0; i < this.components.length; i++) {
