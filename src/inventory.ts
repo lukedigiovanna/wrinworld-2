@@ -364,9 +364,18 @@ class Inventory {
         if (!this._charging) {
             return false;
         }
+
+        if (!this.chargeIndex || slotIndex.type !== this.chargeIndex.type || slotIndex.index !== this.chargeIndex.index) {
+            return;
+        }
+
         const slot = this.getSlot(slotIndex);
         if (slot === null) {
-            throw Error("Somehow was charging on an empty slot. (Make sure a charge is cancelled if modifying a charging slot)");
+            return;
+        }
+
+        if (slot.item !== this.chargeItem) {
+            return;
         }
 
         if (slot.item.charge === undefined) {
@@ -457,61 +466,59 @@ class Inventory {
     }
 
     private clickSlot(slotIndex: SlotLocator, ev: any) {
-        const {index, type} = slotIndex;
-        const typeSlots = this.reference[type];
-        const slot = typeSlots.slots[slotIndex.index];
-            if (this.heldSlot === null) {
-                if (slot !== null) { 
-                    // "pick up" the item in the slot.
-                    this.heldSlot = slot;
-                    if (slotIndex.type === "buff") {
-                        if (slot.item.unequipItem) {
-                            slot.item.unequipItem(this.player);
-                        }
-                    }
-                    typeSlots.slots[index] = null;
+        const { index, type } = slotIndex;
+        const slotGroup = this.reference[type];
+        const slot = slotGroup.slots[slotIndex.index];
+        if (this.heldSlot === null) {
+            if (slot !== null) { 
+                // "pick up" the item in the slot.
+                this.heldSlot = slot;
+                this.unequipItem(slotIndex);
+                slotGroup.slots[index] = null;
+            }
+            this.hideItemDisplay();
+        }
+        else {
+            // Place the held slot
+            if (slotGroup.slots[index] !== null && slotGroup.slots[index].item.itemIndex === this.heldSlot.item.itemIndex) {
+                // Transfer as much count as possible
+                const count = Math.min(
+                    this.heldSlot.count,
+                    this.heldSlot.item.maxStack - slotGroup.slots[index].count
+                );
+                slotGroup.slots[index].count += count;
+                this.heldSlot.count -= count;
+                if (this.heldSlot.count <= 0) {
+                    this.heldSlot = null;
                 }
-                this.hideItemDisplay();
             }
             else {
-                // Place the held slot
-                if (typeSlots.slots[index] !== null && typeSlots.slots[index].item.itemIndex === this.heldSlot.item.itemIndex) {
-                    // Transfer as much count as possible
-                    const count = Math.min(
-                        this.heldSlot.count,
-                        this.heldSlot.item.maxStack - typeSlots.slots[index].count
-                    );
-                    typeSlots.slots[index].count += count;
-                    this.heldSlot.count -= count;
-                    if (this.heldSlot.count <= 0) {
-                        this.heldSlot = null;
-                    }
-                }
-                else {
-                    // Swap the slots
-                    if (slotConfigs[type].acceptItemCategory === null || 
-                        slotConfigs[type].acceptItemCategory.indexOf(this.heldSlot.item.category) >= 0) {
-                        if (type === "buff") {
-                            if (this.heldSlot.item.equipItem) {
-                                this.heldSlot.item.equipItem(this.player);
-                            }
-                            if (typeSlots.slots[index] !== null && typeSlots.slots[index].item.unequipItem) {
-                                typeSlots.slots[index].item.unequipItem(this.player);
-                            }
+                // Swap the slots
+                if (slotConfigs[type].acceptItemCategory === null || 
+                    slotConfigs[type].acceptItemCategory.indexOf(this.heldSlot.item.category) >= 0) {
+                    if (type === "buff") {
+                        if (this.heldSlot.item.equipItem) {
+                            this.heldSlot.item.equipItem(this.player);
                         }
-
-                        const temp = typeSlots.slots[index];
-                        typeSlots.slots[index] = this.heldSlot;
-                        this.heldSlot = temp;
+                        if (slotGroup.slots[index] !== null && slotGroup.slots[index].item.unequipItem) {
+                            this.unequipItem({
+                                type, index
+                            });
+                        }
                     }
+
+                    const temp = slotGroup.slots[index];
+                    slotGroup.slots[index] = this.heldSlot;
+                    this.heldSlot = temp;
                 }
             }
+        }
 
-            this.setSlotUI(this.heldSlot, $("#held-item-display"));
-            if (this.heldSlot === null) {
-                this.showItemDisplay(slotIndex);
-            }
-            this.updateDisplayPositions(ev);
+        this.setSlotUI(this.heldSlot, $("#held-item-display"));
+        if (this.heldSlot === null) {
+            this.showItemDisplay(slotIndex);
+        }
+        this.updateDisplayPositions(ev);
     }
 
     // Helper function to create an empty slot for the given type and add it to
@@ -566,7 +573,6 @@ class Inventory {
         }
         $("#inventory").append(currentRow!);
         
-
         const activeBarRow = $(inventoryRowHTML());
         for (const type of this.hotbarSlotRowOrder) {
             for (let i = 0; i < this.reference[type].slots.length; i++) {
@@ -761,6 +767,19 @@ class Inventory {
         return this.reference[type].slots.length;
     }
 
+    private unequipItem(slotIndex: SlotLocator) {
+        const slotGroup = this.reference[slotIndex.type];
+        const slot = slotGroup.slots[slotIndex.index];
+        if (slot !== null) {
+            slot.item.unequipItem?.(this.player);
+        }
+        if (this._charging && this.chargeIndex && 
+            this.chargeIndex.type === slotIndex.type && 
+            this.chargeIndex.index === slotIndex.index) {
+            this._charging = false;
+        }
+    }
+
     public selectSlot(slotIndex: SlotLocator) {
         if (!slotConfigs[slotIndex.type].selectable) {
             throw Error(`Cannot select slot type ${slotIndex.type} as it is unselectable`);
@@ -774,18 +793,16 @@ class Inventory {
         }
         const equip = slotConfigs[slotIndex.type].equipOnSelect;
         if (equip && slotGroup.selectedIndex !== undefined) {
-            const oldItem = slotGroup.slots[slotGroup.selectedIndex];
-            if (oldItem !== null) {
-                oldItem.item.unequipItem?.(this.player);
-                oldItem.lastTimeUsed = 0;
-            }
+            this.unequipItem({
+                index: slotGroup.selectedIndex,
+                type: slotIndex.type
+            })
         }
         slotGroup.selectedIndex = slotIndex.index;
         if (equip && slotGroup.selectedIndex !== undefined) {
             const newItem = slotGroup.slots[slotGroup.selectedIndex];
             if (newItem !== null) {
                 newItem.item.equipItem?.(this.player);
-                newItem.lastTimeUsed = this.player.game.time;
             }
         }
     }
