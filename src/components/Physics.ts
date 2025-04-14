@@ -9,6 +9,7 @@ const Physics: ComponentFactory = (gameObject: GameObject) => {
         impulse: Vector.zero(),
         gravity: 0,
         angularVelocity: 0,
+        angularVelocityDrag: 0,
         drag: 0,
     }
     return {
@@ -18,6 +19,7 @@ const Physics: ComponentFactory = (gameObject: GameObject) => {
             data.velocity.y -= data.gravity * dt;
             data.impulse.scale(Math.exp(-dt * 2));
             data.velocity.scale(Math.exp(-dt * data.drag));
+            data.angularVelocity *= Math.exp(-dt * data.angularVelocityDrag);
             gameObject.rotation += data.angularVelocity * dt;
             const netVelocity = Vector.add(data.velocity, data.impulse);
             if (!netVelocity.isZero()) {

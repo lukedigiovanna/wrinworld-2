@@ -15,7 +15,8 @@ enum EnemyIndex {
 
 interface Enemy {
     spriteID: string;
-    waterSpriteID?: string; // No water effects when undefined
+    waterSpriteID?: string; // Changes to water sprite when in water when defined
+    deadSpriteID?: string; // Spawns a corpse when defined
     particleID?: string; // No particles when undefined
     scale: Vector;
     speed: number;
@@ -45,6 +46,7 @@ enemiesCodex.set(EnemyIndex.MINION, {
 enemiesCodex.set(EnemyIndex.SLIME, {
     spriteID: "slime",
     waterSpriteID: "slime",
+    deadSpriteID: "slime_dead",
     particleID: "slime_particle",
     scale: new Vector(0.75, 0.5),
     hp: 10,

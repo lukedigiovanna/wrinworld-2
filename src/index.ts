@@ -74,6 +74,7 @@ window.onload = async () => {
         loadImageAndTexture(gl, "minion", "assets/images/enemies/minion.png"),
         loadImageAndTexture(gl, "minion_water", "assets/images/enemies/minion_water.png"),
         loadImageAndTexture(gl, "slime", "assets/images/enemies/slime.png"),
+        loadImageAndTexture(gl, "slime_dead", "assets/images/enemies/slime_dead.png"),
         loadImageAndTexture(gl, "revenant_eye", "assets/images/enemies/revenant_eye.png"),
         loadImageAndTexture(gl, "wraith", "assets/images/enemies/wraith.png"),
         loadImageAndTexture(gl, "wretched_skeleton", "assets/images/enemies/wretched_skeleton.png"),

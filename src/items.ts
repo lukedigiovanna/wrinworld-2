@@ -141,10 +141,10 @@ enum ItemIndex {
     QUICK_BOW,
     // Projectiles
     ARROW,
-    POISON_ARROW, // not implemented
+    POISON_ARROW,
     FLAME_ARROW, // not implemented
     CRYSTAL_BOMB,
-    ROOT_SNARE, // not implemented
+    ROOT_SNARE,
     // Consumables
     HEALING_VIAL,
     ESSENCE_VIAL,
@@ -155,10 +155,10 @@ enum ItemIndex {
     // Buffs
     HEART,
     HEART_CRYSTAL,
-    BASIC_SHIELD, // not implemented
+    BASIC_SHIELD,
     // Mystic arts
-    TELEPORTATION_RUNE, // not implemented
-    STUN_FIDDLE, // not implemented
+    TELEPORTATION_RUNE,
+    STUN_FIDDLE,
 }
 
 type ItemCategory = "Weapon" | "Ammo" | "Consumable" | "Upgrade" | "Buff" | "Utility" | "Mystic Arts";
@@ -509,7 +509,9 @@ itemsCodex.set(ItemIndex.TELEPORTATION_RUNE, {
     consumable: false,
     essenceCost: 5,
     maxStack: 1,
-    cooldown: 1,
+    cooldown: 30,
+    charge: 1,
+    requireFullCharge: true,
     useItem(player, target) {
         player.position.set(target);
         // TODO: spawn particles
