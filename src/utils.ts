@@ -130,6 +130,10 @@ class Vector {
         return Vector.subtract(this, other).magnitude;
     }
 
+    public directionTowards(other: Vector): Vector {
+        return Vector.subtract(other, this);
+    }
+
     public static add(vec1: Vector, vec2: Vector): Vector {
         return new Vector(vec1._x + vec2._x, vec1._y + vec2._y);
     }

@@ -16,6 +16,61 @@ enum EnemyAIState {
     ATTACK,
 }
 
+class EnemyAIData {
+    private self: GameObject;
+    public targetPosition: Vector | undefined;
+
+    constructor(self: GameObject) {
+        this.self = self;
+    }
+
+    public get distanceToPlayer() {
+        return this.self.position.distanceTo(this.self.game.player.position);
+    }
+
+    public get hasLineOfSightToPlayer() {
+        return this.self.raycastPhysicalColliders(
+            this.self.position.directionTowards(this.self.game.player.position), 
+            true
+        )?.hit === this.self.game.player;
+    }
+}
+
+interface EnemyAIConfig {
+    idle: (gameObject: GameObject, data: EnemyAIData) => EnemyAIState;
+}
+
+
+const slimeAIConfig: EnemyAIConfig = {
+    idle(gameObject, data) {
+        if (data.distanceToPlayer < 200 && data.hasLineOfSightToPlayer) {
+            return EnemyAIState.FOLLOW;
+        }
+        if (data.distanceToPlayer < 300) {
+            return EnemyAIState.SEARCH;
+        }
+        return EnemyAIState.IDLE
+    }
+}
+
+const EnemyAI: (config: EnemyAIConfig) => ComponentFactory = (config) => {
+    return (gameObject) => {
+        return {
+            id: "enemy-ai",
+            data: {
+                aiData: new EnemyAIData(gameObject),
+                
+            },
+            start() {
+
+            },
+            update(dt) {
+                
+            },
+        }
+    }
+}
+
 interface BasicFollowAndAttackProperties {
     // How close the target must be before we can start attacking
     followDistance: number;
