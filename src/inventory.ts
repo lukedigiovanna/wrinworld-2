@@ -662,12 +662,6 @@ class Inventory {
                     type
                 });
             }
-            const selectedIndex = this.reference[type].selectedIndex
-            if (selectedIndex !== undefined && slotConfigs[type].selectedIconID) {
-                this.reference[type].slotDivs[selectedIndex]
-                    .find(".slot-icon")
-                    .attr("src", getImage(slotConfigs[type].selectedIconID).src);
-            }
         }
         let i = 0;
         for (const slotIndex of this.hotbarSlotLocators) {
@@ -698,7 +692,24 @@ class Inventory {
             icon.css("top", input.mousePosition.y);
         }
         else {
-            icon.hide();
+            const selectedWeapon = this.reference.weapon.selectedIndex !== undefined ? this.reference.weapon.slots[this.reference.weapon.selectedIndex] : undefined;
+            if (selectedWeapon && selectedWeapon.lastTimeUsed && selectedWeapon.item.cooldown) {
+                const elapsed = this.player.game.time - selectedWeapon.lastTimeUsed;
+                const percent = elapsed / selectedWeapon.item.cooldown;
+                if (percent < 1) {
+                    const index = Math.floor(percent * 10);
+                    icon.attr("src", getImage(`attack_cooldown_${index}`).src);
+                    icon.show();
+                    icon.css("left", input.mousePosition.x);
+                    icon.css("top", input.mousePosition.y);
+                }
+                else {
+                    icon.hide();
+                }
+            }
+            else {
+                icon.hide();
+            }
         }
     }
 
