@@ -128,7 +128,7 @@ class Inventory {
 
     // For tracking charged items:
     // When charging, all other items become disabled.
-    private charging: boolean = false;
+    private _charging: boolean = false;
     private chargeStartTime: number = 0;
     private chargeIndex?: SlotLocator;
     private chargeItem?: Item;
@@ -161,6 +161,10 @@ class Inventory {
         this.hotbarSlotDivs = [];
 
         this.createUI();
+    }
+
+    public get charging() {
+        return this._charging;
     }
 
     // Returns true if the item was successfully added to the inventory
@@ -295,6 +299,9 @@ class Inventory {
         }
         else {
             const useItem = useIndex !== null ? this.getSlot(useIndex)?.item : undefined; 
+            if (item.requireFullCharge && (!charge || charge < 1)) {
+                return false;
+            }
             const success = item.useItem(this.player, target, useItem, charge);
             if (success) {
                 if (useIndex !== null) {
@@ -317,7 +324,7 @@ class Inventory {
     public pressItem(slotIndex: SlotLocator, target: Vector) {
         console.log(`Inventory.pressItem(${JSON.stringify(slotIndex)})`)
         // Ignore request if already charging another item
-        if (this.charging) {
+        if (this._charging) {
             console.log("FAIL: charging");
             return false;
         }
@@ -345,7 +352,7 @@ class Inventory {
             this.useItem(slotIndex, target);
         }
         else { // Enter charge mode
-            this.charging = true;
+            this._charging = true;
             this.chargeStartTime = this.player.game.time;
             this.chargeIndex = slotIndex;
             this.chargeItem = item;
@@ -354,7 +361,7 @@ class Inventory {
 
     // Called when firing key is released
     public releaseItem(slotIndex: SlotLocator, target: Vector) {
-        if (!this.charging) {
+        if (!this._charging) {
             return false;
         }
         const slot = this.getSlot(slotIndex);
@@ -376,7 +383,7 @@ class Inventory {
         const charge = Math.min(slot.item.charge, chargePeriod) / slot.item.charge;
         this.useItem(slotIndex, target, charge);
 
-        this.charging = false;
+        this._charging = false;
     }
 
     // --- UI functions ---
@@ -677,7 +684,7 @@ class Inventory {
 
         // Update cooldown/charging icon
         const icon = $("#cooldown-charge-icon");
-        if (this.charging) {
+        if (this._charging) {
             if (!this.chargeItem || this.chargeItem.charge === undefined) {
                 throw Error("Somehow was charging an item without a charge field");
             }

@@ -10,6 +10,7 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
         inventory: undefined,
         inventoryDisplayed: false,
+        movementData: undefined,
         setSelectedWeaponIndex(i: number) {
             this.inventory.selectSlot({
                 type: "weapon",
@@ -44,8 +45,11 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
                     data.setSelectedWeaponIndex(currIndex - 1);
                 }
             });
+            data.movementData = gameObject.getComponent("movement-data");
         },
         update(dt: number) {
+            data.movementData.data.charging = data.inventory.charging;
+
             if (input.isKeyPressed(controls.selectWeapon1.code)) {
                 data.setSelectedWeaponIndex(0);
             }

@@ -178,6 +178,7 @@ interface Item {
     essenceCost: number;
     cooldown?: number; // Minimum time between uses (none if undefined)
     charge?: number; // Max time to charge up to (none if undefined -- i.e. instant use)
+    requireFullCharge?: boolean; // Only uses item if filled charge to max
     // ex. Bow uses Arrow type
     usesItem?: ItemIndex[];
     useItem?: UseItemFunction;
@@ -229,7 +230,6 @@ function weaponItem(index: WeaponIndex): Partial<Item> {
         cooldown: weapon.cooldown,
         charge: weapon.charge,
         useItem(player: GameObject, target: Vector, uses?: Item, charge?: number) {
-            console.log(`weaponItem.useItem(charge=${charge})`);
             weaponsCodex.get(index).fire(player, target, {uses, charge});
             return true;
         },
@@ -413,6 +413,8 @@ itemsCodex.set(ItemIndex.ESSENCE_VIAL, {
     essenceCost: 0,
     maxStack: 1,
     cooldown: 60,
+    charge: 1,
+    requireFullCharge: true,
     useItem(player) {
         // TODO: add 20 essence (or something like that) to the player
         const essenceManager = player.getComponent("essence-manager");
