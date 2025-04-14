@@ -74,10 +74,10 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
                     corpse.renderer = spriteRenderer(enemyData.deadSpriteID);
                     corpse.scale.setComponents(Math.sign(gameObject.scale.x) * sprite.width, sprite.height);
                     const physics = corpse.addComponent(Physics);
-                    physics.data.angularVelocity = Math.sign(gameObject.scale.x) * MathUtils.random(0.8, 1.8);
-                    physics.data.angularVelocityDrag = 0.8;
+                    physics.data.angularVelocity = Math.sign(gameObject.scale.x) * MathUtils.random(0.4, 2.0);
+                    physics.data.angularVelocityDrag = MathUtils.random(0.6, 1);
                     physics.data.impulse.set(data.physics.data.impulse);
-                    corpse.lifespan = MathUtils.random(4, 12);
+                    corpse.lifespan = MathUtils.random(8, 20);
                     gameObject.game.addGameObject(corpse);
                 }
             },

@@ -31,6 +31,7 @@ const enemiesCodex = new Codex<EnemyIndex, Enemy>();
 enemiesCodex.set(EnemyIndex.MINION, {
     spriteID: "minion",
     waterSpriteID: "minion_water",
+    deadSpriteID: "minion_dead",
     scale: new Vector(1, 1),
     hp: 16,
     drops: [],
@@ -65,6 +66,7 @@ enemiesCodex.set(EnemyIndex.SLIME, {
 });
 enemiesCodex.set(EnemyIndex.REVENANT_EYE, {
     spriteID: "revenant_eye",
+    deadSpriteID: "revenant_eye_dead",
     scale: new Vector(1, 1),
     hp: 25,
     drops: [],
@@ -80,6 +82,7 @@ enemiesCodex.set(EnemyIndex.REVENANT_EYE, {
 enemiesCodex.set(EnemyIndex.WRETCHED_SKELETON, {
     spriteID: "wretched_skeleton",
     waterSpriteID: "wretched_skeleton_water",
+    deadSpriteID: "wretched_skeleton_dead",
     scale: new Vector(1, 2),
     hp: 30,
     speed: 22,

@@ -71,13 +71,16 @@ window.onload = async () => {
 
         loadImageAndTexture(gl, "minion", "assets/images/enemies/minion.png"),
         loadImageAndTexture(gl, "minion_water", "assets/images/enemies/minion_water.png"),
+        loadImageAndTexture(gl, "minion_dead", "assets/images/enemies/minion_dead.png"),
         loadImageAndTexture(gl, "slime", "assets/images/enemies/slime.png"),
         loadImageAndTexture(gl, "slime_water", "assets/images/enemies/slime_water.png"),
         loadImageAndTexture(gl, "slime_dead", "assets/images/enemies/slime_dead.png"),
         loadImageAndTexture(gl, "revenant_eye", "assets/images/enemies/revenant_eye.png"),
+        loadImageAndTexture(gl, "revenant_eye_dead", "assets/images/enemies/revenant_eye_dead.png"),
         loadImageAndTexture(gl, "wraith", "assets/images/enemies/wraith.png"),
         loadImageAndTexture(gl, "wretched_skeleton", "assets/images/enemies/wretched_skeleton.png"),
         loadImageAndTexture(gl, "wretched_skeleton_water", "assets/images/enemies/wretched_skeleton_water.png"),
+        loadImageAndTexture(gl, "wretched_skeleton_dead", "assets/images/enemies/wretched_skeleton_dead.png"),
 
         loadImageAndTexture(gl, "portal", "assets/images/portal.png"),
         loadImageAndTexture(gl, "essence_orb_small", "assets/images/essence_orb_small.png"),
