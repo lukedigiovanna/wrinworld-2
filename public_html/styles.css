@@ -147,7 +147,7 @@ img {
     pointer-events: none;
 }
 
-#attack-reload-icon {
+#cooldown-charge-icon {
     position: absolute;
     pointer-events: none;
     width: 48px;

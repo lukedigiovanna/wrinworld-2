@@ -4,7 +4,7 @@ import { Item, ItemCategory, ItemIndex, itemsCodex, ItemStat,
 import { getImage } from "./imageLoader";
 import { GameObject } from "./gameObjects";
 import input, { InputLayer } from "./input";
-import { Vector } from "./utils";
+import { MathUtils, Vector } from "./utils";
 import { addNotification } from "./notifications";
 import controls, { Controls } from "./controls";
 
@@ -20,9 +20,12 @@ type SlotType = typeof slotTypes[number];
 interface SlotTypeConfig {
     iconID: string;
     selectedIconID?: string;
+    chargeIconID?: string;
     acceptItemCategory: ItemCategory[] | null; // Null to accept all
     controlKeys?: (keyof Controls)[];
+    selectable: boolean;
     equipOnAdd: boolean;
+    equipOnSelect?: boolean;
 }
 
 const slotConfigs: Record<SlotType, SlotTypeConfig> = {
@@ -30,18 +33,22 @@ const slotConfigs: Record<SlotType, SlotTypeConfig> = {
         iconID: "inventory_slot",
         acceptItemCategory: null,
         equipOnAdd: false,
+        selectable: false,
     },
     weapon: {
         iconID: "weapon_slot",
         selectedIconID: "selected_weapon_slot",
         acceptItemCategory: ["Weapon"],
         controlKeys: ["selectWeapon1", "selectWeapon2"],
-        equipOnAdd: true,
+        equipOnAdd: false,
+        equipOnSelect: true,
+        selectable: true,
     },
     quiver: {
         iconID: "quiver_slot",
         acceptItemCategory: ["Ammo"],
         equipOnAdd: false,
+        selectable: false,
     },
     utility: {
         iconID: "utility_slot",
@@ -49,6 +56,7 @@ const slotConfigs: Record<SlotType, SlotTypeConfig> = {
         acceptItemCategory: ["Utility", "Mystic Arts"],
         controlKeys: ["utility1", "utility2"],
         equipOnAdd: false,
+        selectable: false,
     },
     consumable: {
         iconID: "consumable_slot",
@@ -56,11 +64,13 @@ const slotConfigs: Record<SlotType, SlotTypeConfig> = {
         acceptItemCategory: ["Consumable"],
         controlKeys: ["consumable"],
         equipOnAdd: false,
+        selectable: false,
     },
     buff: {
         iconID: "buff_slot",
         acceptItemCategory: ["Buff"],
         equipOnAdd: true,
+        selectable: false,
     }
 } as const;
 
@@ -71,6 +81,7 @@ type InventorySlotCounts = {
 interface SlotGroup {
     slots: (InventorySlot | null)[];
     slotDivs: JQuery<HTMLElement>[];
+    selectedIndex?: number;
 }
 
 interface SlotLocator {
@@ -118,7 +129,7 @@ class Inventory {
     // For tracking charged items:
     // When charging, all other items become disabled.
     private charging: boolean = false;
-    private chargeStartTime?: number;
+    private chargeStartTime: number = 0;
     private chargeIndex?: SlotLocator;
     private chargeItem?: Item;
 
@@ -132,10 +143,19 @@ class Inventory {
                 slotType, 
                 {
                     slots: Array.from({ length: counts[slotType] }, () => null),
-                    slotDivs: []
+                    slotDivs: [],
                 }
             ])
         ) as Record<SlotType, SlotGroup>;
+
+        for (const slotType of slotTypes) {
+            if (slotConfigs[slotType].selectable) {
+                this.selectSlot({
+                    type: slotType,
+                    index: 0,
+                });
+            }
+        }
 
         this.hotbarSlotLocators = [];
         this.hotbarSlotDivs = [];
@@ -186,11 +206,8 @@ class Inventory {
                 count: 1,
                 lastTimeUsed: undefined,
             };
-            // TODO: Equip item if it went into an appropriate slot to be equipped
             if (slotConfigs[emptyIndex.type].equipOnAdd) {
-                if (item.equipItem) {
-                    item.equipItem(this.player);
-                }
+                item.equipItem?.(this.player);
             }
             return true;
         }
@@ -351,29 +368,15 @@ class Inventory {
 
         console.log(`Inventory.releaseItem(${JSON.stringify(slotIndex)})`)
 
-        if (!this.chargeStartTime || !this.chargeItem || !this.chargeIndex) {
-            throw Error("Somehow was charging without settings the chargeTime, chargeIndex, or chargeItem");
+        if (!this.chargeItem || !this.chargeIndex) {
+            throw Error("Somehow was charging without setting the chargeIndex, or chargeItem");
         }
 
         const chargePeriod = this.player.game.time - this.chargeStartTime;
-        const charge = Math.min(slot.item.charge, chargePeriod);
+        const charge = Math.min(slot.item.charge, chargePeriod) / slot.item.charge;
         this.useItem(slotIndex, target, charge);
 
         this.charging = false;
-
-        // // Ensure that if the player changes their slot we ignore a release.
-        // if (this.pressedIndex === null || this.pressedIndex.type !== slotIndex.type || this.pressedIndex.index !== slotIndex.index) {
-        //     return;
-        // }
-        // const slot = this.getSlot(slotIndex);
-        // const item = slot?.item;
-        // // // If theres no item in the slot or the item somehow changed from a press, then ignore
-        // if (!item || item !== this.pressedItem) {
-        //     return;
-        // }
-        // if (item.releaseItem) {
-        //     this.useItem(slotIndex, target, "releaseItem");
-        // }
     }
 
     // --- UI functions ---
@@ -650,13 +653,45 @@ class Inventory {
                 this.setSlotUIByIndex({
                     index: i,
                     type
-                })
+                });
+            }
+            const selectedIndex = this.reference[type].selectedIndex
+            if (selectedIndex !== undefined && slotConfigs[type].selectedIconID) {
+                this.reference[type].slotDivs[selectedIndex]
+                    .find(".slot-icon")
+                    .attr("src", getImage(slotConfigs[type].selectedIconID).src);
             }
         }
         let i = 0;
         for (const slotIndex of this.hotbarSlotLocators) {
             this.setSlotUI(this.reference[slotIndex.type].slots[slotIndex.index], this.hotbarSlotDivs[i]);
+            this.hotbarSlotDivs[i]
+                .find(".slot-icon")
+                .attr("src", getImage(
+                    slotIndex.index === this.reference[slotIndex.type].selectedIndex ?
+                    slotConfigs[slotIndex.type].selectedIconID as string :
+                    slotConfigs[slotIndex.type].iconID
+                ).src);
             i++;
+        }
+
+        // Update cooldown/charging icon
+        const icon = $("#cooldown-charge-icon");
+        if (this.charging) {
+            if (!this.chargeItem || this.chargeItem.charge === undefined) {
+                throw Error("Somehow was charging an item without a charge field");
+            }
+            const elapsed = this.player.game.time - this.chargeStartTime;
+            const charge = Math.min(this.chargeItem.charge, elapsed);
+            const percent = charge / this.chargeItem.charge;
+            const index = Math.floor(percent * 9);
+            icon.attr("src", getImage(`attack_charge_${index}`).src);
+            icon.show();
+            icon.css("left", input.mousePosition.x);
+            icon.css("top", input.mousePosition.y);
+        }
+        else {
+            icon.hide();
         }
     }
 
@@ -700,38 +735,39 @@ class Inventory {
         return null;
     }
 
-    public unselectSlot(slotIndex: SlotLocator, unequip=false) {
-        const div = this.hotbarSlotDiv(slotIndex);
-        if (div === null) {
-            throw Error("Trying to unselect a slotIndex which is not on the hotbar");
-        }
-        div.find(".slot-icon").attr("src", getImage(slotConfigs[slotIndex.type].iconID).src);
-        if (unequip) {
-            const slot = this.getSlot(slotIndex);
-            if (slot) {
-                if (slot.item.unequipItem) {
-                    slot.item.unequipItem(this.player);
-                }
-            }
-        }
+    public getSelectedIndex(type: SlotType) {
+        return this.reference[type].selectedIndex;
     }
 
-    public selectSlot(slotIndex: SlotLocator, equip=false) {
-        const { selectedIconID, iconID } = slotConfigs[slotIndex.type]
-        const id = selectedIconID ? selectedIconID : iconID;
-        const src = getImage(id).src;
-        const div = this.hotbarSlotDiv(slotIndex);
-        if (div === null) {
-            throw Error("Trying to select a slotIndex which is not on the hotbar");
+    public getNumberOfSlots(type: SlotType) {
+        return this.reference[type].slots.length;
+    }
+
+    public selectSlot(slotIndex: SlotLocator) {
+        if (!slotConfigs[slotIndex.type].selectable) {
+            throw Error(`Cannot select slot type ${slotIndex.type} as it is unselectable`);
         }
-        div.find(".slot-icon").attr("src", src);
-        if (equip) {
-            const slot = this.getSlot(slotIndex);
-            if (slot) {
-                if (slot.item.equipItem) {
-                    slot.lastTimeUsed = this.player.game.time;
-                    slot.item.equipItem(this.player);
-                }
+        console.log(`Inventory.selectSlot(${JSON.stringify(slotIndex)})`)
+        const slotGroup = this.reference[slotIndex.type];
+        slotIndex.index = MathUtils.modulo(slotIndex.index, this.getNumberOfSlots(slotIndex.type));
+        // Do nothing if already selecting this slot
+        if (slotIndex.index === slotGroup.selectedIndex) {
+            return;
+        }
+        const equip = slotConfigs[slotIndex.type].equipOnSelect;
+        if (equip && slotGroup.selectedIndex !== undefined) {
+            const oldItem = slotGroup.slots[slotGroup.selectedIndex];
+            if (oldItem !== null) {
+                oldItem.item.unequipItem?.(this.player);
+                oldItem.lastTimeUsed = 0;
+            }
+        }
+        slotGroup.selectedIndex = slotIndex.index;
+        if (equip && slotGroup.selectedIndex !== undefined) {
+            const newItem = slotGroup.slots[slotGroup.selectedIndex];
+            if (newItem !== null) {
+                newItem.item.equipItem?.(this.player);
+                newItem.lastTimeUsed = this.player.game.time;
             }
         }
     }

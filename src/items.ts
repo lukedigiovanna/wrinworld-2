@@ -234,7 +234,10 @@ function weaponItem(index: WeaponIndex): Partial<Item> {
             return true;
         },
         equipItem(player: GameObject) {
-            
+            console.log("Equipping weapon", index);
+        },
+        unequipItem(player: GameObject) {
+            console.log("Unequipping weapon", index);
         },
         getStats() {
             return generateStatsForWeapon(index);

@@ -98,7 +98,6 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
             id: "player-ui-management",
             start() {
                 data.health = gameObject.getComponent("health");
-                // data.weaponManager = gameObject.getComponent("weapon-manager");
             },
             update() {
                 const dirty = data.lastHP !== data.health.data.hp ||
@@ -106,36 +105,6 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                 if (dirty) {
                     updateHealthUI(data.health.data.hp, data.health.data.maximumHP);
                 }
-
-                // const equipped = data.weaponManager.data.equippedWeapon;
-                // if (equipped) {
-                //     let elapsed = gameObject.game.time - data.weaponManager.data.timeLastFired;
-                //     let percent = elapsed / equipped.cooldown;
-                //     let index = Math.floor(percent * 10);
-                //     const attackReloadIcon = $("#attack-reload-icon");
-                //     let follow = false;
-                //     if (percent <= 1) {
-                //         follow = true;
-                //         attackReloadIcon.attr("src", getImage(`attack_reload_${index}`).src);
-                //     }
-                //     else {
-                //         if (data.weaponManager.data.charging) {
-                //             follow = true;
-                //             elapsed = gameObject.game.time - data.weaponManager.data.timeChargeStart;
-                //             percent = elapsed / (equipped.maxCharge ? equipped.maxCharge : 1);
-                //             index = Math.min(9, Math.floor(percent * 10));
-                //             attackReloadIcon.attr("src", getImage(`attack_charge_${index}`).src);
-                //         }
-                //     }
-                //     if (follow) {
-                //         attackReloadIcon.show();
-                //         attackReloadIcon.css("left", input.mousePosition.x);
-                //         attackReloadIcon.css("top", input.mousePosition.y);
-                //     }
-                //     else {
-                //         attackReloadIcon.hide();
-                //     }
-                // }
             }
         }
     });

@@ -9,21 +9,12 @@ import controls, { Controls } from "../controls";
 const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
         inventory: undefined,
-        selectedWeaponIndex: 0,
         inventoryDisplayed: false,
-        setSelectedWeaponIndex(i: number, force=false) {
-            if (!force && i === this.selectedWeaponIndex) {
-                return;
-            }
-            this.inventory.unselectSlot({
-                type: "weapon",
-                index: this.selectedWeaponIndex
-            }, true);
+        setSelectedWeaponIndex(i: number) {
             this.inventory.selectSlot({
                 type: "weapon",
                 index: i
             }, true);
-            this.selectedWeaponIndex = i;
         },
         checkInput(control: keyof Controls, slotIndex: SlotLocator) {
             if (input.isKeyPressed(controls[control].code)) {
@@ -44,22 +35,14 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
         id: "inventory-manager",
         start() {
             data.inventory = new Inventory(gameObject);
-            data.setSelectedWeaponIndex(0, true);
             input.registerScrollCallback((deltaY: number) => {
-                const currIndex = data.selectedWeaponIndex;
-                let newIndex;
+                const currIndex = data.inventory.getSelectedIndex("weapon");
                 if (deltaY < 0) {
-                    newIndex = (currIndex + 1) % 2; 
+                    data.setSelectedWeaponIndex(currIndex + 1);
                 }
                 else {
-                    if (currIndex === 0) {
-                        newIndex = 2 - 1;
-                    }
-                    else {
-                        newIndex = currIndex - 1;
-                    }
+                    data.setSelectedWeaponIndex(currIndex - 1);
                 }
-                data.setSelectedWeaponIndex(newIndex);
             });
         },
         update(dt: number) {
@@ -96,13 +79,13 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
             if (input.mousePressed()) {
                 data.inventory.pressItem({
                     type: "weapon",
-                    index: data.selectedWeaponIndex
+                    index: data.inventory.getSelectedIndex("weapon")
                 }, gameObject.game.camera.screenToWorldPosition(input.mousePosition));
             }
             if (input.mouseReleased()) {
                 data.inventory.releaseItem({
                     type: "weapon",
-                    index: data.selectedWeaponIndex
+                    index: data.inventory.getSelectedIndex("weapon")
                 }, gameObject.game.camera.screenToWorldPosition(input.mousePosition), 0);
             }
 

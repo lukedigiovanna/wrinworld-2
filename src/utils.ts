@@ -213,6 +213,11 @@ class NumberRange {
 }
 
 class MathUtils {
+    // Computes a real modulus (as compared with the remainder operator - %)
+    public static modulo(n: number, d: number) {
+        return ((n % d) + d) % d;
+    }      
+
     public static clamp(x: number, a: number, b: number) {
         return x < a ? a : (x > b) ? b : x;
     }

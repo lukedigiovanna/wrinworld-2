@@ -36,7 +36,7 @@ const mainLoop = () => {
 
     game.draw();
 
-    $("#fps").text(Math.round(fpsAverage));
+    $("#fps").text(Math.round(1 / dt));
     $("#objs").text(game.totalObjects);
     $("#active-objs").text(game.totalActiveObjects);
 
