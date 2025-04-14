@@ -769,6 +769,15 @@ class Inventory {
         return this.reference[type].selectedIndex;
     }
 
+    public getSelectedItem(type: SlotType): Item | undefined {
+        const index = this.getSelectedIndex(type);
+        return index !== undefined ? this.reference[type].slots[index]?.item : undefined;
+    }
+
+    public getChargingItem(): Item | undefined {
+        return this._charging ? this.chargeItem : undefined;
+    }
+
     public getNumberOfSlots(type: SlotType) {
         return this.reference[type].slots.length;
     }

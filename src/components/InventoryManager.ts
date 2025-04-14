@@ -96,21 +96,21 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
             data.inventory.updateUI();
         },
         render(camera) {
-            const selectedWeaponSlot = data.inventory.getSlot({
-                type: "weapon",
-                index: data.selectedWeaponIndex
-            });
-            if (selectedWeaponSlot) {
-                const selected = selectedWeaponSlot.item;
+            let activeItem = data.inventory.getChargingItem();
+            if (!activeItem) {
+                activeItem = data.inventory.getSelectedItem("weapon");
+            } 
+            if (activeItem) {
                 let sign = Math.sign(gameObject.scale.x)
                 const offset = 12;
                 camera.color = Color.WHITE;
                 camera.drawTexture(
-                    getTexture(selected.iconSpriteID), 
+                    getTexture(activeItem.iconSpriteID), 
                     gameObject.position.x + offset * sign, gameObject.position.y - 6, 
                     16 * sign, 16
                 );
             }
+            
             // const weaponManager = gameObject.getComponent("weapon-manager");
             // if (weaponManager.data.charging) {
             //     const hitboxCenter = Vector.add(gameObject.position, gameObject.getComponent("hitbox").data.boxOffset);
