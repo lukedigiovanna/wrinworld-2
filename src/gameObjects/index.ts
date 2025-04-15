@@ -216,12 +216,12 @@ stack trace:`)
     }
 
     // Performs a raycast against all 
-    public raycastHitboxes(direction: Vector, ignoreSelf: boolean=true): {hit: GameObject, distance: number} | null {
+    public raycastHitboxes(direction: Vector, ignoreSelfTeam: boolean=true): {hit: GameObject, distance: number} | null {
         const adjacent = this.getAdjacentObjects();
         let closest = null;
         for (let i = 0; i < adjacent.length; i++) {
             const obj = adjacent[i];
-            if (ignoreSelf && obj === this) {
+            if (ignoreSelfTeam && obj.team === this.team) {
                 continue;
             }
             if (obj.hasComponent("hitbox")) {
@@ -236,12 +236,12 @@ stack trace:`)
         return closest;
     }
 
-    public raycastPhysicalColliders(direction: Vector, ignoreSelf: boolean=true): {hit: GameObject, distance: number} | null {
+    public raycastPhysicalColliders(direction: Vector, ignoreSelfTeam: boolean=true): {hit: GameObject, distance: number} | null {
         const adjacent = this.getAdjacentObjects();
         let closest = null;
         for (let i = 0; i < adjacent.length; i++) {
             const obj = adjacent[i];
-            if (ignoreSelf && obj === this) {
+            if (ignoreSelfTeam && obj.team === this.team) {
                 continue;
             }
             if (obj.hasComponent("physical-collider")) {

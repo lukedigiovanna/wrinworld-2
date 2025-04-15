@@ -1,6 +1,6 @@
-import { ItemIndex } from "./items";
 import { Vector } from "./utils";
-import { BasicFollowAndAttackAI, ComponentFactory } from "./components";
+import { ComponentFactory } from "./components"
+import { BasicFollowAndAttackAI, EnemyAI, slimeAIConfig } from "./components/EnemyAI";
 import { ItemDropChance } from "./items";
 import { Codex } from "./codex";
 import { WeaponIndex } from "./weapons";
@@ -28,6 +28,19 @@ interface Enemy {
 }
 
 const enemiesCodex = new Codex<EnemyIndex, Enemy>();
+enemiesCodex.set(EnemyIndex.SLIME, {
+    spriteID: "slime",
+    waterSpriteID: "slime_water",
+    deadSpriteID: "slime_dead",
+    particleID: "slime_particle",
+    scale: new Vector(0.75, 0.5),
+    hp: 10,
+    drops: [],
+    speed: 22,
+    waterSpeedModifier: 0.5,
+    essenceAmount: 1,
+    ai: EnemyAI(slimeAIConfig)
+});
 enemiesCodex.set(EnemyIndex.MINION, {
     spriteID: "minion",
     waterSpriteID: "minion_water",
@@ -42,26 +55,6 @@ enemiesCodex.set(EnemyIndex.MINION, {
         attackRange: 8,
         followDistance: 160,
         weaponIndex: WeaponIndex.MINION_ATTACK,
-    })
-});
-enemiesCodex.set(EnemyIndex.SLIME, {
-    spriteID: "slime",
-    waterSpriteID: "slime_water",
-    deadSpriteID: "slime_dead",
-    particleID: "slime_particle",
-    scale: new Vector(0.75, 0.5),
-    hp: 10,
-    drops: [],
-    speed: 22,
-    waterSpeedModifier: 0.5,
-    essenceAmount: 1,
-    ai: BasicFollowAndAttackAI({
-        attackRange: 12,
-        followDistance: 192,
-        weaponIndex: WeaponIndex.SLIME_ATTACK,
-        customSpeedModifier(gameObject, direction) {
-            return Math.sin(gameObject.age * 6) * 0.5 + 0.5;
-        },
     })
 });
 enemiesCodex.set(EnemyIndex.REVENANT_EYE, {

@@ -20,7 +20,7 @@ type Component = {
 type ComponentFactory = (gameObject: GameObject) => Component;
 
 export { Component, ComponentFactory, ComponentID};
-export * from "./EnemyAI";
+// export * from "./EnemyAI";
 export * from "./EssenceManager";
 export * from "./Health";
 export * from "./Hitbox";
