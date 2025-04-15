@@ -1,13 +1,11 @@
 import { GameObjectFactory, GameObject, Team } from "./";
 import { Vector, MathUtils } from "../utils";
 import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager, 
-         Health, WeaponManager, EssenceManager, HealthBarDisplayMode,
+         Health, EssenceManager, HealthBarDisplayMode,
          StatusEffectManager, ParticleEmitter, ParticleLayer,
          MovementData} from "../components";
 import { spriteRenderer } from "../renderers";
 import { ItemIndex, itemsCodex } from "../items";
-import { getImage } from "../imageLoader";
-import input from "../input";
 
 const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const player = new GameObject();
@@ -31,7 +29,6 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const collider = player.addComponent(PhysicalCollider);
     collider.data.boxOffset.setComponents(0, -20);
     collider.data.boxSize.setComponents(24, 8);
-    collider.data.castShadow = false;
 
     const health = player.addComponent(Health);
     health.data.initializeHealth(50);

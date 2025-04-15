@@ -32,4 +32,3 @@ export * from "./PhysicalCollider";
 export * from "./Physics";
 export * from "./PlayerMovement";
 export * from "./StatusEffectManager";
-export * from "./WeaponManager";

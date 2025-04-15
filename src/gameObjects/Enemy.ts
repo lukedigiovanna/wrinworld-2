@@ -1,7 +1,7 @@
 import { GameObject, GameObjectFactory, EssenceOrbFactory, Team } from "./";
 import { spriteRenderer } from "../renderers";
 import { Vector, MathUtils } from "../utils";
-import { Health, Hitbox, Physics, PhysicalCollider, ItemDropper, WeaponManager, 
+import { Health, Hitbox, Physics, PhysicalCollider, ItemDropper, 
     HealthBarDisplayMode, ParticleEmitter, ParticleLayer, StatusEffectManager, 
     MovementData} from "../components";
 import { TileIndex } from "../tiles";
@@ -29,7 +29,6 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
     enemy.addComponent(Hitbox);
     enemy.addComponent(Physics);
     enemy.addComponent(ItemDropper(enemyData.drops));
-    enemy.addComponent(WeaponManager);
     enemy.addComponent(StatusEffectManager);
     
     const movementData = enemy.addComponent(MovementData);
