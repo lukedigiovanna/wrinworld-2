@@ -69,6 +69,11 @@ class EnemyAIData {
     }
 
     public update(dt: number) {
+        if (this.movementData.data.isStunned()) { // No moving/attacking/etc.
+            this.targetPosition = undefined;
+            return;
+        }
+
         const newState = this.config.functions[this.state]?.(this.self, dt, this);
         if (newState !== undefined && newState !== this.state) {
             this.state = newState;
@@ -104,19 +109,24 @@ interface EnemyAIConfig {
     customSpeedModifier?: (gameObject: GameObject) => number;
 }
 
+function basicIdle(followDistance: number, changePositionRate: number): EnemyAIStateFunction {
+    return (gameObject: GameObject, dt: number, data: EnemyAIData) => {
+        if (data.distanceToPlayer < 200 && data.hasLineOfSightToPlayer) {
+            return "follow";
+        }
+        if (Math.random() < dt * 0.1) {
+            data.targetPosition = Vector.add(gameObject.position, MathUtils.randomVector(MathUtils.random(16, 40)));
+        }
+        return "idle";
+    }
+}
+
 const slimeAIConfig: EnemyAIConfig = {
     functions: {
-        idle(gameObject, dt, data) {
-            if (data.distanceToPlayer < 200 && data.hasLineOfSightToPlayer) {
-                return "follow";
-            }
-            if (Math.random() < dt * 0.1) {
-                data.targetPosition = Vector.add(gameObject.position, MathUtils.randomVector(MathUtils.random(16, 40)));
-            }
-            return "idle";
-        },
+        idle: basicIdle(200, 0.1),
         follow(gameObject, dt, data) {
             if (data.distanceToPlayer > 250 || !data.hasLineOfSightToPlayer) {
+                data.targetPosition = undefined;
                 return "idle";
             }
             if (data.distanceToPlayer < 40) {
@@ -127,9 +137,12 @@ const slimeAIConfig: EnemyAIConfig = {
         },
         slime_windup_attack(gameObject, dt, data) {
             data.targetPosition = undefined;
-            if (data.timeInState > 0.5) {
+            if (data.timeInState > 0.75) {
                 data.physics.data.impulse.add(
-                    Vector.scaled(gameObject.position.directionTowards(data.playerHitboxCenter), 2.5)
+                    Vector.scaled(
+                        Vector.normalized(gameObject.position.directionTowards(data.playerHitboxCenter)), 
+                        112
+                    )
                 );
                 return "slime_throw_self";
             }
@@ -154,6 +167,45 @@ const slimeAIConfig: EnemyAIConfig = {
     },
 }
 
+const minionAIConfig: EnemyAIConfig = {
+    functions: {
+        idle: basicIdle(240, 0.1),
+        follow(gameObject, dt, data) {
+            if (data.distanceToPlayer > 250 || !data.hasLineOfSightToPlayer) {
+                data.targetPosition = undefined;
+                return "idle";
+            }
+            if (data.distanceToPlayer < 40) {
+                return "slime_windup_attack";
+            }
+            data.targetPosition = data.playerHitboxCenter;
+            return "follow";
+        },
+    },
+    movementSpeed: 36,
+};
+
+const wretchedSkeletonAIConfig: EnemyAIConfig = {
+    functions: {
+
+    },
+    movementSpeed: 28,
+};
+
+const revenantEyeAIConfig: EnemyAIConfig = {
+    functions: {
+
+    },
+    movementSpeed: 32,
+};
+
+const wraithAIConfig: EnemyAIConfig = {
+    functions: {
+
+    },
+    movementSpeed: 44,
+}
+
 const EnemyAI: (config: EnemyAIConfig) => ComponentFactory = (config) => {
     return (gameObject) => {
         return {
@@ -172,63 +224,5 @@ const EnemyAI: (config: EnemyAIConfig) => ComponentFactory = (config) => {
     }
 }
 
-interface BasicFollowAndAttackProperties {
-    // How close the target must be before we can start attacking
-    followDistance: number;
-    // How close the target must be to start attacking
-    attackRange: number;
-    // The weapon to use on attack
-    weaponIndex: WeaponIndex;
-    //
-    customSpeedModifier?: (gameObject: GameObject, direction: Vector) => number;
-}
-
-const BasicFollowAndAttackAI: (props: BasicFollowAndAttackProperties) => ComponentFactory = 
-(props) => {
-    return (gameObject) => {
-        const data: any = {
-            target: undefined,
-            physics: undefined,
-            weaponManager: undefined,
-            movementData: undefined,
-        }
-        return {
-            id: "basic-follow-and-attack-ai",
-            start() {
-                data.target = gameObject.game.player;
-                data.physics = gameObject.getComponent("physics");
-                data.weaponManager = gameObject.getComponent("weapon-manager");
-                data.movementData = gameObject.getComponent("movement-data");
-            },
-            update(dt) {
-                if (gameObject.age < 1.5) {
-                    return;
-                }
-                
-                const targetPosition = data.target.position;
-                const direction = Vector.subtract(targetPosition, gameObject.position);
-                const distance = direction.magnitude;
-                if (distance > props.followDistance) {
-                    data.physics.data.velocity.setComponents(0, 0);
-                    return;
-                }
-
-                
-                if (distance <= props.attackRange) {
-                    data.weaponManager.data.press(props.weaponIndex, targetPosition);
-                    data.weaponManager.data.release(props.weaponIndex, targetPosition);
-                    data.physics.data.velocity.set(Vector.zero());
-                }
-                else {
-                    const modifier = props.customSpeedModifier ? props.customSpeedModifier(gameObject, direction) : 1.0; 
-                    direction.normalize()
-                    direction.scale(this.data.movementData.data.getSpeed() * modifier);
-                    data.physics.data.velocity.set(direction);
-                }   
-            },
-            data
-        }
-    }
-}
-
-export { BasicFollowAndAttackAI, EnemyAI, slimeAIConfig };
+export { EnemyAI, slimeAIConfig, minionAIConfig, wretchedSkeletonAIConfig, 
+         revenantEyeAIConfig, wraithAIConfig };

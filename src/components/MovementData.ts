@@ -13,13 +13,18 @@ const MovementData: ComponentFactory = (gameObject: GameObject) => {
             chargingModifier: 0.3,
             attackingPortalModifier: 0.5,
             waterModifier: 0.5,
-            modifier: 1.0,
             sprinting: false,
             charging: false,
             attackingPortal: false,
+            stunnedCount: 0,
+            isStunned() {
+                return this.stunnedCount > 0;
+            },
             getSpeed() {
+                if (this.isStunned()) {
+                    return 0;
+                }
                 let realModifier = 1.0;
-                realModifier *= this.modifier;
                 if (this.sprinting) realModifier *= this.sprintModifier;
                 if (this.charging) realModifier *= this.chargingModifier;
                 if (this.attackingPortal) realModifier *= this.attackingPortalModifier;

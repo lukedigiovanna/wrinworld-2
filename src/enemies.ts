@@ -1,6 +1,6 @@
 import { Vector } from "./utils";
 import { ComponentFactory } from "./components"
-import { BasicFollowAndAttackAI, EnemyAI, slimeAIConfig } from "./components/EnemyAI";
+import * as AI from "./components/EnemyAI";
 import { ItemDropChance } from "./items";
 import { Codex } from "./codex";
 import { WeaponIndex } from "./weapons";
@@ -38,8 +38,8 @@ enemiesCodex.set(EnemyIndex.SLIME, {
     drops: [],
     speed: 22,
     waterSpeedModifier: 0.5,
-    essenceAmount: 1,
-    ai: EnemyAI(slimeAIConfig)
+    essenceAmount: 2,
+    ai: AI.EnemyAI(AI.slimeAIConfig)
 });
 enemiesCodex.set(EnemyIndex.MINION, {
     spriteID: "minion",
@@ -51,26 +51,7 @@ enemiesCodex.set(EnemyIndex.MINION, {
     speed: 29,
     waterSpeedModifier: 0.5,
     essenceAmount: 2,
-    ai: BasicFollowAndAttackAI({
-        attackRange: 8,
-        followDistance: 160,
-        weaponIndex: WeaponIndex.MINION_ATTACK,
-    })
-});
-enemiesCodex.set(EnemyIndex.REVENANT_EYE, {
-    spriteID: "revenant_eye",
-    deadSpriteID: "revenant_eye_dead",
-    scale: new Vector(1, 1),
-    hp: 25,
-    drops: [],
-    speed: 22,
-    waterSpeedModifier: 1.0,
-    essenceAmount: 5,
-    ai: BasicFollowAndAttackAI({
-        attackRange: 96,
-        followDistance: 256,
-        weaponIndex: WeaponIndex.REVENANT_EYE_ATTACK,
-    }),
+    ai: AI.EnemyAI(AI.minionAIConfig)
 });
 enemiesCodex.set(EnemyIndex.WRETCHED_SKELETON, {
     spriteID: "wretched_skeleton",
@@ -82,11 +63,18 @@ enemiesCodex.set(EnemyIndex.WRETCHED_SKELETON, {
     waterSpeedModifier: 0.5,
     drops: [],
     essenceAmount: 6,
-    ai: BasicFollowAndAttackAI({
-        attackRange: 128,
-        followDistance: 256,
-        weaponIndex: WeaponIndex.WRETCHED_SKELETON_ATTACK,
-    })
+    ai: AI.EnemyAI(AI.wretchedSkeletonAIConfig),
+});
+enemiesCodex.set(EnemyIndex.REVENANT_EYE, {
+    spriteID: "revenant_eye",
+    deadSpriteID: "revenant_eye_dead",
+    scale: new Vector(1, 1),
+    hp: 25,
+    drops: [],
+    speed: 22,
+    waterSpeedModifier: 1.0,
+    essenceAmount: 5,
+    ai: AI.EnemyAI(AI.revenantEyeAIConfig),
 });
 enemiesCodex.set(EnemyIndex.WRAITH, {
     spriteID: "wraith",
@@ -96,11 +84,7 @@ enemiesCodex.set(EnemyIndex.WRAITH, {
     waterSpeedModifier: 1.0,
     drops: [],
     essenceAmount: 8,
-    ai: BasicFollowAndAttackAI({
-        attackRange: 96,
-        followDistance: 256,
-        weaponIndex: WeaponIndex.WRAITH_ATTACK
-    })
+    ai: AI.EnemyAI(AI.wraithAIConfig),
 });
 
 

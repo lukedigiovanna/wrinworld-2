@@ -68,7 +68,7 @@ meleeAttacksCodex.set(MeleeAttackIndex.BASIC, {
     maxHits: 1,
     knockback: 16,
     size: 4,
-    range: 16,
+    range: 8,
     duration: 0.1,
     particleSpriteID: "sword_spark"
 });

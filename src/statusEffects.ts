@@ -51,12 +51,12 @@ statusEffectsCodex.set(StatusEffectIndex.STUN, {
     },
     start(gameObject, level) {
         if (gameObject.hasComponent("movement-data")) {
-            gameObject.getComponent("movement-data").data.modifier -= 1.0;
+            gameObject.getComponent("movement-data").data.stunnedCount++;
         }
     },
     end(gameObject, level) {
         if (gameObject.hasComponent("movement-data")) {
-            gameObject.getComponent("movement-data").data.modifier += 1.0;
+            gameObject.getComponent("movement-data").data.stunnedCount--;
         }
     },
 });
@@ -72,12 +72,12 @@ statusEffectsCodex.set(StatusEffectIndex.ROOT_SNARE, {
     },
     start(gameObject, level) {
         if (gameObject.hasComponent("movement-data")) {
-            gameObject.getComponent("movement-data").data.modifier -= 1.0;
+            gameObject.getComponent("movement-data").data.stunnedCount++;
         }
     },
     end(gameObject, level) {
         if (gameObject.hasComponent("movement-data")) {
-            gameObject.getComponent("movement-data").data.modifier += 1.0;
+            gameObject.getComponent("movement-data").data.stunnedCount--;
         }
     },
 })
