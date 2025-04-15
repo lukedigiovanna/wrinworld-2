@@ -26,7 +26,6 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
     movementData.data.baseSpeed = enemyData.speed;
     movementData.data.waterModifier = enemyData.waterSpeedModifier;
     enemy.addComponent(ItemDropper(enemyData.drops));
-    enemy.addComponent(enemyData.ai);
     enemy.addComponent(WeaponManager);
     enemy.addComponent(StatusEffectManager);
     const collider = enemy.addComponent(PhysicalCollider);
@@ -83,6 +82,7 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
             },
         }
     });
+    enemy.addComponent(enemyData.ai);
     enemy.addComponent((gameObject) => {
         return {
             id: "essence-dropper",

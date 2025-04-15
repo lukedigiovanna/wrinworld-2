@@ -80,6 +80,7 @@ window.onload = async () => {
         loadImageAndTexture(gl, "wraith", "assets/images/enemies/wraith.png"),
         loadImageAndTexture(gl, "wretched_skeleton", "assets/images/enemies/wretched_skeleton.png"),
         loadImageAndTexture(gl, "wretched_skeleton_water", "assets/images/enemies/wretched_skeleton_water.png"),
+        loadImageAndTexture(gl, "wretched_skeleton_attack", "assets/images/enemies/wretched_skeleton_attack.png"),
         loadImageAndTexture(gl, "wretched_skeleton_dead", "assets/images/enemies/wretched_skeleton_dead.png"),
 
         loadImageAndTexture(gl, "portal", "assets/images/portal.png"),

@@ -2,14 +2,15 @@ import { MeleeAttackIndex, meleeAttacksCodex } from "../meleeAttacks";
 import { Component, ComponentFactory } from "./index";
 import { GameObject } from "../gameObjects";
 import { Color, MathUtils, Vector } from "../utils";
-import { fireMelee, WeaponIndex } from "../weapons";
+import { fireMelee, fireProjectile, WeaponIndex } from "../weapons";
+import { projectilesCodex, ProjectileIndex } from "../projectiles";
 
 // system: when enemies are far they should wander
 // .       enemy has a "sight" distance: if they have line of sight to player they follow
 // .       enemy has a "sense" distance: if their target is within a distance, regardless of obstacles they will track
 // .
 
-const states = ["idle", "search", "follow", "attack_windup", "attack", "slime_throw_self"] as const;
+const states = ["idle", "set_search_position", "search", "follow", "attack_windup", "attack", "slime_throw_self"] as const;
 type EnemyAIState = typeof states[number];
 
 class EnemyAIData {
@@ -209,7 +210,43 @@ const minionAIConfig: EnemyAIConfig = {
 
 const wretchedSkeletonAIConfig: EnemyAIConfig = {
     functions: {
-
+        idle: basicIdle(300, 0.1),
+        follow(gameObject, dt, data) {
+            if (data.distanceToPlayer > 300) {
+                // Still track to last known position
+                return "idle";
+            }
+            if (!data.hasLineOfSightToPlayer) {
+                return "set_search_position";
+            }
+            if (data.distanceToPlayer < 100) {
+                return "attack_windup";
+            }
+            data.targetPosition = data.playerHitboxCenter;
+            return "follow";
+        },
+        set_search_position(gameObject, dt, data) {
+            data.targetPosition = Vector.add(gameObject.position, MathUtils.randomVector(32));
+            return "search";
+        },
+        search(gameObject, dt, data) {
+            if (data.timeInState > 0.5) {
+                return "follow";
+            }
+            return "search";
+        },
+        attack_windup(gameObject, dt, data) {
+            gameObject.renderer!.data.spriteID = "wretched_skeleton_attack";
+            if (data.timeInState > 1.5) {
+                return "attack";
+            }
+            data.targetPosition = undefined;
+            return "attack_windup";
+        },
+        attack(gameObject, dt, data) {
+            fireProjectile(projectilesCodex.get(ProjectileIndex.ARROW), gameObject, data.playerHitboxCenter);
+            return "search";
+        }
     },
     movementSpeed: 28,
 };

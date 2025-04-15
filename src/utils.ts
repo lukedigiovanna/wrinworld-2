@@ -134,6 +134,10 @@ class Vector {
         return Vector.subtract(other, this);
     }
 
+    public getNormal(): Vector {
+        return new Vector(-this.y, this.x);
+    }
+
     public static add(vec1: Vector, vec2: Vector): Vector {
         return new Vector(vec1._x + vec2._x, vec1._y + vec2._y);
     }
