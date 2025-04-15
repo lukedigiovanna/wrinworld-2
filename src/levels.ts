@@ -13,44 +13,42 @@ interface Level {
 }
 
 const level1PortalTypes: PortalProperties[] = [
-    // { // Slime portal
-    //     health: 25,
-    //     difficulty: 0,
-    //     packs: [
-    //         {
-    //             packSizeRange: new NumberRange(2, 6),
-    //             cooldownRange: new NumberRange(5, 10),
-    //             maxEnemies: 10,
-    //             enemyIndex: EnemyIndex.SLIME
-    //         }
-    //     ]
-    // },
-    // { // Minion portal
-    //     difficulty: 0.2,
-    //     health: 40,
-    //     packs: [
-    //         {
-    //             cooldownRange: new NumberRange(4, 10),
-    //             packSizeRange: new NumberRange(1, 4),
-    //             maxEnemies: 10,
-    //             enemyIndex: EnemyIndex.MINION
-    //         },
-    //         {
-    //             cooldownRange: new NumberRange(12, 24),
-    //             packSizeRange: new NumberRange(1, 1),
-    //             maxEnemies: 1,
-    //             enemyIndex: EnemyIndex.WRETCHED_SKELETON
-    //         }
-    //     ]
-    // }, 
+    { // Slime portal
+        health: 25,
+        difficulty: 0,
+        packs: [
+            {
+                packSizeRange: new NumberRange(2, 6),
+                cooldownRange: new NumberRange(5, 10),
+                maxEnemies: 10,
+                enemyIndex: EnemyIndex.SLIME
+            }
+        ]
+    },
+    { // Minion portal
+        difficulty: 0.2,
+        health: 40,
+        packs: [
+            {
+                cooldownRange: new NumberRange(4, 10),
+                packSizeRange: new NumberRange(1, 4),
+                maxEnemies: 10,
+                enemyIndex: EnemyIndex.MINION
+            },
+            {
+                cooldownRange: new NumberRange(12, 24),
+                packSizeRange: new NumberRange(1, 1),
+                maxEnemies: 1,
+                enemyIndex: EnemyIndex.WRETCHED_SKELETON
+            }
+        ]
+    }, 
     { // Revenant eye portal
-        difficulty: 0.0,
-        // difficulty: 0.4,
+        difficulty: 0.4,
         health: 70,
         packs: [
             {
-                // cooldownRange: new NumberRange(12, 20),
-                cooldownRange: new NumberRange(1, 2),
+                cooldownRange: new NumberRange(12, 20),
                 packSizeRange: new NumberRange(1, 2),
                 maxEnemies: 3,
                 enemyIndex: EnemyIndex.REVENANT_EYE

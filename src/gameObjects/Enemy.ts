@@ -9,30 +9,37 @@ import { enemiesCodex, EnemyIndex } from "../enemies";
 import { getTexture } from "../imageLoader";
 
 const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyIndex) => {
+    const enemyData = enemiesCodex.get(enemyIndex);
+    
     const enemy = new GameObject();
     enemy.team = Team.ENEMY;
     enemy.position = position.copy();
-    const enemyData = enemiesCodex.get(enemyIndex);
-    enemy.renderer = spriteRenderer(enemyData.spriteID);
+    
     const texture = getTexture(enemyData.spriteID);
+
+    enemy.renderer = spriteRenderer(enemyData.spriteID);
     enemy.scale.setComponents(texture.image.width, texture.image.height);
+    enemy.shadowSize = texture.image.width / 16;
+
     const health = enemy.addComponent(Health);
     health.data.initializeHealth(enemyData.hp);
     health.data.damageSoundEffectID = "hitmarker";
     health.data.healthBarDisplayMode = HealthBarDisplayMode.ON_HIT;
+    
     enemy.addComponent(Hitbox);
     enemy.addComponent(Physics);
-    const movementData = enemy.addComponent(MovementData);
-    movementData.data.baseSpeed = enemyData.speed;
-    movementData.data.waterModifier = enemyData.waterSpeedModifier;
     enemy.addComponent(ItemDropper(enemyData.drops));
     enemy.addComponent(WeaponManager);
     enemy.addComponent(StatusEffectManager);
+    
+    const movementData = enemy.addComponent(MovementData);
+    movementData.data.baseSpeed = enemyData.speed;
+    movementData.data.waterModifier = enemyData.waterSpeedModifier;
+    
     const collider = enemy.addComponent(PhysicalCollider);
     collider.data.boxSize = new Vector(enemy.scale.x * 0.75, 6);
     collider.data.boxOffset = new Vector(0, -enemy.scale.y / 2 + 3);
-    // collider.data.boxOffset = enemyType.physicalColliderOffset.copy();
-    // collider.data.boxSize = enemyType.physicalColliderSize.copy();
+    
     enemy.addComponent((gameObject) => {
         const data: any = {
             collider: undefined,

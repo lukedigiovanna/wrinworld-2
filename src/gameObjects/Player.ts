@@ -62,18 +62,14 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
             id: "add-starter-items",
             start() {
                 const inventoryManager = gameObject.getComponent("inventory-manager");
-                const items = [ItemIndex.BROAD_SWORD, ItemIndex.TELEPORTATION_RUNE, ItemIndex.ROOT_SNARE, ItemIndex.ESSENCE_VIAL, ItemIndex.BATTLE_HAMMER, ItemIndex.BOW, ItemIndex.ARROW];
+                // const items = [ItemIndex.BROAD_SWORD, ItemIndex.TELEPORTATION_RUNE, ItemIndex.ROOT_SNARE, ItemIndex.ESSENCE_VIAL, ItemIndex.BATTLE_HAMMER, ItemIndex.BOW, ItemIndex.ARROW];
+                const items = [ItemIndex.BROAD_SWORD];
                 for (const i of items) {
                     const item = itemsCodex.get(i as ItemIndex);
                     for (let j = 0; j < item.maxStack; j++) {
                         inventoryManager.data.inventory.addItemIndex(i);
                     }
                 }
-                // inventoryManager.data.inventory.addItemIndex(ItemIndex.BROAD_SWORD);
-                // inventoryManager.data.inventory.addItemIndex(ItemIndex.BOW);
-                // for (let i = 0; i < 100; i++) {
-                //     inventoryManager.data.inventory.addItemIndex(ItemIndex.ARROW);
-                // }
             }
         }
     })

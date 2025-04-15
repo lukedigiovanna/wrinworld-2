@@ -48,6 +48,10 @@ const MeleeAttackFactory: GameObjectFactory = (properties: MeleeAttack, owner: G
                 data.updatePosition();
             },
             update(dt) {
+                if (data.owner.destroyed) {
+                    gameObject.destroy();
+                    return;
+                }
                 data.updatePosition();
             },
             onHitboxCollisionEnter(collision) {

@@ -328,6 +328,9 @@ const EnemyAI: (config: EnemyAIConfig) => ComponentFactory = (config) => {
                 if (gameObject.age < 1.5) {
                     return;
                 }
+                if (gameObject.game.player.destroyed) {
+                    return;
+                }
                 this.data.update(dt);
             },
         }

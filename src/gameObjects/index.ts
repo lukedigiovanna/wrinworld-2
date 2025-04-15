@@ -37,7 +37,7 @@ class GameObject {
     public storedInChunkIndex = -1;
 
     private started: boolean = false;
-    private destroyed: boolean = false;
+    private _destroyed: boolean = false;
 
     public team: Team = Team.UNTEAMED;
 
@@ -61,6 +61,10 @@ class GameObject {
 
     public get age() {
         return this._game?.time as number - this._birthTime;
+    }
+
+    public get destroyed() {
+        return this._destroyed;
     }
 
     public get chunkIndex() {
@@ -195,10 +199,10 @@ stack trace:`)
     }
 
     public destroy() {
-        if (this.destroyed) {
+        if (this._destroyed) {
             return;
         }
-        this.destroyed = true;
+        this._destroyed = true;
         this.game.deleteGameObject(this);
         this.components.forEach(component => {
             if (component.destroy)
