@@ -9,7 +9,7 @@ import { fireMelee, WeaponIndex } from "../weapons";
 // .       enemy has a "sense" distance: if their target is within a distance, regardless of obstacles they will track
 // .
 
-const states = ["idle", "search", "follow", "attack", "slime_windup_attack", "slime_throw_self"] as const;
+const states = ["idle", "search", "follow", "attack_windup", "attack", "slime_throw_self"] as const;
 type EnemyAIState = typeof states[number];
 
 class EnemyAIData {
@@ -130,12 +130,12 @@ const slimeAIConfig: EnemyAIConfig = {
                 return "idle";
             }
             if (data.distanceToPlayer < 40) {
-                return "slime_windup_attack";
+                return "attack_windup";
             }
             data.targetPosition = data.playerHitboxCenter;
             return "follow";
         },
-        slime_windup_attack(gameObject, dt, data) {
+        attack_windup(gameObject, dt, data) {
             data.targetPosition = undefined;
             if (data.timeInState > 0.75) {
                 data.physics.data.impulse.add(
@@ -146,7 +146,7 @@ const slimeAIConfig: EnemyAIConfig = {
                 );
                 return "slime_throw_self";
             }
-            return "slime_windup_attack";
+            return "attack_windup";
         },
         slime_throw_self(gameObject, dt, data) {
             if (data.timeInState > 0.5) {
@@ -175,12 +175,34 @@ const minionAIConfig: EnemyAIConfig = {
                 data.targetPosition = undefined;
                 return "idle";
             }
-            if (data.distanceToPlayer < 40) {
-                return "slime_windup_attack";
+            if (data.distanceToPlayer < 24) {
+                return "attack_windup";
             }
             data.targetPosition = data.playerHitboxCenter;
             return "follow";
         },
+        attack_windup(gameObject, dt, data) {
+            data.targetPosition = undefined;
+            if (data.distanceToPlayer > 36) {
+                return "follow";
+            }
+            const f = 1 - data.timeInState / 1 * 0.5;
+            gameObject.color = new Color(1, f, f, 1);
+            if (data.timeInState > 1) {
+                return "attack";
+            }
+            return "attack_windup";
+        },
+        attack(gameObject, dt, data) {
+            fireMelee(
+                {
+                    ...meleeAttacksCodex.get(MeleeAttackIndex.BASIC),
+                    damage: 4,
+                    knockback: 32,
+                    range: 16
+                }, gameObject, data.playerHitboxCenter);
+            return "follow";
+        }
     },
     movementSpeed: 36,
 };
