@@ -1,5 +1,5 @@
 import { MeleeAttackIndex, meleeAttacksCodex } from "../meleeAttacks";
-import { Component, ComponentFactory } from "./index";
+import { Component, ComponentFactory, ParticleLayer } from "./index";
 import { GameObject } from "../gameObjects";
 import { Color, MathUtils, Vector } from "../utils";
 import { fireMelee, fireProjectile, WeaponIndex } from "../weapons";
@@ -19,6 +19,7 @@ class EnemyAIData {
     private startTimeInState: number;
     private config: EnemyAIConfig;
     public targetPosition: Vector | undefined;
+    public attacking: boolean = false;
 
     private _physics: Component;
     private _movementData: Component;
@@ -110,12 +111,12 @@ interface EnemyAIConfig {
     customSpeedModifier?: (gameObject: GameObject) => number;
 }
 
-function basicIdle(followDistance: number, changePositionRate: number): EnemyAIStateFunction {
+function basicIdle(followDistance: number): EnemyAIStateFunction {
     return (gameObject: GameObject, dt: number, data: EnemyAIData) => {
         if (data.distanceToPlayer < 200 && data.hasLineOfSightToPlayer) {
             return "follow";
         }
-        if (Math.random() < dt * 0.1) {
+        if (Math.random() < dt * 0.2) {
             data.targetPosition = Vector.add(gameObject.position, MathUtils.randomVector(MathUtils.random(16, 40)));
         }
         return "idle";
@@ -124,7 +125,7 @@ function basicIdle(followDistance: number, changePositionRate: number): EnemyAIS
 
 const slimeAIConfig: EnemyAIConfig = {
     functions: {
-        idle: basicIdle(200, 0.1),
+        idle: basicIdle(200),
         follow(gameObject, dt, data) {
             if (data.distanceToPlayer > 250 || !data.hasLineOfSightToPlayer) {
                 data.targetPosition = undefined;
@@ -170,7 +171,7 @@ const slimeAIConfig: EnemyAIConfig = {
 
 const minionAIConfig: EnemyAIConfig = {
     functions: {
-        idle: basicIdle(240, 0.1),
+        idle: basicIdle(240),
         follow(gameObject, dt, data) {
             if (data.distanceToPlayer > 250 || !data.hasLineOfSightToPlayer) {
                 data.targetPosition = undefined;
@@ -210,7 +211,7 @@ const minionAIConfig: EnemyAIConfig = {
 
 const wretchedSkeletonAIConfig: EnemyAIConfig = {
     functions: {
-        idle: basicIdle(300, 0.1),
+        idle: basicIdle(300),
         follow(gameObject, dt, data) {
             if (data.distanceToPlayer > 300) {
                 // Still track to last known position
@@ -236,7 +237,7 @@ const wretchedSkeletonAIConfig: EnemyAIConfig = {
             return "search";
         },
         attack_windup(gameObject, dt, data) {
-            gameObject.renderer!.data.spriteID = "wretched_skeleton_attack";
+            data.attacking = true;
             if (data.timeInState > 1.5) {
                 return "attack";
             }
@@ -244,8 +245,14 @@ const wretchedSkeletonAIConfig: EnemyAIConfig = {
             return "attack_windup";
         },
         attack(gameObject, dt, data) {
-            fireProjectile(projectilesCodex.get(ProjectileIndex.ARROW), gameObject, data.playerHitboxCenter);
-            return "search";
+            fireProjectile(
+                {
+                    ...projectilesCodex.get(ProjectileIndex.ARROW),
+                    damage: 6,
+                    maxHits: 1,
+                }, gameObject, data.playerHitboxCenter);
+            data.attacking = false;
+            return "set_search_position";
         }
     },
     movementSpeed: 28,
@@ -253,7 +260,51 @@ const wretchedSkeletonAIConfig: EnemyAIConfig = {
 
 const revenantEyeAIConfig: EnemyAIConfig = {
     functions: {
-
+        idle: basicIdle(300),
+        follow(gameObject, dt, data) {
+            if (data.distanceToPlayer > 300) {
+                // Still track to last known position
+                return "idle";
+            }
+            if (data.distanceToPlayer < 120) {
+                return "attack_windup";
+            }
+            data.targetPosition = data.playerHitboxCenter;
+            return "follow";
+        },
+        attack_windup(gameObject, dt, data) {
+            if (Math.random() < dt * 0.4) {
+                for (let i = 0; i < 24; i++) {
+                    const f = MathUtils.random(0.4, 1);
+                    const s = MathUtils.randomInt(1, 2);
+                    gameObject.game.addPartialParticle({
+                        position: gameObject.position.copy(),
+                        velocity: MathUtils.randomVector(MathUtils.random(4, 16)),
+                        lifetime: MathUtils.random(0.4, 1.2),
+                        color: new Color(f, 0.1, 0.2, 1),
+                        size: new Vector(s, s),
+                        angularVelocity: MathUtils.random(-3, 3),
+                        layer: ParticleLayer.ABOVE_OBJECTS
+                    });
+                }
+                gameObject.position.add(MathUtils.randomVector(MathUtils.random(16, 64)));
+            }
+            if (data.timeInState > 1.25) {
+                return "attack";
+            }
+            data.attacking = true;
+            data.targetPosition = undefined;
+            return "attack_windup";
+        },
+        attack(gameObject, dt, data) {
+            fireProjectile(
+                projectilesCodex.get(ProjectileIndex.TEAR_DROP), 
+                gameObject, 
+                data.playerHitboxCenter
+            );
+            data.attacking = false;
+            return "follow";
+        }
     },
     movementSpeed: 32,
 };

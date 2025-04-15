@@ -365,6 +365,23 @@ class Game {
         this.particles.push(particle);
     }
 
+    public addPartialParticle(particle: Partial<Particle>) {
+        this.addParticle({
+            angularVelocity: 0,
+            birthTime: this.time,
+            color: Color.WHITE,
+            layer: ParticleLayer.BELOW_OBJECTS,
+            lifetime: 1,
+            position: Vector.zero(),
+            rotation: 0,
+            size: new Vector(1, 1),
+            spriteID: "square",
+            useRelativePosition: false,
+            velocity: Vector.zero(),
+            ...particle
+        });
+    }
+
     private getTileCoordinate(position: Vector): { chunkIndex: number, tilePositionIndex: number } {
         const chunkIndex = getChunkIndex(position);
         const chunkPosition = getChunkWorldPosition(chunkIndex);

@@ -15,6 +15,7 @@ enum EnemyIndex {
 
 interface Enemy {
     spriteID: string;
+    attackSpriteID?: string; // Changes to attack sprite if enemy in "attack" AI state
     waterSpriteID?: string; // Changes to water sprite when in water when defined
     deadSpriteID?: string; // Spawns a corpse when defined
     particleID?: string; // No particles when undefined
@@ -55,6 +56,7 @@ enemiesCodex.set(EnemyIndex.MINION, {
 });
 enemiesCodex.set(EnemyIndex.WRETCHED_SKELETON, {
     spriteID: "wretched_skeleton",
+    attackSpriteID: "wretched_skeleton_attack",
     waterSpriteID: "wretched_skeleton_water",
     deadSpriteID: "wretched_skeleton_dead",
     scale: new Vector(1, 2),
@@ -67,6 +69,7 @@ enemiesCodex.set(EnemyIndex.WRETCHED_SKELETON, {
 });
 enemiesCodex.set(EnemyIndex.REVENANT_EYE, {
     spriteID: "revenant_eye",
+    attackSpriteID: "revenant_eye_attack",
     deadSpriteID: "revenant_eye_dead",
     scale: new Vector(1, 1),
     hp: 25,

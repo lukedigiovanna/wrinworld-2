@@ -37,25 +37,32 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
         const data: any = {
             collider: undefined,
             physics: undefined,
+            ai: undefined,
         };
         return {
             id: "common-enemy-logic",
             start() {
                 data.collider = gameObject.getComponent("physical-collider");
                 data.physics = gameObject.getComponent("physics");
+                data.ai = gameObject.getComponent("enemy-ai");
             },
             update(dt) {
                 if (gameObject.game.getTileIndex(gameObject.position) === TileIndex.WATER) {
                     if (enemyData.waterSpriteID) {
                         gameObject.renderer!.data.spriteID = enemyData.waterSpriteID;
                         gameObject.renderer!.data.offset = new Vector(0, Math.sin(gameObject.age * 6) * 0.04);
-                        data.collider!.data.castShadow = false;
+                        gameObject.castsShadow = false;
                     }
                 }
                 else {
-                    gameObject.renderer!.data.spriteID = enemyData.spriteID;
+                    if (enemyData.attackSpriteID && data.ai.data.attacking) {
+                        gameObject.renderer!.data.spriteID = enemyData.attackSpriteID;
+                    }
+                    else {
+                        gameObject.renderer!.data.spriteID = enemyData.spriteID;
+                    }
                     gameObject.renderer!.data.offset = Vector.zero();
-                    data.collider!.data.castShadow = true;
+                    gameObject.castsShadow = true;
                 }
 
                 if (data.physics.data.velocity.x < 0) {
