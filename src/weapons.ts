@@ -20,19 +20,33 @@ interface Weapon {
     // Maximum amount of charge this weapon can accumulate.
     // If it is defined then does not attack until attack key is released.
     charge?: number;
+    // Will shoot immediately upon reaching max charge.
+    useOnFullCharge?: boolean;
+    // Will charge again as soon as shooting
+    automatic?: boolean;
     attack: (props?: AttackProperties) => MeleeAttack | Projectile;
     fire: WeaponFireFunction;
 }
 
 enum WeaponIndex {
     BROAD_SWORD,
+    STRONG_SWORD,
+    POISON_BROAD_SWORD,
+    POISON_STRONG_SWORD,
     DAGGERS,
     BATTLE_HAMMER,
     ESSENCE_DRIPPED_DAGGER,
     SHURIKEN,
     BOW,
-    SLINGSHOT,
+    GHOST_BOW,
+    RICOCHET_BOW,
     QUICK_BOW,
+    BOOMERANG,
+    RICOCHET_BOOMERANG,
+    SLINGSHOT,
+    REINFORCED_SLINGSHOT,
+    MACHINE_GUN_SLINGSHOT,
+
 }
 
 const fireProjectile = (projectile: Projectile, gameObject: GameObject, target: Vector) => {
@@ -151,6 +165,16 @@ weaponsCodex.set(WeaponIndex.QUICK_BOW, {
         knockback: 16,
         speed: 480,
     }),
+    fire(gameObject, target) {
+        fireProjectile(this.attack() as Projectile, gameObject, target);
+    }
+});
+weaponsCodex.set(WeaponIndex.MACHINE_GUN_SLINGSHOT, {
+    cooldown: 0,
+    charge: 0.2,
+    automatic: true,
+    useOnFullCharge: true,
+    attack: () => projectilesCodex.get(ProjectileIndex.ROCK),
     fire(gameObject, target) {
         fireProjectile(this.attack() as Projectile, gameObject, target);
     }

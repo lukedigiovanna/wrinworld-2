@@ -135,6 +135,9 @@ window.onload = async () => {
         loadImageAndTexture(gl, "ricochet_boomerang", "assets/images/items/ricochet_boomerang.png"),
         loadImageAndTexture(gl, "ricochet_upgrade", "assets/images/items/ricochet_upgrade.png"),
         loadImageAndTexture(gl, "ricochet_bow", "assets/images/items/ricochet_bow.png"),
+        loadImageAndTexture(gl, "sprocket_upgrade", "assets/images/items/sprocket_upgrade.png"),
+        loadImageAndTexture(gl, "reinforced_slingshot", "assets/images/items/reinforced_slingshot.png"),
+        loadImageAndTexture(gl, "machine_gun_slingshot", "assets/images/items/machine_gun_slingshot.png"),
     
 
         // Particle sprites

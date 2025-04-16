@@ -80,18 +80,21 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
                 data.inventory.toggleUI();
             }
             
+            const mousePos = gameObject.game.camera.screenToWorldPosition(input.mousePosition);
             if (input.mousePressed()) {
                 data.inventory.pressItem({
                     type: "weapon",
                     index: data.inventory.getSelectedIndex("weapon")
-                }, gameObject.game.camera.screenToWorldPosition(input.mousePosition));
+                }, mousePos);
             }
             if (input.mouseReleased()) {
                 data.inventory.releaseItem({
                     type: "weapon",
                     index: data.inventory.getSelectedIndex("weapon")
-                }, gameObject.game.camera.screenToWorldPosition(input.mousePosition), 0);
+                }, mousePos);
             }
+
+            data.inventory.checkChargedItem(mousePos);
 
             data.inventory.updateUI();
         },

@@ -5,7 +5,6 @@
 import { Vector } from "./utils";
 import { GameObject, Team } from "./gameObjects";
 import { fireProjectile, WeaponIndex, weaponsCodex } from "./weapons";
-import { Codex } from "./codex";
 import { addNotification } from "./notifications";
 import { ProjectileIndex, projectilesCodex } from "./projectiles";
 import { StatusEffectIndex } from "./statusEffects";
@@ -146,6 +145,8 @@ enum ItemIndex {
     QUICK_BOW,
     BOOMERANG,
     RICOCHET_BOOMERANG,
+    REINFORCED_SLINGSHOT,
+    MACHINE_GUN_SLINGSHOT,
     // Projectiles
     ARROW,
     POISON_ARROW,
@@ -162,6 +163,7 @@ enum ItemIndex {
     DICE, // not implemented
     GHOST_ARROWS,
     RICOCHET_UPGRADE,
+    SPROCKET_UPGRADE,
     // Buffs
     HEART,
     HEART_CRYSTAL,
@@ -188,7 +190,9 @@ interface Item {
     essenceCost: number;
     cooldown?: number; // Minimum time between uses (none if undefined)
     charge?: number; // Max time to charge up to (none if undefined -- i.e. instant use)
+    automatic?: boolean; // Will press again automatically after release if enabled
     requireFullCharge?: boolean; // Only uses item if filled charge to max
+    useOnFullCharge?: boolean; // Will use automatically (without waiting for release) on full charge.
     // ex. Bow uses Arrow type
     usesItem?: ItemIndex[];
     useItem?: UseItemFunction;
@@ -239,6 +243,8 @@ function weaponItem(index: WeaponIndex): Partial<Item> {
     return {
         cooldown: weapon.cooldown,
         charge: weapon.charge,
+        automatic: weapon.automatic,
+        useOnFullCharge: weapon.useOnFullCharge,
         useItem(player: GameObject, target: Vector, uses?: Item, charge?: number) {
             weaponsCodex.get(index).fire(player, target, {uses, charge});
             return true;
@@ -388,6 +394,8 @@ const itemsCodex: Record<ItemIndex, Item> = {
     maxStack: 1,
     cooldown: 90,
     charge: 1,
+    requireFullCharge: true,
+    useOnFullCharge: true,
     useItem(player) {
         const health = player.getComponent("health");
         const amountHealed = health.data.heal(10);
@@ -427,6 +435,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     cooldown: 60,
     charge: 1,
     requireFullCharge: true,
+    useOnFullCharge: true,
     useItem(player) {
         // TODO: add 20 essence (or something like that) to the player
         const essenceManager = player.getComponent("essence-manager");
@@ -736,7 +745,38 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: true,
     essenceCost: 0,
     maxStack: 1
-}
+},
+[ItemIndex.SPROCKET_UPGRADE]: {
+    itemIndex: ItemIndex.SPROCKET_UPGRADE,
+    displayName: "Sprocket",
+    description: "An age of new technology",
+    iconSpriteID: "sprocket_upgrade",
+    category: "Upgrade",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1
+},
+[ItemIndex.REINFORCED_SLINGSHOT]: {
+    itemIndex: ItemIndex.REINFORCED_SLINGSHOT,
+    displayName: "Reinforced Slingshot",
+    description: "A stronger slingshot can throw more than just rocks",
+    iconSpriteID: "reinforced_slingshot",
+    category: "Weapon",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1
+},
+[ItemIndex.MACHINE_GUN_SLINGSHOT]: {
+    itemIndex: ItemIndex.MACHINE_GUN_SLINGSHOT,
+    displayName: "Machine Gun Slingshot",
+    description: "A complete barrage!",
+    iconSpriteID: "machine_gun_slingshot",
+    category: "Weapon",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+    ...weaponItem(WeaponIndex.MACHINE_GUN_SLINGSHOT),
+},
 }
 
 export { itemsCodex, ItemIndex, ItemStat, itemStats };

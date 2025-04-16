@@ -413,6 +413,19 @@ class Inventory {
         this._charging = false;
     }
 
+    public checkChargedItem(target: Vector) {
+        if (this._charging && this.chargeIndex && this.chargeItem && this.chargeItem.charge && this.chargeItem.useOnFullCharge) {
+            const charge = this.player.game.time - this.chargeStartTime;
+            if (charge >= this.chargeItem.charge) {
+                this.useItem(this.chargeIndex, target, 1.0);
+                this._charging = false;
+                if (this.chargeItem.automatic) {
+                    this.pressItem(this.chargeIndex, target);
+                }
+            }
+        }
+    }
+
     // --- UI functions ---
 
     private updateDisplayPositions(ev: any) {
