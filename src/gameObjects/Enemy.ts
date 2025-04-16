@@ -101,7 +101,7 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
             id: "essence-dropper",
             destroy() {
                 gameObject.game.addGameObject(
-                    EssenceOrbFactory(enemyData.essenceAmount, gameObject.position)
+                    EssenceOrbFactory(enemyData.essenceAmount.randomInt(), gameObject.position)
                 );
             }
         }

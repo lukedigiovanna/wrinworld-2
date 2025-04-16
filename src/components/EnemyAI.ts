@@ -141,7 +141,7 @@ const slimeAIConfig: EnemyAIConfig = {
                 data.targetPosition = undefined;
                 return "idle";
             }
-            if (data.distanceToPlayer < 40) {
+            if (data.distanceToPlayer < 50) {
                 return "attack_windup";
             }
             data.targetPosition = data.playerHitboxCenter;
@@ -161,17 +161,11 @@ const slimeAIConfig: EnemyAIConfig = {
             return "attack_windup";
         },
         slime_throw_self(gameObject, dt, data) {
-            if (data.timeInState > 0.5) {
-                // fireMelee(
-                //     {
-                //         ...meleeAttacksCodex.get(MeleeAttackIndex.BASIC),
-                //         damage: 2,
-                //         knockback: 40,
-                //     }, gameObject, data.playerHitboxCenter);
+            if (data.timeInState > 1.0) {
                 return "follow";
             }
             if (data.collidingWithPlayer) {
-                gameObject.game.player.getComponent("health").data.damage(2);
+                gameObject.game.player.getComponent("health").data.damage(1);
                 gameObject.game.player.getComponent("physics").data.impulse.add(
                     Vector.scaled(
                         Vector.normalized(

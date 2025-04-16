@@ -1,9 +1,8 @@
-import { Vector } from "./utils";
+import { NumberRange, Vector } from "./utils";
 import { ComponentFactory } from "./components"
 import * as AI from "./components/EnemyAI";
 import { ItemDropChance } from "./items";
 import { Codex } from "./codex";
-import { WeaponIndex } from "./weapons";
 
 enum EnemyIndex {
     MINION,
@@ -24,7 +23,7 @@ interface Enemy {
     waterSpeedModifier: number;
     hp: number;
     drops: ItemDropChance[];
-    essenceAmount: number;
+    essenceAmount: NumberRange;
     ai: ComponentFactory;
 }
 
@@ -39,7 +38,7 @@ enemiesCodex.set(EnemyIndex.SLIME, {
     drops: [],
     speed: 22,
     waterSpeedModifier: 0.5,
-    essenceAmount: 2,
+    essenceAmount: new NumberRange(1, 3),
     ai: AI.EnemyAI(AI.slimeAIConfig)
 });
 enemiesCodex.set(EnemyIndex.MINION, {
@@ -51,7 +50,7 @@ enemiesCodex.set(EnemyIndex.MINION, {
     drops: [],
     speed: 29,
     waterSpeedModifier: 0.5,
-    essenceAmount: 2,
+    essenceAmount: new NumberRange(2, 4),
     ai: AI.EnemyAI(AI.minionAIConfig)
 });
 enemiesCodex.set(EnemyIndex.WRETCHED_SKELETON, {
@@ -64,7 +63,7 @@ enemiesCodex.set(EnemyIndex.WRETCHED_SKELETON, {
     speed: 22,
     waterSpeedModifier: 0.5,
     drops: [],
-    essenceAmount: 6,
+    essenceAmount: new NumberRange(5, 10),
     ai: AI.EnemyAI(AI.wretchedSkeletonAIConfig),
 });
 enemiesCodex.set(EnemyIndex.REVENANT_EYE, {
@@ -76,7 +75,7 @@ enemiesCodex.set(EnemyIndex.REVENANT_EYE, {
     drops: [],
     speed: 22,
     waterSpeedModifier: 1.0,
-    essenceAmount: 5,
+    essenceAmount: new NumberRange(8, 12),
     ai: AI.EnemyAI(AI.revenantEyeAIConfig),
 });
 enemiesCodex.set(EnemyIndex.WRAITH, {
@@ -86,7 +85,7 @@ enemiesCodex.set(EnemyIndex.WRAITH, {
     speed: 25,
     waterSpeedModifier: 1.0,
     drops: [],
-    essenceAmount: 8,
+    essenceAmount: new NumberRange(10, 15),
     ai: AI.EnemyAI(AI.wraithAIConfig),
 });
 

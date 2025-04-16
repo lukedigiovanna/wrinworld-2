@@ -18,9 +18,9 @@ const level1PortalTypes: PortalProperties[] = [
         difficulty: 0,
         packs: [
             {
-                packSizeRange: new NumberRange(2, 6),
-                cooldownRange: new NumberRange(5, 10),
-                maxEnemies: 10,
+                packSizeRange: new NumberRange(2, 4),
+                cooldownRange: new NumberRange(8, 16),
+                maxEnemies: 5,
                 enemyIndex: EnemyIndex.SLIME
             }
         ]
