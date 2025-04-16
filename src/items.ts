@@ -152,6 +152,7 @@ enum ItemIndex {
     FLAME_UPGRADE, // not implemented
     POISON_UPGRADE, // not implemented
     STRENGTH_UPGRADE, // not implemented
+    DICE, // not implemented
     // Buffs
     HEART,
     HEART_CRYSTAL,
@@ -470,6 +471,16 @@ itemsCodex.set(ItemIndex.STRENGTH_UPGRADE, {
     description: "Enhances the power of a weapon",
     category: "Upgrade",
     iconSpriteID: "strength_upgrade",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+});
+itemsCodex.set(ItemIndex.DICE, {
+    itemIndex: ItemIndex.DICE,
+    displayName: "Dice",
+    description: "Transforms a weapon into something new",
+    category: "Upgrade",
+    iconSpriteID: "dice",
     consumable: false,
     essenceCost: 0,
     maxStack: 1,

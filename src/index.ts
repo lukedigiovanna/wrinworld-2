@@ -102,8 +102,6 @@ window.onload = async () => {
         loadImageAndTexture(gl, "crystal_shard", "assets/images/projectiles/crystal_shard.png"),
 
         // Item icons
-        loadImageAndTexture(gl, "zombie_brains", "assets/images/items/zombie_brains.png"),
-        loadImageAndTexture(gl, "zombie_flesh", "assets/images/items/zombie_flesh.png"),
         loadImageAndTexture(gl, "broad_sword_icon", "assets/images/items/broad_sword_icon.png"),
         loadImageAndTexture(gl, "shuriken", "assets/images/items/shuriken.png"),
         loadImageAndTexture(gl, "bow", "assets/images/items/bow.png"),
@@ -127,6 +125,7 @@ window.onload = async () => {
         loadImageAndTexture(gl, "root_snare", "assets/images/items/root_snare.png"),
         loadImageAndTexture(gl, "basic_shield", "assets/images/items/basic_shield.png"),
         loadImageAndTexture(gl, "quick_bow", "assets/images/items/quick_bow.png"),
+        loadImageAndTexture(gl, "dice", "assets/images/items/dice.png"),
 
         // Particle sprites
         loadImageAndTexture(gl, "portal_particle", "assets/images/particles/portal_particle.png"),
@@ -149,6 +148,7 @@ window.onload = async () => {
         loadImage("selected_utility_slot", "assets/images/ui/selected_utility_slot.png"),
         loadImage("weapon_slot", "assets/images/ui/weapon_slot.png"),
         loadImage("selected_weapon_slot", "assets/images/ui/selected_weapon_slot.png"),
+        loadImage("upgrade_slot", "assets/images/ui/upgrade_slot.png"),
         
         loadImage("essence_jar_small_0", "assets/images/ui/essence_jar_small_0.png"),
         loadImage("essence_jar_small_1", "assets/images/ui/essence_jar_small_1.png"),

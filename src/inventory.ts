@@ -14,7 +14,7 @@ interface InventorySlot {
     lastTimeUsed?: number;
 }
 
-const slotTypes = ["free", "weapon", "quiver", "utility", "consumable", "buff"] as const;
+const slotTypes = ["free", "weapon", "quiver", "utility", "consumable", "buff", "upgradable_item", "upgrade_item", "upgrade_result"] as const;
 type SlotType = typeof slotTypes[number];
 
 interface SlotTypeConfig {
@@ -71,6 +71,24 @@ const slotConfigs: Record<SlotType, SlotTypeConfig> = {
         acceptItemCategory: ["Buff"],
         equipOnAdd: true,
         selectable: false,
+    },
+    upgradable_item: {
+        iconID: "inventory_slot",
+        acceptItemCategory: null,
+        equipOnAdd: false,
+        selectable: false,
+    },
+    upgrade_item: {
+        iconID: "upgrade_slot",
+        acceptItemCategory: ["Upgrade"],
+        equipOnAdd: false,
+        selectable: false,
+    },
+    upgrade_result: {
+        iconID: "inventory_slot",
+        acceptItemCategory: [], // Accept no items
+        equipOnAdd: false,
+        selectable: false,
     }
 } as const;
 
@@ -96,6 +114,9 @@ const defaultInventoryCounts: InventorySlotCounts = {
     utility: 2,
     consumable: 1,
     buff: 2,
+    upgradable_item: 1,
+    upgrade_item: 1,
+    upgrade_result: 1,
 }
 
 function inventorySlotHTML(type: SlotType) {
@@ -322,7 +343,6 @@ class Inventory {
 
     // Called when firing key is pressed down
     public pressItem(slotIndex: SlotLocator, target: Vector) {
-        console.log(`Inventory.pressItem(${JSON.stringify(slotIndex)})`)
         // Ignore request if already charging another item
         if (this._charging) {
             console.log("FAIL: charging");
@@ -381,8 +401,6 @@ class Inventory {
         if (slot.item.charge === undefined) {
             throw Error("Somehow was charging an item that doesn't charge");
         }
-
-        console.log(`Inventory.releaseItem(${JSON.stringify(slotIndex)})`)
 
         if (!this.chargeItem || !this.chargeIndex) {
             throw Error("Somehow was charging without setting the chargeIndex, or chargeItem");
@@ -563,6 +581,26 @@ class Inventory {
     private createUI() {
         $("#inventory").empty();
         $("#inventory-screen").on("mousemove", this.updateDisplayPositions.bind(this));
+
+        // Build the upgrade row
+        const upgradeRow = $(inventoryRowHTML());
+        
+        const upgradableItemSlot = this.createAndAddSlotUI("upgradable_item");
+        upgradeRow.append(upgradableItemSlot);
+        
+        upgradeRow.append($(`<p class="upgrade-equation">+</p>`));
+        
+        const upgradeItemSlot = this.createAndAddSlotUI("upgrade_item");
+        upgradeRow.append(upgradeItemSlot);
+
+        upgradeRow.append($(`<p class="upgrade-equation">=</p>`));
+        
+        const upgradeResultSlot = this.createAndAddSlotUI("upgrade_result");
+        upgradeRow.append(upgradeResultSlot);
+        
+        upgradeRow.css("margin-bottom", "55px");
+        $("#inventory").append(upgradeRow);
+        
 
         let currentRow;
         for (let i = 0; i < this.reference.free.slots.length; i++) {

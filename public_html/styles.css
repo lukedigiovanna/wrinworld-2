@@ -140,6 +140,16 @@ img {
     font-family: "Matrix-Mono";
 }
 
+.upgrade-equation {
+    font-family: "Matrix-Mono";
+    font-size: 26px;
+    margin-block: 0;
+    margin-inline: 10px;
+    padding: 24px;
+    color: #c07a00;
+    text-shadow: 0px 0px 4px black;
+}
+
 #held-item-display {
     position: absolute;
     width: 64px;
@@ -284,7 +294,7 @@ img {
     flex-direction: column;
     width: 100%;
     gap: 3px;
-    top: 30%;
+    top: 20%;
     align-items: center;
     justify-content: center;
 }
