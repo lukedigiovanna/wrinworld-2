@@ -149,7 +149,9 @@ const slimeAIConfig: EnemyAIConfig = {
         },
         attack_windup(gameObject, dt, data) {
             data.targetPosition = undefined;
-            if (data.timeInState > 0.75) {
+            const f = 1 - data.timeInState / 1 * 0.5;
+            gameObject.color = new Color(f, f, 1, 1);
+            if (data.timeInState > 1) {
                 data.physics.data.impulse.add(
                     Vector.scaled(
                         Vector.normalized(gameObject.position.directionTowards(data.playerHitboxCenter)), 
@@ -161,11 +163,13 @@ const slimeAIConfig: EnemyAIConfig = {
             return "attack_windup";
         },
         slime_throw_self(gameObject, dt, data) {
+            gameObject.color = new Color(0.5, 0.5, 1, 1);
             if (data.timeInState > 1.0) {
                 return "follow";
             }
             if (data.collidingWithPlayer) {
-                gameObject.game.player.getComponent("health").data.damage(1);
+                const magnitude = data.physics.data.impulse.magnitude / 30;
+                gameObject.game.player.getComponent("health").data.damage(magnitude);
                 gameObject.game.player.getComponent("physics").data.impulse.add(
                     Vector.scaled(
                         Vector.normalized(

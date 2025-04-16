@@ -38,7 +38,7 @@ enemiesCodex.set(EnemyIndex.SLIME, {
     drops: [],
     speed: 22,
     waterSpeedModifier: 0.5,
-    essenceAmount: new NumberRange(1, 3),
+    essenceAmount: new NumberRange(2, 4),
     ai: AI.EnemyAI(AI.slimeAIConfig)
 });
 enemiesCodex.set(EnemyIndex.MINION, {
@@ -50,7 +50,7 @@ enemiesCodex.set(EnemyIndex.MINION, {
     drops: [],
     speed: 29,
     waterSpeedModifier: 0.5,
-    essenceAmount: new NumberRange(2, 4),
+    essenceAmount: new NumberRange(2, 5),
     ai: AI.EnemyAI(AI.minionAIConfig)
 });
 enemiesCodex.set(EnemyIndex.WRETCHED_SKELETON, {
