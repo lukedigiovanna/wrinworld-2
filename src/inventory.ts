@@ -473,7 +473,9 @@ class Inventory {
             if (slot !== null) { 
                 // "pick up" the item in the slot.
                 this.heldSlot = slot;
-                this.unequipItem(slotIndex);
+                if (slotConfigs[type].equipOnAdd) {
+                    this.unequipItem(slotIndex);
+                }
                 slotGroup.slots[index] = null;
             }
             this.hideItemDisplay();
@@ -497,8 +499,8 @@ class Inventory {
                 if (slotConfigs[type].acceptItemCategory === null || 
                     slotConfigs[type].acceptItemCategory.indexOf(this.heldSlot.item.category) >= 0) {
                     if (type === "buff") {
+                        console.log("buff swap");
                         if (this.heldSlot.item.equipItem) {
-                            console.log("equip?");
                             this.heldSlot.item.equipItem(this.player);
                         }
                         if (slotGroup.slots[index] !== null && slotGroup.slots[index].item.unequipItem) {
