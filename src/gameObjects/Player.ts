@@ -60,7 +60,7 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
             start() {
                 const inventoryManager = gameObject.getComponent("inventory-manager");
                 // const items = [ItemIndex.BROAD_SWORD, ItemIndex.TELEPORTATION_RUNE, ItemIndex.ROOT_SNARE, ItemIndex.ESSENCE_VIAL, ItemIndex.BATTLE_HAMMER, ItemIndex.BOW, ItemIndex.ARROW];
-                const items = [ItemIndex.BROAD_SWORD];
+                const items = [ItemIndex.BROAD_SWORD, ItemIndex.HEART];
                 for (const i of items) {
                     const item = itemsCodex.get(i as ItemIndex);
                     for (let j = 0; j < item.maxStack; j++) {

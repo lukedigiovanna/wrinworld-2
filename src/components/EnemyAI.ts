@@ -23,13 +23,19 @@ class EnemyAIData {
 
     private _physics: Component;
     private _movementData: Component;
+    private hitbox: Component;
 
     constructor(self: GameObject, config: EnemyAIConfig) {
         this.self = self;
         this.config = config;
+        
         this._physics = self.getComponent("physics");
+
         this._movementData = self.getComponent("movement-data");
         this._movementData.data.baseSpeed = config.movementSpeed;
+        
+        this.hitbox = self.getComponent("hitbox");
+
         this.startTimeInState = self.game.time;
     }
 
@@ -58,6 +64,10 @@ class EnemyAIData {
         )?.hit === this.self.game.player;
     }
 
+    public get collidingWithPlayer() {
+        return this.hitbox.data.collidingWith.has(this.self.game.player);
+    }
+
     public get timeInState() {
         return this.self.game.time - this.startTimeInState;
     }
@@ -76,7 +86,7 @@ class EnemyAIData {
             return;
         }
 
-        const newState = this.config.functions[this.state]?.(this.self, dt, this);
+        const newState = this.config.stateFunctions[this.state]?.(this.self, dt, this);
         if (newState !== undefined && newState !== this.state) {
             this.state = newState;
             this.startTimeInState = this.self.game.time;
@@ -106,7 +116,7 @@ type EnemyAIStateFunctionMap = {
 }
 
 interface EnemyAIConfig {
-    functions: EnemyAIStateFunctionMap,
+    stateFunctions: EnemyAIStateFunctionMap,
     movementSpeed: number;
     customSpeedModifier?: (gameObject: GameObject) => number;
 }
@@ -124,7 +134,7 @@ function basicIdle(followDistance: number): EnemyAIStateFunction {
 }
 
 const slimeAIConfig: EnemyAIConfig = {
-    functions: {
+    stateFunctions: {
         idle: basicIdle(200),
         follow(gameObject, dt, data) {
             if (data.distanceToPlayer > 250 || !data.hasLineOfSightToPlayer) {
@@ -152,12 +162,24 @@ const slimeAIConfig: EnemyAIConfig = {
         },
         slime_throw_self(gameObject, dt, data) {
             if (data.timeInState > 0.5) {
-                fireMelee(
-                    {
-                        ...meleeAttacksCodex.get(MeleeAttackIndex.BASIC),
-                        damage: 2,
-                        knockback: 40,
-                    }, gameObject, data.playerHitboxCenter);
+                // fireMelee(
+                //     {
+                //         ...meleeAttacksCodex.get(MeleeAttackIndex.BASIC),
+                //         damage: 2,
+                //         knockback: 40,
+                //     }, gameObject, data.playerHitboxCenter);
+                return "follow";
+            }
+            if (data.collidingWithPlayer) {
+                gameObject.game.player.getComponent("health").data.damage(2);
+                gameObject.game.player.getComponent("physics").data.impulse.add(
+                    Vector.scaled(
+                        Vector.normalized(
+                            gameObject.position.directionTowards(gameObject.game.player.position)
+                        ),
+                        100
+                    )
+                )
                 return "follow";
             }
             return "slime_throw_self"
@@ -170,7 +192,7 @@ const slimeAIConfig: EnemyAIConfig = {
 }
 
 const minionAIConfig: EnemyAIConfig = {
-    functions: {
+    stateFunctions: {
         idle: basicIdle(240),
         follow(gameObject, dt, data) {
             if (data.distanceToPlayer > 250 || !data.hasLineOfSightToPlayer) {
@@ -210,7 +232,7 @@ const minionAIConfig: EnemyAIConfig = {
 };
 
 const wretchedSkeletonAIConfig: EnemyAIConfig = {
-    functions: {
+    stateFunctions: {
         idle: basicIdle(300),
         follow(gameObject, dt, data) {
             if (data.distanceToPlayer > 300) {
@@ -259,7 +281,7 @@ const wretchedSkeletonAIConfig: EnemyAIConfig = {
 };
 
 const revenantEyeAIConfig: EnemyAIConfig = {
-    functions: {
+    stateFunctions: {
         idle: basicIdle(300),
         follow(gameObject, dt, data) {
             if (data.distanceToPlayer > 300) {
@@ -310,7 +332,7 @@ const revenantEyeAIConfig: EnemyAIConfig = {
 };
 
 const wraithAIConfig: EnemyAIConfig = {
-    functions: {
+    stateFunctions: {
 
     },
     movementSpeed: 44,
@@ -332,7 +354,7 @@ const EnemyAI: (config: EnemyAIConfig) => ComponentFactory = (config) => {
                     return;
                 }
                 this.data.update(dt);
-            },
+            }
         }
     }
 }

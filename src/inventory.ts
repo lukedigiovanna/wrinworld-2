@@ -498,6 +498,7 @@ class Inventory {
                     slotConfigs[type].acceptItemCategory.indexOf(this.heldSlot.item.category) >= 0) {
                     if (type === "buff") {
                         if (this.heldSlot.item.equipItem) {
+                            console.log("equip?");
                             this.heldSlot.item.equipItem(this.player);
                         }
                         if (slotGroup.slots[index] !== null && slotGroup.slots[index].item.unequipItem) {
