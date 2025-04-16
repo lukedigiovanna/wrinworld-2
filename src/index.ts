@@ -138,7 +138,12 @@ window.onload = async () => {
         loadImageAndTexture(gl, "sprocket_upgrade", "assets/images/items/sprocket_upgrade.png"),
         loadImageAndTexture(gl, "reinforced_slingshot", "assets/images/items/reinforced_slingshot.png"),
         loadImageAndTexture(gl, "machine_gun_slingshot", "assets/images/items/machine_gun_slingshot.png"),
-    
+        loadImageAndTexture(gl, "invincibility_bubble", "assets/images/items/invincibility_bubble.png"),
+        loadImageAndTexture(gl, "poison_battle_hammer", "assets/images/items/poison_battle_hammer.png"),
+        loadImageAndTexture(gl, "quick_battle_hammer", "assets/images/items/quick_battle_hammer.png"),
+        loadImageAndTexture(gl, "quick_broad_sword", "assets/images/items/quick_broad_sword.png"),
+        loadImageAndTexture(gl, "quick_hand_upgrade", "assets/images/items/quick_hand_upgrade.png"),
+        
 
         // Particle sprites
         loadImageAndTexture(gl, "portal_particle", "assets/images/particles/portal_particle.png"),

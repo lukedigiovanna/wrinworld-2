@@ -32,6 +32,10 @@ setCombo(ItemIndex.BROAD_SWORD, ItemIndex.STRENGTH_UPGRADE, () => ItemIndex.STRO
 setCombo(ItemIndex.BROAD_SWORD, ItemIndex.POISON_UPGRADE, () => ItemIndex.POISON_BROAD_SWORD);
 setCombo(ItemIndex.STRONG_SWORD, ItemIndex.POISON_UPGRADE, () => ItemIndex.POISON_STRONG_SWORD);
 setCombo(ItemIndex.POISON_BROAD_SWORD, ItemIndex.STRENGTH_UPGRADE, () => ItemIndex.POISON_STRONG_SWORD);
+setCombo(ItemIndex.BROAD_SWORD, ItemIndex.QUICK_HAND_UPGRADE, () => ItemIndex.QUICK_BROAD_SWORD);
+setCombo(ItemIndex.BATTLE_HAMMER, ItemIndex.QUICK_HAND_UPGRADE, () => ItemIndex.QUICK_BATTLE_HAMMER);
+setCombo(ItemIndex.BATTLE_HAMMER, ItemIndex.POISON_UPGRADE, () => ItemIndex.POISON_BATTLE_HAMMER);
+
 setCombo(ItemIndex.SLINGSHOT, ItemIndex.STRENGTH_UPGRADE, () => ItemIndex.REINFORCED_SLINGSHOT);
 setCombo(ItemIndex.REINFORCED_SLINGSHOT, ItemIndex.SPROCKET_UPGRADE, () => ItemIndex.MACHINE_GUN_SLINGSHOT);
 setCombo(ItemIndex.BOW, ItemIndex.GHOST_ARROWS, () => ItemIndex.GHOST_BOW);

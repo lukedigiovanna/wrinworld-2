@@ -133,8 +133,11 @@ enum ItemIndex {
     STRONG_SWORD,
     POISON_BROAD_SWORD,
     POISON_STRONG_SWORD,
+    QUICK_BROAD_SWORD,
     DAGGERS,
     BATTLE_HAMMER,
+    POISON_BATTLE_HAMMER,
+    QUICK_BATTLE_HAMMER,
     ESSENCE_DRIPPED_DAGGER,
     // Ranged weapons
     BOW,
@@ -156,6 +159,7 @@ enum ItemIndex {
     // Consumables
     HEALING_VIAL,
     ESSENCE_VIAL,
+    INVINCIBILITY_BUBBLE,
     // Upgrades
     FLAME_UPGRADE,
     POISON_UPGRADE,
@@ -164,6 +168,7 @@ enum ItemIndex {
     GHOST_ARROWS,
     RICOCHET_UPGRADE,
     SPROCKET_UPGRADE,
+    QUICK_HAND_UPGRADE,
     // Buffs
     HEART,
     HEART_CRYSTAL,
@@ -777,6 +782,56 @@ const itemsCodex: Record<ItemIndex, Item> = {
     maxStack: 1,
     ...weaponItem(WeaponIndex.MACHINE_GUN_SLINGSHOT),
 },
+[ItemIndex.INVINCIBILITY_BUBBLE]: {
+    itemIndex: ItemIndex.INVINCIBILITY_BUBBLE,
+    displayName: "Invincibility Bubble",
+    description: "Temporary complete immunity",
+    iconSpriteID: "invincibility_bubble",
+    category: "Consumable",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+},
+[ItemIndex.POISON_BATTLE_HAMMER]: {
+    itemIndex: ItemIndex.POISON_BATTLE_HAMMER,
+    displayName: "Poisonous Battle Hammer",
+    description: "AHHH FILL THIS IN LATER WHATEVER",
+    iconSpriteID: "poison_battle_hammer",
+    category: "Weapon",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+},
+[ItemIndex.QUICK_BATTLE_HAMMER]: {
+    itemIndex: ItemIndex.QUICK_BATTLE_HAMMER,
+    displayName: "Quick Battle Hammer",
+    description: "All the power of the regular hammer, but much faster",
+    iconSpriteID: "quick_battle_hammer",
+    category: "Weapon",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+},
+[ItemIndex.QUICK_BROAD_SWORD]: {
+    itemIndex: ItemIndex.QUICK_BROAD_SWORD,
+    displayName: "Quick Broad Sword",
+    description: "Swing back and forth at a much higher rate",
+    iconSpriteID: "quick_broad_sword",
+    category: "Weapon",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+},
+[ItemIndex.QUICK_HAND_UPGRADE]: {
+    itemIndex: ItemIndex.QUICK_HAND_UPGRADE,
+    displayName: "Quick Hands",
+    description: "Makes a weapon much faster",
+    iconSpriteID: "quick_hand_upgrade",
+    category: "Upgrade",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+}
 }
 
 export { itemsCodex, ItemIndex, ItemStat, itemStats };
