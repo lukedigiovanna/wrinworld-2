@@ -157,10 +157,10 @@ enum ItemIndex {
     HEALING_VIAL,
     ESSENCE_VIAL,
     // Upgrades
-    FLAME_UPGRADE, // not implemented
-    POISON_UPGRADE, // not implemented
-    STRENGTH_UPGRADE, // not implemented
-    DICE, // not implemented
+    FLAME_UPGRADE,
+    POISON_UPGRADE,
+    STRENGTH_UPGRADE,
+    DICE,
     GHOST_ARROWS,
     RICOCHET_UPGRADE,
     SPROCKET_UPGRADE,

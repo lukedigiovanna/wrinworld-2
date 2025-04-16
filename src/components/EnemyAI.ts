@@ -83,6 +83,7 @@ class EnemyAIData {
     public update(dt: number) {
         if (this.movementData.data.isStunned()) { // No moving/attacking/etc.
             this.targetPosition = undefined;
+            this._physics.data.velocity.setComponents(0, 0);
             return;
         }
 

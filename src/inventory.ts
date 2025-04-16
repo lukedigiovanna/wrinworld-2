@@ -7,6 +7,7 @@ import input, { InputLayer } from "./input";
 import { MathUtils, Vector } from "./utils";
 import { addNotification } from "./notifications";
 import controls, { Controls } from "./controls";
+import { getUpgradeCombination } from "./upgrades";
 
 interface InventorySlot {
     item: Item;
@@ -507,6 +508,10 @@ class Inventory {
                 if (slotConfigs[type].equipOnAdd) {
                     this.unequipItem(slotIndex);
                 }
+                if (type === "upgrade_result")  {
+                    this.reference.upgradable_item.slots[0] = null;
+                    this.reference.upgrade_item.slots[0] = null;
+                }
                 slotGroup.slots[index] = null;
             }
             this.hideItemDisplay();
@@ -777,6 +782,26 @@ class Inventory {
                 icon.hide();
             }
         }
+
+        const upgradableItem = this.getSlot({ index: 0, type: "upgradable_item" })?.item?.itemIndex;
+        const upgradeItem = this.getSlot({ index: 0, type: "upgrade_item" })?.item?.itemIndex;
+        if (upgradableItem !== undefined && upgradeItem !== undefined) {
+            const upgradeResult = getUpgradeCombination(upgradableItem, upgradeItem);
+            if (upgradeResult) {
+                this.reference.upgrade_result.slots[0] = {
+                    count: 1,
+                    item: itemsCodex[upgradeResult]
+                }
+            }
+            else {
+                this.reference.upgrade_result.slots[0] = null;
+            }
+        }
+        else {
+            this.reference.upgrade_result.slots[0] = null;
+        }
+
+
     }
 
     public toggleUI() {
