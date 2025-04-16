@@ -108,7 +108,7 @@ interface SlotLocator {
 }
 
 const defaultInventoryCounts: InventorySlotCounts = {
-    free: 18,
+    free: 40,
     weapon: 2,
     quiver: 1,
     utility: 2,
@@ -242,7 +242,7 @@ class Inventory {
     }
 
     public addItemIndex(itemIndex: ItemIndex) {
-        this.addItem(itemsCodex.get(itemIndex));
+        this.addItem(itemsCodex[itemIndex]);
     }
 
     // Returns the first index containing an item with the given index.

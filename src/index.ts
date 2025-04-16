@@ -126,6 +126,16 @@ window.onload = async () => {
         loadImageAndTexture(gl, "basic_shield", "assets/images/items/basic_shield.png"),
         loadImageAndTexture(gl, "quick_bow", "assets/images/items/quick_bow.png"),
         loadImageAndTexture(gl, "dice", "assets/images/items/dice.png"),
+        loadImageAndTexture(gl, "ghost_arrows", "assets/images/items/ghost_arrows.png"),
+        loadImageAndTexture(gl, "ghost_bow", "assets/images/items/ghost_bow.png"),
+        loadImageAndTexture(gl, "strong_sword", "assets/images/items/strong_sword.png"),
+        loadImageAndTexture(gl, "poison_strong_sword", "assets/images/items/poison_strong_sword.png"),
+        loadImageAndTexture(gl, "poison_broad_sword", "assets/images/items/poison_broad_sword.png"),
+        loadImageAndTexture(gl, "boomerang", "assets/images/items/boomerang.png"),
+        loadImageAndTexture(gl, "ricochet_boomerang", "assets/images/items/ricochet_boomerang.png"),
+        loadImageAndTexture(gl, "ricochet_upgrade", "assets/images/items/ricochet_upgrade.png"),
+        loadImageAndTexture(gl, "ricochet_bow", "assets/images/items/ricochet_bow.png"),
+    
 
         // Particle sprites
         loadImageAndTexture(gl, "portal_particle", "assets/images/particles/portal_particle.png"),

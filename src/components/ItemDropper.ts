@@ -12,7 +12,7 @@ const ItemDropper: (itemPool: ItemDropChance[]) => ComponentFactory = (itemPool:
                 for (let i = 0; i < itemPool.length; i++) {
                     if (Math.random() < itemPool[i].chance) {
                         gameObject.game.addGameObject(ItemDropFactory(
-                            itemsCodex.get(itemPool[i].itemIndex), 
+                            itemsCodex[itemPool[i].itemIndex], 
                             Vector.add(
                                 gameObject.position, 
                                 MathUtils.randomVector(MathUtils.random(0, 0.5))

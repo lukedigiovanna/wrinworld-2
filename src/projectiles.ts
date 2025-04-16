@@ -94,7 +94,7 @@ projectilesCodex.set(ProjectileIndex.SHURIKEN, {
     chanceOfBreaking: 0.1,
     destroyOnPhysicalCollision: true,
     onDestroy(gameObject) {
-        chanceDropItem(gameObject, itemsCodex.get(ItemIndex.SHURIKEN), this.chanceOfBreaking);
+        chanceDropItem(gameObject, itemsCodex[ItemIndex.SHURIKEN], this.chanceOfBreaking);
     },
 });
 projectilesCodex.set(ProjectileIndex.ARROW, {
@@ -124,7 +124,7 @@ projectilesCodex.set(ProjectileIndex.ARROW, {
         }
     ),
     onDestroy(gameObject) {
-        chanceDropItem(gameObject, itemsCodex.get(ItemIndex.ARROW), this.chanceOfBreaking);
+        chanceDropItem(gameObject, itemsCodex[ItemIndex.ARROW], this.chanceOfBreaking);
     }
 });
 projectilesCodex.set(ProjectileIndex.POISON_ARROW, {
@@ -155,7 +155,7 @@ projectilesCodex.set(ProjectileIndex.POISON_ARROW, {
         }
     ),
     onDestroy(gameObject) {
-        chanceDropItem(gameObject, itemsCodex.get(ItemIndex.POISON_ARROW), this.chanceOfBreaking);
+        chanceDropItem(gameObject, itemsCodex[ItemIndex.POISON_ARROW], this.chanceOfBreaking);
     },
     onHit(hit) {
         if (hit.hasComponent("status-effect-manager")) {

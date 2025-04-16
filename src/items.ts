@@ -131,14 +131,21 @@ interface ItemStatValue {
 enum ItemIndex {
     // Melee weapons
     BROAD_SWORD,
+    STRONG_SWORD,
+    POISON_BROAD_SWORD,
+    POISON_STRONG_SWORD,
     DAGGERS,
     BATTLE_HAMMER,
     ESSENCE_DRIPPED_DAGGER,
     // Ranged weapons
     BOW,
+    GHOST_BOW,
+    RICOCHET_BOW,
     SHURIKEN,
     SLINGSHOT,
     QUICK_BOW,
+    BOOMERANG,
+    RICOCHET_BOOMERANG,
     // Projectiles
     ARROW,
     POISON_ARROW,
@@ -153,6 +160,8 @@ enum ItemIndex {
     POISON_UPGRADE, // not implemented
     STRENGTH_UPGRADE, // not implemented
     DICE, // not implemented
+    GHOST_ARROWS,
+    RICOCHET_UPGRADE,
     // Buffs
     HEART,
     HEART_CRYSTAL,
@@ -246,8 +255,9 @@ function weaponItem(index: WeaponIndex): Partial<Item> {
     }
 }
 
-const itemsCodex = new Codex<ItemIndex, Item>();
-itemsCodex.set(ItemIndex.BROAD_SWORD, {
+// const itemsCodex = new Codex<ItemIndex, Item>();
+const itemsCodex: Record<ItemIndex, Item> = {
+[ItemIndex.BROAD_SWORD]: {
     itemIndex: ItemIndex.BROAD_SWORD,
     displayName: "Broad Sword",
     description: "Basic sword that'll get you by for a few portals",
@@ -257,8 +267,8 @@ itemsCodex.set(ItemIndex.BROAD_SWORD, {
     consumable: false,
     essenceCost: 0,
     ...weaponItem(WeaponIndex.BROAD_SWORD),
-});
-itemsCodex.set(ItemIndex.DAGGERS, {
+},
+[ItemIndex.DAGGERS]: {
     itemIndex: ItemIndex.DAGGERS,
     displayName: "Daggers",
     description: "With two of these you can really quickly jab a foe",
@@ -268,8 +278,8 @@ itemsCodex.set(ItemIndex.DAGGERS, {
     essenceCost: 0,
     maxStack: 1,
     ...weaponItem(WeaponIndex.DAGGERS)
-});
-itemsCodex.set(ItemIndex.BATTLE_HAMMER, {
+},
+[ItemIndex.BATTLE_HAMMER]: {
     itemIndex: ItemIndex.BATTLE_HAMMER,
     displayName: "Battle Hammer",
     description: "This heavy weighted weapon does a lot of damage in a small area",
@@ -279,8 +289,8 @@ itemsCodex.set(ItemIndex.BATTLE_HAMMER, {
     essenceCost: 0,
     maxStack: 1,
     ...weaponItem(WeaponIndex.BATTLE_HAMMER)
-});
-itemsCodex.set(ItemIndex.ESSENCE_DRIPPED_DAGGER, {
+},
+[ItemIndex.ESSENCE_DRIPPED_DAGGER]: {
     itemIndex: ItemIndex.ESSENCE_DRIPPED_DAGGER,
     displayName: "Essence Dripped Dagger",
     description: "Dripping essence on a weapon really increases the power!",
@@ -290,8 +300,8 @@ itemsCodex.set(ItemIndex.ESSENCE_DRIPPED_DAGGER, {
     essenceCost: 2,
     maxStack: 1,
     ...weaponItem(WeaponIndex.ESSENCE_DRIPPED_DAGGER)
-});
-itemsCodex.set(ItemIndex.SHURIKEN, {
+},
+[ItemIndex.SHURIKEN]: {
     itemIndex: ItemIndex.SHURIKEN,
     category: "Weapon",
     displayName: "Shuriken",
@@ -301,8 +311,8 @@ itemsCodex.set(ItemIndex.SHURIKEN, {
     consumable: true,
     essenceCost: 0,
     ...weaponItem(WeaponIndex.SHURIKEN),
-});
-itemsCodex.set(ItemIndex.BOW, {
+},
+[ItemIndex.BOW]: {
     itemIndex: ItemIndex.BOW,
     displayName: "Bow",
     description: "Standard bow but requires you to have some arrows on hand",
@@ -313,8 +323,8 @@ itemsCodex.set(ItemIndex.BOW, {
     consumable: false,
     essenceCost: 0,
     ...weaponItem(WeaponIndex.BOW),
-});
-itemsCodex.set(ItemIndex.QUICK_BOW, {
+},
+[ItemIndex.QUICK_BOW]: {
     itemIndex: ItemIndex.QUICK_BOW,
     displayName: "Quick Bow",
     description: "Crafted from a hyper-elastic material this bow can shoot much faster, but at a cost to effectiveness",
@@ -325,8 +335,8 @@ itemsCodex.set(ItemIndex.QUICK_BOW, {
     essenceCost: 0,
     maxStack: 1,
     ...weaponItem(WeaponIndex.QUICK_BOW)
-});
-itemsCodex.set(ItemIndex.SLINGSHOT, {
+},
+[ItemIndex.SLINGSHOT]: {
     itemIndex: ItemIndex.SLINGSHOT,
     displayName: "Slingshot",
     description: "Use nearby rocks to hurl a bit of hurt from a distance",
@@ -336,8 +346,8 @@ itemsCodex.set(ItemIndex.SLINGSHOT, {
     essenceCost: 0,
     maxStack: 1,
     ...weaponItem(WeaponIndex.SLINGSHOT)
-});
-itemsCodex.set(ItemIndex.ARROW, {
+},
+[ItemIndex.ARROW]: {
     itemIndex: ItemIndex.ARROW,
     displayName: "Arrow",
     description: "Basic arrow",
@@ -346,8 +356,8 @@ itemsCodex.set(ItemIndex.ARROW, {
     maxStack: 100,
     consumable: false,
     essenceCost: 0,
-});
-itemsCodex.set(ItemIndex.POISON_ARROW, {
+},
+[ItemIndex.POISON_ARROW]: {
     itemIndex: ItemIndex.POISON_ARROW,
     displayName: "Poison Arrow",
     description: "Poison tipped arrows leave a stuck foe with more problems than a wound",
@@ -356,8 +366,8 @@ itemsCodex.set(ItemIndex.POISON_ARROW, {
     consumable: false,
     essenceCost: 0,
     maxStack: 100,
-});
-itemsCodex.set(ItemIndex.FLAME_ARROW,  {
+},
+[ItemIndex.FLAME_ARROW]: {
     itemIndex: ItemIndex.FLAME_ARROW,
     displayName: "Flame Arrow",
     description: "A fiery tip is sure to leave a burn",
@@ -366,8 +376,8 @@ itemsCodex.set(ItemIndex.FLAME_ARROW,  {
     consumable: false,
     essenceCost: 0,
     maxStack: 100,
-});
-itemsCodex.set(ItemIndex.HEALING_VIAL, {
+},
+[ItemIndex.HEALING_VIAL]: {
     itemIndex: ItemIndex.HEALING_VIAL,
     displayName: "Healing Vial",
     description: "Quickly recovers some HP after or during a tough battle",
@@ -404,8 +414,8 @@ itemsCodex.set(ItemIndex.HEALING_VIAL, {
             }
         ]
     },
-});
-itemsCodex.set(ItemIndex.ESSENCE_VIAL, {
+},
+[ItemIndex.ESSENCE_VIAL]: {
     itemIndex: ItemIndex.ESSENCE_VIAL,
     displayName: "Essence Vial",
     description: "Shatter when you need a bit of essence in a jif",
@@ -444,8 +454,8 @@ itemsCodex.set(ItemIndex.ESSENCE_VIAL, {
             }
         ]
     },
-});
-itemsCodex.set(ItemIndex.FLAME_UPGRADE, {
+},
+[ItemIndex.FLAME_UPGRADE]: {
     itemIndex: ItemIndex.FLAME_UPGRADE,
     displayName: "Flame Upgrade",
     description: "Adds a fiery touch to a weapon",
@@ -454,8 +464,8 @@ itemsCodex.set(ItemIndex.FLAME_UPGRADE, {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-});
-itemsCodex.set(ItemIndex.POISON_UPGRADE, {
+},
+[ItemIndex.POISON_UPGRADE]: {
     itemIndex: ItemIndex.POISON_UPGRADE,
     displayName: "Poison Upgrade",
     description: "Adds a drop of poison to the tip of a weapon",
@@ -464,8 +474,8 @@ itemsCodex.set(ItemIndex.POISON_UPGRADE, {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-});
-itemsCodex.set(ItemIndex.STRENGTH_UPGRADE, {
+},
+[ItemIndex.STRENGTH_UPGRADE]: {
     itemIndex: ItemIndex.STRENGTH_UPGRADE,
     displayName: "Strength Upgrade",
     description: "Enhances the power of a weapon",
@@ -474,8 +484,8 @@ itemsCodex.set(ItemIndex.STRENGTH_UPGRADE, {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-});
-itemsCodex.set(ItemIndex.DICE, {
+},
+[ItemIndex.DICE]: {
     itemIndex: ItemIndex.DICE,
     displayName: "Dice",
     description: "Transforms a weapon into something new",
@@ -484,8 +494,8 @@ itemsCodex.set(ItemIndex.DICE, {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-});
-itemsCodex.set(ItemIndex.HEART, {
+},
+[ItemIndex.HEART]: {
     itemIndex: ItemIndex.HEART,
     displayName: "Heart",
     description: "With an additional heart you can withstand more damage",
@@ -510,8 +520,8 @@ itemsCodex.set(ItemIndex.HEART, {
             }
         ]
     },
-});
-itemsCodex.set(ItemIndex.TELEPORTATION_RUNE, {
+},
+[ItemIndex.TELEPORTATION_RUNE]: {
     itemIndex: ItemIndex.TELEPORTATION_RUNE,
     displayName: "Teleportation Rune",
     description: "Teleport anywhere within a few meters, but at a slight cost",
@@ -528,8 +538,8 @@ itemsCodex.set(ItemIndex.TELEPORTATION_RUNE, {
         // TODO: spawn particles
         return true;
     }
-});
-itemsCodex.set(ItemIndex.CRYSTAL_BOMB, {
+},
+[ItemIndex.CRYSTAL_BOMB]: {
     itemIndex: ItemIndex.CRYSTAL_BOMB,
     displayName: "Crystal Bomb",
     description: "Toss this in a horde and let it do the rest",
@@ -543,8 +553,8 @@ itemsCodex.set(ItemIndex.CRYSTAL_BOMB, {
         fireProjectile(projectilesCodex.get(ProjectileIndex.CRYSTAL_BOMB), player, target);
         return true;
     }
-});
-itemsCodex.set(ItemIndex.HEART_CRYSTAL, {
+},
+[ItemIndex.HEART_CRYSTAL]: {
     itemIndex: ItemIndex.HEART_CRYSTAL,
     displayName: "Heart Crystal",
     description: "The aura of this crystal has a special mending ability",
@@ -569,8 +579,8 @@ itemsCodex.set(ItemIndex.HEART_CRYSTAL, {
             }
         ]
     },
-});
-itemsCodex.set(ItemIndex.STUN_FIDDLE, {
+},
+[ItemIndex.STUN_FIDDLE]: {
     itemIndex: ItemIndex.STUN_FIDDLE,
     displayName: "Stun Fiddle",
     description: "The mystical melody emanated from this fiddle stops anyone in their tracks",
@@ -597,8 +607,8 @@ itemsCodex.set(ItemIndex.STUN_FIDDLE, {
         }
         return true; // TODO: stun all enemies in radius and play the melody
     }
-});
-itemsCodex.set(ItemIndex.ROOT_SNARE, {
+},
+[ItemIndex.ROOT_SNARE]: {
     itemIndex: ItemIndex.ROOT_SNARE,
     displayName: "Root Snare",
     description: "Send out a groveling root to tangle up any enemies in its path",
@@ -612,8 +622,8 @@ itemsCodex.set(ItemIndex.ROOT_SNARE, {
         fireProjectile(projectilesCodex.get(ProjectileIndex.ROOT_SNARE), player, target);
         return true;
     }
-});
-itemsCodex.set(ItemIndex.BASIC_SHIELD, {
+},
+[ItemIndex.BASIC_SHIELD]: {
     itemIndex: ItemIndex.BASIC_SHIELD,
     displayName: "Basic Shield",
     description: "Deflects some damage",
@@ -636,7 +646,98 @@ itemsCodex.set(ItemIndex.BASIC_SHIELD, {
             }
         ];
     }
-});
+},
+[ItemIndex.GHOST_ARROWS]: {
+    itemIndex: ItemIndex.GHOST_ARROWS,
+    displayName: "Ghost Arrows",
+    description: "Where are these extra arrows coming from?",
+    iconSpriteID: "ghost_arrows",
+    category: "Upgrade",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+},
+[ItemIndex.RICOCHET_UPGRADE]: {
+    itemIndex: ItemIndex.RICOCHET_UPGRADE,
+    displayName: "Ricochet Upgrade",
+    description: "Bouncy bouncy",
+    iconSpriteID: "ricochet_upgrade",
+    category: "Upgrade",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+},
+[ItemIndex.GHOST_BOW]: {
+    itemIndex: ItemIndex.GHOST_BOW,
+    displayName: "Ghost Bow",
+    description: "Multishot!",
+    iconSpriteID: "ghost_bow",
+    category: "Weapon",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+},
+[ItemIndex.RICOCHET_BOW]: {
+    itemIndex: ItemIndex.RICOCHET_BOW,
+    displayName: "Ricochet Bow",
+    description: "Your arrows will just keep on going",
+    iconSpriteID: "ricochet_bow",
+    category: "Weapon",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+},
+[ItemIndex.STRONG_SWORD]: {
+    itemIndex: ItemIndex.STRONG_SWORD,
+    displayName: "Strong Sword",
+    description: "This sure deals a lot of damage",
+    iconSpriteID: "strong_sword",
+    category: "Weapon",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+},
+[ItemIndex.POISON_STRONG_SWORD]: {
+    itemIndex: ItemIndex.POISON_STRONG_SWORD,
+    displayName: "Poisonous Strong Sword",
+    description: "A lot of a damage and a lasting sting",
+    iconSpriteID: "poison_strong_sword",
+    category: "Weapon",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+},
+[ItemIndex.POISON_BROAD_SWORD]: {
+    itemIndex: ItemIndex.POISON_BROAD_SWORD,
+    displayName: "Poisonous Broad Sword",
+    description: "Leave a lasting ailment to your foe",
+    iconSpriteID: "poison_broad_sword",
+    category: "Weapon",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+},
+[ItemIndex.BOOMERANG]: { 
+    itemIndex: ItemIndex.BOOMERANG,
+    displayName: "Boomerang",
+    description: "Woop woop",
+    iconSpriteID: "boomerang",
+    category: "Weapon",
+    consumable: true,
+    essenceCost: 0,
+    maxStack: 1,
+},
+[ItemIndex.RICOCHET_BOOMERANG]: {
+    itemIndex: ItemIndex.RICOCHET_BOOMERANG,
+    displayName: "Bouncy Boomerang",
+    description: "Woop hit woop hit woop",
+    iconSpriteID: "ricochet_boomerang",
+    category: "Weapon",
+    consumable: true,
+    essenceCost: 0,
+    maxStack: 1
+}
+}
 
 export { itemsCodex, ItemIndex, ItemStat, itemStats };
 export type { Item, ItemDropChance, ItemStatData, ItemStatValue, ItemCategory };

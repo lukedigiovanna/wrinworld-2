@@ -155,7 +155,7 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, drops: P
                     const drop = drops[i];
                     const count = drop.count ? drop.count.randomInt() : 1;
                     for (let j = 0; j < count; j++) {
-                        const item = ItemDropFactory(itemsCodex.get(drop.itemIndex), gameObject.position);
+                        const item = ItemDropFactory(itemsCodex[drop.itemIndex], gameObject.position);
                         const physics = item.getComponent("physics");
                         if (physics) {
                             physics.data.impulse.add(MathUtils.randomVector(MathUtils.random(0, 48)));
