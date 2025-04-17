@@ -3,6 +3,7 @@ import { loadImage, loadImageAndTexture, loadImageAndTextureSpritesheet } from "
 import { loadSound } from "./soundLoader";
 import { ShaderProgram } from "./shader";
 import { vertexShaderCode, fragmentShaderCode } from "./shaderCode";
+import settings from "./settings";
 
 let lastTime = new Date().getTime();
 let game: Game | undefined = undefined;
@@ -36,9 +37,15 @@ const mainLoop = () => {
 
     game.draw();
 
-    $("#fps").text(Math.round(1 / dt));
-    $("#objs").text(game.totalObjects);
-    $("#active-objs").text(game.totalActiveObjects);
+    if (settings.showFPS) {
+        $("#debug-info").css("visibility", "visible");
+        $("#fps").text(Math.round(1 / dt));
+        $("#objs").text(game.totalObjects);
+        $("#active-objs").text(game.totalActiveObjects);
+    }
+    else {
+        $("#debug-info").css("visibility", "hidden");
+    }
 
     window.requestAnimationFrame(mainLoop);
 }
