@@ -476,7 +476,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     category: "Upgrade",
     iconSpriteID: "flame_upgrade",
     consumable: false,
-    essenceCost: 0,
+    essenceCost: 20,
     maxStack: 1,
 },
 [ItemIndex.POISON_UPGRADE]: {
@@ -486,7 +486,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     category: "Upgrade",
     iconSpriteID: "poison_upgrade",
     consumable: false,
-    essenceCost: 0,
+    essenceCost: 20,
     maxStack: 1,
 },
 [ItemIndex.STRENGTH_UPGRADE]: {
@@ -496,7 +496,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     category: "Upgrade",
     iconSpriteID: "strength_upgrade",
     consumable: false,
-    essenceCost: 0,
+    essenceCost: 30,
     maxStack: 1,
 },
 [ItemIndex.DICE]: {
@@ -506,7 +506,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     category: "Upgrade",
     iconSpriteID: "dice",
     consumable: false,
-    essenceCost: 0,
+    essenceCost: 35,
     maxStack: 1,
 },
 [ItemIndex.HEART]: {
@@ -542,7 +542,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     category: "Mystic Arts",
     iconSpriteID: "teleportation_rune",
     consumable: false,
-    essenceCost: 5,
+    essenceCost: 3,
     maxStack: 1,
     cooldown: 30,
     charge: 1,
@@ -560,7 +560,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     category: "Utility",
     iconSpriteID: "crystal_bomb",
     consumable: false,
-    essenceCost: 10,
+    essenceCost: 5,
     maxStack: 1,
     cooldown: 1,
     useItem(player, target) {
@@ -579,17 +579,17 @@ const itemsCodex: Record<ItemIndex, Item> = {
     maxStack: 1,
     equipItem(player) {
         const health = player.getComponent("health");
-        health.data.regenerationRate += 1;
+        health.data.regenerationRate += 0.2;
     },
     unequipItem(player) {
         const health = player.getComponent("health");
-        health.data.regenerationRate -= 1;
+        health.data.regenerationRate -= 0.2;
     },
     getStats() {
         return [
             {
                 stat: ItemStat.REGENERATION,
-                value: 1
+                value: 0.2
             }
         ]
     },
@@ -601,7 +601,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     category: "Mystic Arts",
     iconSpriteID: "stun_fiddle",
     consumable: false,
-    essenceCost: 10,
+    essenceCost: 8,
     maxStack: 1,
     cooldown: 45,
     useItem(player) {
@@ -631,7 +631,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-    cooldown: 10,
+    cooldown: 12,
     useItem(player, target) {
         fireProjectile(projectilesCodex[ProjectileIndex.ROOT_SNARE], player, target);
         return true;
@@ -668,7 +668,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     iconSpriteID: "ghost_arrows",
     category: "Upgrade",
     consumable: false,
-    essenceCost: 0,
+    essenceCost: 50,
     maxStack: 1,
 },
 [ItemIndex.RICOCHET_UPGRADE]: {
@@ -678,7 +678,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     iconSpriteID: "ricochet_upgrade",
     category: "Upgrade",
     consumable: false,
-    essenceCost: 0,
+    essenceCost: 40,
     maxStack: 1,
 },
 [ItemIndex.GHOST_BOW]: {
@@ -765,7 +765,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     iconSpriteID: "sprocket_upgrade",
     category: "Upgrade",
     consumable: false,
-    essenceCost: 0,
+    essenceCost: 75,
     maxStack: 1
 },
 [ItemIndex.REINFORCED_SLINGSHOT]: {
@@ -844,7 +844,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     iconSpriteID: "quick_hand_upgrade",
     category: "Upgrade",
     consumable: false,
-    essenceCost: 0,
+    essenceCost: 50,
     maxStack: 1,
 }
 }

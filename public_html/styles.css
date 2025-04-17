@@ -140,14 +140,45 @@ img {
     font-family: "Matrix-Mono";
 }
 
-.upgrade-equation {
-    font-family: "Matrix-Mono";
-    font-size: 26px;
+.upgrade-equation-component {
     margin-block: 0;
     margin-inline: 10px;
-    padding: 24px;
-    color: #c07a00;
+    width: 60px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Matrix-Mono";
+}
+
+.upgrade-equation-component #symbol {
+    font-size: 26px;
+    color: #db9214;
     text-shadow: 0px 0px 4px black;
+}
+
+.upgrade-equation-component #essence-cost-container {
+    position: absolute;
+    color: #19cdde;
+    text-shadow: 0px 0px 1px white;
+    font-size: 10px;
+    top: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.upgrade-equation-component #essence-cost-container span {
+    margin-right: 4px;
+}
+
+.upgrade-equation-component #essence-cost-container img {
+    width: 12px;
+}
+
+.upgrade-equation-component #x {
+    position: absolute;
+    font-size: 30px;
+    color: red;
 }
 
 #held-item-display {

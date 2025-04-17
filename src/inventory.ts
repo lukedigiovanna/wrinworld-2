@@ -501,15 +501,25 @@ class Inventory {
         if (this.heldSlot === null) {
             if (slot !== null) { 
                 // "pick up" the item in the slot.
-                this.heldSlot = slot;
-                if (slotConfigs[type].equipOnAdd) {
-                    this.unequipItem(slotIndex);
-                }
                 if (type === "upgrade_result")  {
-                    this.reference.upgradable_item.slots[0] = null;
-                    this.reference.upgrade_item.slots[0] = null;
+                    const cost = this.reference.upgrade_item.slots[0]?.item.essenceCost;
+                    const essenceManager = this.player.getComponent("essence-manager");
+                    const essence = essenceManager.data.essence;
+                    if (cost !== undefined && essence >= cost) {
+                        this.reference.upgradable_item.slots[0] = null;
+                        this.reference.upgrade_item.slots[0] = null;
+                        this.heldSlot = slot;
+                        slotGroup.slots[index] = null;
+                        essenceManager.data.useEssence(cost);
+                    }
                 }
-                slotGroup.slots[index] = null;
+                else {
+                    this.heldSlot = slot;
+                    if (slotConfigs[type].equipOnAdd) {
+                        this.unequipItem(slotIndex);
+                    }
+                    slotGroup.slots[index] = null;
+                }
             }
             this.hideItemDisplay();
         }
@@ -602,12 +612,24 @@ class Inventory {
         const upgradableItemSlot = this.createAndAddSlotUI("upgradable_item");
         upgradeRow.append(upgradableItemSlot);
         
-        upgradeRow.append($(`<p class="upgrade-equation">+</p>`));
+        upgradeRow.append($(`
+            <div class="upgrade-equation-component">
+                <p id="symbol">+</p>
+            </div>
+        `));
         
         const upgradeItemSlot = this.createAndAddSlotUI("upgrade_item");
         upgradeRow.append(upgradeItemSlot);
 
-        upgradeRow.append($(`<p class="upgrade-equation">=</p>`));
+        upgradeRow.append($(`
+            <div class="upgrade-equation-component">
+                <div id="essence-cost-container">
+                    <span id="essence-cost">30</span><img src="${getImage("essence_orb_small").src}">
+                </div>
+                <p id="symbol">=</p>
+                <p id="x">X</p>
+            </div>
+        `));
         
         const upgradeResultSlot = this.createAndAddSlotUI("upgrade_result");
         upgradeRow.append(upgradeResultSlot);
@@ -787,13 +809,33 @@ class Inventory {
                     count: 1,
                     item: itemsCodex[upgradeResult]
                 }
+                const cost = itemsCodex[upgradeItem].essenceCost
+                const essence = this.player.getComponent("essence-manager").data.essence;
+                if (essence < cost) {
+                    this.reference.upgrade_result.slotDivs[0].find(".item").css("opacity", "50%");
+                    this.reference.upgrade_result.slotDivs[0].css("cursor", "auto");
+                    $("#essence-cost").css("color", "red");
+                }
+                else {
+                    this.reference.upgrade_result.slotDivs[0].find(".item").css("opacity", "100%");
+                    this.reference.upgrade_result.slotDivs[0].css("cursor", "pointer");
+                    $("#essence-cost").css("color", "#19cdde");
+                }
+                $("#essence-cost-container").show();
+                $("#essence-cost").text(cost);
+                $("#x").hide();
+                
             }
             else {
                 this.reference.upgrade_result.slots[0] = null;
+                $("#essence-cost-container").hide();
+                $("#x").show();
             }
         }
         else {
             this.reference.upgrade_result.slots[0] = null;
+            $("#essence-cost-container").hide();
+            $("#x").hide();
         }
 
 
