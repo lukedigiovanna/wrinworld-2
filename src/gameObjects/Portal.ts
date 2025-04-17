@@ -1,6 +1,6 @@
 import { spriteRenderer } from "../renderers";
 import { GameObjectFactory, GameObject, ItemDropFactory } from "./index";
-import { Vector, MathUtils, NumberRange } from "../utils";
+import { Vector, MathUtils, NumberRange, Color } from "../utils";
 import { ParticleEmitter, Health, HealthBarDisplayMode } from "../components";
 import { EnemyFactory, EnemyIndex } from "./Enemy";
 import { enemiesCodex } from "../enemies";
@@ -169,7 +169,7 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, drops: P
 
     const health = portal.addComponent(Health);
     health.data.initializeHealth(properties.health);
-    health.data.barColor = [0, 225, 255];
+    health.data.barColor = new Color(0, 225, 255, 1);
     health.data.healthBarDisplayMode = HealthBarDisplayMode.NONE;
 
     portal.tag = "portal";

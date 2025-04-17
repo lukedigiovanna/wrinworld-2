@@ -1,5 +1,6 @@
 enum SpriteAnimationIndex {
-    CHARACTER_IDLE
+    CHARACTER_IDLE,
+    CHARACTER_RUN,
 }
 
 class SpriteAnimation {
@@ -22,6 +23,9 @@ class SpriteAnimation {
 const animationsCodex: Record<SpriteAnimationIndex, SpriteAnimation> = {
     [SpriteAnimationIndex.CHARACTER_IDLE]: new SpriteAnimation(
         ["character_idle_0", "character_idle_1"], 3),
+    [SpriteAnimationIndex.CHARACTER_RUN]: new SpriteAnimation(
+        ["character_run_0", "character_run_1"], 3
+    )
 }
 
 export { SpriteAnimationIndex, animationsCodex };

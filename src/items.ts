@@ -799,9 +799,12 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
+    cooldown: 60,
+    charge: 1,
+    useOnFullCharge: true,
     useItem(player, target, uses, charge) {
-        // TODO: unimplemented
-        return false;
+        player.getComponent("status-effect-manager").data.applyEffect(StatusEffectIndex.INVINCIBILITY, 1, 5);
+        return true;
     }
 },
 [ItemIndex.POISON_BATTLE_HAMMER]: {

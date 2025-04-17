@@ -24,7 +24,7 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
 
     player.addComponent(Physics);
     const movementData = player.addComponent(MovementData);
-    movementData.data.baseSpeed = 150;
+    movementData.data.baseSpeed = 120;
     player.addComponent(PlayerMovement);
     
     const hitbox = player.addComponent(Hitbox);
@@ -33,7 +33,7 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
     
     const collider = player.addComponent(PhysicalCollider);
     collider.data.boxOffset.setComponents(0, -16);
-    collider.data.boxSize.setComponents(18, 8);
+    collider.data.boxSize.setComponents(16, 6);
 
     const health = player.addComponent(Health);
     health.data.initializeHealth(50);

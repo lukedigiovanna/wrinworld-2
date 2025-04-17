@@ -3,6 +3,7 @@ import { GameObject } from "../gameObjects";
 import input from "../input";
 import { Color, MathUtils, Vector } from "../utils";
 import { tileCodex, TileIndex } from "../tiles";
+import { SpriteAnimationIndex } from "../animations";
 
 const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
@@ -18,6 +19,7 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
             data.collider = gameObject.getComponent("physical-collider");
             data.trailParticleEmitter = gameObject.getComponent("particle-emitter-trail");
             data.movementData = gameObject.getComponent("movement-data");
+            data.animationManager = gameObject.getComponent("animation-manager");
         },
         update(dt: number) {
             const movement = Vector.zero();
@@ -63,6 +65,13 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
                 gameObject.renderer!.data.offset = Vector.zero();
                 // gameObject.renderer!.data.spriteID = "character";
                 gameObject.castsShadow = true;
+            }
+
+            if (movement.isZero()) {
+                data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_IDLE
+            }
+            else {
+                data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_RUN
             }
 
             const tile = tileCodex[tileIndex];

@@ -6,6 +6,7 @@ enum StatusEffectIndex {
     FLAME,
     STUN,
     ROOT_SNARE,
+    INVINCIBILITY,
 }
 
 interface StatusEffect {
@@ -82,6 +83,23 @@ const statusEffectsCodex: Record<StatusEffectIndex, StatusEffect> = {
         }
     },
 },
+[StatusEffectIndex.INVINCIBILITY]: {
+    displayName: "Invincibility",
+    iconSpriteID: "invincibility_icon",
+    displayIconID: "invincibility_bubble",
+    particleID: "square",
+    rate: 1,
+    start(gameObject, level) {
+        if (gameObject.hasComponent("health")) {
+            gameObject.getComponent("health").data.invincibleCount++;
+        }
+    },
+    end(gameObject, level) {
+        if (gameObject.hasComponent("health")) {
+            gameObject.getComponent("health").data.invincibleCount--;
+        }
+    },
+}
 }
 
 export { StatusEffectIndex, statusEffectsCodex };

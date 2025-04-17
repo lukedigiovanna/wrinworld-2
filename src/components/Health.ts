@@ -16,12 +16,13 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
         maximumHP: 20,
         regenerationRate: 0,
         resistance: 0, // percent damage avoided
+        invincibleCount: 0,
         lastHitTime: -999,
         healthBarDisplayMode: HealthBarDisplayMode.NONE,
         timeLastShowedHealthBar: -999,
         damageSoundEffectID: undefined,
         deathSoundEffectID: undefined,
-        barColor: [0, 255, 0],
+        barColor: Color.GREEN,
         initializeHealth(hp: number) {
             this.hp = hp;
             this.maximumHP = hp;
@@ -42,10 +43,13 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
             return amount;
         },
         damage(amount: number) {
-            if (data.damageSoundEffectID) {
-                getSound(data.damageSoundEffectID).play();
+            if (this.invincibleCount > 0) {
+                return;
             }
-            amount *= (1 - data.resistance);
+            if (this.damageSoundEffectID) {
+                getSound(this.damageSoundEffectID).play();
+            }
+            amount *= (1 - this.resistance);
             this.hp = Math.max(0, this.hp - amount);
             this.lastHitTime = gameObject.game.time;
             if (this.healthBarDisplayMode !== HealthBarDisplayMode.NONE) {
@@ -112,7 +116,7 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
                 gameObject.position.x, 
                 gameObject.position.y + gameObject.scale.y / 2 + topMargin, 
                 barWidth, barHeight);
-            camera.color = new Color(data.barColor[0], data.barColor[1], data.barColor[2], opacity);
+            camera.color = new Color(data.barColor.r, data.barColor.g, data.barColor.b, opacity);
             const realWidth = barWidth * data.hp / data.maximumHP - borderWidth * 2;
             camera.fillRect(
                 gameObject.position.x - barWidth / 2 + borderWidth + realWidth / 2, 
