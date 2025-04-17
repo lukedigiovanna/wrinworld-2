@@ -228,6 +228,10 @@ window.onload = async () => {
         loadImage("cooldown_14", "assets/images/ui/cooldown_14.png"),
         loadImage("cooldown_15", "assets/images/ui/cooldown_15.png"),
         
+        loadImage("status_effect_slot", "assets/images/ui/status_effect_slot.png"),
+
+        loadImage("invincibility_icon", "assets/images/status_effects/invincibility_icon.png"),
+
         // Misc.
         loadImageAndTexture(gl, "square",  "assets/images/square.png"),
         loadImageAndTexture(gl, "undefined", "assets/images/undefined.png"),

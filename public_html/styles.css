@@ -244,10 +244,36 @@ img {
     font-size: 20px;
 }
 
+#status-effect-icon-row {
+    display: flex;
+    flex-direction: row;
+    gap: 9px;
+}
+
+.status-effect-icon-container {
+    position: relative;
+    width: 54px;
+    height: 54px;
+}
+
+.status-effect-icon-container .slot-icon {
+    position: absolute;
+    width: 54px;
+    height: 54px;
+}
+
+.status-effect-icon-container .effect-icon {
+    position: absolute;
+    left: 9px;
+    top: 9px;
+    width: 36px;
+    height: 36px;
+}
+
 #hud-row {
     display: flex;
     flex-direction: row;
-    height: 100px;
+    /* height: 100px; */
     align-items: flex-end;
     justify-content: space-between;
 }
