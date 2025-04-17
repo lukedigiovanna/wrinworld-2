@@ -2,12 +2,13 @@
 
 // NOTE: items are exclusively used by the player
 
-import { Vector } from "./utils";
+import { Color, MathUtils, Vector } from "./utils";
 import { GameObject, Team } from "./gameObjects";
 import { fireProjectile, WeaponIndex, weaponsCodex } from "./weapons";
 import { addNotification } from "./notifications";
 import { ProjectileIndex, projectilesCodex } from "./projectiles";
 import { StatusEffectIndex } from "./statusEffects";
+import { ParticleLayer } from "./components";
 
 enum ItemStat {
     // Weapon based
@@ -544,12 +545,22 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 3,
     maxStack: 1,
-    cooldown: 30,
-    charge: 1,
-    requireFullCharge: true,
+    cooldown: 60,
     useItem(player, target) {
+        for (let i = 0; i < 24; i++) {
+            const f = MathUtils.random(0.4, 1);
+            const s = MathUtils.randomInt(1, 2);
+            player.game.addPartialParticle({
+                position: player.position.copy(),
+                velocity: MathUtils.randomVector(MathUtils.random(4, 16)),
+                lifetime: MathUtils.random(0.4, 1.2),
+                color: new Color(0.1, f, f, 1),
+                size: new Vector(s, s),
+                angularVelocity: MathUtils.random(-3, 3),
+                layer: ParticleLayer.ABOVE_OBJECTS
+            });
+        }
         player.position.set(target);
-        // TODO: spawn particles
         return true;
     }
 },
