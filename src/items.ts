@@ -769,7 +769,8 @@ const itemsCodex: Record<ItemIndex, Item> = {
     category: "Weapon",
     consumable: false,
     essenceCost: 0,
-    maxStack: 1
+    maxStack: 1,
+    ...weaponItem(WeaponIndex.REINFORCED_SLINGSHOT)
 },
 [ItemIndex.MACHINE_GUN_SLINGSHOT]: {
     itemIndex: ItemIndex.MACHINE_GUN_SLINGSHOT,
@@ -821,6 +822,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
+    ...weaponItem(WeaponIndex.QUICK_BROAD_SWORD),
 },
 [ItemIndex.QUICK_HAND_UPGRADE]: {
     itemIndex: ItemIndex.QUICK_HAND_UPGRADE,

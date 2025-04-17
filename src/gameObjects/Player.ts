@@ -13,7 +13,7 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
     player.tag = "player";
     player.position.set(position.copy());
     player.renderer = spriteRenderer("peach");
-    player.scale.setComponents(32, 48);
+    player.scale.setComponents(27, 42);
     player.castsShadow = true;
     player.shadowSize = 2;
 

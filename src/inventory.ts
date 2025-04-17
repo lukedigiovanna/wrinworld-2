@@ -415,7 +415,7 @@ class Inventory {
     }
 
     public checkChargedItem(target: Vector) {
-        if (this._charging && this.chargeIndex && this.chargeItem && this.chargeItem.charge && this.chargeItem.useOnFullCharge) {
+        if (this._charging && this.chargeIndex && this.chargeItem && this.chargeItem.charge && (this.chargeItem.useOnFullCharge || this.chargeItem.automatic)) {
             const charge = this.player.game.time - this.chargeStartTime;
             if (charge >= this.chargeItem.charge) {
                 this.useItem(this.chargeIndex, target, 1.0);

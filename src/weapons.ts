@@ -30,11 +30,14 @@ interface Weapon {
 
 enum WeaponIndex {
     BROAD_SWORD,
+    QUICK_BROAD_SWORD,
     STRONG_SWORD,
     POISON_BROAD_SWORD,
     POISON_STRONG_SWORD,
     DAGGERS,
     BATTLE_HAMMER,
+    QUICK_BATTLE_HAMMER,
+    POISON_BATTLE_HAMMER,
     ESSENCE_DRIPPED_DAGGER,
     SHURIKEN,
     BOW,
@@ -92,7 +95,16 @@ function scaleMeleeByCharge(melee: MeleeAttack, charge: number | undefined, fiel
 
 const weaponsCodex = new Codex<WeaponIndex, Weapon>();
 weaponsCodex.set(WeaponIndex.BROAD_SWORD, {
-    cooldown: 0.5,
+    cooldown: 0.75,
+    attack: () => meleeAttacksCodex.get(MeleeAttackIndex.BROAD_SWORD),
+    fire(gameObject, target) {
+        fireMelee(this.attack() as MeleeAttack, gameObject, target);
+    }
+});
+weaponsCodex.set(WeaponIndex.QUICK_BROAD_SWORD, {
+    cooldown: 0,
+    charge: 0.5,
+    automatic: true,
     attack: () => meleeAttacksCodex.get(MeleeAttackIndex.BROAD_SWORD),
     fire(gameObject, target) {
         fireMelee(this.attack() as MeleeAttack, gameObject, target);
@@ -125,7 +137,9 @@ weaponsCodex.set(WeaponIndex.BOW, {
     }
 });
 weaponsCodex.set(WeaponIndex.DAGGERS, {
-    cooldown: 0.2,
+    cooldown: 0.0,
+    charge: 0.2,
+    automatic: true,
     attack: () => meleeAttacksCodex.get(MeleeAttackIndex.DAGGER),
     fire(gameObject, target) {
         fireMelee(this.attack() as MeleeAttack, gameObject, target);
@@ -167,6 +181,17 @@ weaponsCodex.set(WeaponIndex.QUICK_BOW, {
     }),
     fire(gameObject, target) {
         fireProjectile(this.attack() as Projectile, gameObject, target);
+    }
+});
+weaponsCodex.set(WeaponIndex.REINFORCED_SLINGSHOT, {
+    cooldown: 0.8,
+    charge: 0.8,
+    attack: (props) => scaleProjectileByCharge({
+        ...projectilesCodex.get(ProjectileIndex.ROCK),
+        damage: 12
+    }, props?.charge),
+    fire(gameObject, target, props) {
+        fireProjectile(this.attack(props) as Projectile, gameObject, target);
     }
 });
 weaponsCodex.set(WeaponIndex.MACHINE_GUN_SLINGSHOT, {

@@ -40,6 +40,7 @@ setCombo(ItemIndex.SLINGSHOT, ItemIndex.STRENGTH_UPGRADE, () => ItemIndex.REINFO
 setCombo(ItemIndex.REINFORCED_SLINGSHOT, ItemIndex.SPROCKET_UPGRADE, () => ItemIndex.MACHINE_GUN_SLINGSHOT);
 setCombo(ItemIndex.BOW, ItemIndex.GHOST_ARROWS, () => ItemIndex.GHOST_BOW);
 setCombo(ItemIndex.BOW, ItemIndex.RICOCHET_UPGRADE, () => ItemIndex.RICOCHET_BOW);
+setCombo(ItemIndex.BOW, ItemIndex.QUICK_HAND_UPGRADE, () => ItemIndex.QUICK_BOW);
 setCombo(ItemIndex.BOOMERANG, ItemIndex.RICOCHET_UPGRADE, () => ItemIndex.RICOCHET_BOOMERANG);
 
 const dicePool = [ItemIndex.BROAD_SWORD, ItemIndex.BATTLE_HAMMER, ItemIndex.POISON_BROAD_SWORD, ItemIndex.BOW, ItemIndex.SLINGSHOT, ItemIndex.DAGGERS, ItemIndex.STRONG_SWORD, ItemIndex.POISON_STRONG_SWORD, ItemIndex.BOOMERANG];

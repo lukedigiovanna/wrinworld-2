@@ -68,6 +68,7 @@ window.onload = async () => {
         // Entities
         loadImageAndTexture(gl, "peach", "assets/images/peach.png"),
         loadImageAndTexture(gl, "peach_water", "assets/images/peach_water.png"),
+        loadImageAndTexture(gl, "character", "assets/images/character.png"),
 
         loadImageAndTexture(gl, "minion", "assets/images/enemies/minion.png"),
         loadImageAndTexture(gl, "minion_water", "assets/images/enemies/minion_water.png"),
