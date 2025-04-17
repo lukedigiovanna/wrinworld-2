@@ -67,6 +67,7 @@ const MeleeAttackFactory: GameObjectFactory = (properties: MeleeAttack, owner: G
                             properties.knockback
                         )
                     );
+                    properties.onHit?.(collision);
                     data.hitCount++;
                     if (data.hitCount >= properties.maxHits) {
                         gameObject.destroy();

@@ -1,8 +1,9 @@
-import { Vector } from "./utils";
+import { MathUtils, Vector } from "./utils";
 import { ProjectileFactory, GameObject, MeleeAttackFactory } from "./gameObjects";
 import { Projectile, projectilesCodex, ProjectileIndex } from "./projectiles";
 import { MeleeAttack, meleeAttacksCodex, MeleeAttackIndex } from "./meleeAttacks";
 import { Item, ItemIndex } from "./items";
+import { StatusEffectIndex } from "./statusEffects";
 
 // NOTE: players AND enemies can fire weapons!
 
@@ -100,9 +101,7 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
     }
 },
 [WeaponIndex.QUICK_BROAD_SWORD]: {
-    cooldown: 0,
-    charge: 0.5,
-    automatic: true,
+    cooldown: 0.35,
     attack: () => meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
     fire(gameObject, target) {
         fireMelee(this.attack() as MeleeAttack, gameObject, target);
@@ -204,21 +203,37 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
 },
 [WeaponIndex.STRONG_SWORD]: {
     cooldown: 0,
-    attack: (props) => meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
+    attack: (props) => ({
+        ...meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
+        damage: 8,
+        sweepDamage: 4 
+    }),
     fire(gameObject, target) {
         fireMelee(this.attack() as MeleeAttack, gameObject, target);
     }
 },
 [WeaponIndex.POISON_BROAD_SWORD]: {
     cooldown: 0,
-    attack: (props) => meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
+    attack: (props) => ({
+        ...meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
+        onHit(hit) {
+            hit.getComponentOptional("status-effect-manager")?.data.applyEffect(StatusEffectIndex.POISON, 1, MathUtils.random(3, 6));
+        }
+    }),
     fire(gameObject, target) {
         fireMelee(this.attack() as MeleeAttack, gameObject, target);
     }
 },
 [WeaponIndex.POISON_STRONG_SWORD]: {
     cooldown: 0,
-    attack: (props) => meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
+    attack: (props) => ({
+        ...meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
+        damage: 8,
+        sweepDamage: 4,
+        onHit(hit) {
+            hit.getComponentOptional("status-effect-manager")?.data.applyEffect(StatusEffectIndex.POISON, MathUtils.random(1, 3), MathUtils.random(3, 6));
+        }
+    }),
     fire(gameObject, target) {
         fireMelee(this.attack() as MeleeAttack, gameObject, target);
     }

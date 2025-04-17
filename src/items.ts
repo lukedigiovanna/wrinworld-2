@@ -562,7 +562,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 5,
     maxStack: 1,
-    cooldown: 1,
+    cooldown: 120,
     useItem(player, target) {
         fireProjectile(projectilesCodex[ProjectileIndex.CRYSTAL_BOMB], player, target);
         return true;

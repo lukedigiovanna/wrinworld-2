@@ -1,3 +1,4 @@
+import { GameObject } from "./gameObjects";
 
 enum MeleeAttackIndex {
     BROAD_SWORD, // Sweeping attack for broad sword types
@@ -26,6 +27,8 @@ interface MeleeAttack {
     sweepArcLength?: number;
     // Particle effects, if applicable
     particleSpriteID?: string;
+
+    onHit?: (hit: GameObject) => void;
 }
 
 const meleeAttacksCodex: Record<MeleeAttackIndex, MeleeAttack> = {
