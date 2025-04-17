@@ -109,7 +109,7 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
                 camera.color = Color.WHITE;
                 camera.drawTexture(
                     getTexture(activeItem.iconSpriteID), 
-                    gameObject.position.x + offset * sign, gameObject.position.y - 6, 
+                    gameObject.position.x + offset * sign, gameObject.position.y - 4, 
                     16 * sign, 16
                 );
             }

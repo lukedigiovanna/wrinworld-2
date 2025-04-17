@@ -6,24 +6,27 @@ import settings from "../settings";
 // TODO! HANDLE DELETED OBJECTS POSSIBLY PERSISTING IN THE `collidingWith` SET
 
 const Hitbox: ComponentFactory = (gameObject: GameObject) => {
-    const boxOffset = new Vector(0, 0);
-    const boxSize = gameObject.scale.copy();
-    const collidingWith = new Set<GameObject>();
     return {
         id: "hitbox",
+        data: {
+            boxOffset: new Vector(0, 0),
+            boxSize: gameObject.scale.copy(),
+            collidingWith: new Set<GameObject>(),
+        },
         start() {},
         update(dt) {
             // check for collision with any other object with a hitbox collider
-            const rotatedBoxOffset = Vector.rotated(boxOffset, gameObject.rotation);
+            const rotatedBoxOffset = Vector.rotated(this.data.boxOffset, gameObject.rotation);
             const [l, r, t, b] = [
-                gameObject.position.x + rotatedBoxOffset.x - boxSize.x / 2,
-                gameObject.position.x + rotatedBoxOffset.x + boxSize.x / 2,
-                gameObject.position.y + rotatedBoxOffset.y + boxSize.y / 2,
-                gameObject.position.y + rotatedBoxOffset.y - boxSize.y / 2,
+                gameObject.position.x + rotatedBoxOffset.x - this.data.boxSize.x / 2,
+                gameObject.position.x + rotatedBoxOffset.x + this.data.boxSize.x / 2,
+                gameObject.position.y + rotatedBoxOffset.y + this.data.boxSize.y / 2,
+                gameObject.position.y + rotatedBoxOffset.y - this.data.boxSize.y / 2,
             ];
             gameObject.getAdjacentObjects().forEach((obj: GameObject) => {
                 if (gameObject === obj) return;
                 if (!obj.hasComponent("hitbox")) return;
+                if (obj.destroyed) return;
                 const other = obj.getComponent("hitbox");
             
                 // check for collision
@@ -35,14 +38,14 @@ const Hitbox: ComponentFactory = (gameObject: GameObject) => {
                     obj.position.y + oRotatedBoxOffset.y - other.data?.boxSize.y / 2,
                 ];
                 if (!(r <= ol || l >= or || t <= ob || b >= ot)) {
-                    if (!collidingWith.has(obj)) {
+                    if (!this.data.collidingWith.has(obj)) {
                         gameObject.onHitboxCollisionEnter(obj);
-                        collidingWith.add(obj);
+                        this.data.collidingWith.add(obj);
                     }
                 }
-                else if (collidingWith.has(obj)) {
+                else if (this.data.collidingWith.has(obj)) {
                     gameObject.onHitboxCollisionExit(obj);
-                    collidingWith.delete(obj);
+                    this.data.collidingWith.delete(obj);
                 }
             });
         },
@@ -53,16 +56,11 @@ const Hitbox: ComponentFactory = (gameObject: GameObject) => {
                 camera.strokeRect(
                     gameObject.position.x + rotatedOffset.x, 
                     gameObject.position.y + rotatedOffset.y, 
-                    boxSize.x,
-                    boxSize.y
+                    this.data.boxSize.x,
+                    this.data.boxSize.y
                 )
             }
         },
-        data: {
-            boxOffset,
-            boxSize,
-            collidingWith
-        }
     }
 }
 

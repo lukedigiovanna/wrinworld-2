@@ -18,7 +18,7 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const animationManager = player.addComponent(AnimationManager);
     animationManager.data.animation = SpriteAnimationIndex.CHARACTER_IDLE;
 
-    player.scale.setComponents(27, 42);
+    player.scale.setComponents(24, 42);
     player.castsShadow = true;
     player.shadowSize = 2;
 
@@ -28,12 +28,12 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
     player.addComponent(PlayerMovement);
     
     const hitbox = player.addComponent(Hitbox);
-    hitbox.data.boxSize.setComponents(24, 24);
-    hitbox.data.boxOffset.setComponents(0, -12)
+    hitbox.data.boxSize.setComponents(18, 18);
+    hitbox.data.boxOffset.setComponents(0, -11)
     
     const collider = player.addComponent(PhysicalCollider);
-    collider.data.boxOffset.setComponents(0, -20);
-    collider.data.boxSize.setComponents(24, 8);
+    collider.data.boxOffset.setComponents(0, -16);
+    collider.data.boxSize.setComponents(18, 8);
 
     const health = player.addComponent(Health);
     health.data.initializeHealth(50);

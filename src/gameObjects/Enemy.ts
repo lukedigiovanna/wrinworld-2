@@ -13,6 +13,7 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
     
     const enemy = new GameObject();
     enemy.team = Team.ENEMY;
+    enemy.tag = "enemy";
     enemy.position = position.copy();
     
     const texture = getTexture(enemyData.spriteID);
@@ -26,7 +27,9 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
     health.data.damageSoundEffectID = "hitmarker";
     health.data.healthBarDisplayMode = HealthBarDisplayMode.ON_HIT;
     
-    enemy.addComponent(Hitbox);
+    const hitbox = enemy.addComponent(Hitbox);
+    hitbox.data.boxSize = new Vector(enemy.scale.x * 0.75, enemy.scale.y);
+    
     enemy.addComponent(Physics);
     enemy.addComponent(ItemDropper(enemyData.drops));
     enemy.addComponent(StatusEffectManager);

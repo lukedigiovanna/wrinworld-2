@@ -206,21 +206,21 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
     cooldown: 0,
     attack: (props) => meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
     fire(gameObject, target) {
-        fireProjectile(this.attack() as Projectile, gameObject, target);
+        fireMelee(this.attack() as MeleeAttack, gameObject, target);
     }
 },
 [WeaponIndex.POISON_BROAD_SWORD]: {
     cooldown: 0,
     attack: (props) => meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
     fire(gameObject, target) {
-        fireProjectile(this.attack() as Projectile, gameObject, target);
+        fireMelee(this.attack() as MeleeAttack, gameObject, target);
     }
 },
 [WeaponIndex.POISON_STRONG_SWORD]: {
     cooldown: 0,
     attack: (props) => meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
     fire(gameObject, target) {
-        fireProjectile(this.attack() as Projectile, gameObject, target);
+        fireMelee(this.attack() as MeleeAttack, gameObject, target);
     }
 },
 [WeaponIndex.QUICK_BATTLE_HAMMER]: {

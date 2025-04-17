@@ -15,7 +15,6 @@ class SpriteAnimation {
 
     public getFrame(time: number) {
         const index = Math.floor(time / this.rate) % this.frames.length;
-        console.log(time, index);
         return this.frames[index];
     }
 }

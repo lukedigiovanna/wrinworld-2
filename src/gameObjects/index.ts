@@ -163,7 +163,10 @@ class GameObject {
 
     public update(dt: number) {
         // check if we changed chunk indexes
-        this.components.forEach((component: Component) => {
+        for (const component of this.components) {
+            if (this._destroyed) {
+                break;
+            }
             try {
                 component.update?.(dt);
             }
@@ -177,7 +180,7 @@ age: ${this.age}
 position: ${this.position.x}, ${this.position.y}
 stack trace:`)
             }
-        });
+        }
         
         if (this.lifespan && this.age >= this.lifespan) {
             this.destroy();

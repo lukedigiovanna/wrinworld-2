@@ -690,6 +690,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
+    ...weaponItem(WeaponIndex.GHOST_BOW),
 },
 [ItemIndex.RICOCHET_BOW]: {
     itemIndex: ItemIndex.RICOCHET_BOW,
@@ -700,6 +701,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
+    ...weaponItem(WeaponIndex.RICOCHET_BOW),
 },
 [ItemIndex.STRONG_SWORD]: {
     itemIndex: ItemIndex.STRONG_SWORD,
@@ -710,6 +712,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
+    ...weaponItem(WeaponIndex.STRONG_SWORD),
 },
 [ItemIndex.POISON_STRONG_SWORD]: {
     itemIndex: ItemIndex.POISON_STRONG_SWORD,
@@ -720,6 +723,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
+    ...weaponItem(WeaponIndex.POISON_STRONG_SWORD),
 },
 [ItemIndex.POISON_BROAD_SWORD]: {
     itemIndex: ItemIndex.POISON_BROAD_SWORD,
@@ -730,6 +734,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
+    ...weaponItem(WeaponIndex.POISON_BROAD_SWORD),
 },
 [ItemIndex.BOOMERANG]: { 
     itemIndex: ItemIndex.BOOMERANG,
@@ -740,6 +745,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: true,
     essenceCost: 0,
     maxStack: 1,
+    ...weaponItem(WeaponIndex.BOOMERANG),
 },
 [ItemIndex.RICOCHET_BOOMERANG]: {
     itemIndex: ItemIndex.RICOCHET_BOOMERANG,
@@ -749,7 +755,8 @@ const itemsCodex: Record<ItemIndex, Item> = {
     category: "Weapon",
     consumable: true,
     essenceCost: 0,
-    maxStack: 1
+    maxStack: 1,
+    ...weaponItem(WeaponIndex.RICOCHET_BOOMERANG),
 },
 [ItemIndex.SPROCKET_UPGRADE]: {
     itemIndex: ItemIndex.SPROCKET_UPGRADE,
@@ -792,6 +799,10 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
+    useItem(player, target, uses, charge) {
+        // TODO: unimplemented
+        return false;
+    }
 },
 [ItemIndex.POISON_BATTLE_HAMMER]: {
     itemIndex: ItemIndex.POISON_BATTLE_HAMMER,
@@ -802,6 +813,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
+    ...weaponItem(WeaponIndex.POISON_BATTLE_HAMMER),
 },
 [ItemIndex.QUICK_BATTLE_HAMMER]: {
     itemIndex: ItemIndex.QUICK_BATTLE_HAMMER,
@@ -812,6 +824,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
+    ...weaponItem(WeaponIndex.QUICK_BATTLE_HAMMER),
 },
 [ItemIndex.QUICK_BROAD_SWORD]: {
     itemIndex: ItemIndex.QUICK_BROAD_SWORD,
