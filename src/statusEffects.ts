@@ -1,5 +1,4 @@
 import { Color } from "./utils";
-import { Codex } from "./codex";
 import { GameObject } from "./gameObjects";
 
 enum StatusEffectIndex {
@@ -19,8 +18,8 @@ interface StatusEffect {
     end?: (gameObject: GameObject, level: number) => void; // Run when effect is removed.
 }
 
-const statusEffectsCodex = new Codex<StatusEffectIndex, StatusEffect>();
-statusEffectsCodex.set(StatusEffectIndex.POISON, {
+const statusEffectsCodex: Record<StatusEffectIndex, StatusEffect> = {
+[StatusEffectIndex.POISON]: {
     displayName: "Poison",
     iconSpriteID: "poison_effect_icon",
     particleID: "poison_particle",
@@ -30,8 +29,8 @@ statusEffectsCodex.set(StatusEffectIndex.POISON, {
             gameObject.getComponent("health").data.damage(level * 0.25);
         }
     },
-});
-statusEffectsCodex.set(StatusEffectIndex.FLAME, {
+},
+[StatusEffectIndex.FLAME]: {
     displayName: "Flame",
     iconSpriteID: "flame_effect_icon",
     particleID: "flame_particle",
@@ -41,8 +40,8 @@ statusEffectsCodex.set(StatusEffectIndex.FLAME, {
             gameObject.getComponent("health").data.damage(level * 1.2);
         }
     },
-});
-statusEffectsCodex.set(StatusEffectIndex.STUN, {
+},
+[StatusEffectIndex.STUN]: {
     displayName: "Stun",
     iconSpriteID: "stun_effect_icon",
     particleID: "stun_particle",
@@ -59,8 +58,8 @@ statusEffectsCodex.set(StatusEffectIndex.STUN, {
             gameObject.getComponent("movement-data").data.stunnedCount--;
         }
     },
-});
-statusEffectsCodex.set(StatusEffectIndex.ROOT_SNARE, {
+},
+[StatusEffectIndex.ROOT_SNARE]: {
     displayName: "Root Snare",
     iconSpriteID: "root_snare_icon",
     particleID: "square",
@@ -80,7 +79,8 @@ statusEffectsCodex.set(StatusEffectIndex.ROOT_SNARE, {
             gameObject.getComponent("movement-data").data.stunnedCount--;
         }
     },
-})
+},
+}
 
 export { StatusEffectIndex, statusEffectsCodex };
 export type { StatusEffect };

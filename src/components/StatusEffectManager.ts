@@ -26,7 +26,7 @@ const StatusEffectManager: ComponentFactory = (gameObject: GameObject) => {
                     break;
                 }
             }
-            const statusEffect = statusEffectsCodex.get(effectIndex);
+            const statusEffect = statusEffectsCodex[effectIndex];
             const effect: Effect = {
                 statusEffect,
                 index: effectIndex,

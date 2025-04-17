@@ -230,7 +230,7 @@ class Game {
                 if (!chunk) continue;
                 for (let i = 0; i < TILES_PER_CHUNK; i++) {
                     const tileIndex = chunk.tiles[i];
-                    const tile = tileCodex.get(tileIndex);
+                    const tile = tileCodex[tileIndex];
                     if (tile.spriteID) {
                         let spriteID = tile.spriteID;
                         const tilePosition = new Vector(
@@ -437,7 +437,7 @@ class Game {
     // will generate the chunk there if necessary.
     public getTile(position: Vector): Tile {
         const tileIndex = this.getTileIndex(position);
-        return tileCodex.get(tileIndex);
+        return tileCodex[tileIndex];
     }
 
     // Returns true if any tile in the given radius around the given position is

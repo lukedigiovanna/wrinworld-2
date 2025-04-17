@@ -1,4 +1,3 @@
-import { Codex } from "./codex";
 
 enum MeleeAttackIndex {
     BROAD_SWORD, // Sweeping attack for broad sword types
@@ -29,8 +28,8 @@ interface MeleeAttack {
     particleSpriteID?: string;
 }
 
-const meleeAttacksCodex = new Codex<MeleeAttackIndex, MeleeAttack>();
-meleeAttacksCodex.set(MeleeAttackIndex.BROAD_SWORD, {
+const meleeAttacksCodex: Record<MeleeAttackIndex, MeleeAttack> = {
+[MeleeAttackIndex.BROAD_SWORD]: {
     damage: 5,
     sweepDamage: 2,
     maxHits: 3,
@@ -41,8 +40,8 @@ meleeAttacksCodex.set(MeleeAttackIndex.BROAD_SWORD, {
     sweepArcStart: -Math.PI / 4,
     sweepArcLength: Math.PI / 2,
     particleSpriteID: "sword_spark"
-});
-meleeAttacksCodex.set(MeleeAttackIndex.DAGGER, {
+},
+[MeleeAttackIndex.DAGGER]: {
     damage: 4,
     sweepDamage: 0,
     maxHits: 1,
@@ -51,8 +50,8 @@ meleeAttacksCodex.set(MeleeAttackIndex.DAGGER, {
     range: 24,
     duration: 0.1,
     particleSpriteID: "sword_spark"
-});
-meleeAttacksCodex.set(MeleeAttackIndex.BATTLE_HAMMER, {
+},
+[MeleeAttackIndex.BATTLE_HAMMER]: {
     damage: 20,
     sweepDamage: 10,
     maxHits: 6,
@@ -61,8 +60,8 @@ meleeAttacksCodex.set(MeleeAttackIndex.BATTLE_HAMMER, {
     range: 24,
     duration: 0.2,
     particleSpriteID: "sword_spark",
-});
-meleeAttacksCodex.set(MeleeAttackIndex.BASIC, {
+},
+[MeleeAttackIndex.BASIC]: {
     damage: 1,
     sweepDamage: 0,
     maxHits: 1,
@@ -71,7 +70,8 @@ meleeAttacksCodex.set(MeleeAttackIndex.BASIC, {
     range: 8,
     duration: 0.1,
     particleSpriteID: "sword_spark"
-});
+},
+}
 
 export { meleeAttacksCodex, MeleeAttackIndex };
 export type { MeleeAttack };

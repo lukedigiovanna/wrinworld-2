@@ -65,7 +65,7 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
                 gameObject.castsShadow = true;
             }
 
-            const tile = tileCodex.get(tileIndex);
+            const tile = tileCodex[tileIndex];
             if (tile.trailColor && !movement.isZero()) {
                 data.trailParticleEmitter.data.color = () => {
                     const f = MathUtils.random(-0.25, 0.25);

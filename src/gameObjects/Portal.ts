@@ -42,7 +42,7 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, drops: P
             lifetime: () => MathUtils.random(0.4, 1.4)
         }
     ));
-    const enemyParticles = properties.packs.map(pack => enemiesCodex.get(pack.enemyIndex).particleID).filter(p => p !== undefined);
+    const enemyParticles = properties.packs.map(pack => enemiesCodex[pack.enemyIndex].particleID).filter(p => p !== undefined);
     if (enemyParticles.length > 0) {
         portal.addComponent(ParticleEmitter(
             {

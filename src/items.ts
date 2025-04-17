@@ -212,7 +212,7 @@ interface ItemDropChance {
 }
 
 function generateStatsForWeapon(weaponIndex: WeaponIndex): ItemStatValue[] {
-    const weapon = weaponsCodex.get(weaponIndex);
+    const weapon = weaponsCodex[weaponIndex];
     const attack = weapon.attack();
     const maxCharge = weapon.charge ? weapon.charge : 0;
     const stats = [
@@ -244,14 +244,14 @@ function generateStatsForWeapon(weaponIndex: WeaponIndex): ItemStatValue[] {
 
 // Shorthand for filling out basic item use functions for weapons.
 function weaponItem(index: WeaponIndex): Partial<Item> {
-    const weapon = weaponsCodex.get(index);
+    const weapon = weaponsCodex[index];
     return {
         cooldown: weapon.cooldown,
         charge: weapon.charge,
         automatic: weapon.automatic,
         useOnFullCharge: weapon.useOnFullCharge,
         useItem(player: GameObject, target: Vector, uses?: Item, charge?: number) {
-            weaponsCodex.get(index).fire(player, target, {uses, charge});
+            weapon.fire(player, target, {uses, charge});
             return true;
         },
         equipItem(player: GameObject) {
@@ -564,7 +564,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     maxStack: 1,
     cooldown: 1,
     useItem(player, target) {
-        fireProjectile(projectilesCodex.get(ProjectileIndex.CRYSTAL_BOMB), player, target);
+        fireProjectile(projectilesCodex[ProjectileIndex.CRYSTAL_BOMB], player, target);
         return true;
     }
 },
@@ -633,7 +633,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     maxStack: 1,
     cooldown: 10,
     useItem(player, target) {
-        fireProjectile(projectilesCodex.get(ProjectileIndex.ROOT_SNARE), player, target);
+        fireProjectile(projectilesCodex[ProjectileIndex.ROOT_SNARE], player, target);
         return true;
     }
 },

@@ -9,7 +9,7 @@ import { enemiesCodex, EnemyIndex } from "../enemies";
 import { getTexture } from "../imageLoader";
 
 const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyIndex) => {
-    const enemyData = enemiesCodex.get(enemyIndex);
+    const enemyData = enemiesCodex[enemyIndex];
     
     const enemy = new GameObject();
     enemy.team = Team.ENEMY;

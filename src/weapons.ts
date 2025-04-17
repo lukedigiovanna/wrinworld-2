@@ -2,7 +2,6 @@ import { Vector } from "./utils";
 import { ProjectileFactory, GameObject, MeleeAttackFactory } from "./gameObjects";
 import { Projectile, projectilesCodex, ProjectileIndex } from "./projectiles";
 import { MeleeAttack, meleeAttacksCodex, MeleeAttackIndex } from "./meleeAttacks";
-import { Codex } from "./codex";
 import { Item, ItemIndex } from "./items";
 
 // NOTE: players AND enemies can fire weapons!
@@ -49,7 +48,6 @@ enum WeaponIndex {
     SLINGSHOT,
     REINFORCED_SLINGSHOT,
     MACHINE_GUN_SLINGSHOT,
-
 }
 
 const fireProjectile = (projectile: Projectile, gameObject: GameObject, target: Vector) => {
@@ -93,88 +91,88 @@ function scaleMeleeByCharge(melee: MeleeAttack, charge: number | undefined, fiel
     return result;
 }
 
-const weaponsCodex = new Codex<WeaponIndex, Weapon>();
-weaponsCodex.set(WeaponIndex.BROAD_SWORD, {
+const weaponsCodex: Record<WeaponIndex, Weapon> = {
+[WeaponIndex.BROAD_SWORD]: {
     cooldown: 0.75,
-    attack: () => meleeAttacksCodex.get(MeleeAttackIndex.BROAD_SWORD),
+    attack: () => meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
     fire(gameObject, target) {
         fireMelee(this.attack() as MeleeAttack, gameObject, target);
     }
-});
-weaponsCodex.set(WeaponIndex.QUICK_BROAD_SWORD, {
+},
+[WeaponIndex.QUICK_BROAD_SWORD]: {
     cooldown: 0,
     charge: 0.5,
     automatic: true,
-    attack: () => meleeAttacksCodex.get(MeleeAttackIndex.BROAD_SWORD),
+    attack: () => meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
     fire(gameObject, target) {
         fireMelee(this.attack() as MeleeAttack, gameObject, target);
     }
-});
-weaponsCodex.set(WeaponIndex.SHURIKEN, {
+},
+[WeaponIndex.SHURIKEN]: {
     cooldown: 0.25,
-    attack: () => projectilesCodex.get(ProjectileIndex.SHURIKEN),
+    attack: () => projectilesCodex[ProjectileIndex.SHURIKEN],
     fire(gameObject, target) {
         fireProjectile(this.attack() as Projectile, gameObject, target);
     }
-});
-weaponsCodex.set(WeaponIndex.BOW, {
+},
+[WeaponIndex.BOW]: {
     cooldown: 0.0,
     charge: 1.2,
     attack(props) {
         let projectile;
         if (props?.uses) {
             if (props.uses.itemIndex === ItemIndex.POISON_ARROW) {
-                projectile = projectilesCodex.get(ProjectileIndex.POISON_ARROW);
+                projectile = projectilesCodex[ProjectileIndex.POISON_ARROW];
             }
         }
         if (!projectile) {
-            projectile = projectilesCodex.get(ProjectileIndex.ARROW);
+            projectile = projectilesCodex[ProjectileIndex.ARROW];
         }
         return scaleProjectileByCharge(projectile, props?.charge);
     },
     fire(gameObject, target, props) {
         fireProjectile(this.attack(props) as Projectile, gameObject, target);
     }
-});
-weaponsCodex.set(WeaponIndex.DAGGERS, {
+},
+[WeaponIndex.DAGGERS]: {
     cooldown: 0.0,
     charge: 0.2,
     automatic: true,
-    attack: () => meleeAttacksCodex.get(MeleeAttackIndex.DAGGER),
+    attack: () => meleeAttacksCodex[MeleeAttackIndex.DAGGER],
     fire(gameObject, target) {
         fireMelee(this.attack() as MeleeAttack, gameObject, target);
     }
-});
-weaponsCodex.set(WeaponIndex.BATTLE_HAMMER, {
+},
+[WeaponIndex.BATTLE_HAMMER]: {
     cooldown: 1.6,
     charge: 1.6,
-    attack: (props) => scaleMeleeByCharge(meleeAttacksCodex.get(MeleeAttackIndex.BATTLE_HAMMER), props?.charge),
+    attack: (props) => scaleMeleeByCharge(meleeAttacksCodex[MeleeAttackIndex.BATTLE_HAMMER], props?.charge),
     fire(gameObject, target, props) {
         fireMelee(this.attack(props) as MeleeAttack, gameObject, target);
     }
-});
-weaponsCodex.set(WeaponIndex.ESSENCE_DRIPPED_DAGGER, {
+},
+[WeaponIndex.ESSENCE_DRIPPED_DAGGER]: {
     cooldown: 0.4,
     attack: () => ({
-        ...meleeAttacksCodex.get(MeleeAttackIndex.DAGGER),
+        ...meleeAttacksCodex[MeleeAttackIndex.DAGGER],
         damage: 16
     }),
     fire(gameObject, target) {
         fireMelee(this.attack() as MeleeAttack, gameObject, target);
     }
-});
-weaponsCodex.set(WeaponIndex.SLINGSHOT, {
+},
+[WeaponIndex.SLINGSHOT]: {
     cooldown: 0.8,
     charge: 1.2,
-    attack: (props) => scaleProjectileByCharge(projectilesCodex.get(ProjectileIndex.ROCK), props?.charge),
+    attack: (props) => scaleProjectileByCharge(projectilesCodex[ProjectileIndex.ROCK], props?.charge),
     fire(gameObject, target, props) {
         fireProjectile(this.attack(props) as Projectile, gameObject, target);
     }
-});
-weaponsCodex.set(WeaponIndex.QUICK_BOW, {
+},
+[WeaponIndex.QUICK_BOW]: {
     cooldown: 0.25,
     attack: () => ({
-        ...projectilesCodex.get(ProjectileIndex.ARROW),
+        ...projectilesCodex[ProjectileIndex.ARROW],
         damage: 6,
         knockback: 16,
         speed: 480,
@@ -182,28 +180,92 @@ weaponsCodex.set(WeaponIndex.QUICK_BOW, {
     fire(gameObject, target) {
         fireProjectile(this.attack() as Projectile, gameObject, target);
     }
-});
-weaponsCodex.set(WeaponIndex.REINFORCED_SLINGSHOT, {
+},
+[WeaponIndex.REINFORCED_SLINGSHOT]: {
     cooldown: 0.8,
     charge: 0.8,
     attack: (props) => scaleProjectileByCharge({
-        ...projectilesCodex.get(ProjectileIndex.ROCK),
+        ...projectilesCodex[ProjectileIndex.ROCK],
         damage: 12
     }, props?.charge),
     fire(gameObject, target, props) {
         fireProjectile(this.attack(props) as Projectile, gameObject, target);
     }
-});
-weaponsCodex.set(WeaponIndex.MACHINE_GUN_SLINGSHOT, {
+},
+[WeaponIndex.MACHINE_GUN_SLINGSHOT]: {
     cooldown: 0,
     charge: 0.2,
     automatic: true,
     useOnFullCharge: true,
-    attack: () => projectilesCodex.get(ProjectileIndex.ROCK),
+    attack: () => projectilesCodex[ProjectileIndex.ROCK],
     fire(gameObject, target) {
         fireProjectile(this.attack() as Projectile, gameObject, target);
     }
-});
+},
+[WeaponIndex.STRONG_SWORD]: {
+    cooldown: 0,
+    attack: (props) => meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
+    fire(gameObject, target) {
+        fireProjectile(this.attack() as Projectile, gameObject, target);
+    }
+},
+[WeaponIndex.POISON_BROAD_SWORD]: {
+    cooldown: 0,
+    attack: (props) => meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
+    fire(gameObject, target) {
+        fireProjectile(this.attack() as Projectile, gameObject, target);
+    }
+},
+[WeaponIndex.POISON_STRONG_SWORD]: {
+    cooldown: 0,
+    attack: (props) => meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
+    fire(gameObject, target) {
+        fireProjectile(this.attack() as Projectile, gameObject, target);
+    }
+},
+[WeaponIndex.QUICK_BATTLE_HAMMER]: {
+    cooldown: 0,
+    attack: (props) => projectilesCodex[ProjectileIndex.CRYSTAL_SHARD],
+    fire(gameObject, target) {
+        fireProjectile(this.attack() as Projectile, gameObject, target);
+    }
+},
+[WeaponIndex.POISON_BATTLE_HAMMER]: {
+    cooldown: 0,
+    attack: (props) => projectilesCodex[ProjectileIndex.CRYSTAL_SHARD],
+    fire(gameObject, target) {
+        fireProjectile(this.attack() as Projectile, gameObject, target);
+    }
+},
+[WeaponIndex.GHOST_BOW]: {
+    cooldown: 0,
+    attack: (props) => projectilesCodex[ProjectileIndex.CRYSTAL_SHARD],
+    fire(gameObject, target) {
+        fireProjectile(this.attack() as Projectile, gameObject, target);
+    }
+},
+[WeaponIndex.RICOCHET_BOW]: {
+    cooldown: 0,
+    attack: (props) => projectilesCodex[ProjectileIndex.CRYSTAL_SHARD],
+    fire(gameObject, target) {
+        fireProjectile(this.attack() as Projectile, gameObject, target);
+    }
+},
+[WeaponIndex.BOOMERANG]: {
+    cooldown: 0,
+    attack: (props) => projectilesCodex[ProjectileIndex.CRYSTAL_SHARD],
+    fire(gameObject, target) {
+        fireProjectile(this.attack() as Projectile, gameObject, target);
+    }
+},
+[WeaponIndex.RICOCHET_BOOMERANG]: {
+    cooldown: 0,
+    attack: (props) => projectilesCodex[ProjectileIndex.CRYSTAL_SHARD],
+    fire(gameObject, target) {
+        fireProjectile(this.attack() as Projectile, gameObject, target);
+    }
+},
+}
 
 export { WeaponIndex, weaponsCodex, fireProjectile, fireMelee };
 export type { Weapon };

@@ -2,7 +2,6 @@ import { NumberRange, Vector } from "./utils";
 import { ComponentFactory } from "./components"
 import * as AI from "./components/EnemyAI";
 import { ItemDropChance } from "./items";
-import { Codex } from "./codex";
 
 enum EnemyIndex {
     MINION,
@@ -27,8 +26,8 @@ interface Enemy {
     ai: ComponentFactory;
 }
 
-const enemiesCodex = new Codex<EnemyIndex, Enemy>();
-enemiesCodex.set(EnemyIndex.SLIME, {
+const enemiesCodex: Record<EnemyIndex, Enemy> = {
+[EnemyIndex.SLIME]: {
     spriteID: "slime",
     waterSpriteID: "slime_water",
     deadSpriteID: "slime_dead",
@@ -40,8 +39,8 @@ enemiesCodex.set(EnemyIndex.SLIME, {
     waterSpeedModifier: 0.5,
     essenceAmount: new NumberRange(2, 4),
     ai: AI.EnemyAI(AI.slimeAIConfig)
-});
-enemiesCodex.set(EnemyIndex.MINION, {
+},
+[EnemyIndex.MINION]: {
     spriteID: "minion",
     waterSpriteID: "minion_water",
     deadSpriteID: "minion_dead",
@@ -52,8 +51,8 @@ enemiesCodex.set(EnemyIndex.MINION, {
     waterSpeedModifier: 0.5,
     essenceAmount: new NumberRange(2, 5),
     ai: AI.EnemyAI(AI.minionAIConfig)
-});
-enemiesCodex.set(EnemyIndex.WRETCHED_SKELETON, {
+},
+[EnemyIndex.WRETCHED_SKELETON]: {
     spriteID: "wretched_skeleton",
     attackSpriteID: "wretched_skeleton_attack",
     waterSpriteID: "wretched_skeleton_water",
@@ -65,8 +64,8 @@ enemiesCodex.set(EnemyIndex.WRETCHED_SKELETON, {
     drops: [],
     essenceAmount: new NumberRange(5, 10),
     ai: AI.EnemyAI(AI.wretchedSkeletonAIConfig),
-});
-enemiesCodex.set(EnemyIndex.REVENANT_EYE, {
+},
+[EnemyIndex.REVENANT_EYE]: {
     spriteID: "revenant_eye",
     attackSpriteID: "revenant_eye_attack",
     deadSpriteID: "revenant_eye_dead",
@@ -77,8 +76,8 @@ enemiesCodex.set(EnemyIndex.REVENANT_EYE, {
     waterSpeedModifier: 1.0,
     essenceAmount: new NumberRange(8, 12),
     ai: AI.EnemyAI(AI.revenantEyeAIConfig),
-});
-enemiesCodex.set(EnemyIndex.WRAITH, {
+},
+[EnemyIndex.WRAITH]: {
     spriteID: "wraith",
     scale: new Vector(0.75, 1.5),
     hp: 35,
@@ -87,7 +86,8 @@ enemiesCodex.set(EnemyIndex.WRAITH, {
     drops: [],
     essenceAmount: new NumberRange(10, 15),
     ai: AI.EnemyAI(AI.wraithAIConfig),
-});
+},
+}
 
 
 export { enemiesCodex, EnemyIndex };

@@ -219,7 +219,7 @@ const minionAIConfig: EnemyAIConfig = {
         attack(gameObject, dt, data) {
             fireMelee(
                 {
-                    ...meleeAttacksCodex.get(MeleeAttackIndex.BASIC),
+                    ...meleeAttacksCodex[MeleeAttackIndex.BASIC],
                     damage: 4,
                     knockback: 32,
                     range: 16
@@ -268,7 +268,7 @@ const wretchedSkeletonAIConfig: EnemyAIConfig = {
         attack(gameObject, dt, data) {
             fireProjectile(
                 {
-                    ...projectilesCodex.get(ProjectileIndex.ARROW),
+                    ...projectilesCodex[ProjectileIndex.ARROW],
                     damage: 6,
                     maxHits: 1,
                 }, gameObject, data.playerHitboxCenter);
@@ -319,7 +319,7 @@ const revenantEyeAIConfig: EnemyAIConfig = {
         },
         attack(gameObject, dt, data) {
             fireProjectile(
-                projectilesCodex.get(ProjectileIndex.TEAR_DROP), 
+                projectilesCodex[ProjectileIndex.TEAR_DROP], 
                 gameObject, 
                 data.playerHitboxCenter
             );

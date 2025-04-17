@@ -1,5 +1,4 @@
 import { Color } from "./utils";
-import { Codex } from "./codex";
 
 interface Tile {
     spriteID: string | undefined;
@@ -23,81 +22,82 @@ enum TileIndex {
     CURSED_PLANKS,
 }
 
-const tileCodex = new Codex<TileIndex, Tile>();
-tileCodex.set(TileIndex.AIR, {
+const tileCodex: Record<TileIndex, Tile> = {
+[TileIndex.AIR]: {
     spriteID: undefined,
     canGrowPlants: false,
     canSpawnPortal: false,
     wall: false,
-});
-tileCodex.set(TileIndex.GRASS, {
+},
+[TileIndex.GRASS]: {
     spriteID: "grass",
     canGrowPlants: true,
     canSpawnPortal: true,
     wall: false,
     trailColor: Color.hex("#058600"),
-});
-tileCodex.set(TileIndex.CURSED_GRASS, {
+},
+[TileIndex.CURSED_GRASS]: {
     spriteID: "cursed_grass",
     canGrowPlants: false,
     canSpawnPortal: true,
     wall: false,
     trailColor: Color.hex("#058600"),
-});
-tileCodex.set(TileIndex.WATER, {
+},
+[TileIndex.WATER]: {
     spriteID: "water",
     canGrowPlants: false,
     canSpawnPortal: false,
     wall: false,
-});
-tileCodex.set(TileIndex.ROCKS, {
+},
+[TileIndex.ROCKS]: {
     spriteID: "rocks",
     canGrowPlants: false,
     canSpawnPortal: false,
     wall: true,
-});
-tileCodex.set(TileIndex.PATH, {
+},
+[TileIndex.PATH]: {
     spriteID: "path",
     canGrowPlants: false,
     canSpawnPortal: true,
     wall: false,
     trailColor: Color.hex("#886e2a"),
-});
-tileCodex.set(TileIndex.CURSED_PATH, {
+},
+[TileIndex.CURSED_PATH]: {
     spriteID: "cursed_path",
     canGrowPlants: false,
     canSpawnPortal: true,
     wall: false,
     trailColor: Color.hex("#886e2a"),
-});
-tileCodex.set(TileIndex.SAND, {
+},
+[TileIndex.SAND]: {
     spriteID: "sand",
     canGrowPlants: false,
     canSpawnPortal: true,
     wall: false,
     trailColor: Color.hex("#d9cb4c"),
-});
-tileCodex.set(TileIndex.CURSED_SAND, {
+},
+[TileIndex.CURSED_SAND]: {
     spriteID: "cursed_sand",
     canGrowPlants: false,
     canSpawnPortal: true,
     wall: false,
     trailColor: Color.hex("#d9cb4c"),
-});
-tileCodex.set(TileIndex.PLANKS, {
+},
+[TileIndex.PLANKS]: {
     spriteID: "planks",
     canGrowPlants: false,
     canSpawnPortal: true,
     wall: false,
     trailColor: Color.ORANGE,
-});
-tileCodex.set(TileIndex.CURSED_PLANKS, {
+},
+[TileIndex.CURSED_PLANKS]: {
     spriteID: "cursed_planks",
     canGrowPlants: false,
     canSpawnPortal: true,
     wall: false,
     trailColor: Color.ORANGE,
-});
+},
+}
 
 export type { Tile };
 export { tileCodex, TileIndex };

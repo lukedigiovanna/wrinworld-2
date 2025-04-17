@@ -415,7 +415,7 @@ const LEVEL_1: Level = {
             for (let y = bottom; y <= top; y++) {
                 const c = MathUtils.randomWeightedChoice([PropIndex.TREE, PropIndex.TALL_GRASS, null],[treeRate, grassRate, 1 - treeRate - grassRate])
                 if (c !== null) {
-                    const texture = getTexture(propsCodex.get(c).spriteID);
+                    const texture = getTexture(propsCodex[c as PropIndex].spriteID);
                     const position = new Vector((x + 0.5) * PIXELS_PER_TILE, y * PIXELS_PER_TILE + texture.height / 2);
                     let tooCloseToPortal = false;
                     for (let j = 0; j < portalPositions.length; j++) {

@@ -2,14 +2,12 @@ import { ItemDropFactory, ProjectileFactory } from "./gameObjects";
 import { GameObject } from "./gameObjects";
 import { Vector, MathUtils, Color } from "./utils";
 import { Item, ItemIndex, itemsCodex } from "./items";
-import { Codex } from "./codex";
 import { StatusEffectIndex } from "./statusEffects";
 import { ComponentFactory } from "./components";
-// For some webpack reason this needs to be a separate import or we get a bizzare error only detected upon javascript execution.
+// Own import to avoid circular dependency error in webpack.
 import { ParticleEmitter } from "./components/ParticleEmitter";
 
 enum ProjectileIndex {
-    ZOMBIE_BRAINS,
     SHURIKEN,
     ARROW,
     POISON_ARROW,
@@ -75,8 +73,8 @@ function chanceDropItem(gameObject: GameObject, item: Item, chanceOfBreaking: nu
     }
 }
 
-const projectilesCodex = new Codex<ProjectileIndex, Projectile>();
-projectilesCodex.set(ProjectileIndex.SHURIKEN, {
+const projectilesCodex: Record<ProjectileIndex, Projectile> = {
+[ProjectileIndex.SHURIKEN]: {
     homingSkill: 0,
     maxHits: 1,
     ricochetFactor: 0,
@@ -96,8 +94,8 @@ projectilesCodex.set(ProjectileIndex.SHURIKEN, {
     onDestroy(gameObject) {
         chanceDropItem(gameObject, itemsCodex[ItemIndex.SHURIKEN], this.chanceOfBreaking);
     },
-});
-projectilesCodex.set(ProjectileIndex.ARROW, {
+},
+[ProjectileIndex.ARROW]: {
     homingSkill: 0,
     maxHits: 10,
     ricochetFactor: 0,
@@ -126,8 +124,8 @@ projectilesCodex.set(ProjectileIndex.ARROW, {
     onDestroy(gameObject) {
         chanceDropItem(gameObject, itemsCodex[ItemIndex.ARROW], this.chanceOfBreaking);
     }
-});
-projectilesCodex.set(ProjectileIndex.POISON_ARROW, {
+},
+[ProjectileIndex.POISON_ARROW]: {
     homingSkill: 0,
     maxHits: 1,
     ricochetFactor: 0.2,
@@ -162,8 +160,8 @@ projectilesCodex.set(ProjectileIndex.POISON_ARROW, {
             hit.getComponent("status-effect-manager").data.applyEffect(StatusEffectIndex.POISON, 1, 5);
         }
     },
-})
-projectilesCodex.set(ProjectileIndex.TEAR_DROP, {
+},
+[ProjectileIndex.TEAR_DROP]: {
     homingSkill: 0,
     maxHits: 1,
     ricochetFactor: 0,
@@ -197,8 +195,8 @@ projectilesCodex.set(ProjectileIndex.TEAR_DROP, {
         for (let i = 0; i < 35; i++)
             gameObject.getComponent("particle-emitter-explosion").data.emit();
     },
-});
-projectilesCodex.set(ProjectileIndex.WRAITH_ATTACK, {
+},
+[ProjectileIndex.WRAITH_ATTACK]: {
     homingSkill: 0,
     maxHits: 1,
     ricochetFactor: 0,
@@ -213,8 +211,8 @@ projectilesCodex.set(ProjectileIndex.WRAITH_ATTACK, {
     drag: 0,
     colliderSize: new Vector(0.3, 0.3),
     destroyOnPhysicalCollision: true,
-});
-projectilesCodex.set(ProjectileIndex.ROCK, {
+},
+[ProjectileIndex.ROCK]: {
     homingSkill: 0,
     maxHits: 1,
     ricochetFactor: 0,
@@ -248,8 +246,8 @@ projectilesCodex.set(ProjectileIndex.ROCK, {
         for (let i = 0; i < 35; i++)
             gameObject.getComponent("particle-emitter-explosion").data.emit();
     },
-});
-projectilesCodex.set(ProjectileIndex.CRYSTAL_BOMB, {
+},
+[ProjectileIndex.CRYSTAL_BOMB]: {
     homingSkill: 0,
     maxHits: 999,
     ricochetFactor: 0,
@@ -268,7 +266,7 @@ projectilesCodex.set(ProjectileIndex.CRYSTAL_BOMB, {
         const owner = gameObject.getComponent("projectile").data.owner;
         for (let i = 0; i < 50; i++) {
             const target = Vector.add(gameObject.position, MathUtils.randomVector(1));
-            const projectile = {...projectilesCodex.get(ProjectileIndex.CRYSTAL_SHARD)};
+            const projectile = {...projectilesCodex[ProjectileIndex.CRYSTAL_SHARD]};
             projectile.speed += MathUtils.random(-40, 40);
             projectile.angularVelocity += MathUtils.random(-10, 10);
             // projectile.size += MathUtils.random(-0.1, 0.1);
@@ -276,8 +274,8 @@ projectilesCodex.set(ProjectileIndex.CRYSTAL_BOMB, {
             gameObject.game.addGameObject(shard);
         }
     },
-});
-projectilesCodex.set(ProjectileIndex.CRYSTAL_SHARD, {
+},
+[ProjectileIndex.CRYSTAL_SHARD]: {
     homingSkill: 0,
     maxHits: 3,
     ricochetFactor: 0.1,
@@ -291,8 +289,8 @@ projectilesCodex.set(ProjectileIndex.CRYSTAL_SHARD, {
     rotateToDirectionOfTarget: true,
     drag: 0,
     destroyOnPhysicalCollision: true,
-});
-projectilesCodex.set(ProjectileIndex.ROOT_SNARE, {
+},
+[ProjectileIndex.ROOT_SNARE]: {
     homingSkill: 0,
     maxHits: 1,
     ricochetFactor: 0,
@@ -311,7 +309,8 @@ projectilesCodex.set(ProjectileIndex.ROOT_SNARE, {
             hit.getComponent("status-effect-manager").data.applyEffect(StatusEffectIndex.ROOT_SNARE, 1, 5);
         }
     },
-});
+},
+}
 
 export { ProjectileIndex, projectilesCodex };
 export type { Projectile };

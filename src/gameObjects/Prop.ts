@@ -6,7 +6,7 @@ import { getTexture } from "../imageLoader";
 import { PropIndex, propsCodex } from "../props";
 
 const PropFactory: GameObjectFactory = (propertiesIndex: PropIndex, position: Vector) => {
-    const properties = propsCodex.get(propertiesIndex);
+    const properties = propsCodex[propertiesIndex];
     const prop = new GameObject();
     prop.tag = "prop";
     const texture = getTexture(properties.spriteID);
