@@ -171,7 +171,7 @@ class GameObject {
                 component.update?.(dt);
             }
             catch (e) {
-                console.log(e);
+                console.error(e);
                 throw Error(`
 message: ${e}
 component id: ${component.id}

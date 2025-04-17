@@ -13,7 +13,6 @@ const upgradeCombinations = new Map<string, UpgradeResultFunction>();
 
 function setCombo(item: ItemIndex, upgrade: ItemIndex, result: UpgradeResultFunction) {
     const hash = hashUpgradeCombinationTuple([item, upgrade]);
-    console.log(hash);
     upgradeCombinations.set(hash, result);
 }
 

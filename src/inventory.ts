@@ -279,7 +279,6 @@ class Inventory {
     }
 
     private useItem(slotIndex: SlotLocator, target: Vector, charge?: number): boolean {
-        console.log(`Inventory.useItem(${JSON.stringify(slotIndex)})`)
         const slot = this.getSlot(slotIndex);
         if (slot === null) { 
             return false;
@@ -346,13 +345,11 @@ class Inventory {
     public pressItem(slotIndex: SlotLocator, target: Vector) {
         // Ignore request if already charging another item
         if (this._charging) {
-            console.log("FAIL: charging");
             return false;
         }
         
         const slot = this.getSlot(slotIndex);
         if (slot === null) {
-            console.log("FAIL: no slot at index")
             return;
         }
         const item = slot.item;
@@ -535,7 +532,6 @@ class Inventory {
                 if (slotConfigs[type].acceptItemCategory === null || 
                     slotConfigs[type].acceptItemCategory.indexOf(this.heldSlot.item.category) >= 0) {
                     if (type === "buff") {
-                        console.log("buff swap");
                         if (this.heldSlot.item.equipItem) {
                             this.heldSlot.item.equipItem(this.player);
                         }
@@ -695,7 +691,6 @@ class Inventory {
             }
             if (slot.lastTimeUsed && slot.item.cooldown) {
                 const elapsed = this.player.game.time - slot.lastTimeUsed;
-                // console.log(elapsed, slot.item.cooldown);
                 if (elapsed < slot.item.cooldown) {
                     const p = elapsed / slot.item.cooldown;
                     const index = Math.floor(p * 16);
@@ -878,7 +873,6 @@ class Inventory {
         if (!slotConfigs[slotIndex.type].selectable) {
             throw Error(`Cannot select slot type ${slotIndex.type} as it is unselectable`);
         }
-        console.log(`Inventory.selectSlot(${JSON.stringify(slotIndex)})`)
         const slotGroup = this.reference[slotIndex.type];
         slotIndex.index = MathUtils.modulo(slotIndex.index, this.getNumberOfSlots(slotIndex.type));
         // Do nothing if already selecting this slot
