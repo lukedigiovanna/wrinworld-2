@@ -55,23 +55,21 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
                 gameObject.scale.x = -Math.abs(gameObject.scale.x);
             }
 
+            
+            if (movement.isZero()) {
+                data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_IDLE;
+            }
+            else {
+                data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_RUN;
+            }
+
             const tileIndex = gameObject.game.getTileIndex(Vector.add(gameObject.position, data.collider.data.boxOffset));
             if (tileIndex === TileIndex.WATER) {
-                // gameObject.renderer!.data.spriteID = "peach_water";
-                gameObject.renderer!.data.offset = new Vector(0, Math.sin(gameObject.age * 4) * 1.5);
+                data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_IDLE_WATER;
                 gameObject.castsShadow = false;
             }
             else {
-                gameObject.renderer!.data.offset = Vector.zero();
-                // gameObject.renderer!.data.spriteID = "character";
                 gameObject.castsShadow = true;
-            }
-
-            if (movement.isZero()) {
-                data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_IDLE
-            }
-            else {
-                data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_RUN
             }
 
             const tile = tileCodex[tileIndex];
