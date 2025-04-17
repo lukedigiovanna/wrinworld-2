@@ -214,7 +214,7 @@ interface ItemDropChance {
 function generateStatsForWeapon(weaponIndex: WeaponIndex): ItemStatValue[] {
     const weapon = weaponsCodex[weaponIndex];
     const attack = weapon.attack();
-    const maxCharge = weapon.charge ? weapon.charge : 0;
+    const maxCharge = weapon.charge ?? 0;
     const stats = [
         {
             stat: ItemStat.COOLDOWN,
@@ -690,6 +690,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
+    usesItem: [ItemIndex.ARROW, ItemIndex.POISON_ARROW, ItemIndex.FLAME_ARROW],
     ...weaponItem(WeaponIndex.GHOST_BOW),
 },
 [ItemIndex.RICOCHET_BOW]: {
@@ -701,6 +702,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
+    usesItem: [ItemIndex.ARROW, ItemIndex.POISON_ARROW, ItemIndex.FLAME_ARROW],
     ...weaponItem(WeaponIndex.RICOCHET_BOW),
 },
 [ItemIndex.STRONG_SWORD]: {

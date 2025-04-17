@@ -10,6 +10,7 @@ import { ParticleEmitter } from "./components/ParticleEmitter";
 enum ProjectileIndex {
     SHURIKEN,
     ARROW,
+    GHOST_ARROW,
     POISON_ARROW,
     TEAR_DROP,
     WRAITH_ATTACK,
@@ -28,6 +29,8 @@ interface Projectile {
     ricochetFactor: number;
     // The sprite this projectile should represent as (invisible if undefined)
     spriteID: string;
+    // Optional color scale
+    color?: Color;
     // Amount of HP to deal upon hit
     damage: number;
     // Amount to reduce the damage of this projectile by per hit when the maxHits > 1
@@ -65,7 +68,7 @@ interface Projectile {
 }
 
 function chanceDropItem(gameObject: GameObject, item: Item, chanceOfBreaking: number | undefined) {
-    const chance = chanceOfBreaking ? chanceOfBreaking as number : 1;
+    const chance = chanceOfBreaking ?? 1;
     if (Math.random() > chance) {
         gameObject.game.addGameObject(
             ItemDropFactory(item, gameObject.position)
@@ -97,7 +100,7 @@ const projectilesCodex: Record<ProjectileIndex, Projectile> = {
 },
 [ProjectileIndex.ARROW]: {
     homingSkill: 0,
-    maxHits: 10,
+    maxHits: 1,
     ricochetFactor: 0,
     spriteID: "arrow",
     damage: 10,
@@ -160,6 +163,34 @@ const projectilesCodex: Record<ProjectileIndex, Projectile> = {
             hit.getComponent("status-effect-manager").data.applyEffect(StatusEffectIndex.POISON, 1, 5);
         }
     },
+},
+[ProjectileIndex.GHOST_ARROW]: {
+    homingSkill: 0,
+    maxHits: 4,
+    ricochetFactor: 0,
+    spriteID: "arrow",
+    damage: 6,
+    damageReductionPerHit: 0.4,
+    color: new Color(0.5, 1, 1, 0.8),
+    knockback: 0,
+    lifespan: 4,
+    speed: 400,
+    angularVelocity: 0,
+    rotateToDirectionOfTarget: true,
+    drag: 0.9,
+    hitboxSize: new Vector(0.25, 0.25),
+    colliderSize: new Vector(0, 0),
+    destroyOnPhysicalCollision: false,
+    particleEmitter: ParticleEmitter(
+        {
+            spriteID: () => "square",
+            rate: () => MathUtils.random(2, 6),
+            rotation: () => MathUtils.randomAngle(),
+            velocity: () => MathUtils.randomVector(MathUtils.random(24, 32)),
+            lifetime: () => MathUtils.random(0.4, 0.6),
+            color: () => Color.CYAN,
+        }
+    ),
 },
 [ProjectileIndex.TEAR_DROP]: {
     homingSkill: 0,

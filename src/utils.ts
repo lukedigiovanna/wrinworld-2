@@ -553,6 +553,7 @@ class Color {
     public static GREEN = new Color(0, 1, 0, 1);
     public static BLUE = new Color(0, 0, 1, 1);
     public static MAGENTA = new Color(1, 0, 1, 1);
+    public static CYAN = new Color(0, 1, 1, 1);
 }
 
 export { Vector, MathUtils, PerlinNoise, LinearParametricCurve, 

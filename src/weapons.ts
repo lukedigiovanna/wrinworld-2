@@ -75,7 +75,7 @@ const fireMelee = (meleeAttack: MeleeAttack, gameObject: GameObject, target: Vec
 
 // Linearly scales the given fields by the charge and returns the new result
 function scaleProjectileByCharge(projectile: Projectile, charge: number | undefined, fields: (keyof Projectile)[]=["damage", "lifespan", "speed", "knockback"]) {
-    const chargeValue = charge ? charge : 1;
+    const chargeValue = charge ?? 1;
     const result = {...projectile};
     for (const key of fields) {
         (result[key] as number) *= chargeValue;
@@ -84,7 +84,7 @@ function scaleProjectileByCharge(projectile: Projectile, charge: number | undefi
 }
 
 function scaleMeleeByCharge(melee: MeleeAttack, charge: number | undefined, fields: (keyof MeleeAttack)[]=["damage", "knockback", "sweepDamage"]) {
-    const chargeValue = charge ? charge : 1;
+    const chargeValue = charge ?? 1;
     const result = {...melee};
     for (const key of fields) {
         (result[key] as number) *= chargeValue;
@@ -133,6 +133,39 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
         fireProjectile(this.attack(props) as Projectile, gameObject, target);
     }
 },
+[WeaponIndex.GHOST_BOW]: {
+    cooldown: 0,
+    charge: 1.2,
+    attack: (props) => scaleProjectileByCharge(projectilesCodex[ProjectileIndex.ARROW], props?.charge),
+    fire(gameObject, target, props) {
+        fireProjectile(this.attack(props) as Projectile, gameObject, target);
+        const direction = gameObject.position.directionTowards(target);
+        const rightTarget = Vector.add(gameObject.position, Vector.rotated(direction, 0.2));
+        const leftTarget = Vector.add(gameObject.position, Vector.rotated(direction, -0.2));
+        const ghostArrow = scaleProjectileByCharge(projectilesCodex[ProjectileIndex.GHOST_ARROW], props?.charge);
+        fireProjectile(ghostArrow, gameObject, rightTarget);
+        fireProjectile(ghostArrow, gameObject, leftTarget);
+    }
+},
+[WeaponIndex.RICOCHET_BOW]: {
+    cooldown: 0,
+    attack: (props) => projectilesCodex[ProjectileIndex.CRYSTAL_SHARD],
+    fire(gameObject, target) {
+        fireProjectile(this.attack() as Projectile, gameObject, target);
+    }
+},
+[WeaponIndex.QUICK_BOW]: {
+    cooldown: 0.25,
+    attack: () => ({
+        ...projectilesCodex[ProjectileIndex.ARROW],
+        damage: 6,
+        knockback: 16,
+        speed: 480,
+    }),
+    fire(gameObject, target) {
+        fireProjectile(this.attack() as Projectile, gameObject, target);
+    }
+},
 [WeaponIndex.DAGGERS]: {
     cooldown: 0.0,
     charge: 0.2,
@@ -174,18 +207,6 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
     attack: (props) => scaleProjectileByCharge(projectilesCodex[ProjectileIndex.ROCK], props?.charge),
     fire(gameObject, target, props) {
         fireProjectile(this.attack(props) as Projectile, gameObject, target);
-    }
-},
-[WeaponIndex.QUICK_BOW]: {
-    cooldown: 0.25,
-    attack: () => ({
-        ...projectilesCodex[ProjectileIndex.ARROW],
-        damage: 6,
-        knockback: 16,
-        speed: 480,
-    }),
-    fire(gameObject, target) {
-        fireProjectile(this.attack() as Projectile, gameObject, target);
     }
 },
 [WeaponIndex.REINFORCED_SLINGSHOT]: {
@@ -252,20 +273,6 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
 [WeaponIndex.POISON_BATTLE_HAMMER]: {
     cooldown: 1.6,
     charge: 1.6,
-    attack: (props) => projectilesCodex[ProjectileIndex.CRYSTAL_SHARD],
-    fire(gameObject, target) {
-        fireProjectile(this.attack() as Projectile, gameObject, target);
-    }
-},
-[WeaponIndex.GHOST_BOW]: {
-    cooldown: 0,
-    attack: (props) => projectilesCodex[ProjectileIndex.CRYSTAL_SHARD],
-    fire(gameObject, target) {
-        fireProjectile(this.attack() as Projectile, gameObject, target);
-    }
-},
-[WeaponIndex.RICOCHET_BOW]: {
-    cooldown: 0,
     attack: (props) => projectilesCodex[ProjectileIndex.CRYSTAL_SHARD],
     fire(gameObject, target) {
         fireProjectile(this.attack() as Projectile, gameObject, target);

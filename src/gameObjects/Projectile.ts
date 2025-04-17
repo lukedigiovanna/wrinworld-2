@@ -1,5 +1,5 @@
 import { GameObject, GameObjectFactory, Team } from "./index";
-import { MathUtils, Vector } from "../utils";
+import { MathUtils, Vector, Color } from "../utils";
 import { Hitbox, Physics, PhysicalCollider } from "../components";
 import { spriteRenderer } from "../renderers";
 import { Projectile } from "../projectiles";
@@ -12,10 +12,11 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
     projectile.position = position.copy();
     
     const sprite = getTexture(properties.spriteID);
-    const scale = properties.scale ? properties.scale : 1;
+    const scale = properties.scale ?? 1;
     projectile.scale.setComponents(
         sprite.width * scale, sprite.height * scale
     );
+    projectile.color = properties.color ?? Color.WHITE;
     
     projectile.lifespan = properties.lifespan;
 
