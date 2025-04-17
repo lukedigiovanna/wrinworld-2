@@ -55,13 +55,13 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
 
             const tileIndex = gameObject.game.getTileIndex(Vector.add(gameObject.position, data.collider.data.boxOffset));
             if (tileIndex === TileIndex.WATER) {
-                gameObject.renderer!.data.spriteID = "peach_water";
+                // gameObject.renderer!.data.spriteID = "peach_water";
                 gameObject.renderer!.data.offset = new Vector(0, Math.sin(gameObject.age * 4) * 1.5);
                 gameObject.castsShadow = false;
             }
             else {
                 gameObject.renderer!.data.offset = Vector.zero();
-                gameObject.renderer!.data.spriteID = "character";
+                // gameObject.renderer!.data.spriteID = "character";
                 gameObject.castsShadow = true;
             }
 

@@ -3,16 +3,21 @@ import { Vector, MathUtils } from "../utils";
 import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager, 
          Health, EssenceManager, HealthBarDisplayMode,
          StatusEffectManager, ParticleEmitter, ParticleLayer,
-         MovementData} from "../components";
+         MovementData,
+         AnimationManager} from "../components";
 import { spriteRenderer } from "../renderers";
 import { ItemIndex, itemsCodex } from "../items";
+import { SpriteAnimationIndex } from "../animations";
 
 const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const player = new GameObject();
     player.team = Team.PLAYER;
     player.tag = "player";
     player.position.set(position.copy());
-    player.renderer = spriteRenderer("peach");
+    player.renderer = spriteRenderer("character");
+    const animationManager = player.addComponent(AnimationManager);
+    animationManager.data.animation = SpriteAnimationIndex.CHARACTER_IDLE;
+
     player.scale.setComponents(27, 42);
     player.castsShadow = true;
     player.shadowSize = 2;

@@ -69,6 +69,7 @@ window.onload = async () => {
         loadImageAndTexture(gl, "peach", "assets/images/peach.png"),
         loadImageAndTexture(gl, "peach_water", "assets/images/peach_water.png"),
         loadImageAndTexture(gl, "character", "assets/images/character.png"),
+        loadImageAndTextureSpritesheet(gl, "character_idle", "assets/images/character_idle.png", 24, 42),
 
         loadImageAndTexture(gl, "minion", "assets/images/enemies/minion.png"),
         loadImageAndTexture(gl, "minion_water", "assets/images/enemies/minion_water.png"),
