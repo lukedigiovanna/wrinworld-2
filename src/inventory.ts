@@ -357,11 +357,13 @@ class Inventory {
         // Ignore request if the item is still on cooldown 
         if (item.cooldown && slot.lastTimeUsed && 
             this.player.game.time - slot.lastTimeUsed < item.cooldown) {
-            const remaining = item.cooldown - (this.player.game.time - slot.lastTimeUsed);
-            addNotification({
-                text: `Available in ${Math.round(remaining * 10) / 10}s`,
-                color: "rgb(255, 31, 31)"
-            });
+            if (item.category !== "Weapon") {
+                const remaining = item.cooldown - (this.player.game.time - slot.lastTimeUsed);
+                addNotification({
+                    text: `Available in ${Math.round(remaining * 10) / 10}s`,
+                    color: "rgb(255, 31, 31)"
+                });
+            }
             return;
         }
 
@@ -813,7 +815,7 @@ class Inventory {
                 const essence = this.player.getComponent("essence-manager").data.essence;
                 if (essence < cost) {
                     this.reference.upgrade_result.slotDivs[0].find(".item").css("opacity", "50%");
-                    this.reference.upgrade_result.slotDivs[0].css("cursor", "auto");
+                    this.reference.upgrade_result.slotDivs[0].css("cursor", "not-allowed");
                     $("#essence-cost").css("color", "red");
                 }
                 else {

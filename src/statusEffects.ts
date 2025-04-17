@@ -12,6 +12,7 @@ interface StatusEffect {
     displayName: string;
     iconSpriteID: string;
     particleID: string;
+    displayIconID?: string;
     rate: number; // How many times per second to apply the effect
     apply?: (gameObject: GameObject, level: number) => void; // Run based on rate
     start?: (gameObject: GameObject, level: number) => void; // Run when effect is added
@@ -63,6 +64,7 @@ const statusEffectsCodex: Record<StatusEffectIndex, StatusEffect> = {
     displayName: "Root Snare",
     iconSpriteID: "root_snare_icon",
     particleID: "square",
+    displayIconID: "root_snare",
     rate: 1,
     apply(gameObject, level) {
         if (gameObject.hasComponent("health")) {

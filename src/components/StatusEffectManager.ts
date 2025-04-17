@@ -1,7 +1,8 @@
 import { ComponentFactory, ParticleEmitter } from "./";
 import { GameObject } from "../gameObjects";
 import { StatusEffectIndex, statusEffectsCodex, StatusEffect } from "../statusEffects";
-import { MathUtils, Vector } from "../utils";
+import { MathUtils, Vector, Color } from "../utils";
+import { getTexture } from "../imageLoader";
 
 interface Effect {
     statusEffect: StatusEffect;
@@ -78,6 +79,15 @@ const StatusEffectManager: ComponentFactory = (gameObject: GameObject) => {
                 },
                 "status-effects"
             ))
+        },
+        render(camera) {
+            for (const effect of this.data.effects) {
+                if (effect.statusEffect.displayIconID !== undefined) {
+                    const texture = getTexture(effect.statusEffect.displayIconID);
+                    camera.color = Color.WHITE;
+                    camera.drawTexture(texture, gameObject.position.x, gameObject.position.y, texture.width, texture.height);
+                }
+            }
         },
         data
     }

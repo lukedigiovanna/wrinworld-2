@@ -150,6 +150,14 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
         fireMelee(this.attack(props) as MeleeAttack, gameObject, target);
     }
 },
+[WeaponIndex.QUICK_BATTLE_HAMMER]: {
+    cooldown: 1,
+    charge: 1,
+    attack: (props) => scaleMeleeByCharge(meleeAttacksCodex[MeleeAttackIndex.BATTLE_HAMMER], props?.charge),
+    fire(gameObject, target, props) {
+        fireMelee(this.attack(props) as MeleeAttack, gameObject, target);
+    }
+},
 [WeaponIndex.ESSENCE_DRIPPED_DAGGER]: {
     cooldown: 0.4,
     attack: () => ({
@@ -196,24 +204,16 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
     charge: 0.2,
     automatic: true,
     useOnFullCharge: true,
-    attack: () => projectilesCodex[ProjectileIndex.ROCK],
+    attack: () => ({
+        ...projectilesCodex[ProjectileIndex.ROCK],
+        damage: 3,
+    }),
     fire(gameObject, target) {
         fireProjectile(this.attack() as Projectile, gameObject, target);
     }
 },
-[WeaponIndex.STRONG_SWORD]: {
-    cooldown: 0,
-    attack: (props) => ({
-        ...meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
-        damage: 8,
-        sweepDamage: 4 
-    }),
-    fire(gameObject, target) {
-        fireMelee(this.attack() as MeleeAttack, gameObject, target);
-    }
-},
 [WeaponIndex.POISON_BROAD_SWORD]: {
-    cooldown: 0,
+    cooldown: 0.75,
     attack: (props) => ({
         ...meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
         onHit(hit) {
@@ -224,12 +224,23 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
         fireMelee(this.attack() as MeleeAttack, gameObject, target);
     }
 },
-[WeaponIndex.POISON_STRONG_SWORD]: {
-    cooldown: 0,
+[WeaponIndex.STRONG_SWORD]: {
+    cooldown: 0.75,
     attack: (props) => ({
         ...meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
-        damage: 8,
-        sweepDamage: 4,
+        damage: 10,
+        sweepDamage: 5,
+    }),
+    fire(gameObject, target) {
+        fireMelee(this.attack() as MeleeAttack, gameObject, target);
+    }
+},
+[WeaponIndex.POISON_STRONG_SWORD]: {
+    cooldown: 0.75,
+    attack: (props) => ({
+        ...meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
+        damage: 10,
+        sweepDamage: 5,
         onHit(hit) {
             hit.getComponentOptional("status-effect-manager")?.data.applyEffect(StatusEffectIndex.POISON, MathUtils.random(1, 3), MathUtils.random(3, 6));
         }
@@ -238,15 +249,9 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
         fireMelee(this.attack() as MeleeAttack, gameObject, target);
     }
 },
-[WeaponIndex.QUICK_BATTLE_HAMMER]: {
-    cooldown: 0,
-    attack: (props) => projectilesCodex[ProjectileIndex.CRYSTAL_SHARD],
-    fire(gameObject, target) {
-        fireProjectile(this.attack() as Projectile, gameObject, target);
-    }
-},
 [WeaponIndex.POISON_BATTLE_HAMMER]: {
-    cooldown: 0,
+    cooldown: 1.6,
+    charge: 1.6,
     attack: (props) => projectilesCodex[ProjectileIndex.CRYSTAL_SHARD],
     fire(gameObject, target) {
         fireProjectile(this.attack() as Projectile, gameObject, target);

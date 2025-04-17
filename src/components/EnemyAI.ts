@@ -271,6 +271,7 @@ const wretchedSkeletonAIConfig: EnemyAIConfig = {
                     ...projectilesCodex[ProjectileIndex.ARROW],
                     damage: 6,
                     maxHits: 1,
+                    chanceOfBreaking: 1
                 }, gameObject, data.playerHitboxCenter);
             data.attacking = false;
             return "set_search_position";
