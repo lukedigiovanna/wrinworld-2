@@ -47,20 +47,27 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
             movement.scale(speed);
             data.physics.data.velocity.set(movement);
 
-            const mousePos = gameObject.game.camera.screenToWorldPosition(input.mousePosition);
-            if (mousePos.x > gameObject.position.x) {
-                gameObject.scale.x = Math.abs(gameObject.scale.x);
-            }
-            else {
-                gameObject.scale.x = -Math.abs(gameObject.scale.x);
-            }
+            
 
             
             if (movement.isZero()) {
                 data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_IDLE;
+                const mousePos = gameObject.game.camera.screenToWorldPosition(input.mousePosition);
+                if (mousePos.x > gameObject.position.x) {
+                    gameObject.scale.x = Math.abs(gameObject.scale.x);
+                }
+                else {
+                    gameObject.scale.x = -Math.abs(gameObject.scale.x);
+                }
             }
             else {
                 data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_RUN;
+                if (data.physics.data.velocity.x >= 0) { 
+                    gameObject.scale.x = Math.abs(gameObject.scale.x);
+                }
+                else {
+                    gameObject.scale.x = -Math.abs(gameObject.scale.x);
+                }
             }
 
             const tileIndex = gameObject.game.getTileIndex(Vector.add(gameObject.position, data.collider.data.boxOffset));

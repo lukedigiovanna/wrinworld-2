@@ -31,7 +31,7 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, drops: P
     const portal = new GameObject();
     portal.renderer = spriteRenderer("portal");
     portal.position.set(position);
-    portal.scale.scale(96);
+    portal.scale.scale(80);
     portal.addComponent(ParticleEmitter(
         {
             spriteID: () => "portal_particle",

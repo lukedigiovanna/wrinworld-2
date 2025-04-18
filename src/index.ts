@@ -95,7 +95,7 @@ window.onload = async () => {
         loadImageAndTexture(gl, "wretched_skeleton_attack", "assets/images/enemies/wretched_skeleton_attack.png"),
         loadImageAndTexture(gl, "wretched_skeleton_dead", "assets/images/enemies/wretched_skeleton_dead.png"),
 
-        loadImageAndTexture(gl, "portal", "assets/images/portal.png"),
+        loadImageAndTexture(gl, "portal", "assets/images/portal_medium.png"),
         loadImageAndTexture(gl, "essence_orb_small", "assets/images/essence_orb_small.png"),
 
         // Props
