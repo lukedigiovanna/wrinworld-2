@@ -155,8 +155,6 @@ enum ItemIndex {
     ARROW,
     POISON_ARROW,
     FLAME_ARROW, // not implemented
-    CRYSTAL_BOMB,
-    ROOT_SNARE,
     // Consumables
     HEALING_VIAL,
     ESSENCE_VIAL,
@@ -177,6 +175,9 @@ enum ItemIndex {
     // Mystic arts
     TELEPORTATION_RUNE,
     STUN_FIDDLE,
+    CRYSTAL_BOMB,
+    ROOT_SNARE,
+    FLOWER_POWER,
 }
 
 type ItemCategory = "Weapon" | "Ammo" | "Consumable" | "Upgrade" | "Buff" | "Utility" | "Mystic Arts";
@@ -849,6 +850,16 @@ const itemsCodex: Record<ItemIndex, Item> = {
     category: "Upgrade",
     consumable: false,
     essenceCost: 50,
+    maxStack: 1,
+},
+[ItemIndex.FLOWER_POWER]: {
+    itemIndex: ItemIndex.FLOWER_POWER,
+    displayName: "Flower Power",
+    description: "The true power of a flower is unknown",
+    iconSpriteID: "flower_power",
+    category: "Utility",
+    consumable: false,
+    essenceCost: 0,
     maxStack: 1,
 }
 }

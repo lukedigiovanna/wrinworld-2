@@ -75,7 +75,7 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                 //         inventoryManager.data.inventory.addItemIndex(i);
                 //     }
                 // }
-                for (let i = 0; i <= 40; i++) {
+                for (let i = 0; i <= 41; i++) {
                     inventoryManager.data.inventory.addItemIndex(i);
                 }
             }
