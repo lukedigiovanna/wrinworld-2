@@ -37,6 +37,7 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
                 if (properties.rotateToDirectionOfTarget) {
                     projectile.rotation = physics.data.velocity.angle;
                 }
+                properties.update?.(gameObject, owner, dt);
             },
             onHitboxCollisionEnter(collision) {
                 if (collision.team !== Team.UNTEAMED && 

@@ -18,6 +18,7 @@ enum ProjectileIndex {
     CRYSTAL_BOMB,
     CRYSTAL_SHARD,
     ROOT_SNARE,
+    BOOMERANG,
 }
 
 interface Projectile {
@@ -61,6 +62,8 @@ interface Projectile {
 
     particleEmitter?: ComponentFactory,
     chanceOfBreaking?: number;
+    // Any additional logic for this projectile
+    update?: (gameObject: GameObject, owner: GameObject, dt: number) => void;
     // Any logic that should happen when this object dies (including after lifespan)
     onDestroy?: (gameObject: GameObject) => void;
     // Any additional logic that happens to a thing this projectile hits
@@ -341,6 +344,36 @@ const projectilesCodex: Record<ProjectileIndex, Projectile> = {
         }
     },
 },
+[ProjectileIndex.BOOMERANG]: {
+    homingSkill: 0,
+    maxHits: 999,
+    ricochetFactor: 0,
+    spriteID: "boomerang",
+    damage: 10,
+    damageReductionPerHit: 0.2,
+    knockback: 0,
+    lifespan: 6,
+    speed: 160,
+    angularVelocity: 16,
+    rotateToDirectionOfTarget: false,
+    drag: 0,
+    destroyOnPhysicalCollision: true,
+    update(gameObject, owner, dt) {
+        if (gameObject.age > 1 && gameObject.position.distanceTo(owner.position) < 16) {
+            gameObject.destroy();
+        }
+        else {
+            const physics = gameObject.getComponent("physics");
+            const pull = gameObject.position
+                            .directionTowards(owner.position)
+                            .normalized().scaled(128 * dt);
+            physics.data.velocity.add(pull);
+        }
+    },
+    onDestroy(gameObject) {
+        chanceDropItem(gameObject, itemsCodex[ItemIndex.BOOMERANG], 0);
+    },
+}
 }
 
 export { ProjectileIndex, projectilesCodex };

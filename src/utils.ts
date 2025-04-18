@@ -92,9 +92,17 @@ class Vector {
         }
     }
 
+    public normalized() {
+        return Vector.normalized(this);
+    }
+
     public scale(num: number): void {
         this.x *= num;
         this.y *= num;
+    }
+
+    public scaled(num: number) {
+        return Vector.scaled(this, num);    
     }
 
     public dot(other: Vector): number {

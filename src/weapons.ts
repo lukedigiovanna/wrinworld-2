@@ -280,14 +280,14 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
 },
 [WeaponIndex.BOOMERANG]: {
     cooldown: 0,
-    attack: (props) => projectilesCodex[ProjectileIndex.CRYSTAL_SHARD],
+    attack: (props) => projectilesCodex[ProjectileIndex.BOOMERANG],
     fire(gameObject, target) {
         fireProjectile(this.attack() as Projectile, gameObject, target);
     }
 },
 [WeaponIndex.RICOCHET_BOOMERANG]: {
     cooldown: 0,
-    attack: (props) => projectilesCodex[ProjectileIndex.CRYSTAL_SHARD],
+    attack: (props) => projectilesCodex[ProjectileIndex.BOOMERANG],
     fire(gameObject, target) {
         fireProjectile(this.attack() as Projectile, gameObject, target);
     }
