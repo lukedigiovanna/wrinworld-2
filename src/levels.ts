@@ -69,183 +69,42 @@ const level1PortalTypes: PortalProperties[] = [
     // }
 ];
 
-interface PortalDropPool {
-    drops: PortalDrop[];
-    rarity: number; // low number = more rare
-}
+// interface PortalDropPool {
+//     drops: PortalDrop[];
+//     rarity: number; // low number = more rare
+// }
+
+type PortalDropPool = PortalDrop[];
 
 const level1PortalDrops: PortalDropPool[] = [
-    { // Bow and Arrow
-        drops: [
-            {
-                itemIndex: ItemIndex.ARROW,
-                count: new NumberRange(12, 24)
-            },
-            {
-                itemIndex: ItemIndex.BOW,
-            }
-        ],
-        rarity: 1
-    },
-    { // Shurikens
-        drops: [
-            {
-                itemIndex: ItemIndex.SHURIKEN,
-                count: new NumberRange(4, 10)
-            }
-        ],
-        rarity: 1,
-    },
-    { // Healing vials
-        drops: [
-            {
-                itemIndex: ItemIndex.HEALING_VIAL,
-            }
-        ],
-        rarity: 1,
-    },
-    { // Slingshot
-        drops: [
-            {
-                itemIndex: ItemIndex.SLINGSHOT,
-            }
-        ],
-        rarity: 1
-    },
-    { // Quick bow and Arrows
-        drops: [
-            {
-                itemIndex: ItemIndex.QUICK_BOW,
-            },
-            {
-                itemIndex: ItemIndex.ARROW,
-                count: new NumberRange(24, 32),
-            }
-        ],
-        rarity: 1
-    },
-    { // Daggers
-        drops: [
-            {
-                itemIndex: ItemIndex.DAGGERS,
-            }
-        ],
-        rarity: 1
-    },
-    { // Battle Hammer
-        drops: [
-            {
-                itemIndex: ItemIndex.BATTLE_HAMMER,
-            }
-        ],
-        rarity: 1
-    },
-    { // Essence Dripped Dagger
-        drops: [
-            {
-                itemIndex: ItemIndex.ESSENCE_DRIPPED_DAGGER,
-            },
-        ],
-        rarity: 1
-    },
-    { // Poison arrows
-        drops: [
-            {
-                itemIndex: ItemIndex.POISON_ARROW,
-                count: new NumberRange(16, 32),
-            }
-        ],
-        rarity: 1
-    },
-    { // Flame arrows
-        drops: [
-            {
-                itemIndex: ItemIndex.FLAME_ARROW,
-                count: new NumberRange(16, 32),
-            }
-        ],
-        rarity: 1
-    },
-    { // Crystal bombs and essence vials
-        drops: [
-            {
-                itemIndex: ItemIndex.CRYSTAL_BOMB,
-            }
-        ],
-        rarity: 1
-    },
-    { // Root snares
-        drops: [
-            {
-                itemIndex: ItemIndex.ROOT_SNARE,
-            }
-        ],
-        rarity: 1
-    },
-    { // Flame upgrade
-        drops: [
-            {
-                itemIndex: ItemIndex.FLAME_UPGRADE,
-            }
-        ],
-        rarity: 1
-    },
-    { // Poison upgrade
-        drops: [
-            {
-                itemIndex: ItemIndex.POISON_UPGRADE,
-            }
-        ],
-        rarity: 1
-    },
-    { // Strength upgrade
-        drops: [
-            {
-                itemIndex: ItemIndex.STRENGTH_UPGRADE,
-            }
-        ],
-        rarity: 1
-    },
-    { // Heart buff
-        drops: [
-            {
-                itemIndex: ItemIndex.HEART,
-            }
-        ],
-        rarity: 1
-    },
-    { // Heart crystal buff
-        drops: [
-            {
-                itemIndex: ItemIndex.HEART_CRYSTAL,
-            }
-        ],
-        rarity: 1
-    },
-    { // Basic shield buff
-        drops: [
-            {
-                itemIndex: ItemIndex.BASIC_SHIELD,
-            }
-        ],
-        rarity: 1
-    },
-    { // Teleportation rune
-        drops: [
-            {
-                itemIndex: ItemIndex.TELEPORTATION_RUNE,
-            }
-        ],
-        rarity: 1
-    },
-    { // Stun fiddle
-        drops: [
-            {
-                itemIndex: ItemIndex.STUN_FIDDLE,
-            }
-        ],
-        rarity: 1
-    }
+    [
+        { itemIndex: ItemIndex.ARROW, count: new NumberRange(20, 36) },
+        { itemIndex: ItemIndex.BOW }
+    ],
+    [ { itemIndex: ItemIndex.SHURIKEN, count: new NumberRange(4, 10) } ],
+    [ { itemIndex: ItemIndex.SLINGSHOT } ],
+    [ { itemIndex: ItemIndex.DAGGERS } ],
+    [ { itemIndex: ItemIndex.BOOMERANG } ],
+    [ { itemIndex: ItemIndex.BATTLE_HAMMER } ],
+    [ { itemIndex: ItemIndex.ESSENCE_DRIPPED_DAGGER } ],
+    [ { itemIndex: ItemIndex.POISON_ARROW, count: new NumberRange(16, 32) } ],
+    [ { itemIndex: ItemIndex.FLAME_ARROW, count: new NumberRange(16, 32) } ],
+    [ { itemIndex: ItemIndex.HEART } ],
+    [ { itemIndex: ItemIndex.HEART_CRYSTAL } ],
+    [ { itemIndex: ItemIndex.BASIC_SHIELD } ],
+    [ { itemIndex: ItemIndex.CRYSTAL_BOMB } ],
+    [ { itemIndex: ItemIndex.ROOT_SNARE } ],
+    [ { itemIndex: ItemIndex.TELEPORTATION_RUNE } ],
+    [ { itemIndex: ItemIndex.STUN_FIDDLE } ],
+    [ { itemIndex: ItemIndex.INVINCIBILITY_BUBBLE } ],
+    [ { itemIndex: ItemIndex.HEALING_VIAL } ],
+    [ { itemIndex: ItemIndex.ESSENCE_VIAL } ],
+    [ { itemIndex: ItemIndex.QUICK_HAND_UPGRADE } ],
+    [ { itemIndex: ItemIndex.DICE } ],
+    [ { itemIndex: ItemIndex.RICOCHET_UPGRADE } ],
+    [ { itemIndex: ItemIndex.FLAME_UPGRADE } ],
+    [ { itemIndex: ItemIndex.POISON_UPGRADE } ],
+    [ { itemIndex: ItemIndex.STRENGTH_UPGRADE } ],
 ];
 
 // LEVEL 1
@@ -350,14 +209,6 @@ const LEVEL_1: Level = {
 
         // 6. Place portals
         const portalPositions = [];
-        const dropChances = [];
-        let totalRarity = 0;
-        for (let i = 0; i < level1PortalDrops.length; i++) {
-            totalRarity += level1PortalDrops[i].rarity;
-        }
-        for (let i = 0; i < level1PortalDrops.length; i++) {
-            dropChances.push(level1PortalDrops[i].rarity / totalRarity);
-        }
         for (let i = 0; i < numPortals; i++) {
             let position;
             let invalid;
@@ -382,8 +233,8 @@ const LEVEL_1: Level = {
                 throw Error("Cannot generate portal for position: " + position + " progressio " + progression + " because no portal has low enough difficulty");
             }
             const properties = MathUtils.randomChoice(validChoices);
-            const dropPool = MathUtils.randomWeightedChoice(level1PortalDrops, dropChances);
-            game.addGameObject(PortalFactory(properties, dropPool.drops, position));
+            const dropPool = MathUtils.randomChoice(level1PortalDrops);
+            game.addGameObject(PortalFactory(properties, dropPool, position));
             portalPositions.push(position);
             const R = 5;
             for (let xo = -R; xo <= R; xo++) {
