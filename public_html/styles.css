@@ -248,6 +248,8 @@ img {
     display: flex;
     flex-direction: row;
     gap: 9px;
+    margin-bottom: 6px;
+    margin-left: 6px;
 }
 
 .status-effect-icon-container {
@@ -273,17 +275,16 @@ img {
 #hud-row {
     display: flex;
     flex-direction: row;
-    /* height: 100px; */
     align-items: flex-end;
     justify-content: space-between;
 }
 
 #health-bar {
     position: relative;
-    height: 80px;
+    height: 39px;
     display: flex;
     align-items: flex-end;
-    width: 390px;
+    width: 372px;
 }
 
 #health-bar-frame {
@@ -306,7 +307,7 @@ img {
     transition: width 0.2s ease-in-out;
 }
 
-.hud-row-container {
+.field-value-row {
     display: flex;
     align-items: flex-end;
 }
@@ -320,7 +321,7 @@ img {
 }
 
 #health-text {
-    margin-left: -12px;
+    margin-left: 4px;
 }
 
 #essence-text {

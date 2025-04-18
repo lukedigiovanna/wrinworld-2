@@ -29,33 +29,37 @@
                 </div>
                 <div id="hud-container">
                     <div id="hud">
-                        <div id="status-effect-icon-row">
-                            <div class="status-effect-icon-container">
-                                <img class="slot-icon" src="assets/images/ui/status_effect_slot.png" />
-                                <img class="effect-icon" src="assets/images/status_effects/poison_icon.png" />
-                            </div>
-                            <div class="status-effect-icon-container">
-                                <img class="slot-icon" src="assets/images/ui/status_effect_slot.png" />
-                                <img class="effect-icon" src="assets/images/status_effects/invincibility_icon.png" />
-                            </div>
-                        </div>
                         <div id="hud-row">
                             <div class="hud-row-container">
-                                <div id="health-bar">
-                                    <div id="health-bar-fill-container">
-                                        <div id="health-bar-fill"></div> 
+                                <div id="status-effect-icon-row">
+                                    <div class="status-effect-icon-container">
+                                        <img class="slot-icon" src="assets/images/ui/status_effect_slot.png" />
+                                        <img class="effect-icon" src="assets/images/status_effects/poison_icon.png" />
                                     </div>
-                                    <img id="health-bar-frame" src="assets/images/ui/health_bar_frame.png" />
+                                    <div class="status-effect-icon-container">
+                                        <img class="slot-icon" src="assets/images/ui/status_effect_slot.png" />
+                                        <img class="effect-icon" src="assets/images/status_effects/invincibility_icon.png" />
+                                    </div>
                                 </div>
-                                <p id="health-text">
-                                    <span id="hp-amount">20</span>/<span id="hp-max">20</span>
-                                </p>
+                                <div class="field-value-row">
+                                    <div id="health-bar">
+                                        <div id="health-bar-fill-container">
+                                            <div id="health-bar-fill"></div> 
+                                        </div>
+                                        <img id="health-bar-frame" src="assets/images/ui/health_bar_frame.png" />
+                                    </div>
+                                    <p id="health-text">
+                                        <span id="hp-amount">20</span>/<span id="hp-max">20</span>
+                                    </p>
+                                </div>
                             </div>
                             <div class="hud-row-container">
-                                <p id="essence-text">
-                                    <span id="essence-amount">0</span>/<span id="essence-max">100</span>
-                                </p>
-                                <img id="essence-jar" />
+                                <div class="field-value-row">
+                                    <p id="essence-text">
+                                        <span id="essence-amount">0</span>/<span id="essence-max">100</span>
+                                    </p>
+                                    <img id="essence-jar" />
+                                </div>
                             </div>
                         </div>
                         <div id="hotbar">
