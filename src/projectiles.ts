@@ -1,4 +1,4 @@
-import { ItemDropFactory, ProjectileFactory } from "./gameObjects";
+import { ItemDropFactory, ProjectileFactory, Team } from "./gameObjects";
 import { GameObject } from "./gameObjects";
 import { Vector, MathUtils, Color } from "./utils";
 import { Item, ItemIndex, itemsCodex } from "./items";
@@ -19,6 +19,7 @@ enum ProjectileIndex {
     CRYSTAL_SHARD,
     ROOT_SNARE,
     BOOMERANG,
+    RICOCHET_BOOMERANG,
 }
 
 interface Projectile {
@@ -63,11 +64,11 @@ interface Projectile {
     particleEmitter?: ComponentFactory,
     chanceOfBreaking?: number;
     // Any additional logic for this projectile
-    update?: (gameObject: GameObject, owner: GameObject, dt: number) => void;
+    update?: (gameObject: GameObject, data: any, dt: number) => void;
     // Any logic that should happen when this object dies (including after lifespan)
     onDestroy?: (gameObject: GameObject) => void;
     // Any additional logic that happens to a thing this projectile hits
-    onHit?: (hit: GameObject) => void;
+    onHit?: (gameObject: GameObject, data: any, hit: GameObject) => void;
 }
 
 function chanceDropItem(gameObject: GameObject, item: Item, chanceOfBreaking: number | undefined) {
@@ -161,7 +162,7 @@ const projectilesCodex: Record<ProjectileIndex, Projectile> = {
     onDestroy(gameObject) {
         chanceDropItem(gameObject, itemsCodex[ItemIndex.POISON_ARROW], this.chanceOfBreaking);
     },
-    onHit(hit) {
+    onHit(gameObject, owner, hit) {
         if (hit.hasComponent("status-effect-manager")) {
             hit.getComponent("status-effect-manager").data.applyEffect(StatusEffectIndex.POISON, 1, 5);
         }
@@ -310,7 +311,7 @@ const projectilesCodex: Record<ProjectileIndex, Projectile> = {
     rotateToDirectionOfTarget: false,
     drag: 1.2,
     destroyOnPhysicalCollision: false,
-    onHit(hit) {
+    onHit(gameObject, owner, hit) {
         if (hit.hasComponent("status-effect-manager")) {
             hit.getComponent("status-effect-manager").data.applyEffect(StatusEffectIndex.ROOT_SNARE, 1, 5);
         }
@@ -330,20 +331,60 @@ const projectilesCodex: Record<ProjectileIndex, Projectile> = {
     rotateToDirectionOfTarget: false,
     drag: 0,
     destroyOnPhysicalCollision: true,
-    update(gameObject, owner, dt) {
-        if (gameObject.age > 1 && gameObject.position.distanceTo(owner.position) < 16) {
+    update(gameObject, data, dt) {
+        if (gameObject.age > 0.2 && gameObject.position.distanceTo(data.owner.position) < 16) {
             gameObject.destroy();
         }
         else {
             const physics = gameObject.getComponent("physics");
             const pull = gameObject.position
-                            .directionTowards(owner.position)
+                            .directionTowards(data.owner.position)
                             .normalized().scaled(128 * dt);
             physics.data.velocity.add(pull);
         }
     },
     onDestroy(gameObject) {
         chanceDropItem(gameObject, itemsCodex[ItemIndex.BOOMERANG], 0);
+    },
+},
+[ProjectileIndex.RICOCHET_BOOMERANG]: {
+    homingSkill: 0,
+    maxHits: 999,
+    ricochetFactor: 0,
+    spriteID: "ricochet_boomerang",
+    damage: 10,
+    damageReductionPerHit: 0.2,
+    knockback: 0,
+    lifespan: 6,
+    speed: 160,
+    angularVelocity: 16,
+    rotateToDirectionOfTarget: false,
+    drag: 0,
+    destroyOnPhysicalCollision: true,
+    update(gameObject, data, dt) {
+        if (gameObject.age > 0.2 && gameObject.position.distanceTo(data.owner.position) < 16) {
+            gameObject.destroy();
+        }
+    },
+    onDestroy(gameObject) {
+        chanceDropItem(gameObject, itemsCodex[ItemIndex.RICOCHET_BOOMERANG], 0);
+    },
+    onHit(gameObject, data, hit) {
+        const physics = gameObject.getComponent("physics");
+        let target = data.owner.position;
+        if (data.hitCount < 3) {
+            const nearestEnemy = gameObject.game.getNearestGameObjectWithFilter(
+                gameObject.position, 
+                (obj) => hit !== obj && obj.team !== Team.UNTEAMED && obj.team !== data.owner.team
+            );
+            if (nearestEnemy !== undefined && nearestEnemy.distance < 144) {
+                target = nearestEnemy.object.position;
+            }
+        }
+        physics.data.velocity = gameObject.position
+                                        .directionTowards(target)
+                                        .normalized()
+                                        .scaled(physics.data.velocity.magnitude);
     },
 }
 }

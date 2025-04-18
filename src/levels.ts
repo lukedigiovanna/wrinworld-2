@@ -13,50 +13,50 @@ interface Level {
 }
 
 const level1PortalTypes: PortalProperties[] = [
-    // { // Slime portal
-    //     health: 25,
-    //     difficulty: 0,
-    //     packs: [
-    //         {
-    //             packSizeRange: new NumberRange(2, 4),
-    //             cooldownRange: new NumberRange(8, 16),
-    //             maxEnemies: 5,
-    //             enemyIndex: EnemyIndex.SLIME
-    //         }
-    //     ]
-    // },
-    // { // Minion portal
-    //     difficulty: 0.2,
-    //     health: 40,
-    //     packs: [
-    //         {
-    //             cooldownRange: new NumberRange(4, 10),
-    //             packSizeRange: new NumberRange(1, 4),
-    //             maxEnemies: 10,
-    //             enemyIndex: EnemyIndex.MINION
-    //         },
-    //         {
-    //             cooldownRange: new NumberRange(12, 24),
-    //             packSizeRange: new NumberRange(1, 1),
-    //             maxEnemies: 1,
-    //             enemyIndex: EnemyIndex.WRETCHED_SKELETON
-    //         }
-    //     ]
-    // }, 
-    // { // Revenant eye portal
-    //     difficulty: 0.4,
-    //     health: 60,
-    //     packs: [
-    //         {
-    //             cooldownRange: new NumberRange(12, 20),
-    //             packSizeRange: new NumberRange(1, 2),
-    //             maxEnemies: 3,
-    //             enemyIndex: EnemyIndex.REVENANT_EYE
-    //         }
-    //     ]
-    // },
+    { // Slime portal
+        health: 25,
+        difficulty: 0,
+        packs: [
+            {
+                packSizeRange: new NumberRange(2, 4),
+                cooldownRange: new NumberRange(8, 16),
+                maxEnemies: 5,
+                enemyIndex: EnemyIndex.SLIME
+            }
+        ]
+    },
+    { // Minion portal
+        difficulty: 0.2,
+        health: 40,
+        packs: [
+            {
+                cooldownRange: new NumberRange(4, 10),
+                packSizeRange: new NumberRange(1, 4),
+                maxEnemies: 10,
+                enemyIndex: EnemyIndex.MINION
+            },
+            {
+                cooldownRange: new NumberRange(12, 24),
+                packSizeRange: new NumberRange(1, 1),
+                maxEnemies: 1,
+                enemyIndex: EnemyIndex.WRETCHED_SKELETON
+            }
+        ]
+    }, 
+    { // Revenant eye portal
+        difficulty: 0.4,
+        health: 60,
+        packs: [
+            {
+                cooldownRange: new NumberRange(12, 20),
+                packSizeRange: new NumberRange(1, 2),
+                maxEnemies: 3,
+                enemyIndex: EnemyIndex.REVENANT_EYE
+            }
+        ]
+    },
     { // Wraith portal
-        difficulty: 0.0,
+        difficulty: 0.6,
         health: 75,
         packs: [
             {
@@ -124,8 +124,10 @@ const LEVEL_1: Level = {
         const numPortals = 15;
         const minDistance = 8 * PIXELS_PER_TILE;
         const treeRate = 0.05;
-        const grassRate = 0.3;
-        const flowerPatches = 24;
+        const grassRate = 0;
+        // const grassRate = 0.3;
+        const flowerPatches = 0;
+        // const flowerPatches = 24;
 
         // 1. Set Grass Background
         for (let x = left; x <= right; x++) {

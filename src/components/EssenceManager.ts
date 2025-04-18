@@ -51,7 +51,7 @@ const EssenceManager: ComponentFactory = (gameObject: GameObject) => {
         update(dt) {
             let attacking = false;
             if (data.essence >= 1 && input.isKeyDown(controls.attackPortal.code)) {
-                const nearest = gameObject.game.getNearestGameObjectWithTag(gameObject.position, "portal");
+                const nearest = gameObject.game.getNearestGameObjectWithFilter(gameObject.position, (gameObject) => gameObject.tag === "portal");
                 if (nearest) {
                     const { object, distance } = nearest;
                     if (distance <= PORTAL_ACTIVE_RADIUS) {

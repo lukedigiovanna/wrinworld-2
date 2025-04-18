@@ -37,7 +37,7 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
                 if (properties.rotateToDirectionOfTarget) {
                     projectile.rotation = physics.data.velocity.angle;
                 }
-                properties.update?.(gameObject, owner, dt);
+                properties.update?.(gameObject, data, dt);
             },
             onHitboxCollisionEnter(collision) {
                 if (collision.team !== Team.UNTEAMED && 
@@ -53,10 +53,8 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
                             properties.knockback
                         )
                     );
-                    if (properties.onHit) {
-                        properties.onHit(collision);
-                    }
                     data.hitCount++;
+                    properties.onHit?.(gameObject, data, collision);
                     const rotationAngle = MathUtils.random(-Math.PI / 2 * properties.ricochetFactor, Math.PI / 2 * properties.ricochetFactor);
                     data.physics.data.velocity.rotate(rotationAngle);
                     properties.damage *= (1 - properties.damageReductionPerHit);

@@ -339,12 +339,12 @@ class Game {
         return objs;
     }
 
-    public getNearestGameObjectWithTag(source: Vector, tag: string): 
+    public getNearestGameObjectWithFilter(source: Vector, filter: (gameObject: GameObject) => boolean): 
                     {object: GameObject, distance: number} | undefined {
         let minDistance = 999999;
         let object = undefined;
         for (let i = 0; i < this.activeObjects.length; i++) {
-            if (this.activeObjects[i].tag === tag) {
+            if (filter(this.activeObjects[i])) {
                 const distance = Vector.subtract(source, this.activeObjects[i].position).magnitude;
                 if (distance < minDistance) {
                     object = this.activeObjects[i];

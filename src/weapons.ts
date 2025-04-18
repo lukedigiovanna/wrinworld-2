@@ -237,7 +237,7 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
     cooldown: 0.75,
     attack: (props) => ({
         ...meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
-        onHit(hit) {
+        onHit(gameObject, data, hit) {
             hit.getComponentOptional("status-effect-manager")?.data.applyEffect(StatusEffectIndex.POISON, 1, MathUtils.random(3, 6));
         }
     }),
@@ -262,7 +262,7 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
         ...meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
         damage: 10,
         sweepDamage: 5,
-        onHit(hit) {
+        onHit(gameObject, data, hit) {
             hit.getComponentOptional("status-effect-manager")?.data.applyEffect(StatusEffectIndex.POISON, MathUtils.random(1, 3), MathUtils.random(3, 6));
         }
     }),
@@ -287,7 +287,7 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
 },
 [WeaponIndex.RICOCHET_BOOMERANG]: {
     cooldown: 0,
-    attack: (props) => projectilesCodex[ProjectileIndex.BOOMERANG],
+    attack: (props) => projectilesCodex[ProjectileIndex.RICOCHET_BOOMERANG],
     fire(gameObject, target) {
         fireProjectile(this.attack() as Projectile, gameObject, target);
     }

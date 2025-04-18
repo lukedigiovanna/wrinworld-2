@@ -28,7 +28,7 @@ interface MeleeAttack {
     // Particle effects, if applicable
     particleSpriteID?: string;
 
-    onHit?: (hit: GameObject) => void;
+    onHit?: (gameObject: GameObject, data: any, hit: GameObject) => void;
 }
 
 const meleeAttacksCodex: Record<MeleeAttackIndex, MeleeAttack> = {

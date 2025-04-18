@@ -751,7 +751,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
 [ItemIndex.RICOCHET_BOOMERANG]: {
     itemIndex: ItemIndex.RICOCHET_BOOMERANG,
     displayName: "Bouncy Boomerang",
-    description: "Woop hit woop hit woop",
+    description: "Woop hit woop hit woop hit woop",
     iconSpriteID: "ricochet_boomerang",
     category: "Weapon",
     consumable: true,
