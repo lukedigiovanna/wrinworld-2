@@ -13,60 +13,60 @@ interface Level {
 }
 
 const level1PortalTypes: PortalProperties[] = [
-    { // Slime portal
-        health: 25,
-        difficulty: 0,
-        packs: [
-            {
-                packSizeRange: new NumberRange(2, 4),
-                cooldownRange: new NumberRange(8, 16),
-                maxEnemies: 5,
-                enemyIndex: EnemyIndex.SLIME
-            }
-        ]
-    },
-    { // Minion portal
-        difficulty: 0.2,
-        health: 40,
-        packs: [
-            {
-                cooldownRange: new NumberRange(4, 10),
-                packSizeRange: new NumberRange(1, 4),
-                maxEnemies: 10,
-                enemyIndex: EnemyIndex.MINION
-            },
-            {
-                cooldownRange: new NumberRange(12, 24),
-                packSizeRange: new NumberRange(1, 1),
-                maxEnemies: 1,
-                enemyIndex: EnemyIndex.WRETCHED_SKELETON
-            }
-        ]
-    }, 
-    { // Revenant eye portal
-        difficulty: 0.4,
-        health: 70,
-        packs: [
-            {
-                cooldownRange: new NumberRange(12, 20),
-                packSizeRange: new NumberRange(1, 2),
-                maxEnemies: 3,
-                enemyIndex: EnemyIndex.REVENANT_EYE
-            }
-        ]
-    },
-    // { // Wraith portal
-    //     difficulty: 0.7,
-    //     health: 80,
+    // { // Slime portal
+    //     health: 25,
+    //     difficulty: 0,
+    //     packs: [
+    //         {
+    //             packSizeRange: new NumberRange(2, 4),
+    //             cooldownRange: new NumberRange(8, 16),
+    //             maxEnemies: 5,
+    //             enemyIndex: EnemyIndex.SLIME
+    //         }
+    //     ]
+    // },
+    // { // Minion portal
+    //     difficulty: 0.2,
+    //     health: 40,
+    //     packs: [
+    //         {
+    //             cooldownRange: new NumberRange(4, 10),
+    //             packSizeRange: new NumberRange(1, 4),
+    //             maxEnemies: 10,
+    //             enemyIndex: EnemyIndex.MINION
+    //         },
+    //         {
+    //             cooldownRange: new NumberRange(12, 24),
+    //             packSizeRange: new NumberRange(1, 1),
+    //             maxEnemies: 1,
+    //             enemyIndex: EnemyIndex.WRETCHED_SKELETON
+    //         }
+    //     ]
+    // }, 
+    // { // Revenant eye portal
+    //     difficulty: 0.4,
+    //     health: 60,
     //     packs: [
     //         {
     //             cooldownRange: new NumberRange(12, 20),
-    //             packSizeRange: new NumberRange(1, 1),
-    //             maxEnemies: 2,
-    //             enemyIndex: EnemyIndex.WRAITH
+    //             packSizeRange: new NumberRange(1, 2),
+    //             maxEnemies: 3,
+    //             enemyIndex: EnemyIndex.REVENANT_EYE
     //         }
     //     ]
-    // }
+    // },
+    { // Wraith portal
+        difficulty: 0.0,
+        health: 75,
+        packs: [
+            {
+                cooldownRange: new NumberRange(12, 20),
+                packSizeRange: new NumberRange(1, 1),
+                maxEnemies: 2,
+                enemyIndex: EnemyIndex.WRAITH
+            }
+        ]
+    }
 ];
 
 // interface PortalDropPool {

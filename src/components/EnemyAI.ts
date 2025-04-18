@@ -288,7 +288,7 @@ const revenantEyeAIConfig: EnemyAIConfig = {
                 // Still track to last known position
                 return "idle";
             }
-            if (data.distanceToPlayer < 120) {
+            if (data.distanceToPlayer < 100) {
                 return "attack_windup";
             }
             data.targetPosition = data.playerHitboxCenter;
@@ -311,7 +311,7 @@ const revenantEyeAIConfig: EnemyAIConfig = {
                 }
                 gameObject.position.add(MathUtils.randomVector(MathUtils.random(16, 64)));
             }
-            if (data.timeInState > 1.25) {
+            if (data.timeInState > 1.75) {
                 return "attack";
             }
             data.attacking = true;
@@ -333,7 +333,40 @@ const revenantEyeAIConfig: EnemyAIConfig = {
 
 const wraithAIConfig: EnemyAIConfig = {
     stateFunctions: {
-
+        idle: basicIdle(400),
+        follow(gameObject, dt, data) {
+            if (data.distanceToPlayer > 420) {
+                // Still track to last known position
+                return "idle";
+            }
+            if (data.distanceToPlayer < 160) {
+                return "attack_windup";
+            }
+            data.targetPosition = data.playerHitboxCenter;
+            return "follow";
+        },
+        attack_windup(gameObject, dt, data) {
+            data.targetPosition = undefined;
+            if (Math.random() < dt * 16) {
+                const f = MathUtils.random(0, 0.2);
+                gameObject.game.addPartialParticle({
+                    position: gameObject.position.copy(),
+                    layer: ParticleLayer.ABOVE_OBJECTS,
+                    color: new Color(f, f, f, 1),
+                    size: new Vector(1, 2),
+                    velocity: MathUtils.randomVector(MathUtils.random(2, 14)),
+                    angularVelocity: MathUtils.random(-2, 2),
+                });
+            }
+            if (data.timeInState > 3) {
+                return "attack";
+            }
+            return "attack_windup";
+        },
+        attack(gameObject, dt, data) {
+            fireProjectile(projectilesCodex[ProjectileIndex.WRAITH_ATTACK], gameObject, data.playerHitboxCenter);
+            return "follow";
+        }
     },
     movementSpeed: 44,
 }
