@@ -8,6 +8,8 @@ import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager,
 import { spriteRenderer } from "../renderers";
 import { ItemIndex, itemsCodex } from "../items";
 import { SpriteAnimationIndex } from "../animations";
+import { getImage } from "../imageLoader";
+import { StatusEffectIndex } from "../statusEffects";
 
 const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const player = new GameObject();
@@ -83,28 +85,34 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
     player.addComponent((gameObject) => {
         const data: any = {
             health: undefined,
-            lastHP: 0,
-            lastMaxHP: 0,
-            weaponManager: undefined,
+            statusEffectManager: undefined
         };
-        const updateHealthUI = (hp: number, maxHP: number) => {
-            data.lastHP = hp;
-            data.lastMaxHP = maxHP;
-            const percent = Math.floor(hp / maxHP * 100);
-            $("#health-bar-fill").css("width", `${percent}%`);
-            $("#hp-amount").text(Math.round(hp));
-            $("#hp-max").text(maxHP);
-        }
         return {
             id: "player-ui-management",
             start() {
                 data.health = gameObject.getComponent("health");
+                data.statusEffectManager = gameObject.getComponent("status-effect-manager");
             },
             update() {
-                const dirty = data.lastHP !== data.health.data.hp ||
-                             data.lastMaxHP !== data.health.data.maximumHP;
-                if (dirty) {
-                    updateHealthUI(data.health.data.hp, data.health.data.maximumHP);
+                const hp = data.health.data.hp;
+                const maxHP = data.health.data.maximumHP;
+                const percent = Math.floor(hp / maxHP * 100);
+                $("#health-bar-fill").css("width", `${percent}%`);
+                $("#hp-amount").text(Math.round(hp));
+                $("#hp-max").text(maxHP);
+                $("#status-effect-icon-row").empty();
+                for (const effect of data.statusEffectManager.data.effects) {
+                    const icon = $(`
+                        <div class="status-effect-icon-container">
+                            <img class="slot-icon" src="assets/images/ui/status_effect_slot.png" />
+                            <img class="effect-icon" src="${getImage(effect.statusEffect.iconSpriteID).src}" />
+                        </div>
+                    `);
+                    const elapsed = gameObject.game.time - effect.startTime;
+                    if (effect.duration - elapsed < 5) {
+                        icon.css("opacity", `${MathUtils.rescale(Math.sin(elapsed * 4), -1, 1, 50, 100)}%`);
+                    }
+                    $("#status-effect-icon-row").append(icon);
                 }
             }
         }
