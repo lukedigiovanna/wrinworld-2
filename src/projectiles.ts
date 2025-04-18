@@ -210,34 +210,18 @@ const projectilesCodex: Record<ProjectileIndex, Projectile> = {
     drag: 0,
     colliderSize: new Vector(0.3, 0.3),
     destroyOnPhysicalCollision: true,
-    particleEmitter: ParticleEmitter(
-        {
-            spriteID: () => "square",
-            color: () => {
-                const f = MathUtils.random(0.3, 0.6);
-                return new Color(f, f, f + 0.4, 1);
-            },
-            rate: () => 0,
-            scale: () => MathUtils.random(1, 2),
-            rotation: () => MathUtils.randomAngle(),
-            velocity: () => MathUtils.randomVector(MathUtils.random(4, 32)),
-            lifetime: () => MathUtils.random(0.4, 0.6)
-        },
-        "explosion"
-    ),
     onDestroy(gameObject) {
-        for (let i = 0; i < 35; i++)
-            gameObject.getComponent("particle-emitter-explosion").data.emit();
+        gameObject.game.addParticleExplosion(gameObject.position, new Color(0.4, 0.4, 0.8, 1), 32, 32);
     },
 },
 [ProjectileIndex.WRAITH_ATTACK]: {
     homingSkill: 0,
-    maxHits: 999,
+    maxHits: 1,
     ricochetFactor: 0,
     spriteID: "wraith_attack",
     damage: 8,
     damageReductionPerHit: 0,
-    knockback: 2,
+    knockback: 32,
     lifespan: 4,
     speed: 180,
     color: new Color(1, 1, 1, 0.9),
@@ -246,6 +230,9 @@ const projectilesCodex: Record<ProjectileIndex, Projectile> = {
     drag: 0,
     colliderSize: new Vector(0.3, 0.3),
     destroyOnPhysicalCollision: true,
+    onDestroy(gameObject) {
+        gameObject.game.addParticleExplosion(gameObject.position, new Color(0.1, 0.1, 0.1, 1), 32, 32);
+    }
 },
 [ProjectileIndex.ROCK]: {
     homingSkill: 0,
@@ -262,24 +249,8 @@ const projectilesCodex: Record<ProjectileIndex, Projectile> = {
     angularVelocity: 5,
     colliderSize: new Vector(0.25, 0.25),
     destroyOnPhysicalCollision: true,
-    particleEmitter: ParticleEmitter(
-        {
-            spriteID: () => "square",
-            color: () => {
-                const f = MathUtils.random(0.3, 0.6);
-                return new Color(f, f, f, 1);
-            },
-            rate: () => 0,
-            scale: () => MathUtils.random(1, 2),
-            rotation: () => MathUtils.randomAngle(),
-            velocity: () => MathUtils.randomVector(MathUtils.random(4, 32)),
-            lifetime: () => MathUtils.random(0.4, 0.6)
-        },
-        "explosion"
-    ),
     onDestroy(gameObject) {
-        for (let i = 0; i < 35; i++)
-            gameObject.getComponent("particle-emitter-explosion").data.emit();
+        gameObject.game.addParticleExplosion(gameObject.position, new Color(0.4, 0.4, 0.4, 1.0), 32, 32);
     },
 },
 [ProjectileIndex.CRYSTAL_BOMB]: {

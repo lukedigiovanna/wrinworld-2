@@ -180,12 +180,13 @@ class Game {
             pos.add(particle.gameObject.position);
         }
         this._camera.color = particle.color;
+        const texture = getTexture(particle.spriteID);
         this._camera.drawTexture(
-            getTexture(particle.spriteID), 
+            texture, 
             pos.x,
             pos.y,
-            particle.size.x, 
-            particle.size.y, 
+            particle.scale * texture.width, 
+            particle.scale * texture.height, 
             particle.rotation
         );
     }
@@ -374,12 +375,28 @@ class Game {
             lifetime: 1,
             position: Vector.zero(),
             rotation: 0,
-            size: new Vector(1, 1),
+            scale: 1,
             spriteID: "square",
             useRelativePosition: false,
             velocity: Vector.zero(),
             ...particle
         });
+    }
+
+    public addParticleExplosion(position: Vector, color: Color, radius: number, numberOfParticles: number) {
+        for (let i = 0; i < numberOfParticles; i++) {
+            const f = MathUtils.random(-0.2, 0.2);
+            this.addPartialParticle(
+                {
+                    position: position.copy(),
+                    layer: ParticleLayer.ABOVE_OBJECTS,
+                    scale: MathUtils.random(1, 2),
+                    velocity: MathUtils.randomVector(MathUtils.random(2, radius)),
+                    angularVelocity: MathUtils.random(-3, 3),
+                    color: new Color(color.r + f, color.g + f, color.b + f, color.a),
+                }
+            )
+        }
     }
 
     private getTileCoordinate(position: Vector): { chunkIndex: number, tilePositionIndex: number } {

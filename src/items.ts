@@ -547,19 +547,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     maxStack: 1,
     cooldown: 60,
     useItem(player, target) {
-        for (let i = 0; i < 24; i++) {
-            const f = MathUtils.random(0.4, 1);
-            const s = MathUtils.randomInt(1, 2);
-            player.game.addPartialParticle({
-                position: player.position.copy(),
-                velocity: MathUtils.randomVector(MathUtils.random(4, 16)),
-                lifetime: MathUtils.random(0.4, 1.2),
-                color: new Color(0.1, f, f, 1),
-                size: new Vector(s, s),
-                angularVelocity: MathUtils.random(-3, 3),
-                layer: ParticleLayer.ABOVE_OBJECTS
-            });
-        }
+        player.game.addParticleExplosion(player.position, new Color(1, 0.7, 0.7, 1), 16, 24);
         player.position.set(target);
         return true;
     }

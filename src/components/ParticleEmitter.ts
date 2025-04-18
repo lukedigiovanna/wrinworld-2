@@ -13,7 +13,7 @@ enum ParticleLayer {
 
 interface Particle {
     position: Vector;
-    size: Vector;
+    scale: number;
     velocity: Vector;
     angularVelocity: number;
     rotation: number;
@@ -78,7 +78,7 @@ const ParticleEmitter: (data: Partial<ParticleEmitterData>, altID?: string) => C
                     spriteID: spriteID,
                     color: data.color(),
                     useRelativePosition: false,
-                    size: Vector.scaled(new Vector(sprite.width, sprite.height), data.scale()),
+                    scale: data.scale(),
                     rotation: data.rotation(),
                     velocity: data.velocity(),
                     angularVelocity: data.angularVelocity(),

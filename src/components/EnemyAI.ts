@@ -296,19 +296,7 @@ const revenantEyeAIConfig: EnemyAIConfig = {
         },
         attack_windup(gameObject, dt, data) {
             if (Math.random() < dt * 0.4) {
-                for (let i = 0; i < 24; i++) {
-                    const f = MathUtils.random(0.4, 1);
-                    const s = MathUtils.randomInt(1, 2);
-                    gameObject.game.addPartialParticle({
-                        position: gameObject.position.copy(),
-                        velocity: MathUtils.randomVector(MathUtils.random(4, 16)),
-                        lifetime: MathUtils.random(0.4, 1.2),
-                        color: new Color(f, 0.1, 0.2, 1),
-                        size: new Vector(s, s),
-                        angularVelocity: MathUtils.random(-3, 3),
-                        layer: ParticleLayer.ABOVE_OBJECTS
-                    });
-                }
+                gameObject.game.addParticleExplosion(gameObject.position, new Color(0.7, 0.1, 0.2, 1), 16, 24);
                 gameObject.position.add(MathUtils.randomVector(MathUtils.random(16, 64)));
             }
             if (data.timeInState > 1.75) {
@@ -353,7 +341,7 @@ const wraithAIConfig: EnemyAIConfig = {
                     position: gameObject.position.copy(),
                     layer: ParticleLayer.ABOVE_OBJECTS,
                     color: new Color(f, f, f, 1),
-                    size: new Vector(1, 2),
+                    scale: MathUtils.random(1, 2),
                     velocity: MathUtils.randomVector(MathUtils.random(2, 14)),
                     angularVelocity: MathUtils.random(-2, 2),
                 });
