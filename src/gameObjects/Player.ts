@@ -68,16 +68,16 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                 const inventoryManager = gameObject.getComponent("inventory-manager");
                 // const items = [ItemIndex.BROAD_SWORD, ItemIndex.TELEPORTATION_RUNE, ItemIndex.ROOT_SNARE, ItemIndex.ESSENCE_VIAL, ItemIndex.BATTLE_HAMMER, ItemIndex.BOW, ItemIndex.ARROW];
                 // const items = [ItemIndex.BROAD_SWORD, ItemIndex.HEART, ItemIndex.DICE, ItemIndex.FLAME_UPGRADE, ItemIndex.POISON_UPGRADE, ItemIndex.STRENGTH_UPGRADE];
-                const items = [ItemIndex.RICOCHET_BOOMERANG, ItemIndex.BOOMERANG];
-                for (const i of items) {
-                    const item = itemsCodex[i as ItemIndex];
-                    for (let j = 0; j < item.maxStack; j++) {
-                        inventoryManager.data.inventory.addItemIndex(i);
-                    }
-                }
-                // for (let i = 0; i <= 40; i++) {
-                //     inventoryManager.data.inventory.addItemIndex(i);
+                // const items = [ItemIndex.RICOCHET_BOOMERANG, ItemIndex.BOOMERANG];
+                // for (const i of items) {
+                //     const item = itemsCodex[i as ItemIndex];
+                //     for (let j = 0; j < item.maxStack; j++) {
+                //         inventoryManager.data.inventory.addItemIndex(i);
+                //     }
                 // }
+                for (let i = 0; i <= 40; i++) {
+                    inventoryManager.data.inventory.addItemIndex(i);
+                }
             }
         }
     })

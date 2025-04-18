@@ -105,6 +105,7 @@ const level1PortalDrops: PortalDropPool[] = [
     [ { itemIndex: ItemIndex.FLAME_UPGRADE } ],
     [ { itemIndex: ItemIndex.POISON_UPGRADE } ],
     [ { itemIndex: ItemIndex.STRENGTH_UPGRADE } ],
+    [ { itemIndex: ItemIndex.SPROCKET_UPGRADE } ],
 ];
 
 // LEVEL 1
@@ -124,10 +125,8 @@ const LEVEL_1: Level = {
         const numPortals = 15;
         const minDistance = 8 * PIXELS_PER_TILE;
         const treeRate = 0.05;
-        const grassRate = 0;
-        // const grassRate = 0.3;
-        const flowerPatches = 0;
-        // const flowerPatches = 24;
+        const grassRate = 0.3;
+        const flowerPatches = 24;
 
         // 1. Set Grass Background
         for (let x = left; x <= right; x++) {

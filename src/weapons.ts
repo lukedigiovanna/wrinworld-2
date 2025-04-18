@@ -107,6 +107,43 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
         fireMelee(this.attack() as MeleeAttack, gameObject, target);
     }
 },
+[WeaponIndex.POISON_BROAD_SWORD]: {
+    cooldown: 0.75,
+    attack: (props) => ({
+        ...meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
+        onHit(gameObject, data, hit) {
+            hit.getComponentOptional("status-effect-manager")?.data.applyEffect(StatusEffectIndex.POISON, 1, MathUtils.random(3, 6));
+        }
+    }),
+    fire(gameObject, target) {
+        fireMelee(this.attack() as MeleeAttack, gameObject, target);
+    }
+},
+[WeaponIndex.STRONG_SWORD]: {
+    cooldown: 0.75,
+    attack: (props) => ({
+        ...meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
+        damage: 10,
+        sweepDamage: 5,
+    }),
+    fire(gameObject, target) {
+        fireMelee(this.attack() as MeleeAttack, gameObject, target);
+    }
+},
+[WeaponIndex.POISON_STRONG_SWORD]: {
+    cooldown: 0.75,
+    attack: (props) => ({
+        ...meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
+        damage: 10,
+        sweepDamage: 5,
+        onHit(gameObject, data, hit) {
+            hit.getComponentOptional("status-effect-manager")?.data.applyEffect(StatusEffectIndex.POISON, MathUtils.random(1, 3), MathUtils.random(3, 6));
+        }
+    }),
+    fire(gameObject, target) {
+        fireMelee(this.attack() as MeleeAttack, gameObject, target);
+    }
+},
 [WeaponIndex.SHURIKEN]: {
     cooldown: 0.25,
     attack: () => projectilesCodex[ProjectileIndex.SHURIKEN],
@@ -178,7 +215,7 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
 [WeaponIndex.BATTLE_HAMMER]: {
     cooldown: 1.6,
     charge: 1.6,
-    attack: (props) => scaleMeleeByCharge(meleeAttacksCodex[MeleeAttackIndex.BATTLE_HAMMER], props?.charge),
+    attack: (props) => meleeAttacksCodex[MeleeAttackIndex.BATTLE_HAMMER],
     fire(gameObject, target, props) {
         fireMelee(this.attack(props) as MeleeAttack, gameObject, target);
     }
@@ -187,6 +224,19 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
     cooldown: 1,
     charge: 1,
     attack: (props) => scaleMeleeByCharge(meleeAttacksCodex[MeleeAttackIndex.BATTLE_HAMMER], props?.charge),
+    fire(gameObject, target, props) {
+        fireMelee(this.attack(props) as MeleeAttack, gameObject, target);
+    }
+},
+[WeaponIndex.POISON_BATTLE_HAMMER]: {
+    cooldown: 1.6,
+    charge: 1.6,
+    attack: (props) => ({
+        ...scaleMeleeByCharge(meleeAttacksCodex[MeleeAttackIndex.BATTLE_HAMMER], props?.charge),
+        onHit(gameObject, data, hit) {
+            hit.getComponentOptional("status-effect-manager")?.data.applyEffect(StatusEffectIndex.POISON, MathUtils.random(1, 3), MathUtils.random(2, 5));
+        }
+    }),
     fire(gameObject, target, props) {
         fireMelee(this.attack(props) as MeleeAttack, gameObject, target);
     }
@@ -229,51 +279,6 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
         ...projectilesCodex[ProjectileIndex.ROCK],
         damage: 3,
     }),
-    fire(gameObject, target) {
-        fireProjectile(this.attack() as Projectile, gameObject, target);
-    }
-},
-[WeaponIndex.POISON_BROAD_SWORD]: {
-    cooldown: 0.75,
-    attack: (props) => ({
-        ...meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
-        onHit(gameObject, data, hit) {
-            hit.getComponentOptional("status-effect-manager")?.data.applyEffect(StatusEffectIndex.POISON, 1, MathUtils.random(3, 6));
-        }
-    }),
-    fire(gameObject, target) {
-        fireMelee(this.attack() as MeleeAttack, gameObject, target);
-    }
-},
-[WeaponIndex.STRONG_SWORD]: {
-    cooldown: 0.75,
-    attack: (props) => ({
-        ...meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
-        damage: 10,
-        sweepDamage: 5,
-    }),
-    fire(gameObject, target) {
-        fireMelee(this.attack() as MeleeAttack, gameObject, target);
-    }
-},
-[WeaponIndex.POISON_STRONG_SWORD]: {
-    cooldown: 0.75,
-    attack: (props) => ({
-        ...meleeAttacksCodex[MeleeAttackIndex.BROAD_SWORD],
-        damage: 10,
-        sweepDamage: 5,
-        onHit(gameObject, data, hit) {
-            hit.getComponentOptional("status-effect-manager")?.data.applyEffect(StatusEffectIndex.POISON, MathUtils.random(1, 3), MathUtils.random(3, 6));
-        }
-    }),
-    fire(gameObject, target) {
-        fireMelee(this.attack() as MeleeAttack, gameObject, target);
-    }
-},
-[WeaponIndex.POISON_BATTLE_HAMMER]: {
-    cooldown: 1.6,
-    charge: 1.6,
-    attack: (props) => projectilesCodex[ProjectileIndex.CRYSTAL_SHARD],
     fire(gameObject, target) {
         fireProjectile(this.attack() as Projectile, gameObject, target);
     }
