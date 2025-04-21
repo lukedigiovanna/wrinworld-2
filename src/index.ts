@@ -107,6 +107,7 @@ window.onload = async () => {
         // Projectiles
         loadImageAndTexture(gl, "arrow", "assets/images/projectiles/arrow.png"),
         loadImageAndTexture(gl, "poison_arrow", "assets/images/projectiles/poison_arrow.png"),
+        loadImageAndTexture(gl, "ricochet_arrow", "assets/images/projectiles/ricochet_arrow.png"),
         loadImageAndTexture(gl, "tear_drop", "assets/images/projectiles/tear_drop.png"),
         loadImageAndTexture(gl, "wraith_attack", "assets/images/projectiles/wraith_attack.png"),
         loadImageAndTexture(gl, "rock", "assets/images/projectiles/rock.png"),

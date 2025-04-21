@@ -13,6 +13,7 @@ enum ProjectileIndex {
     GHOST_ARROW,
     POISON_ARROW,
     FLAME_ARROW,
+    RICOCHET_ARROW,
     TEAR_DROP,
     WRAITH_ATTACK,
     ROCK,
@@ -205,7 +206,7 @@ const projectilesCodex: Record<ProjectileIndex, Projectile> = {
     },
 },
 [ProjectileIndex.GHOST_ARROW]: {
-    homingSkill: 0,
+    homingSkill: 0.5,
     maxHits: 4,
     ricochetFactor: 0,
     spriteID: "arrow",
@@ -231,6 +232,50 @@ const projectilesCodex: Record<ProjectileIndex, Projectile> = {
             color: () => Color.CYAN,
         }
     ),
+},
+[ProjectileIndex.RICOCHET_ARROW]: {
+    homingSkill: 0,
+    maxHits: 3,
+    ricochetFactor: 0.0,
+    spriteID: "ricochet_arrow",
+    damage: 10,
+    damageReductionPerHit: 0.2,
+    knockback: 24,
+    lifespan: 4,
+    speed: 400,
+    angularVelocity: 0,
+    rotateToDirectionOfTarget: true,
+    drag: 0.9,
+    hitboxSize: new Vector(0.25, 0.25),
+    colliderSize: new Vector(0.2, 0.2),
+    chanceOfBreaking: 0.2,
+    destroyOnPhysicalCollision: true,
+    particleEmitter: ParticleEmitter(
+        {
+            spriteID: () => "square",
+            color: () => new Color(0.8, 0.2, 0.2, 1.0),
+            rate: () => MathUtils.random(2, 6),
+            rotation: () => MathUtils.randomAngle(),
+            velocity: () => MathUtils.randomVector(MathUtils.random(24, 32)),
+            lifetime: () => MathUtils.random(0.4, 0.6)
+        }
+    ),
+    onDestroy(gameObject) {
+        chanceDropItem(gameObject, itemsCodex[ItemIndex.ARROW], this.chanceOfBreaking);
+    },
+    onHit(gameObject, data, hit) {
+        const physics = gameObject.getComponent("physics");
+        const nearestEnemy = gameObject.game.getNearestGameObjectWithFilter(
+            gameObject.position, 
+            (obj) => hit !== obj && obj.team !== Team.UNTEAMED && obj.team !== data.owner.team
+        );
+        if (nearestEnemy !== undefined && nearestEnemy.distance < 144) {
+            physics.data.velocity = gameObject.position
+                                    .directionTowards(nearestEnemy.object.position)
+                                    .normalized()
+                                    .scaled(physics.data.velocity.magnitude);
+        }
+    },
 },
 [ProjectileIndex.TEAR_DROP]: {
     homingSkill: 0,
@@ -261,7 +306,6 @@ const projectilesCodex: Record<ProjectileIndex, Projectile> = {
     knockback: 32,
     lifespan: 4,
     speed: 180,
-    color: new Color(1, 1, 1, 0.9),
     angularVelocity: 0,
     rotateToDirectionOfTarget: true,
     drag: 0,

@@ -189,9 +189,10 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
 },
 [WeaponIndex.RICOCHET_BOW]: {
     cooldown: 0,
-    attack: (props) => projectilesCodex[ProjectileIndex.CRYSTAL_SHARD],
-    fire(gameObject, target) {
-        fireProjectile(this.attack() as Projectile, gameObject, target);
+    charge: 1.2,
+    attack: (props) => scaleProjectileByCharge(projectilesCodex[ProjectileIndex.RICOCHET_ARROW], props?.charge),
+    fire(gameObject, target, props) {
+        fireProjectile(this.attack(props) as Projectile, gameObject, target);
     }
 },
 [WeaponIndex.QUICK_BOW]: {
