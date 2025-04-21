@@ -73,11 +73,15 @@ class Camera {
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
         this.gl.clearColor(0, 0, 0, 1);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+        // Apply a random shake
+        // const shake = MathUtils.randomVector(MathUtils.random(1, 4));
         // Set the appropriate projection matrix
         const pixelsPerUnit = this.canvas.height / this.height;
         const modifiedPPU = Math.floor(pixelsPerUnit);
         const height = Math.round(this.canvas.height / modifiedPPU);
         const width = Math.round(this.canvas.width / modifiedPPU);
+        // const x = Math.round(this.position.x + shake.x);
+        // const y = Math.round(this.position.y + shake.y);
         const x = Math.round(this.position.x);
         const y = Math.round(this.position.y);
         const lw = Math.floor(width / 2), rw = Math.ceil(width / 2);

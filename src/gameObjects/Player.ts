@@ -6,10 +6,9 @@ import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager,
          MovementData,
          AnimationManager} from "../components";
 import { spriteRenderer } from "../renderers";
-import { ItemIndex, itemsCodex } from "../items";
 import { SpriteAnimationIndex } from "../animations";
 import { getImage } from "../imageLoader";
-import { StatusEffectIndex } from "../statusEffects";
+import { ItemIndex } from "../items";
 
 const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const player = new GameObject();
@@ -75,9 +74,10 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                 //         inventoryManager.data.inventory.addItemIndex(i);
                 //     }
                 // }
-                for (let i = 0; i <= 41; i++) {
-                    inventoryManager.data.inventory.addItemIndex(i);
-                }
+                // for (let i = 0; i <= 41; i++) {
+                //     inventoryManager.data.inventory.addItemIndex(i);
+                // }
+                inventoryManager.data.inventory.addItemIndex(ItemIndex.BROAD_SWORD);
             }
         }
     })

@@ -111,6 +111,7 @@ window.onload = async () => {
         loadImageAndTexture(gl, "wraith_attack", "assets/images/projectiles/wraith_attack.png"),
         loadImageAndTexture(gl, "rock", "assets/images/projectiles/rock.png"),
         loadImageAndTexture(gl, "crystal_shard", "assets/images/projectiles/crystal_shard.png"),
+        loadImageAndTexture(gl, "flower_petal", "assets/images/projectiles/flower_petal.png"),
 
         // Item icons
         loadImageAndTexture(gl, "broad_sword_icon", "assets/images/items/broad_sword_icon.png"),
