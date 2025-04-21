@@ -1,8 +1,9 @@
 import input from "./input";
-import { Vector, MathUtils, Color} from "./utils";
+import { Vector, MathUtils, Color, Ease } from "./utils";
 import { MAX_LIGHTS, MAX_SHADOWS, ShaderLight, ShaderProgram, ShaderShadow } from "./shader";
 import { getOrthographicProjection, Matrix4 } from "./matrixutils";
 import { Texture, getTexture } from "./imageLoader";
+import { Game } from "./game";
 
 const squareVertices = new Float32Array([
     0, 0,  0, 1, // Bottom-left
@@ -12,6 +13,8 @@ const squareVertices = new Float32Array([
 ]);
 
 class Camera {
+    private game: Game;
+
     public position: Vector; // center of camera view
     public height: number;
 
@@ -29,7 +32,12 @@ class Camera {
 
     private squareVBO: WebGLBuffer;
 
-    constructor(canvas: HTMLCanvasElement, gl: WebGLRenderingContext, shaderProgram: ShaderProgram) {
+    private shakeDuration: number = 0;
+    private shakeIntensity: number = 0;
+    private shakeStartTime: number = 0;
+
+    constructor(game: Game, canvas: HTMLCanvasElement, gl: WebGLRenderingContext, shaderProgram: ShaderProgram) {
+        this.game = game;
         this.canvas = canvas;
         this.gl = gl;
         this.shaderProgram = shaderProgram;
@@ -45,6 +53,12 @@ class Camera {
         const texCoordAttribLocation = shaderProgram.getAttribLocation("a_textureCoord");
         gl.enableVertexAttribArray(texCoordAttribLocation);
         gl.vertexAttribPointer(texCoordAttribLocation, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+    }
+
+    public applyShake(duration: number, intensity: number) {
+        this.shakeDuration = duration;
+        this.shakeIntensity = intensity;
+        this.shakeStartTime = this.game.time;
     }
 
     public update(dt: number) {
@@ -74,16 +88,20 @@ class Camera {
         this.gl.clearColor(0, 0, 0, 1);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
         // Apply a random shake
-        // const shake = MathUtils.randomVector(MathUtils.random(1, 4));
+        const shakeTime = this.game.time - this.shakeStartTime;
+        const position = this.position.copy();
+        if (shakeTime < this.shakeDuration) {
+            const I = this.shakeIntensity * (1 - Ease.inQuart(shakeTime / this.shakeDuration))
+            const shake = MathUtils.randomVector(MathUtils.random(0, I));
+            position.add(shake);
+        }
         // Set the appropriate projection matrix
         const pixelsPerUnit = this.canvas.height / this.height;
         const modifiedPPU = Math.floor(pixelsPerUnit);
         const height = Math.round(this.canvas.height / modifiedPPU);
         const width = Math.round(this.canvas.width / modifiedPPU);
-        // const x = Math.round(this.position.x + shake.x);
-        // const y = Math.round(this.position.y + shake.y);
-        const x = Math.round(this.position.x);
-        const y = Math.round(this.position.y);
+        const x = Math.round(position.x);
+        const y = Math.round(position.y);
         const lw = Math.floor(width / 2), rw = Math.ceil(width / 2);
         const bh = Math.floor(height / 2), th = Math.ceil(height / 2);
         const projection = getOrthographicProjection(

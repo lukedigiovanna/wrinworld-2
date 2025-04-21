@@ -553,6 +553,10 @@ class Ease {
              ? 1
              : Math.pow(2, -10 * x) * Math.sin((x * 10 - 0.75) * c4) + 1;
     }
+
+    public static inQuart(x: number): number {
+        return x * x * x * x;
+    }
 }
 
 class Color {

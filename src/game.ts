@@ -55,7 +55,7 @@ class Game {
     private level: Level = LEVEL_1;
 
     constructor(canvas: HTMLCanvasElement, gl: WebGLRenderingContext, shaderProgram: ShaderProgram) {
-        this._camera = new Camera(canvas, gl, shaderProgram);
+        this._camera = new Camera(this, canvas, gl, shaderProgram);
         this._player = PlayerFactory(new Vector(0, 16 * PIXELS_PER_TILE));
         this.addGameObject(this._player);
         this._camera.target = this._player.position;
