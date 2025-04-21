@@ -1,4 +1,4 @@
-import { GameObjectFactory, GameObject, Team } from "./";
+import { GameObjectFactory, GameObject, Team, PORTAL_ACTIVE_RADIUS } from "./";
 import { Vector, MathUtils } from "../utils";
 import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager, 
          Health, EssenceManager, HealthBarDisplayMode,
@@ -9,6 +9,7 @@ import { spriteRenderer } from "../renderers";
 import { SpriteAnimationIndex } from "../animations";
 import { getImage } from "../imageLoader";
 import { ItemIndex } from "../items";
+import input from "../input";
 
 const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const player = new GameObject();
@@ -58,6 +59,20 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
     player.addComponent(InventoryManager);
     player.addComponent(EssenceManager);
     player.addComponent(StatusEffectManager);
+
+    player.addComponent((gameObject) => {
+        return {
+            id: "cheats",
+            update(dt) {
+                if (input.isKeyPressed("KeyZ")) {
+                    const p = gameObject.game.getNearestGameObjectWithFilter(gameObject.position, (gameObject) => gameObject.tag === "portal");
+                    if (p !== undefined && p.distance < PORTAL_ACTIVE_RADIUS) {
+                        p.object.destroy();
+                    }
+                }
+            }
+        }
+    })
 
     // Starter items
     player.addComponent((gameObject) => {

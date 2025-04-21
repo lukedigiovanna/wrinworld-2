@@ -1,11 +1,10 @@
-import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Color } from "./utils";
+import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Permutation } from "./utils";
 import { Game, PIXELS_PER_TILE } from "./game";
 import { TileIndex } from "./tiles";
-import { EnemyIndex, PortalFactory, PortalProperties, PortalDrop, PropFactory, GameObject } from "./gameObjects";
+import { EnemyIndex, PortalFactory, PortalProperties, PortalDrop, PropFactory } from "./gameObjects";
 import { ItemIndex } from "./items";
 import { PropIndex, propsCodex } from "./props";
 import { getTexture } from "./imageLoader";
-import { spriteRenderer } from "./renderers";
 
 interface Level {
     regionName: string;
@@ -210,6 +209,7 @@ const LEVEL_1: Level = {
 
         // 6. Place portals
         const portalPositions = [];
+        const dropsPermutation = new Permutation(level1PortalDrops);
         for (let i = 0; i < numPortals; i++) {
             let position;
             let invalid;
@@ -234,7 +234,7 @@ const LEVEL_1: Level = {
                 throw Error("Cannot generate portal for position: " + position + " progressio " + progression + " because no portal has low enough difficulty");
             }
             const properties = MathUtils.randomChoice(validChoices);
-            const dropPool = MathUtils.randomChoice(level1PortalDrops);
+            const dropPool = dropsPermutation.next;
             game.addGameObject(PortalFactory(properties, dropPool, position));
             portalPositions.push(position);
             const R = 5;
