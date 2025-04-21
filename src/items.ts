@@ -3,7 +3,7 @@
 // NOTE: items are exclusively used by the player
 
 import { Color, MathUtils, Vector } from "./utils";
-import { GameObject, Team } from "./gameObjects";
+import { FlowerPowerPetalFactory, GameObject, Team } from "./gameObjects";
 import { fireProjectile, WeaponIndex, weaponsCodex } from "./weapons";
 import { addNotification } from "./notifications";
 import { ProjectileIndex, projectilesCodex } from "./projectiles";
@@ -861,6 +861,14 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
+    cooldown: 5,
+    useItem(player, target) {
+        const numberOfPetals = 8;
+        for (let i = 0; i < numberOfPetals; i++) {
+            player.game.addGameObject(FlowerPowerPetalFactory(player, i / numberOfPetals))
+        }
+        return true;
+    }
 }
 }
 

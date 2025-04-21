@@ -267,12 +267,13 @@ stack trace:`)
 type GameObjectFactory = (...args: any[]) => GameObject;
 
 export { GameObject, GameObjectFactory, Team };
-export * from "./Projectile";
+export * from "./Enemy";
+export * from "./EssenceOrb";
+export * from "./EssenceOrbAttack";
+export * from "./FlowerPowerPetal";
+export * from "./ItemDrop";
 export * from "./MeleeAttack";
 export * from "./Player";
 export * from "./Portal";
+export * from "./Projectile";
 export * from "./Prop";
-export * from "./Enemy";
-export * from "./ItemDrop";
-export * from "./EssenceOrb";
-export * from "./EssenceOrbAttack";

@@ -65,8 +65,16 @@ class Vector {
         this.y += other.y;
     }
 
+    public plus(other: Vector): Vector {
+        return new Vector(this.x + other.x, this.y + other.y);
+    }
+
     public subtract(other: Vector): void {
         this.add(Vector.scaled(other, -1));
+    }
+
+    public minus(other: Vector): Vector {
+        return new Vector(this.x - other.x, this.y - other.y);
     }
 
     // component-wise multiplies
@@ -535,6 +543,18 @@ class CatmullRomParametricCurve {
     }
 }
 
+class Ease {
+    public static outElastic(x: number) {
+        const c4 = (2 * Math.PI) / 3;
+
+        return x === 0
+             ? 0
+             : x === 1
+             ? 1
+             : Math.pow(2, -10 * x) * Math.sin((x * 10 - 0.75) * c4) + 1;
+    }
+}
+
 class Color {
     private _r: number;
     private _g: number;
@@ -595,4 +615,4 @@ class Color {
 }
 
 export { Vector, MathUtils, PerlinNoise, LinearParametricCurve, 
-         CatmullRomParametricCurve, NumberRange, Rectangle, Permutation, Color };
+         CatmullRomParametricCurve, Ease, NumberRange, Rectangle, Permutation, Color };
