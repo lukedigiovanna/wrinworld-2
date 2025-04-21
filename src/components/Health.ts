@@ -22,6 +22,7 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
         timeLastShowedHealthBar: -999,
         damageSoundEffectID: undefined,
         deathSoundEffectID: undefined,
+        onDamage: undefined,
         barColor: Color.GREEN,
         initializeHealth(hp: number) {
             this.hp = hp;
@@ -51,6 +52,7 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
             }
             amount *= (1 - this.resistance);
             this.hp = Math.max(0, this.hp - amount);
+            this.onDamage?.(amount);
             this.lastHitTime = gameObject.game.time;
             if (this.healthBarDisplayMode !== HealthBarDisplayMode.NONE) {
                 this.timeLastShowedHealthBar = gameObject.game.time;

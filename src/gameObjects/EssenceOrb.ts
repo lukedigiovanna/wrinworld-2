@@ -1,6 +1,6 @@
 import { spriteRenderer } from "../renderers";
 import { GameObjectFactory, GameObject } from "./index";
-import { MathUtils, Vector, Color } from "../utils";
+import { MathUtils, Vector, Color, Ease } from "../utils";
 import { Hitbox } from "../components";
 import { getSound } from "../soundLoader";
 import { PIXELS_PER_TILE } from "../game";
@@ -32,16 +32,14 @@ const EssenceOrbFactory: GameObjectFactory = (value: number, position: Vector) =
                     );
                 }
                 const player = gameObject.game.player;
-                const diff = Vector.subtract(player.position, gameObject.position);
-                const distance = diff.magnitude;
-                if (distance < 64) {
-                    gameObject.position.add(
-                        Vector.scaled(
-                            Vector.normalized(diff), 
-                            dt * 32 / Math.max(distance - PIXELS_PER_TILE, 1)
-                        )
-                    );
+                const pickupDistance = player.getComponent("essence-manager").data.essencePickupDistance;
+                const dir = gameObject.position.directionTowards(player.hitboxCenter);
+                const distance = dir.magnitude;
+                if (distance <= pickupDistance) {
+                    const speed = 128 * Ease.inQuart(1 - distance / pickupDistance);
+                    gameObject.position.add(dir.normalized().scaled(speed * dt));
                 }
+
                 const c = (Math.cos(gameObject.age * 6) * 0.5 + 0.5) * 0.5 + 0.75;
                 gameObject.color = new Color(c, c, c, 1);
             }

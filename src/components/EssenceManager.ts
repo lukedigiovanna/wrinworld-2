@@ -22,6 +22,7 @@ function updateEssenceUI(essenceAmount: number, essenceMax: number) {
 const EssenceManager: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
         movementData: undefined,
+        essencePickupDistance: 40,
         essence: 0,
         maxEssence: 100,
         startingRate: 0.5,

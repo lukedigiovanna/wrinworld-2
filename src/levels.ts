@@ -91,6 +91,8 @@ const level1PortalDrops: PortalDropPool[] = [
     [ { itemIndex: ItemIndex.HEART } ],
     [ { itemIndex: ItemIndex.HEART_CRYSTAL } ],
     [ { itemIndex: ItemIndex.BASIC_SHIELD } ],
+    [ { itemIndex: ItemIndex.LIGHT_BOOTS } ],
+    [ { itemIndex: ItemIndex.ESSENCE_MAGNET } ],
     [ { itemIndex: ItemIndex.CRYSTAL_BOMB } ],
     [ { itemIndex: ItemIndex.ROOT_SNARE } ],
     [ { itemIndex: ItemIndex.TELEPORTATION_RUNE } ],

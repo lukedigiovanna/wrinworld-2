@@ -566,6 +566,10 @@ class Ease {
     public static inQuart(x: number): number {
         return x * x * x * x;
     }
+
+    public static easeInExpo(x: number): number {
+        return x === 0 ? 0 : Math.pow(2, 10 * x - 10);
+    }        
 }
 
 class Color {

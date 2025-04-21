@@ -145,6 +145,7 @@ enum ItemIndex {
     GHOST_BOW,
     RICOCHET_BOW,
     QUICK_BOW,
+    POWER_BOW,
     BOOMERANG,
     RICOCHET_BOOMERANG,
     SLINGSHOT,
@@ -154,7 +155,7 @@ enum ItemIndex {
     // Projectiles
     ARROW,
     POISON_ARROW,
-    FLAME_ARROW, // not implemented
+    FLAME_ARROW,
     // Consumables
     HEALING_VIAL,
     ESSENCE_VIAL,
@@ -172,6 +173,8 @@ enum ItemIndex {
     HEART,
     HEART_CRYSTAL,
     BASIC_SHIELD,
+    LIGHT_BOOTS,
+    ESSENCE_MAGNET,
     // Mystic arts
     TELEPORTATION_RUNE,
     STUN_FIDDLE,
@@ -870,7 +873,50 @@ const itemsCodex: Record<ItemIndex, Item> = {
         }
         return true;
     }
-}
+},
+[ItemIndex.POWER_BOW]: {
+    itemIndex: ItemIndex.POWER_BOW,
+    displayName: "Power Bow",
+    description: "State of the art",
+    iconSpriteID: "power_bow",
+    category: "Weapon",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+},
+[ItemIndex.LIGHT_BOOTS]: {
+    itemIndex: ItemIndex.LIGHT_BOOTS,
+    displayName: "Light Boots",
+    description: "It's a bit easier to move around when you are lighter on your feet!",
+    iconSpriteID: "light_boots",
+    category: "Buff",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+    equipItem(player) {
+        player.getComponent("movement-data").data.miscellaneousModifier += 0.2;
+    },
+    unequipItem(player) {
+        player.getComponent("movement-data").data.miscellaneousModifier -= 0.2;
+    }
+},
+[ItemIndex.ESSENCE_MAGNET]: {
+    itemIndex: ItemIndex.ESSENCE_MAGNET,
+    displayName: "Essence Magnet",
+    description: "Makes you quite attractive to those little blue orbs",
+    iconSpriteID: "essence_magnet",
+    category: "Buff",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+    equipItem(player) {
+        player.getComponent("essence-manager").data.essencePickupDistance += 256;
+    },
+    unequipItem(player) {
+        player.getComponent("essence-manager").data.essencePickupDistance -= 256;
+    }
+},
+
 }
 
 export { itemsCodex, ItemIndex, ItemStat, itemStats };

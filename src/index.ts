@@ -157,6 +157,9 @@ window.onload = async () => {
         loadImageAndTexture(gl, "quick_broad_sword", "assets/images/items/quick_broad_sword.png"),
         loadImageAndTexture(gl, "quick_hand_upgrade", "assets/images/items/quick_hand_upgrade.png"),
         loadImageAndTexture(gl, "flower_power", "assets/images/items/flower_power.png"),
+        loadImageAndTexture(gl, "light_boots", "assets/images/items/light_boots.png"),
+        loadImageAndTexture(gl, "essence_magnet", "assets/images/items/essence_magnet.png"),
+        loadImageAndTexture(gl, "power_bow", "assets/images/items/power_bow.png"),
         
 
         // Particle sprites

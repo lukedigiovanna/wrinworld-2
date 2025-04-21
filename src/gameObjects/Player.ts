@@ -43,6 +43,9 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
     health.data.healthBarDisplayMode = HealthBarDisplayMode.NONE;
     health.data.damageSoundEffectID = "peach_damage";
     health.data.deathSoundEffectID = "peach_die";
+    health.data.onDamage = (amount: number) => {
+        player.game.camera.applyShake(0.2, amount / 4);
+    }
 
     const trailEmitter = player.addComponent(ParticleEmitter({
         rate: () => 30,
@@ -72,7 +75,7 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                 }
             }
         }
-    })
+    });
 
     // Starter items
     player.addComponent((gameObject) => {
@@ -87,7 +90,7 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                 //         inventoryManager.data.inventory.addItemIndex(i);
                 //     }
                 // }
-                for (let i = 0; i <= 41; i++) {
+                for (let i = 0; i <= 44; i++) {
                     const item = itemsCodex[i as ItemIndex];
                     for (let j = 0; j < item.maxStack; j++) {
                         inventoryManager.data.inventory.addItemIndex(i);
