@@ -52,7 +52,9 @@ enum WeaponIndex {
 }
 
 const fireProjectile = (projectile: Projectile, gameObject: GameObject, target: Vector) => {
-    const hitboxCenter = Vector.add(gameObject.position, gameObject.getComponent("hitbox").data.boxOffset);
+    const hitbox = gameObject.getComponentOptional("hitbox");
+    const offset = hitbox ? hitbox.data.boxOffset : Vector.zero();
+    const hitboxCenter = Vector.add(gameObject.position, offset);
     const direction = Vector.subtract(target, hitboxCenter);
     if (direction.x !== 0) {
         gameObject.scale.x = Math.abs(gameObject.scale.x) * Math.sign(direction.x);

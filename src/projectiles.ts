@@ -20,6 +20,7 @@ enum ProjectileIndex {
     ROOT_SNARE,
     BOOMERANG,
     RICOCHET_BOOMERANG,
+    FLOWER_POWER_PETAL,
 }
 
 interface Projectile {
@@ -386,6 +387,21 @@ const projectilesCodex: Record<ProjectileIndex, Projectile> = {
                                         .normalized()
                                         .scaled(physics.data.velocity.magnitude);
     },
+},
+[ProjectileIndex.FLOWER_POWER_PETAL]: {
+    homingSkill: 0,
+    maxHits: 1,
+    ricochetFactor: 0,
+    spriteID: "flower_power_petal",
+    damage: 8,
+    damageReductionPerHit: 0.0,
+    knockback: 32,
+    lifespan: 6,
+    speed: 160,
+    angularVelocity: 0,
+    rotateToDirectionOfTarget: true,
+    drag: 0,
+    destroyOnPhysicalCollision: true,
 }
 }
 

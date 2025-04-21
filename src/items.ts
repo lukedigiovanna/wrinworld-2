@@ -861,7 +861,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-    cooldown: 5,
+    cooldown: 30,
     useItem(player, target) {
         const numberOfPetals = 8;
         for (let i = 0; i < numberOfPetals; i++) {

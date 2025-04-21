@@ -95,6 +95,7 @@ const level1PortalDrops: PortalDropPool[] = [
     [ { itemIndex: ItemIndex.ROOT_SNARE } ],
     [ { itemIndex: ItemIndex.TELEPORTATION_RUNE } ],
     [ { itemIndex: ItemIndex.STUN_FIDDLE } ],
+    [ { itemIndex: ItemIndex.FLOWER_POWER } ],
     [ { itemIndex: ItemIndex.INVINCIBILITY_BUBBLE } ],
     [ { itemIndex: ItemIndex.HEALING_VIAL } ],
     [ { itemIndex: ItemIndex.ESSENCE_VIAL } ],
