@@ -12,6 +12,7 @@ enum ProjectileIndex {
     ARROW,
     GHOST_ARROW,
     POISON_ARROW,
+    FLAME_ARROW,
     TEAR_DROP,
     WRAITH_ATTACK,
     ROCK,
@@ -166,6 +167,40 @@ const projectilesCodex: Record<ProjectileIndex, Projectile> = {
     onHit(gameObject, owner, hit) {
         if (hit.hasComponent("status-effect-manager")) {
             hit.getComponent("status-effect-manager").data.applyEffect(StatusEffectIndex.POISON, 1, 5);
+        }
+    },
+},
+[ProjectileIndex.FLAME_ARROW]: {
+    homingSkill: 0,
+    maxHits: 1,
+    ricochetFactor: 0.0,
+    spriteID: "arrow",
+    damage: 10,
+    damageReductionPerHit: 0,
+    knockback: 24,
+    lifespan: 4,
+    speed: 400,
+    angularVelocity: 0,
+    rotateToDirectionOfTarget: true,
+    drag: 0.9,
+    hitboxSize: new Vector(0.25, 0.25),
+    colliderSize: new Vector(0.2, 0.2),
+    chanceOfBreaking: 0.2,
+    destroyOnPhysicalCollision: true,
+    particleEmitter: ParticleEmitter(
+        {
+            spriteID: () => "flame_particle",
+            rate: () => MathUtils.random(2, 6),
+            velocity: () => MathUtils.randomVector(MathUtils.random(24, 32)),
+            lifetime: () => MathUtils.random(0.4, 0.6)
+        }
+    ),
+    onDestroy(gameObject) {
+        chanceDropItem(gameObject, itemsCodex[ItemIndex.FLAME_ARROW], this.chanceOfBreaking);
+    },
+    onHit(gameObject, owner, hit) {
+        if (hit.hasComponent("status-effect-manager")) {
+            hit.getComponent("status-effect-manager").data.applyEffect(StatusEffectIndex.FLAME, 1, 5);
         }
     },
 },

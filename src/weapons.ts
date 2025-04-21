@@ -160,6 +160,9 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
             if (props.uses.itemIndex === ItemIndex.POISON_ARROW) {
                 projectile = projectilesCodex[ProjectileIndex.POISON_ARROW];
             }
+            else if (props.uses.itemIndex === ItemIndex.FLAME_ARROW) {
+                projectile = projectilesCodex[ProjectileIndex.FLAME_ARROW];
+            }
         }
         if (!projectile) {
             projectile = projectilesCodex[ProjectileIndex.ARROW];

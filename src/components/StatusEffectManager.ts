@@ -22,9 +22,11 @@ const StatusEffectManager: ComponentFactory = (gameObject: GameObject) => {
                 const effect = this.effects[i];
                 if (effect.index === effectIndex) {
                     // Remove the old version
-                    effect.statusEffect.end?.(gameObject, effect.level);
-                    this.effects.splice(i, 1);
-                    break;
+                    // effect.statusEffect.end?.(gameObject, effect.level);
+                    // this.effects.splice(i, 1);
+                    // break;
+                    // console.log("double applied", effect.index);
+                    return;
                 }
             }
             const statusEffect = statusEffectsCodex[effectIndex];

@@ -87,7 +87,7 @@ const level1PortalDrops: PortalDropPool[] = [
     [ { itemIndex: ItemIndex.BATTLE_HAMMER } ],
     [ { itemIndex: ItemIndex.ESSENCE_DRIPPED_DAGGER } ],
     [ { itemIndex: ItemIndex.POISON_ARROW, count: new NumberRange(16, 32) } ],
-    // [ { itemIndex: ItemIndex.FLAME_ARROW, count: new NumberRange(16, 32) } ],
+    [ { itemIndex: ItemIndex.FLAME_ARROW, count: new NumberRange(16, 32) } ],
     [ { itemIndex: ItemIndex.HEART } ],
     [ { itemIndex: ItemIndex.HEART_CRYSTAL } ],
     [ { itemIndex: ItemIndex.BASIC_SHIELD } ],
@@ -106,6 +106,7 @@ const level1PortalDrops: PortalDropPool[] = [
     [ { itemIndex: ItemIndex.POISON_UPGRADE } ],
     [ { itemIndex: ItemIndex.STRENGTH_UPGRADE } ],
     [ { itemIndex: ItemIndex.SPROCKET_UPGRADE } ],
+    [ { itemIndex: ItemIndex.GHOST_ARROWS }],
 ];
 
 // LEVEL 1

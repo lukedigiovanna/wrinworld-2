@@ -13,6 +13,7 @@ const MovementData: ComponentFactory = (gameObject: GameObject) => {
             chargingModifier: 0.3,
             attackingPortalModifier: 0.5,
             waterModifier: 0.5,
+            miscellaneousModifier: 1.0,
             sprinting: false,
             charging: false,
             attackingPortal: false,
@@ -28,6 +29,7 @@ const MovementData: ComponentFactory = (gameObject: GameObject) => {
                 if (this.sprinting) realModifier *= this.sprintModifier;
                 if (this.charging) realModifier *= this.chargingModifier;
                 if (this.attackingPortal) realModifier *= this.attackingPortalModifier;
+                realModifier *= this.miscellaneousModifier;
                 let pos = gameObject.position.copy();
                 if (gameObject.hasComponent("hitbox")) {
                     pos.add(gameObject.getComponent("hitbox").data.boxOffset);
