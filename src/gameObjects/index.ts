@@ -262,6 +262,16 @@ stack trace:`)
         }
         return closest;
     }
+
+    public get hitboxCenter() {
+        const hitbox = this.getComponentOptional("hitbox");
+        if (hitbox !== undefined) {
+            return this.position.plus(hitbox.data.boxOffset);
+        }
+        else {
+            return this.position.copy();
+        }
+    }
 }
 
 type GameObjectFactory = (...args: any[]) => GameObject;

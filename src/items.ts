@@ -254,7 +254,7 @@ function weaponItem(index: WeaponIndex): Partial<Item> {
         useOnFullCharge: weapon.useOnFullCharge,
         useItem(player: GameObject, target: Vector, uses?: Item, charge?: number) {
             weapon.fire(player, target, {uses, charge});
-            player.game.camera.applyShake(0.2, 1);
+            // player.game.camera.applyShake(0.2, 1);
             return true;
         },
         equipItem(player: GameObject) {

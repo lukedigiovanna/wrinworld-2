@@ -117,6 +117,10 @@ class Vector {
         return this.x * other.x + this.y * other.y;
     }
 
+    public scalarCross(other: Vector): number {
+        return Vector.scalarCross(this, other);
+    }
+
     public copy(): Vector {
         return new Vector(this._x, this._y);
     }
@@ -187,6 +191,11 @@ class Vector {
         const ret = vec.copy();
         ret.normalize();
         return ret;
+    }
+
+    // Returns the z component of the cross product of the two vectors.
+    public static scalarCross(vec1: Vector, vec2: Vector): number {
+        return vec1.x * vec2.y - vec1.y * vec2.x;
     }
 }
 

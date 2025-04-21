@@ -24,7 +24,7 @@ enum ProjectileIndex {
 }
 
 interface Projectile {
-    // 0 to 1 - how good the projectile is at tracking the target. 0 is no homing, 1 is perfect homing
+    // how good the projectile is at tracking the target. higher number is better homing
     homingSkill: number;
     // How many distinct mobs this projectile can hit
     maxHits: number;
@@ -389,7 +389,7 @@ const projectilesCodex: Record<ProjectileIndex, Projectile> = {
     },
 },
 [ProjectileIndex.FLOWER_POWER_PETAL]: {
-    homingSkill: 0,
+    homingSkill: 4,
     maxHits: 1,
     ricochetFactor: 0,
     spriteID: "flower_power_petal",

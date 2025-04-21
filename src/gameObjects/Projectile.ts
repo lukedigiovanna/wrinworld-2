@@ -38,6 +38,15 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
                     projectile.rotation = physics.data.velocity.angle;
                 }
                 properties.update?.(gameObject, data, dt);
+                if (properties.homingSkill > 0) {
+                    const target = gameObject.game.getNearestGameObjectWithFilter(
+                        gameObject.position, (other) => other.team !== Team.UNTEAMED && other.team !== owner.team);
+                    if (target !== undefined) {
+                        const towards = gameObject.position.directionTowards(target.object.hitboxCenter).normalized();
+                        const cross = towards.scalarCross(data.physics.data.velocity);
+                        data.physics.data.velocity.rotate(-Math.sign(cross) * dt * properties.homingSkill);
+                    }
+                }
             },
             onHitboxCollisionEnter(collision) {
                 if (collision.team !== Team.UNTEAMED && 

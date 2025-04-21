@@ -40,10 +40,7 @@ class EnemyAIData {
     }
 
     public get playerHitboxCenter() {
-        return Vector.add(
-            this.self.game.player.position,
-            this.self.game.player.getComponent("hitbox").data.boxOffset
-        );
+        return this.self.game.player.hitboxCenter;
     }
 
     public get distanceToPlayer() {
