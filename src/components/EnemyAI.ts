@@ -1,7 +1,7 @@
 import { MeleeAttackIndex, meleeAttacksCodex } from "../meleeAttacks";
 import { Component, ComponentFactory, ParticleLayer } from "./index";
 import { GameObject } from "../gameObjects";
-import { Color, MathUtils, Vector } from "../utils";
+import { Color, Ease, MathUtils, Vector } from "../utils";
 import { fireMelee, fireProjectile, WeaponIndex } from "../weapons";
 import { projectilesCodex, ProjectileIndex } from "../projectiles";
 
@@ -411,7 +411,7 @@ const wraithAIConfig: EnemyAIConfig = {
 
 const groundWormAI: EnemyAIConfig = {
     stateFunctions: {
-        idle: (gameObject, dt, data) => {
+        idle(gameObject, dt, data) {
             if (Math.random() < dt / 2 || !data.targetPosition || gameObject.position.distanceTo(data.targetPosition) < 4) {
                 data.targetPosition = gameObject.position.plus(MathUtils.randomVector(MathUtils.random(16, 64)));
             }
@@ -427,12 +427,12 @@ const groundWormAI: EnemyAIConfig = {
                     spriteID: "cracks_particle"
                 });
             }
-            if (Math.random() < dt / 4) {
+            if (Math.random() < dt * (0.25 + 1 - Ease.linear(data.distanceToPlayer / 64))) {
                 return "attack_windup";
             }
             return "idle";
         },
-        attack_windup: (gameObject, dt, data) => {
+        attack_windup(gameObject, dt, data) {
             data.targetPosition = undefined;
             gameObject.getComponent("health").data.invincibleCount = 0;
             gameObject.renderer!.data.hidden = false;
@@ -446,7 +446,7 @@ const groundWormAI: EnemyAIConfig = {
             }
             return "attack_windup";
         },
-        attack: (gameObject, dt, data) => {
+        attack(gameObject, dt, data) {
             if (data.collidingWithPlayer) {
                 gameObject.game.player.getComponent("health").data.damage(1);
             }
@@ -454,6 +454,58 @@ const groundWormAI: EnemyAIConfig = {
         }
     },
     movementSpeed: 100
+}
+
+const evilBunnyAI: EnemyAIConfig = {
+    stateFunctions: {
+        idle: basicIdle(300),
+        follow(gameObject, dt, data) {
+            if (data.distanceToPlayer > 320) {
+                return "idle";
+            }
+            if (Math.random() < dt / 6) {
+                return "attack_windup";
+            }
+            if (data.distanceToPlayer < 54) {
+                data.targetPosition = data.playerHitboxCenter.plus(
+                                            data.playerHitboxCenter.directionTowards(gameObject.position)
+                                                                   .normalized()
+                                                                   .scaled(54));
+            }
+            else {
+                const towards = gameObject.position.directionTowards(data.playerHitboxCenter).normalized()
+                const normal = towards.getNormal();
+                const p = Ease.linear((data.distanceToPlayer - 64) / 64);
+                data.targetPosition = gameObject.position.plus(
+                    Vector.add(
+                        normal.scaled((1 - p) * 10), 
+                        towards.scaled(p * 10)
+                    ));
+            }
+            return "follow";
+        },
+        attack_windup(gameObject, dt, data) {
+            data.targetPosition = undefined;
+            data.attacking = true;
+            if (data.timeInState >= 1.5) {
+                return "attack";
+            }
+            return "attack_windup";
+        },
+        attack(gameObject, dt, data) {
+            data.attacking = false;
+            const projectile = MathUtils.randomWeightedChoice(
+                [ProjectileIndex.PLAYING_CARD, ProjectileIndex.DOVE, ProjectileIndex.RUBBER_CHICKEN], 
+                [3, 1, 1]
+            ) as ProjectileIndex;
+            fireProjectile(projectilesCodex[projectile], gameObject, data.playerHitboxCenter);
+            return "follow";
+        }
+    },
+    customSpeedModifier(gameObject) {
+        return Math.pow(Math.sin(gameObject.age * 6), 4);
+    },
+    movementSpeed: 110,
 }
 
 const dummyAI: EnemyAIConfig = {
@@ -485,4 +537,4 @@ const EnemyAI: (config: EnemyAIConfig) => ComponentFactory = (config) => {
 }
 
 export { EnemyAI, slimeAIConfig, redSlimeAIConfig, minionAIConfig, wretchedSkeletonAIConfig, 
-         revenantEyeAIConfig, wraithAIConfig, groundWormAI, dummyAI };
+         revenantEyeAIConfig, wraithAIConfig, groundWormAI, evilBunnyAI, dummyAI };

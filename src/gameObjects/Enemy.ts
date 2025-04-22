@@ -35,7 +35,6 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
     enemy.addComponent(StatusEffectManager);
     
     const movementData = enemy.addComponent(MovementData);
-    movementData.data.baseSpeed = enemyData.speed;
     movementData.data.waterModifier = enemyData.waterSpeedModifier;
     
     const collider = enemy.addComponent(PhysicalCollider);
@@ -56,22 +55,63 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
                 data.ai = gameObject.getComponent("enemy-ai");
             },
             update(dt) {
-                if (gameObject.game.getTileIndex(gameObject.position) === TileIndex.WATER) {
-                    if (enemyData.waterSpriteID) {
-                        gameObject.renderer!.data.spriteID = enemyData.waterSpriteID;
-                        gameObject.renderer!.data.offset = new Vector(0, Math.sin(gameObject.age * 6) * 0.04);
-                        gameObject.castsShadow = false;
+                // TODO: refactor this to repeat self less
+                const inWater = gameObject.game.getTileIndex(gameObject.position) === TileIndex.WATER;
+                const attacking = data.ai.data.attacking;
+                if (inWater) {
+                    if (attacking) { // water + attacking
+                        if (enemyData.waterAttackSpriteID) {
+                            gameObject.renderer!.data.spriteID = enemyData.waterAttackSpriteID;
+                            gameObject.renderer!.data.offset = new Vector(0, Math.sin(gameObject.age * 6) * 0.04);
+                            gameObject.castsShadow = false;
+                        }
+                        else if (enemyData.waterSpriteID) {
+                            gameObject.renderer!.data.spriteID = enemyData.waterAttackSpriteID;
+                            gameObject.renderer!.data.offset = new Vector(0, Math.sin(gameObject.age * 6) * 0.04);
+                            gameObject.castsShadow = false;
+                        }
+                        else if (enemyData.attackSpriteID) {
+                            gameObject.renderer!.data.spriteID = enemyData.attackSpriteID;
+                            gameObject.renderer!.data.offset = Vector.zero();
+                            gameObject.castsShadow = true;
+                        }
+                        else {
+                            gameObject.renderer!.data.spriteID = enemyData.spriteID;
+                            gameObject.renderer!.data.offset = Vector.zero();
+                            gameObject.castsShadow = true;
+                        }
+                    }
+                    else { // water + not attacking
+                        if (enemyData.waterSpriteID) {
+                            gameObject.renderer!.data.spriteID = enemyData.waterSpriteID;
+                            gameObject.renderer!.data.offset = new Vector(0, Math.sin(gameObject.age * 6) * 0.04);
+                            gameObject.castsShadow = false;
+                        }
+                        else {
+                            gameObject.renderer!.data.spriteID = enemyData.spriteID;
+                            gameObject.renderer!.data.offset = Vector.zero();
+                            gameObject.castsShadow = true;
+                        }
                     }
                 }
                 else {
-                    if (enemyData.attackSpriteID && data.ai.data.attacking) {
-                        gameObject.renderer!.data.spriteID = enemyData.attackSpriteID;
+                    if (attacking) { // not in water + attacking
+                        if (enemyData.attackSpriteID) {
+                            gameObject.renderer!.data.spriteID = enemyData.attackSpriteID;
+                            gameObject.renderer!.data.offset = Vector.zero();
+                            gameObject.castsShadow = true;
+                        }
+                        else {
+                            gameObject.renderer!.data.spriteID = enemyData.spriteID;
+                            gameObject.renderer!.data.offset = Vector.zero();
+                            gameObject.castsShadow = true;
+                        }
                     }
-                    else {
+                    else { // not in water + not attacking
                         gameObject.renderer!.data.spriteID = enemyData.spriteID;
+                        gameObject.renderer!.data.offset = Vector.zero();
+                        gameObject.castsShadow = true;
                     }
-                    gameObject.renderer!.data.offset = Vector.zero();
-                    gameObject.castsShadow = true;
                 }
 
                 if (data.physics.data.velocity.x < 0) {

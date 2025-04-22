@@ -283,16 +283,13 @@ class MathUtils {
         return options[this.randomInt(0, options.length - 1)];
     }
 
-    public static randomWeightedChoice(options: any[], chances: number[]) {
-        // Establish preconditions: chances must sum to 1 and the chances must correspond with the options
-        if (options.length !== chances.length) {
+    public static randomWeightedChoice(options: any[], weights: number[]) {
+        if (options.length !== weights.length) {
             throw Error("Options and chances must be the same size");
         }
-        let sumChance = 0;
-        for (let i = 0; i < chances.length; i++) sumChance += chances[i];
-        if (Math.abs(sumChance - 1) > 1e-4) {
-            throw Error("Chances must sum to 1");
-        }
+        let sum = 0;
+        for (let i = 0; i < weights.length; i++) sum += weights[i];
+        const chances = weights.map(w => w / sum);
         const p = Math.random();
         let s = 0;
         for (let i = 0; i < options.length; i++) {
@@ -556,19 +553,19 @@ class Ease {
     public static outElastic(x: number) {
         const c4 = (2 * Math.PI) / 3;
 
-        return x === 0
+        return x <= 0
              ? 0
-             : x === 1
+             : x >= 1
              ? 1
              : Math.pow(2, -10 * x) * Math.sin((x * 10 - 0.75) * c4) + 1;
     }
 
     public static inQuart(x: number): number {
-        return x * x * x * x;
+        return this.linear(x * x * x * x);
     }
 
     public static easeInExpo(x: number): number {
-        return x === 0 ? 0 : Math.pow(2, 10 * x - 10);
+        return x === 0 ? 0 : this.linear(Math.pow(2, 10 * x - 10));
     }
     
     public static linear(x: number) {

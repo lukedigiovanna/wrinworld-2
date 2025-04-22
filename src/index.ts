@@ -96,6 +96,8 @@ window.onload = async () => {
         loadImageAndTexture(gl, "wretched_skeleton_attack", "assets/images/enemies/wretched_skeleton_attack.png"),
         loadImageAndTexture(gl, "wretched_skeleton_dead", "assets/images/enemies/wretched_skeleton_dead.png"),
         loadImageAndTexture(gl, "evil_bunny", "assets/images/enemies/evil_bunny.png"),
+        loadImageAndTexture(gl, "evil_bunny_attack", "assets/images/enemies/evil_bunny_attack.png"),
+        loadImageAndTexture(gl, "evil_bunny_dead", "assets/images/enemies/evil_bunny_dead.png"),
         loadImageAndTexture(gl, "red_slime", "assets/images/enemies/red_slime.png"),
         loadImageAndTexture(gl, "ground_worm", "assets/images/enemies/ground_worm.png"),
         loadImageAndTexture(gl, "ground_worm_dead", "assets/images/enemies/ground_worm_dead.png"),
@@ -120,6 +122,10 @@ window.onload = async () => {
         loadImageAndTexture(gl, "rock", "assets/images/projectiles/rock.png"),
         loadImageAndTexture(gl, "crystal_shard", "assets/images/projectiles/crystal_shard.png"),
         loadImageAndTexture(gl, "flower_power_petal", "assets/images/projectiles/flower_petal.png"),
+        loadImageAndTexture(gl, "playing_card", "assets/images/projectiles/playing_card.png"),
+        loadImageAndTexture(gl, "dove", "assets/images/projectiles/dove.png"),
+        loadImageAndTexture(gl, "rubber_chicken", "assets/images/projectiles/rubber_chicken.png"),
+
 
         // Item icons
         loadImageAndTexture(gl, "broad_sword_icon", "assets/images/items/broad_sword_icon.png"),

@@ -21,9 +21,9 @@ interface Enemy {
     spriteID: string;
     attackSpriteID?: string; // Changes to attack sprite if enemy in "attack" AI state
     waterSpriteID?: string; // Changes to water sprite when in water when defined
+    waterAttackSpriteID?: string;
     deadSpriteID?: string; // Spawns a corpse when defined
     particleID?: string; // No particles when undefined
-    speed: number;
     waterSpeedModifier: number;
     hp: number;
     drops: ItemDropChance[];
@@ -39,7 +39,6 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
     particleID: "slime_particle",
     hp: 10,
     drops: [],
-    speed: 22,
     waterSpeedModifier: 0.5,
     essenceAmount: new NumberRange(2, 4),
     ai: AI.EnemyAI(AI.slimeAIConfig)
@@ -50,7 +49,6 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
     deadSpriteID: "minion_dead",
     hp: 16,
     drops: [],
-    speed: 29,
     waterSpeedModifier: 0.5,
     essenceAmount: new NumberRange(2, 5),
     ai: AI.EnemyAI(AI.minionAIConfig)
@@ -61,7 +59,6 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
     waterSpriteID: "wretched_skeleton_water",
     deadSpriteID: "wretched_skeleton_dead",
     hp: 30,
-    speed: 22,
     waterSpeedModifier: 0.5,
     drops: [],
     essenceAmount: new NumberRange(5, 10),
@@ -73,7 +70,6 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
     deadSpriteID: "revenant_eye_dead",
     hp: 25,
     drops: [],
-    speed: 22,
     waterSpeedModifier: 1.0,
     essenceAmount: new NumberRange(8, 12),
     ai: AI.EnemyAI(AI.revenantEyeAIConfig),
@@ -81,7 +77,6 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
 [EnemyIndex.WRAITH]: {
     spriteID: "wraith",
     hp: 35,
-    speed: 25,
     waterSpeedModifier: 1.0,
     drops: [],
     essenceAmount: new NumberRange(10, 15),
@@ -89,17 +84,17 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
 },
 [EnemyIndex.EVIL_BUNNY]: {
     spriteID: "evil_bunny",
+    attackSpriteID: "evil_bunny_attack",
+    deadSpriteID: "evil_bunny_dead",
     hp: 12,
-    speed: 25,
     waterSpeedModifier: 0.4,
     drops: [],
     essenceAmount: new NumberRange(10, 15),
-    ai: AI.EnemyAI(AI.dummyAI),
+    ai: AI.EnemyAI(AI.evilBunnyAI),
 },
 [EnemyIndex.RED_SLIME]: {
     spriteID: "red_slime",
     hp: 10,
-    speed: 25,
     waterSpeedModifier: 0.4,
     drops: [],
     essenceAmount: new NumberRange(3, 5),
@@ -109,7 +104,6 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
     spriteID: "ground_worm",
     deadSpriteID: "ground_worm_dead",
     hp: 12,
-    speed: 25,
     waterSpeedModifier: 0.4,
     drops: [],
     essenceAmount: new NumberRange(3, 5),
@@ -118,7 +112,6 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
 [EnemyIndex.CORRUPTED_DEER]: {
     spriteID: "corrupted_deer",
     hp: 12,
-    speed: 25,
     waterSpeedModifier: 0.4,
     drops: [],
     essenceAmount: new NumberRange(10, 15),
@@ -127,7 +120,6 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
 [EnemyIndex.FUNGAL_HUSK]: {
     spriteID: "fungal_husk",
     hp: 12,
-    speed: 25,
     waterSpeedModifier: 0.4,
     drops: [],
     essenceAmount: new NumberRange(10, 15),
