@@ -150,6 +150,8 @@ class Game {
 
         if (this.gameOver && this.gameOverTime === undefined) {
             this.gameOverTime = this.time;
+            $("#death-screen").css("opacity", "100%");
+            $("#death-screen").css("visibility", "visible");
         }
 
         if (this.gameOverTime !== undefined) {
@@ -506,6 +508,9 @@ class Game {
 
     // Pauses the game
     public pause() {
+        if (this.gameOver) {
+            return;
+        }
         console.log("[paused]");
         this.paused = true;
         $("#pause-screen").css("opacity", "100%");
