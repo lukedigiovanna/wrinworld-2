@@ -107,11 +107,12 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
 },
 [EnemyIndex.GROUND_WORM]: {
     spriteID: "ground_worm",
+    deadSpriteID: "ground_worm_dead",
     hp: 12,
     speed: 25,
     waterSpeedModifier: 0.4,
     drops: [],
-    essenceAmount: new NumberRange(10, 15),
+    essenceAmount: new NumberRange(3, 5),
     ai: AI.EnemyAI(AI.groundWormAI),
 },
 [EnemyIndex.CORRUPTED_DEER]: {

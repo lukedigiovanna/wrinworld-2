@@ -98,6 +98,7 @@ window.onload = async () => {
         loadImageAndTexture(gl, "evil_bunny", "assets/images/enemies/evil_bunny.png"),
         loadImageAndTexture(gl, "red_slime", "assets/images/enemies/red_slime.png"),
         loadImageAndTexture(gl, "ground_worm", "assets/images/enemies/ground_worm.png"),
+        loadImageAndTexture(gl, "ground_worm_dead", "assets/images/enemies/ground_worm_dead.png"),
         loadImageAndTexture(gl, "corrupted_deer", "assets/images/enemies/corrupted_deer.png"),
         loadImageAndTexture(gl, "fungal_husk", "assets/images/enemies/fungal_husk.png"),
 

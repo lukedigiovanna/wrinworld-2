@@ -427,7 +427,7 @@ const groundWormAI: EnemyAIConfig = {
                     spriteID: "cracks_particle"
                 });
             }
-            if (Math.random() < dt / 6) {
+            if (Math.random() < dt / 4) {
                 return "attack_windup";
             }
             return "idle";
