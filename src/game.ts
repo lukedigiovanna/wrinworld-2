@@ -1,4 +1,4 @@
-import { GameObject, PlayerFactory } from "./gameObjects";
+import { EnemyFactory, EnemyIndex, GameObject, PlayerFactory } from "./gameObjects";
 import { Vector, MathUtils, PerlinNoise, Color, Ease } from "./utils";
 import input from "./input";
 import { Camera } from "./camera";
@@ -60,6 +60,13 @@ class Game {
         this._camera = new Camera(this, canvas, gl, shaderProgram);
         this._player = PlayerFactory(new Vector(0, 16 * PIXELS_PER_TILE));
         this.addGameObject(this._player);
+
+        this.addGameObject(EnemyFactory(new Vector(-100, 400), EnemyIndex.EVIL_BUNNY));
+        this.addGameObject(EnemyFactory(new Vector(-50, 400), EnemyIndex.RED_SLIME));
+        this.addGameObject(EnemyFactory(new Vector(0, 400), EnemyIndex.GROUND_WORM));
+        this.addGameObject(EnemyFactory(new Vector(50, 400), EnemyIndex.CORRUPTED_DEER));
+        this.addGameObject(EnemyFactory(new Vector(100, 400), EnemyIndex.FUNGAL_HUSK));
+
         this._camera.target = this._player.position;
 
         this.level.generate(this);

@@ -95,6 +95,11 @@ window.onload = async () => {
         loadImageAndTexture(gl, "wretched_skeleton_water", "assets/images/enemies/wretched_skeleton_water.png"),
         loadImageAndTexture(gl, "wretched_skeleton_attack", "assets/images/enemies/wretched_skeleton_attack.png"),
         loadImageAndTexture(gl, "wretched_skeleton_dead", "assets/images/enemies/wretched_skeleton_dead.png"),
+        loadImageAndTexture(gl, "evil_bunny", "assets/images/enemies/evil_bunny.png"),
+        loadImageAndTexture(gl, "red_slime", "assets/images/enemies/red_slime.png"),
+        loadImageAndTexture(gl, "ground_worm", "assets/images/enemies/ground_worm.png"),
+        loadImageAndTexture(gl, "corrupted_deer", "assets/images/enemies/corrupted_deer.png"),
+        loadImageAndTexture(gl, "fungal_husk", "assets/images/enemies/fungal_husk.png"),
 
         loadImageAndTexture(gl, "portal", "assets/images/portal_medium.png"),
         loadImageAndTexture(gl, "essence_orb_small", "assets/images/essence_orb_small.png"),

@@ -4,11 +4,17 @@ import * as AI from "./components/EnemyAI";
 import { ItemDropChance } from "./items";
 
 enum EnemyIndex {
+    // Level 1 Enemies
     MINION,
     SLIME,
     REVENANT_EYE,
     WRAITH,
     WRETCHED_SKELETON,
+    EVIL_BUNNY,
+    RED_SLIME,
+    CORRUPTED_DEER,
+    GROUND_WORM,
+    FUNGAL_HUSK
 }
 
 interface Enemy {
@@ -17,7 +23,6 @@ interface Enemy {
     waterSpriteID?: string; // Changes to water sprite when in water when defined
     deadSpriteID?: string; // Spawns a corpse when defined
     particleID?: string; // No particles when undefined
-    scale: Vector;
     speed: number;
     waterSpeedModifier: number;
     hp: number;
@@ -32,7 +37,6 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
     waterSpriteID: "slime_water",
     deadSpriteID: "slime_dead",
     particleID: "slime_particle",
-    scale: new Vector(0.75, 0.5),
     hp: 10,
     drops: [],
     speed: 22,
@@ -44,7 +48,6 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
     spriteID: "minion",
     waterSpriteID: "minion_water",
     deadSpriteID: "minion_dead",
-    scale: new Vector(1, 1),
     hp: 16,
     drops: [],
     speed: 29,
@@ -57,7 +60,6 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
     attackSpriteID: "wretched_skeleton_attack",
     waterSpriteID: "wretched_skeleton_water",
     deadSpriteID: "wretched_skeleton_dead",
-    scale: new Vector(1, 2),
     hp: 30,
     speed: 22,
     waterSpeedModifier: 0.5,
@@ -69,7 +71,6 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
     spriteID: "revenant_eye",
     attackSpriteID: "revenant_eye_attack",
     deadSpriteID: "revenant_eye_dead",
-    scale: new Vector(1, 1),
     hp: 25,
     drops: [],
     speed: 22,
@@ -79,7 +80,6 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
 },
 [EnemyIndex.WRAITH]: {
     spriteID: "wraith",
-    scale: new Vector(0.75, 1.5),
     hp: 35,
     speed: 25,
     waterSpeedModifier: 1.0,
@@ -87,6 +87,51 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
     essenceAmount: new NumberRange(10, 15),
     ai: AI.EnemyAI(AI.wraithAIConfig),
 },
+[EnemyIndex.EVIL_BUNNY]: {
+    spriteID: "evil_bunny",
+    hp: 12,
+    speed: 25,
+    waterSpeedModifier: 0.4,
+    drops: [],
+    essenceAmount: new NumberRange(10, 15),
+    ai: AI.EnemyAI(AI.dummyAI),
+},
+[EnemyIndex.RED_SLIME]: {
+    spriteID: "red_slime",
+    hp: 12,
+    speed: 25,
+    waterSpeedModifier: 0.4,
+    drops: [],
+    essenceAmount: new NumberRange(10, 15),
+    ai: AI.EnemyAI(AI.dummyAI),
+},
+[EnemyIndex.GROUND_WORM]: {
+    spriteID: "ground_worm",
+    hp: 12,
+    speed: 25,
+    waterSpeedModifier: 0.4,
+    drops: [],
+    essenceAmount: new NumberRange(10, 15),
+    ai: AI.EnemyAI(AI.dummyAI),
+},
+[EnemyIndex.CORRUPTED_DEER]: {
+    spriteID: "corrupted_deer",
+    hp: 12,
+    speed: 25,
+    waterSpeedModifier: 0.4,
+    drops: [],
+    essenceAmount: new NumberRange(10, 15),
+    ai: AI.EnemyAI(AI.dummyAI),
+},
+[EnemyIndex.FUNGAL_HUSK]: {
+    spriteID: "fungal_husk",
+    hp: 12,
+    speed: 25,
+    waterSpeedModifier: 0.4,
+    drops: [],
+    essenceAmount: new NumberRange(10, 15),
+    ai: AI.EnemyAI(AI.dummyAI),
+}
 }
 
 

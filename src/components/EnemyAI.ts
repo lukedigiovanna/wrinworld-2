@@ -356,6 +356,13 @@ const wraithAIConfig: EnemyAIConfig = {
     movementSpeed: 44,
 }
 
+const dummyAI: EnemyAIConfig = {
+    stateFunctions: {
+
+    },
+    movementSpeed: 0
+}
+
 const EnemyAI: (config: EnemyAIConfig) => ComponentFactory = (config) => {
     return (gameObject) => {
         return {
@@ -378,4 +385,4 @@ const EnemyAI: (config: EnemyAIConfig) => ComponentFactory = (config) => {
 }
 
 export { EnemyAI, slimeAIConfig, minionAIConfig, wretchedSkeletonAIConfig, 
-         revenantEyeAIConfig, wraithAIConfig };
+         revenantEyeAIConfig, wraithAIConfig, dummyAI };
