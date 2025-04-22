@@ -18,8 +18,6 @@ const CorpseFactory: GameObjectFactory = (gameObject: GameObject, spriteID: stri
         physics.data.impulse.set(objectPhysics.data.impulse);
     }
     corpse.lifespan = MathUtils.random(8, 20);
-    gameObject.game.addGameObject(corpse);
-    
     return corpse;
 }
 

@@ -32,12 +32,14 @@ const EssenceOrbFactory: GameObjectFactory = (value: number, position: Vector) =
                     );
                 }
                 const player = gameObject.game.player;
-                const pickupDistance = player.getComponent("essence-manager").data.essencePickupDistance;
-                const dir = gameObject.position.directionTowards(player.hitboxCenter);
-                const distance = dir.magnitude;
-                if (distance <= pickupDistance) {
-                    const speed = 128 * Ease.inQuart(1 - distance / pickupDistance);
-                    gameObject.position.add(dir.normalized().scaled(speed * dt));
+                if (!player.destroyed) {
+                    const pickupDistance = player.getComponent("essence-manager").data.essencePickupDistance;
+                    const dir = gameObject.position.directionTowards(player.hitboxCenter);
+                    const distance = dir.magnitude;
+                    if (distance <= pickupDistance) {
+                        const speed = 128 * Ease.inQuart(1 - distance / pickupDistance);
+                        gameObject.position.add(dir.normalized().scaled(speed * dt));
+                    }
                 }
 
                 const c = (Math.cos(gameObject.age * 6) * 0.5 + 0.5) * 0.5 + 0.75;
@@ -50,7 +52,7 @@ const EssenceOrbFactory: GameObjectFactory = (value: number, position: Vector) =
             id: "essence-pickup",
             onHitboxCollisionEnter(collision) {
                 if (collision.tag === "player") {
-                    const essenceManager = collision.getComponent("essence-manager");
+                    const essenceManager = collision.getComponentOptional("essence-manager");
                     essenceManager?.data.addEssence(value);
                     getSound("essence_pickup").play();                    
                     gameObject.destroy();
