@@ -90,15 +90,27 @@ const level1PortalTypes: PortalProperties[] = [
     //         }
     //     ]
     // },
-    { // Bunny portal
+    // { // Bunny portal
+    //     difficulty: 0.0,
+    //     health: 35,
+    //     packs: [
+    //         {
+    //             cooldownRange: new NumberRange(8, 16),
+    //             packSizeRange: new NumberRange(1, 3),
+    //             maxEnemies: 6,
+    //             enemyIndex: EnemyIndex.EVIL_BUNNY
+    //         }
+    //     ]
+    // },
+    { // Husk portal
         difficulty: 0.0,
-        health: 35,
+        health: 80,
         packs: [
             {
-                cooldownRange: new NumberRange(8, 16),
-                packSizeRange: new NumberRange(1, 3),
-                maxEnemies: 6,
-                enemyIndex: EnemyIndex.EVIL_BUNNY
+                cooldownRange: new NumberRange(10, 20),
+                packSizeRange: new NumberRange(1, 2),
+                maxEnemies: 4,
+                enemyIndex: EnemyIndex.FUNGAL_HUSK
             }
         ]
     },

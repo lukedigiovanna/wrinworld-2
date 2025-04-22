@@ -14,7 +14,8 @@ enum EnemyIndex {
     RED_SLIME,
     CORRUPTED_DEER,
     GROUND_WORM,
-    FUNGAL_HUSK
+    FUNGAL_HUSK,
+    FUNGAL_SPIRIT,
 }
 
 interface Enemy {
@@ -119,12 +120,22 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
 },
 [EnemyIndex.FUNGAL_HUSK]: {
     spriteID: "fungal_husk",
-    hp: 12,
+    attackSpriteID: "fungal_husk_attack",
+    deadSpriteID: "fungal_husk_dead",
+    hp: 50,
     waterSpeedModifier: 0.4,
     drops: [],
-    essenceAmount: new NumberRange(10, 15),
+    essenceAmount: new NumberRange(12, 16),
+    ai: AI.EnemyAI(AI.fungalHuskAI),
+},
+[EnemyIndex.FUNGAL_SPIRIT]: {
+    spriteID: "fungal_spirit",
+    hp: 7,
+    waterSpeedModifier: 0.4,
+    drops: [],
+    essenceAmount: new NumberRange(1, 2),
     ai: AI.EnemyAI(AI.dummyAI),
-}
+},
 }
 
 

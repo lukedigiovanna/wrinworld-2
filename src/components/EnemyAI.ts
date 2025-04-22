@@ -2,8 +2,9 @@ import { MeleeAttackIndex, meleeAttacksCodex } from "../meleeAttacks";
 import { Component, ComponentFactory, ParticleLayer } from "./index";
 import { GameObject } from "../gameObjects";
 import { Color, Ease, MathUtils, Vector } from "../utils";
-import { fireMelee, fireProjectile, WeaponIndex } from "../weapons";
+import { fireMelee, fireProjectile } from "../weapons";
 import { projectilesCodex, ProjectileIndex } from "../projectiles";
+import { StatusEffectIndex } from "../statusEffects";
 
 // system: when enemies are far they should wander
 // .       enemy has a "sight" distance: if they have line of sight to player they follow
@@ -506,7 +507,46 @@ const evilBunnyAI: EnemyAIConfig = {
         return Math.pow(Math.sin(gameObject.age * 6), 4);
     },
     movementSpeed: 110,
-}
+};
+
+const fungalHuskAI: EnemyAIConfig = {
+    stateFunctions: {
+        idle: basicIdle(300),
+        follow(gameObject, dt, data) {
+            data.targetPosition = data.playerHitboxCenter;
+            if (data.distanceToPlayer < 32) {
+                return "attack_windup";
+            }
+            return "follow";
+        },
+        attack_windup(gameObject, dt, data) {
+            if (data.distanceToPlayer > 48) {
+                data.attacking = false;
+                return "follow";
+            }
+            data.targetPosition = undefined;
+            if (data.timeInState > 1) {
+                return "attack";
+            }
+            data.attacking = true;
+            return "attack_windup";
+        },
+        attack(gameObject, dt, data) {
+            data.attacking = false;
+            fireMelee({
+                ...meleeAttacksCodex[MeleeAttackIndex.BASIC],
+                damage: 10,
+                range: 24,
+                knockback: 50,
+                onHit(gameObject, data, hit) {
+                    hit.getComponentOptional("status-effect-manager")?.data?.applyEffect(StatusEffectIndex.POISON, 1, 2);
+                },
+            }, gameObject, data.playerHitboxCenter);
+            return "follow";
+        }
+    },
+    movementSpeed: 10
+};
 
 const dummyAI: EnemyAIConfig = {
     stateFunctions: {
@@ -537,4 +577,4 @@ const EnemyAI: (config: EnemyAIConfig) => ComponentFactory = (config) => {
 }
 
 export { EnemyAI, slimeAIConfig, redSlimeAIConfig, minionAIConfig, wretchedSkeletonAIConfig, 
-         revenantEyeAIConfig, wraithAIConfig, groundWormAI, evilBunnyAI, dummyAI };
+         revenantEyeAIConfig, wraithAIConfig, groundWormAI, evilBunnyAI, fungalHuskAI, dummyAI };
