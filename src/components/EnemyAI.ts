@@ -415,6 +415,9 @@ const groundWormAI: EnemyAIConfig = {
             if (Math.random() < dt / 2 || !data.targetPosition || gameObject.position.distanceTo(data.targetPosition) < 4) {
                 data.targetPosition = gameObject.position.plus(MathUtils.randomVector(MathUtils.random(16, 64)));
             }
+            if (Math.random() < dt * 2 && data.distanceToPlayer < 64) {
+                data.targetPosition = data.playerHitboxCenter;
+            }
             gameObject.getComponent("health").data.invincibleCount = 1;
             gameObject.renderer!.data.hidden = true;
             gameObject.castsShadow = false;
