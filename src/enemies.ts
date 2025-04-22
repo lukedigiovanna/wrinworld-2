@@ -103,7 +103,7 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
     waterSpeedModifier: 0.4,
     drops: [],
     essenceAmount: new NumberRange(10, 15),
-    ai: AI.EnemyAI(AI.dummyAI),
+    ai: AI.EnemyAI(AI.redSlimeAIConfig),
 },
 [EnemyIndex.GROUND_WORM]: {
     spriteID: "ground_worm",

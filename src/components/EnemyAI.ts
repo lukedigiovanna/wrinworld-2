@@ -169,12 +169,9 @@ const slimeAIConfig: EnemyAIConfig = {
                 const magnitude = data.physics.data.impulse.magnitude / 30;
                 gameObject.game.player.getComponent("health").data.damage(magnitude);
                 gameObject.game.player.getComponent("physics").data.impulse.add(
-                    Vector.scaled(
-                        Vector.normalized(
-                            gameObject.position.directionTowards(gameObject.game.player.position)
-                        ),
-                        100
-                    )
+                    gameObject.position.directionTowards(gameObject.game.player.position)
+                                       .normalized()
+                                       .scaled(100)
                 )
                 return "follow";
             }
@@ -182,6 +179,62 @@ const slimeAIConfig: EnemyAIConfig = {
         }
     },
     movementSpeed: 36,
+    customSpeedModifier(gameObject) {
+        return (Math.sin(gameObject.age * 5) * 0.5 + 0.5) * 0.9 + 0.1;
+    },
+}
+
+const redSlimeAIConfig: EnemyAIConfig = {
+    stateFunctions: {
+        idle: basicIdle(200),
+        follow(gameObject, dt, data) {
+            if (data.distanceToPlayer > 250 || !data.hasLineOfSightToPlayer) {
+                data.targetPosition = undefined;
+                return "idle";
+            }
+            if (data.distanceToPlayer < 75) {
+                return "attack_windup";
+            }
+            data.targetPosition = data.playerHitboxCenter;
+            return "follow";
+        },
+        attack_windup(gameObject, dt, data) {
+            data.targetPosition = undefined;
+            const f = 1 - data.timeInState / 1 * 0.75;
+            gameObject.color = new Color(1, f, f, 1);
+            gameObject.renderer!.data.offset = MathUtils.randomVector(MathUtils.random(0, data.timeInState * 2));
+            if (data.timeInState > 1) {
+                data.physics.data.impulse.add(
+                    Vector.scaled(
+                        Vector.normalized(gameObject.position.directionTowards(data.playerHitboxCenter)), 
+                        200
+                    )
+                );
+                return "slime_throw_self";
+            }
+            return "attack_windup";
+        },
+        slime_throw_self(gameObject, dt, data) {
+            gameObject.color = new Color(1, 0.25, 0.25, 1);
+            if (data.timeInState > 0.6) {
+                gameObject.game.addParticleExplosion(gameObject.position, Color.RED, 32, 32);
+                if (data.distanceToPlayer < 32) {
+                    const damage = (1 - data.distanceToPlayer / 32) * 8;
+                    gameObject.game.player.getComponent("health").data.damage(damage);
+                    gameObject.game.player.getComponent("physics").data.impulse.add(
+                        gameObject.position.directionTowards(gameObject.game.player.position)
+                                           .normalized()
+                                           .scaled(100)
+                    )
+                }
+                gameObject.getComponent("essence-dropper").data.disabled = true;
+                gameObject.destroy();
+                return "follow";
+            }
+            return "slime_throw_self"
+        }
+    },
+    movementSpeed: 44,
     customSpeedModifier(gameObject) {
         return (Math.sin(gameObject.age * 5) * 0.5 + 0.5) * 0.9 + 0.1;
     },
@@ -384,5 +437,5 @@ const EnemyAI: (config: EnemyAIConfig) => ComponentFactory = (config) => {
     }
 }
 
-export { EnemyAI, slimeAIConfig, minionAIConfig, wretchedSkeletonAIConfig, 
+export { EnemyAI, slimeAIConfig, redSlimeAIConfig, minionAIConfig, wretchedSkeletonAIConfig, 
          revenantEyeAIConfig, wraithAIConfig, dummyAI };

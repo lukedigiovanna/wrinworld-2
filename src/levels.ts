@@ -24,6 +24,18 @@ const level1PortalTypes: PortalProperties[] = [
             }
         ]
     },
+    { // Red slime portal
+        health: 35,
+        difficulty: 0.1,
+        packs: [
+            {
+                packSizeRange: new NumberRange(4, 8),
+                cooldownRange: new NumberRange(6, 14),
+                maxEnemies: 10,
+                enemyIndex: EnemyIndex.RED_SLIME
+            }
+        ]
+    },
     { // Minion portal
         difficulty: 0.2,
         health: 40,

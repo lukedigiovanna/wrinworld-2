@@ -92,10 +92,15 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
     enemy.addComponent((gameObject) => {
         return {
             id: "essence-dropper",
+            data: {
+                disabled: false,
+            },
             destroy() {
-                gameObject.game.addGameObject(
-                    EssenceOrbFactory(enemyData.essenceAmount.randomInt(), gameObject.position)
-                );
+                if (!this.data.disabled) {
+                    gameObject.game.addGameObject(
+                        EssenceOrbFactory(enemyData.essenceAmount.randomInt(), gameObject.position)
+                    );
+                }
             }
         }
     });
