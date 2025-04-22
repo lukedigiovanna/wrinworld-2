@@ -1,5 +1,5 @@
-import { NumberRange, Vector } from "./utils";
-import { ComponentFactory } from "./components"
+import { MathUtils, NumberRange, Vector } from "./utils";
+import { ComponentFactory, ParticleEmitter, ParticleLayer } from "./components"
 import * as AI from "./components/EnemyAI";
 import { ItemDropChance } from "./items";
 
@@ -24,7 +24,7 @@ interface Enemy {
     waterSpriteID?: string; // Changes to water sprite when in water when defined
     waterAttackSpriteID?: string;
     deadSpriteID?: string; // Spawns a corpse when defined
-    particleID?: string; // No particles when undefined
+    particleEmitter?: ComponentFactory; // No particles when undefined
     waterSpeedModifier: number;
     hp: number;
     drops: ItemDropChance[];
@@ -37,7 +37,13 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
     spriteID: "slime",
     waterSpriteID: "slime_water",
     deadSpriteID: "slime_dead",
-    particleID: "slime_particle",
+    particleEmitter: ParticleEmitter({
+        spriteID: () => "slime_particle",
+        rotation: () => MathUtils.random(0, 2 * Math.PI),
+        spawnBoxSize: () => new Vector(5, 5),
+        rate: () => 5,
+        layer: () => ParticleLayer.BELOW_OBJECTS
+    }),
     hp: 10,
     drops: [],
     waterSpeedModifier: 0.5,
@@ -122,6 +128,15 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
     spriteID: "fungal_husk",
     attackSpriteID: "fungal_husk_attack",
     deadSpriteID: "fungal_husk_dead",
+    particleEmitter: ParticleEmitter({
+        spriteID: () => "husk_particle",
+        rotation: () => MathUtils.random(0, 2 * Math.PI),
+        angularVelocity: () => MathUtils.random(-0.2, 0.2),
+        velocity: () => MathUtils.randomVector(MathUtils.random(1, 14)),
+        spawnBoxSize: () => new Vector(5, 5),
+        rate: () => 1,
+        layer: () => ParticleLayer.ABOVE_OBJECTS
+    }),
     hp: 50,
     waterSpeedModifier: 0.4,
     drops: [],

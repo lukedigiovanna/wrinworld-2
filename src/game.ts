@@ -401,14 +401,16 @@ class Game {
         });
     }
 
-    public addParticleExplosion(position: Vector, color: Color, radius: number, numberOfParticles: number) {
+    public addParticleExplosion(position: Vector, color: Color, radius: number, numberOfParticles: number, spriteID="square", scaleBound=2) {
         for (let i = 0; i < numberOfParticles; i++) {
             const f = MathUtils.random(-0.2, 0.2);
             this.addPartialParticle(
                 {
+                    spriteID: spriteID,
                     position: position.copy(),
+                    lifetime: MathUtils.random(0.5, 1.5),
                     layer: ParticleLayer.ABOVE_OBJECTS,
-                    scale: MathUtils.random(1, 2),
+                    scale: MathUtils.random(1, scaleBound),
                     velocity: MathUtils.randomVector(MathUtils.random(2, radius)),
                     angularVelocity: MathUtils.random(-3, 3),
                     color: new Color(color.r + f, color.g + f, color.b + f, color.a),

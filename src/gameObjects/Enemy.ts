@@ -40,7 +40,7 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
     const collider = enemy.addComponent(PhysicalCollider);
     collider.data.boxSize = new Vector(enemy.scale.x * 0.75, 6);
     collider.data.boxOffset = new Vector(0, -enemy.scale.y / 2 + 3);
-    
+
     enemy.addComponent((gameObject) => {
         const data: any = {
             collider: undefined,
@@ -128,7 +128,9 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
             },
         }
     });
+    
     enemy.addComponent(enemyData.ai);
+
     enemy.addComponent((gameObject) => {
         return {
             id: "essence-dropper",
@@ -158,14 +160,8 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
             }
         }
     });
-    if (enemyData.particleID) {
-        enemy.addComponent(ParticleEmitter({
-            spriteID: () => enemyData.particleID as string,
-            rotation: () => MathUtils.random(0, 2 * Math.PI),
-            spawnBoxSize: () => enemy.scale,
-            rate: () => 5,
-            layer: () => ParticleLayer.BELOW_OBJECTS
-        }));
+    if (enemyData.particleEmitter) {
+        enemy.addComponent(enemyData.particleEmitter);
     }
     enemy.tag = "enemy";
     return enemy;

@@ -42,19 +42,19 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, drops: P
             lifetime: () => MathUtils.random(0.4, 1.4)
         }
     ));
-    const enemyParticles = properties.packs.map(pack => enemiesCodex[pack.enemyIndex].particleID).filter(p => p !== undefined);
-    if (enemyParticles.length > 0) {
-        portal.addComponent(ParticleEmitter(
-            {
-                spriteID: () => MathUtils.randomChoice(enemyParticles),
-                spawnBoxSize: () => Vector.zero(),
-                rotation: () => MathUtils.randomAngle(),
-                velocity: () => MathUtils.randomVector(MathUtils.random(16, 24)),
-                lifetime: () => MathUtils.random(0.3, 1.2)
-            },
-            "enemy-particles"
-        ));
-    }
+    // const enemyParticles = properties.packs.map(pack => enemiesCodex[pack.enemyIndex].particleEmitter).filter(p => p !== undefined);
+    // if (enemyParticles.length > 0) {
+    //     portal.addComponent(ParticleEmitter(
+    //         {
+    //             spriteID: () => MathUtils.randomChoice(enemyParticles),
+    //             spawnBoxSize: () => Vector.zero(),
+    //             rotation: () => MathUtils.randomAngle(),
+    //             velocity: () => MathUtils.randomVector(MathUtils.random(16, 24)),
+    //             lifetime: () => MathUtils.random(0.3, 1.2)
+    //         },
+    //         "enemy-particles"
+    //     ));
+    // }
     portal.addComponent((gameObject: GameObject) => {
         const data: any = {
             health: undefined,

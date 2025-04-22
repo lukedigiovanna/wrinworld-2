@@ -106,6 +106,10 @@ class EnemyAIData {
             this._physics.data.velocity.setComponents(0, 0);
         }
     }
+
+    public destroy() {
+        this.config.onDestroy?.(this.self, this);
+    }
 }
 
 type EnemyAIStateFunction = (gameObject: GameObject, dt: number, data: EnemyAIData) => EnemyAIState;
@@ -118,6 +122,7 @@ interface EnemyAIConfig {
     stateFunctions: EnemyAIStateFunctionMap,
     movementSpeed: number;
     customSpeedModifier?: (gameObject: GameObject) => number;
+    onDestroy?: (gameObject: GameObject, data: EnemyAIData) => void;
 }
 
 function basicIdle(followDistance: number): EnemyAIStateFunction {
@@ -545,6 +550,12 @@ const fungalHuskAI: EnemyAIConfig = {
             return "follow";
         }
     },
+    onDestroy(gameObject, data) {
+        if (data.distanceToPlayer < 48) {
+            gameObject.game.player.getComponent("status-effect-manager").data.applyEffect(StatusEffectIndex.POISON, 1, (1 - data.distanceToPlayer / 48) * 5);
+        }
+        gameObject.game.addParticleExplosion(gameObject.position, Color.WHITE, 32, 12, "husk_particle", 1);
+    },
     movementSpeed: 10
 };
 
@@ -571,7 +582,10 @@ const EnemyAI: (config: EnemyAIConfig) => ComponentFactory = (config) => {
                     return;
                 }
                 this.data.update(dt);
-            }
+            },
+            destroy() {
+                this.data.destroy();
+            },
         }
     }
 }
