@@ -149,7 +149,7 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
     waterSpeedModifier: 0.4,
     drops: [],
     essenceAmount: new NumberRange(1, 2),
-    ai: AI.EnemyAI(AI.dummyAI),
+    ai: AI.EnemyAI(AI.fungalSpiritAI),
 },
 }
 

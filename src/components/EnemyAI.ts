@@ -1,6 +1,6 @@
 import { MeleeAttackIndex, meleeAttacksCodex } from "../meleeAttacks";
 import { Component, ComponentFactory, ParticleLayer } from "./index";
-import { GameObject } from "../gameObjects";
+import { EnemyFactory, EnemyIndex, GameObject } from "../gameObjects";
 import { Color, Ease, MathUtils, Vector } from "../utils";
 import { fireMelee, fireProjectile } from "../weapons";
 import { projectilesCodex, ProjectileIndex } from "../projectiles";
@@ -11,12 +11,12 @@ import { StatusEffectIndex } from "../statusEffects";
 // .       enemy has a "sense" distance: if their target is within a distance, regardless of obstacles they will track
 // .
 
-const states = ["idle", "set_search_position", "search", "follow", "attack_windup", "attack", "slime_throw_self"] as const;
+const states = ["idle", "set_search_position", "search", "follow", "attack_windup", "attack", "slime_throw_self", "husk_shake"] as const;
 type EnemyAIState = typeof states[number];
 
 class EnemyAIData {
     private self: GameObject;
-    private state: EnemyAIState = "idle";
+    private _state: EnemyAIState = "idle";
     private startTimeInState: number;
     private config: EnemyAIConfig;
     public targetPosition: Vector | undefined;
@@ -78,6 +78,13 @@ class EnemyAIData {
         return this._movementData;
     }
 
+    public set state(newState: EnemyAIState) {
+        if (newState !== undefined && newState !== this._state) {
+            this._state = newState;
+            this.startTimeInState = this.self.game.time;
+        }
+    }
+
     public update(dt: number) {
         if (this.movementData.data.isStunned()) { // No moving/attacking/etc.
             this.targetPosition = undefined;
@@ -85,10 +92,9 @@ class EnemyAIData {
             return;
         }
 
-        const newState = this.config.stateFunctions[this.state]?.(this.self, dt, this);
-        if (newState !== undefined && newState !== this.state) {
+        const newState = this.config.stateFunctions[this._state]?.(this.self, dt, this);
+        if (newState !== undefined) {
             this.state = newState;
-            this.startTimeInState = this.self.game.time;
         }
         if (this.targetPosition) {
             // const modifier = props.customSpeedModifier ? props.customSpeedModifier(gameObject, direction) : 1.0; 
@@ -110,6 +116,10 @@ class EnemyAIData {
     public destroy() {
         this.config.onDestroy?.(this.self, this);
     }
+    
+    public damage(amount: number) {
+        this.config.onDamage?.(this.self, this, amount);
+    }
 }
 
 type EnemyAIStateFunction = (gameObject: GameObject, dt: number, data: EnemyAIData) => EnemyAIState;
@@ -123,6 +133,7 @@ interface EnemyAIConfig {
     movementSpeed: number;
     customSpeedModifier?: (gameObject: GameObject) => number;
     onDestroy?: (gameObject: GameObject, data: EnemyAIData) => void;
+    onDamage?: (gameObject: GameObject, data: EnemyAIData, amount: number) => void;
 }
 
 function basicIdle(followDistance: number): EnemyAIStateFunction {
@@ -548,6 +559,13 @@ const fungalHuskAI: EnemyAIConfig = {
                 },
             }, gameObject, data.playerHitboxCenter);
             return "follow";
+        },
+        husk_shake(gameObject, dt, data) {
+            if (data.timeInState > 0.25) {
+                return "follow";
+            }
+            gameObject.renderer!.data.offset = MathUtils.randomVector(1);
+            return "husk_shake";
         }
     },
     onDestroy(gameObject, data) {
@@ -556,8 +574,46 @@ const fungalHuskAI: EnemyAIConfig = {
         }
         gameObject.game.addParticleExplosion(gameObject.position, Color.WHITE, 32, 12, "husk_particle", 1);
     },
+    onDamage(gameObject, data, amount) {
+        if (Math.random() < amount / 10) {
+            data.state = "husk_shake";
+            const spirit = EnemyFactory(gameObject.position, EnemyIndex.FUNGAL_SPIRIT)
+            spirit.getComponent("physics").data.impulse.add(MathUtils.randomVector(MathUtils.random(48, 64)));
+            gameObject.game.addGameObject(spirit);
+        }
+    },
     movementSpeed: 10
 };
+
+const fungalSpiritAI: EnemyAIConfig = {
+    stateFunctions: {
+        idle: basicIdle(200),
+        follow(gameObject, dt, data) {
+            if (data.distanceToPlayer > 200) {
+                return "idle";
+            }
+            data.targetPosition = data.playerHitboxCenter;
+            if (data.distanceToPlayer < 20) {
+                return "attack_windup";
+            }
+            return "follow";
+        },
+        attack_windup(gameObject, dt, data) {
+            data.targetPosition = data.playerHitboxCenter;
+            if (data.timeInState > 0.5) {
+                return "attack";
+            }
+            return "attack_windup";
+        },
+        attack(gameObject, dt, data) {
+            if (data.collidingWithPlayer) {
+                gameObject.game.player.getComponent("health").data.damage(2);
+            }
+            return "follow";
+        }
+    },
+    movementSpeed: 60
+}
 
 const dummyAI: EnemyAIConfig = {
     stateFunctions: {
@@ -573,6 +629,8 @@ const EnemyAI: (config: EnemyAIConfig) => ComponentFactory = (config) => {
             data: undefined,
             start() {
                 this.data = new EnemyAIData(gameObject, config);
+                const health = gameObject.getComponent("health");
+                health.data.onDamage = this.data.damage.bind(this.data);
             },
             update(dt) {
                 if (gameObject.age < 1.5) {
@@ -591,4 +649,5 @@ const EnemyAI: (config: EnemyAIConfig) => ComponentFactory = (config) => {
 }
 
 export { EnemyAI, slimeAIConfig, redSlimeAIConfig, minionAIConfig, wretchedSkeletonAIConfig, 
-         revenantEyeAIConfig, wraithAIConfig, groundWormAI, evilBunnyAI, fungalHuskAI, dummyAI };
+         revenantEyeAIConfig, wraithAIConfig, groundWormAI, evilBunnyAI, fungalHuskAI, 
+         fungalSpiritAI, dummyAI };
