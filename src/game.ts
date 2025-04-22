@@ -8,6 +8,7 @@ import { Tile, tileCodex, TileIndex } from "./tiles";
 import { Level, LEVEL_1 } from "./levels";
 import { ShaderProgram, ShaderShadow, MAX_SHADOWS } from "./shader";
 import settings from "./settings";
+import statTracker from "./statTracker";
 
 const CHUNK_SIZE = 8;
 const TILES_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE;
@@ -152,6 +153,7 @@ class Game {
             this.gameOverTime = this.time;
             $("#death-screen").css("opacity", "100%");
             $("#death-screen").css("visibility", "visible");
+            $("#score").text(statTracker.score);
         }
 
         if (this.gameOverTime !== undefined) {

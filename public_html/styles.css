@@ -464,8 +464,13 @@ img {
 
 #death-screen h1 {
     margin-top: 10%;
+    margin-bottom: 8px;
     color: #ab170c;
     font-size: 72px;
     -webkit-text-stroke: 3px #111;
     text-stroke: 3px #111;
+}
+
+#death-screen #score-text {
+
 }

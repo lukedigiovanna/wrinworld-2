@@ -3,6 +3,7 @@ import { getImage } from "../imageLoader";
 import { ComponentFactory } from "./";
 import input from "../input";
 import controls from "../controls";
+import statTracker from "../statTracker";
 
 function updateEssenceUI(essenceAmount: number, essenceMax: number) {
     // TODO: change this to be different jars based on the maxEssence amount
@@ -31,6 +32,7 @@ const EssenceManager: ComponentFactory = (gameObject: GameObject) => {
         lastThrownEssenceTime: -999,
         // Returns the amount actually added
         addEssence(amount: number) {
+            statTracker.score += amount;
             if (this.essence + amount > this.maxEssence) {
                 amount = this.maxEssence - this.essence;
             }
