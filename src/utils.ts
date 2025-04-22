@@ -569,7 +569,13 @@ class Ease {
 
     public static easeInExpo(x: number): number {
         return x === 0 ? 0 : Math.pow(2, 10 * x - 10);
-    }        
+    }
+    
+    public static linear(x: number) {
+        return x < 0 ? 0 
+             : x < 1 ? x 
+             : 1;
+    }
 }
 
 class Color {

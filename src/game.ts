@@ -1,5 +1,5 @@
 import { GameObject, PlayerFactory } from "./gameObjects";
-import { Vector, MathUtils, PerlinNoise, Color } from "./utils";
+import { Vector, MathUtils, PerlinNoise, Color, Ease } from "./utils";
 import input from "./input";
 import { Camera } from "./camera";
 import { getTexture } from "./imageLoader";
@@ -47,6 +47,7 @@ class Game {
     private _camera: Camera;
     private _player: GameObject;
     private _gameTime: number = 0;
+    private gameOverTime: number | undefined = undefined;
 
     public noise = new PerlinNoise(MathUtils.randomInt(1000, 100000));
 
@@ -145,6 +146,14 @@ class Game {
                 this.unpause();
             }
             return;
+        }
+
+        if (this.gameOver && this.gameOverTime === undefined) {
+            this.gameOverTime = this.time;
+        }
+
+        if (this.gameOverTime !== undefined) {
+            dt *= 0.5 * (1 - Ease.linear(0.25 * (this.time - this.gameOverTime)));
         }
 
         if (input.isKeyPressed("Escape")) {
@@ -489,6 +498,10 @@ class Game {
 
     public get camera() {
         return this._camera;
+    }
+
+    public get gameOver() {
+        return this._player.destroyed;
     }
 
     // Pauses the game

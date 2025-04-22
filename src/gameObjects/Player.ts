@@ -1,4 +1,4 @@
-import { GameObjectFactory, GameObject, Team, PORTAL_ACTIVE_RADIUS } from "./";
+import { GameObjectFactory, GameObject, Team, PORTAL_ACTIVE_RADIUS, CorpseFactory } from "./";
 import { Vector, MathUtils } from "../utils";
 import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager, 
          Health, EssenceManager, HealthBarDisplayMode,
@@ -73,6 +73,9 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                         p.object.destroy();
                     }
                 }
+                if (input.isKeyPressed("KeyG")) {
+                    gameObject.destroy();
+                }
             }
         }
     });
@@ -136,6 +139,15 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
             }
         }
     });
+
+    player.addComponent((gameObject) => {
+        return {
+            id: "player-spawn-corpse",
+            destroy() {
+                gameObject.game.addGameObject(CorpseFactory(gameObject, "character_dead"))
+            }
+        }
+    })
 
     return player;
 }
