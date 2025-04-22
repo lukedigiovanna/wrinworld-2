@@ -98,11 +98,11 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
 },
 [EnemyIndex.RED_SLIME]: {
     spriteID: "red_slime",
-    hp: 12,
+    hp: 10,
     speed: 25,
     waterSpeedModifier: 0.4,
     drops: [],
-    essenceAmount: new NumberRange(10, 15),
+    essenceAmount: new NumberRange(3, 5),
     ai: AI.EnemyAI(AI.redSlimeAIConfig),
 },
 [EnemyIndex.GROUND_WORM]: {
@@ -112,7 +112,7 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
     waterSpeedModifier: 0.4,
     drops: [],
     essenceAmount: new NumberRange(10, 15),
-    ai: AI.EnemyAI(AI.dummyAI),
+    ai: AI.EnemyAI(AI.groundWormAI),
 },
 [EnemyIndex.CORRUPTED_DEER]: {
     spriteID: "corrupted_deer",

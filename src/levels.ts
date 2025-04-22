@@ -36,6 +36,18 @@ const level1PortalTypes: PortalProperties[] = [
             }
         ]
     },
+    { // Ground worm portal
+        health: 35,
+        difficulty: 0.1,
+        packs: [
+            {
+                packSizeRange: new NumberRange(1, 2),
+                cooldownRange: new NumberRange(8, 16),
+                maxEnemies: 6,
+                enemyIndex: EnemyIndex.GROUND_WORM
+            }
+        ]
+    },
     { // Minion portal
         difficulty: 0.2,
         health: 40,

@@ -409,6 +409,50 @@ const wraithAIConfig: EnemyAIConfig = {
     movementSpeed: 44,
 }
 
+const groundWormAI: EnemyAIConfig = {
+    stateFunctions: {
+        idle: (gameObject, dt, data) => {
+            if (Math.random() < dt / 2 || !data.targetPosition || gameObject.position.distanceTo(data.targetPosition) < 4) {
+                data.targetPosition = gameObject.position.plus(MathUtils.randomVector(MathUtils.random(16, 64)));
+            }
+            gameObject.getComponent("health").data.invincibleCount = 1;
+            gameObject.renderer!.data.hidden = true;
+            gameObject.castsShadow = false;
+            if (Math.random() < dt * 8) {
+                gameObject.game.addPartialParticle({
+                    position: gameObject.position.copy(),
+                    spriteID: "cracks_particle"
+                });
+            }
+            if (Math.random() < dt / 6) {
+                return "attack_windup";
+            }
+            return "idle";
+        },
+        attack_windup: (gameObject, dt, data) => {
+            data.targetPosition = undefined;
+            gameObject.getComponent("health").data.invincibleCount = 0;
+            gameObject.renderer!.data.hidden = false;
+            gameObject.castsShadow = true;
+            gameObject.getComponent("physics").data.angularVelocity = 6;
+            if (data.timeInState > 0.25) {
+                return "attack";
+            }
+            if (Math.random() < dt / 2) {
+                return "idle";
+            }
+            return "attack_windup";
+        },
+        attack: (gameObject, dt, data) => {
+            if (data.collidingWithPlayer) {
+                gameObject.game.player.getComponent("health").data.damage(1);
+            }
+            return "attack_windup";
+        }
+    },
+    movementSpeed: 100
+}
+
 const dummyAI: EnemyAIConfig = {
     stateFunctions: {
 
@@ -438,4 +482,4 @@ const EnemyAI: (config: EnemyAIConfig) => ComponentFactory = (config) => {
 }
 
 export { EnemyAI, slimeAIConfig, redSlimeAIConfig, minionAIConfig, wretchedSkeletonAIConfig, 
-         revenantEyeAIConfig, wraithAIConfig, dummyAI };
+         revenantEyeAIConfig, wraithAIConfig, groundWormAI, dummyAI };

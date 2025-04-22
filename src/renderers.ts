@@ -11,12 +11,15 @@ type Renderer = {
 function spriteRenderer(id: string): Renderer {
     return {
         render(camera: Camera, gameObject: GameObject) {
-            const pos = Vector.add(gameObject.position, this.data.offset);
-            camera.color = gameObject.color;
-            camera.drawTexture(getTexture(this.data.spriteID), pos.x, pos.y, gameObject.scale.x, gameObject.scale.y, gameObject.rotation, gameObject.rotationPointOffset);
+            if (!this.data.hidden) {
+                const pos = Vector.add(gameObject.position, this.data.offset);
+                camera.color = gameObject.color;
+                camera.drawTexture(getTexture(this.data.spriteID), pos.x, pos.y, gameObject.scale.x, gameObject.scale.y, gameObject.rotation, gameObject.rotationPointOffset);
+            }
         },
         data: {
             spriteID: id,
+            hidden: false,
             offset: Vector.zero()
         }
     }
