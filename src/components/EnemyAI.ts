@@ -615,6 +615,16 @@ const fungalSpiritAI: EnemyAIConfig = {
     movementSpeed: 60
 }
 
+const corruptedDeerAI: EnemyAIConfig = {
+    stateFunctions: {
+        idle: basicIdle(300),
+        follow(gameObject, dt, data) {
+            return "follow";
+        },
+    },
+    movementSpeed: 30,
+}
+
 const dummyAI: EnemyAIConfig = {
     stateFunctions: {
 

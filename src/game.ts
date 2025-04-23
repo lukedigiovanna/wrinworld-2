@@ -35,7 +35,6 @@ interface Chunk {
 }
 
 class Game {
-    // private _objects: GameObject[];
     private objectQueue: GameObject[] = []; // Queue of objects to add on the next frame
     private objectDeleteQueue: GameObject[] = [];
     private _totalObjects = 0;
@@ -61,10 +60,8 @@ class Game {
         this._player = PlayerFactory(new Vector(0, 16 * PIXELS_PER_TILE));
         this.addGameObject(this._player);
 
-        this.addGameObject(EnemyFactory(new Vector(-50, 400), EnemyIndex.CORRUPTED_DEER));
-        this.addGameObject(EnemyFactory(new Vector(0, 400), EnemyIndex.FUNGAL_SPIRIT));
-        this.addGameObject(EnemyFactory(new Vector(50, 400), EnemyIndex.FUNGAL_HUSK));
-
+        this.addGameObject(EnemyFactory(new Vector(0, 400), EnemyIndex.CORRUPTED_DEER));
+        
         this._camera.target = this._player.position;
 
         this.level.generate(this);
