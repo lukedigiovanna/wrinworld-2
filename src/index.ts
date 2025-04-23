@@ -102,6 +102,8 @@ window.onload = async () => {
         loadImageAndTexture(gl, "ground_worm", "assets/images/enemies/ground_worm.png"),
         loadImageAndTexture(gl, "ground_worm_dead", "assets/images/enemies/ground_worm_dead.png"),
         loadImageAndTexture(gl, "corrupted_deer", "assets/images/enemies/corrupted_deer.png"),
+        loadImageAndTexture(gl, "corrupted_deer_dead", "assets/images/enemies/corrupted_deer_dead.png"),
+        loadImageAndTexture(gl, "corrupted_deer_attack", "assets/images/enemies/corrupted_deer_attack.png"),
         loadImageAndTexture(gl, "fungal_husk", "assets/images/enemies/fungal_husk.png"),
         loadImageAndTexture(gl, "fungal_husk_dead", "assets/images/enemies/fungal_husk_dead.png"),
         loadImageAndTexture(gl, "fungal_husk_attack", "assets/images/enemies/fungal_husk_attack.png"),

@@ -85,6 +85,10 @@ class EnemyAIData {
         }
     }
 
+    public get state() {
+        return this._state;
+    }
+
     public update(dt: number) {
         if (this.movementData.data.isStunned()) { // No moving/attacking/etc.
             this.targetPosition = undefined;
@@ -619,10 +623,68 @@ const corruptedDeerAI: EnemyAIConfig = {
     stateFunctions: {
         idle: basicIdle(300),
         follow(gameObject, dt, data) {
+            if (data.hasLineOfSightToPlayer && Math.random() < dt / 8) {
+                return "attack_windup";
+            }
+            if (data.distanceToPlayer < 100) {
+                data.targetPosition = data.playerHitboxCenter.plus(
+                                            data.playerHitboxCenter.directionTowards(gameObject.position)
+                                                                   .normalized()
+                                                                   .scaled(100));
+            }
+            else if (Math.random() < dt) {
+                data.targetPosition = gameObject.position.plus(MathUtils.randomVector(MathUtils.random(16, 72)));
+            }
             return "follow";
         },
+        attack_windup(gameObject, dt, data) {
+            data.attacking = true;
+            if (Math.random() < dt * 4) {
+                gameObject.game.addPartialParticle({
+                    position: gameObject.position.copy(),
+                    spriteID: "husk_particle",
+                    velocity: MathUtils.randomVector(MathUtils.random(2, 24)),
+                    layer: ParticleLayer.ABOVE_OBJECTS
+                });
+            }
+            gameObject.renderer!.data.offset = MathUtils.randomVector(1);
+            if (data.timeInState > 1.5) {
+                const distance = data.distanceToPlayer;
+                data.targetPosition = gameObject.position.plus(
+                    gameObject.position.directionTowards(data.playerHitboxCenter)
+                                       .normalized()
+                                       .scaled(distance + 64)
+                );
+                gameObject.getComponent("movement-data").data.miscellaneousModifier += 3;
+                gameObject.getComponent("physical-collider").data.ignoreCollisionWith.add("player");
+                return "attack";
+            }
+            return "attack_windup";
+        },
+        attack(gameObject, dt, data) {
+            gameObject.renderer!.data.offset = MathUtils.randomVector(1);
+            if (data.timeInState > 2.5 || !data.targetPosition || gameObject.position.distanceTo(data.targetPosition) < 8) {
+                data.attacking = false;
+                gameObject.getComponent("movement-data").data.miscellaneousModifier -= 3;
+                gameObject.getComponent("physical-collider").data.ignoreCollisionWith.delete("player");
+                gameObject.renderer!.data.offset = Vector.zero();
+                return "follow";
+            }
+            if (data.collidingWithPlayer) {
+                gameObject.game.player.getComponent("health").data.damage(30 * dt);
+                gameObject.game.player.getComponent("physics").data.impulse.add(
+                    gameObject.getComponent("physics").data.velocity.normalized().scaled(10)
+                )
+            }
+            return "attack";
+        }
     },
-    movementSpeed: 30,
+    onDamage(gameObject, data, amount) {
+        if (data.state !== "attack") {
+            data.state = "attack_windup";
+        }
+    },
+    movementSpeed: 80,
 }
 
 const dummyAI: EnemyAIConfig = {
@@ -660,4 +722,4 @@ const EnemyAI: (config: EnemyAIConfig) => ComponentFactory = (config) => {
 
 export { EnemyAI, slimeAIConfig, redSlimeAIConfig, minionAIConfig, wretchedSkeletonAIConfig, 
          revenantEyeAIConfig, wraithAIConfig, groundWormAI, evilBunnyAI, fungalHuskAI, 
-         fungalSpiritAI, dummyAI };
+         fungalSpiritAI, corruptedDeerAI, dummyAI };

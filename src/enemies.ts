@@ -118,11 +118,13 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
 },
 [EnemyIndex.CORRUPTED_DEER]: {
     spriteID: "corrupted_deer",
-    hp: 12,
+    deadSpriteID: "corrupted_deer_dead",
+    attackSpriteID: "corrupted_deer_attack",
+    hp: 30,
     waterSpeedModifier: 0.4,
     drops: [],
     essenceAmount: new NumberRange(10, 15),
-    ai: AI.EnemyAI(AI.dummyAI),
+    ai: AI.EnemyAI(AI.corruptedDeerAI),
 },
 [EnemyIndex.FUNGAL_HUSK]: {
     spriteID: "fungal_husk",
