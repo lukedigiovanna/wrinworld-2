@@ -6,11 +6,6 @@ import { fireMelee, fireProjectile } from "../weapons";
 import { projectilesCodex, ProjectileIndex } from "../projectiles";
 import { StatusEffectIndex } from "../statusEffects";
 
-// system: when enemies are far they should wander
-// .       enemy has a "sight" distance: if they have line of sight to player they follow
-// .       enemy has a "sense" distance: if their target is within a distance, regardless of obstacles they will track
-// .
-
 const states = ["idle", "set_search_position", "search", "follow", "attack_windup", "attack", "slime_throw_self", "husk_shake"] as const;
 type EnemyAIState = typeof states[number];
 
@@ -238,18 +233,18 @@ const redSlimeAIConfig: EnemyAIConfig = {
         slime_throw_self(gameObject, dt, data) {
             gameObject.color = new Color(1, 0.25, 0.25, 1);
             if (data.timeInState > 0.6) {
-                gameObject.game.addParticleExplosion(gameObject.position, Color.RED, 32, 32);
                 if (data.distanceToPlayer < 32) {
                     const damage = (1 - data.distanceToPlayer / 32) * 8;
                     gameObject.game.player.getComponent("health").data.damage(damage);
                     gameObject.game.player.getComponent("physics").data.impulse.add(
                         gameObject.position.directionTowards(gameObject.game.player.position)
-                                           .normalized()
-                                           .scaled(100)
+                        .normalized()
+                        .scaled(100)
                     )
+                    gameObject.game.addParticleExplosion(gameObject.position, Color.RED, 32, 32);
+                    gameObject.getComponent("essence-dropper").data.disabled = true;
+                    gameObject.destroy();
                 }
-                gameObject.getComponent("essence-dropper").data.disabled = true;
-                gameObject.destroy();
                 return "follow";
             }
             return "slime_throw_self"

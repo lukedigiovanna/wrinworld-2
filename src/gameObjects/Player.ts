@@ -76,6 +76,9 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                 if (input.isKeyPressed("KeyG")) {
                     gameObject.destroy();
                 }
+                if (input.isKeyPressed("KeyT")) {
+                    gameObject.getComponent("essence-manager").data.addEssence(100);
+                }
             }
         }
     });
@@ -86,7 +89,7 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
             id: "add-starter-items",
             start() {
                 const inventoryManager = gameObject.getComponent("inventory-manager");
-                const items = [ItemIndex.BROAD_SWORD];
+                const items = [ItemIndex.BROAD_SWORD, ItemIndex.SLINGSHOT, ItemIndex.STRENGTH_UPGRADE, ItemIndex.SPROCKET_UPGRADE, ItemIndex.BOOMERANG, ItemIndex.DICE, ItemIndex.RICOCHET_BOW, ItemIndex.GHOST_BOW, ItemIndex.ARROW];
                 for (const i of items) {
                     const item = itemsCodex[i as ItemIndex];
                     for (let j = 0; j < item.maxStack; j++) {
