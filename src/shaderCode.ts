@@ -69,7 +69,7 @@ vec2 swirlUV(vec2 uv, vec2 frag, Portal portal) {
 
     if (dist > portal.radius) return uv;
 
-    float angle = (frag.x + frag.y) / 130.0 * portal.strength * (portal.radius - dist) / portal.radius + portal.age * 2.0;
+    float angle = portal.strength * (portal.radius - dist) / portal.radius + portal.age * 1.5;
     float s = sin(angle);
     float c = cos(angle);
 
@@ -81,8 +81,8 @@ vec2 swirlUV(vec2 uv, vec2 frag, Portal portal) {
     vec2 newOffset = rotated;
     vec2 newFrag = portal.position + newOffset;
 
-    float strength = 1.0 - dist / portal.radius;
-    vec2 delta = normalize(newFrag - frag) * 0.2 * strength;
+    float strength = (1.0 - dist / portal.radius) * sin(rotated.x / 20.0) * sin(rotated.y / 20.0);
+    vec2 delta = normalize(newFrag - frag) * 0.5 * strength;
     return uv + delta; // offset UV based on the distortion
 }
 
