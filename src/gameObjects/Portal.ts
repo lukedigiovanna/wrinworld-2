@@ -56,6 +56,24 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, drops: P
     //     ));
     // }
     portal.addComponent((gameObject: GameObject) => {
+        return {
+            id: "portal-repulsive-effect",
+            update(dt) {
+                const radius = 48;
+                const nearby = gameObject.game.getGameObjectsByFilter((obj) => obj.hasComponent("physics") && gameObject.position.distanceTo(obj.position) <= radius)
+                for (let i = 0; i < nearby.length; i++) {
+                    const obj = nearby[i];
+                    const distance = gameObject.position.distanceTo(obj.position);
+                    const strength = 1 - distance / radius;
+                    obj.getComponent("physics").data.impulse.add(
+                        obj.position.minus(gameObject.position)
+                                    .normalized()
+                                    .scaled(strength * 480 * dt));
+                }
+            },
+        }
+    });
+    portal.addComponent((gameObject: GameObject) => {
         const data: any = {
             health: undefined,
         };
@@ -118,12 +136,8 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, drops: P
                     }
                     for (let j = 0; j < packSize; j++) {
                         const enemy = EnemyFactory(
-                            gameObject.position, pack.enemyIndex
+                            gameObject.position.plus(MathUtils.randomVector(1)), pack.enemyIndex
                         );
-                        const physics = enemy.getComponent("physics");
-                        if (physics) {
-                            physics.data.impulse.add(MathUtils.randomVector(120));
-                        }
                         const portalTracker = enemy.getComponent("portal-tracker");
                         if (portalTracker) {
                             portalTracker.data.portal = this;
