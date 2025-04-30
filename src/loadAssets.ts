@@ -17,8 +17,6 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "cursed_planks", "assets/images/tiles/cursed_planks.png"),
 
         // Entities
-        loadImageAndTexture(gl, "peach", "assets/images/peach.png"),
-        loadImageAndTexture(gl, "peach_water", "assets/images/peach_water.png"),
         loadImageAndTexture(gl, "character", "assets/images/character.png"),
         loadImageAndTexture(gl, "character_dead", "assets/images/character_dead.png"),
         loadImageAndTextureSpritesheet(gl, "character_idle", "assets/images/character_idle.png", 24, 42),

@@ -123,7 +123,7 @@ void main() {
     vec3 baseColor = textureColor.rgb * color.rgb * color.a;
 
     baseColor *= shadowMultiplier;
-    // baseColor *= lightColor;
+    baseColor *= lightColor;
 
     gl_FragColor = vec4(baseColor, alpha);
 }
