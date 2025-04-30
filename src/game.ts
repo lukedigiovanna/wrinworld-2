@@ -231,7 +231,16 @@ class Game {
                 radius: 120,
                 color: new Color(0.8, 0.6, 0.2, 1.0),
             }
-        ])
+        ]);
+
+        this._camera.setPortals(this.getGameObjectsByFilter((obj) => obj.tag === "portal").map(portal =>
+            ({
+                position: portal.position,
+                radius: 50,
+                strength: 5,
+                age: portal.age
+            })
+        ));
 
         const playerCI = getChunkIndex(this.player.position);
 

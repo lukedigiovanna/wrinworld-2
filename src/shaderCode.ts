@@ -53,8 +53,48 @@ float computeLightFalloff(vec2 fragPos, Light light) {
     return attenuation * attenuation * light.intensity; // quadratic falloff 
 }
 
+#define MAX_PORTALS 12
+struct Portal {
+    vec2 position;
+    float radius;
+    float strength;
+    float age;
+};
+uniform int numPortals;
+uniform Portal portals[MAX_PORTALS];
+
+vec2 swirlUV(vec2 uv, vec2 frag, Portal portal) {
+    vec2 offset = frag - portal.position;
+    float dist = length(offset);
+
+    if (dist > portal.radius) return uv;
+
+    float angle = (frag.x + frag.y) / 130.0 * portal.strength * (portal.radius - dist) / portal.radius + portal.age * 2.0;
+    float s = sin(angle);
+    float c = cos(angle);
+
+    vec2 rotated = vec2(
+        offset.x * c - offset.y * s,
+        offset.x * s + offset.y * c
+    );
+
+    vec2 newOffset = rotated;
+    vec2 newFrag = portal.position + newOffset;
+
+    float strength = 1.0 - dist / portal.radius;
+    vec2 delta = normalize(newFrag - frag) * 0.2 * strength;
+    return uv + delta; // offset UV based on the distortion
+}
+
 void main() {
-    vec4 textureColor = texture2D(texture, texCoord * clipSize + clipOffset);
+    vec2 distortedUV = texCoord;
+
+    for (int i = 0; i < MAX_PORTALS; i++) {
+        if (i >= numPortals) break;
+        distortedUV = swirlUV(distortedUV, fragPos, portals[i]);
+    }
+
+    vec4 textureColor = texture2D(texture, distortedUV * clipSize + clipOffset);
 
     float shadowValue = 0.0;
     for (int i = 0; i < MAX_SHADOWS; i++) {

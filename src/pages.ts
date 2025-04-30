@@ -99,6 +99,9 @@ class GamePage implements Page {
 
         this.game = new Game(this.canvas, this.gl, this.shaderProgram);
 
+        $("button#resume-game").on("click", () => {
+            this.game?.unpause();
+        });
         $("button#quit-game").on("click", () => {
             loadPage(PageIndex.MAIN);
         });

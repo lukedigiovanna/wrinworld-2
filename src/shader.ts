@@ -13,8 +13,16 @@ interface ShaderLight {
     color: Color;
 }
 
+interface ShaderPortal {
+    position: Vector;
+    radius: number;
+    strength: number;
+    age: number;
+}
+
 const MAX_SHADOWS = 120;
 const MAX_LIGHTS = 120;
+const MAX_PORTALS = 12;
 
 class ShaderProgram {
     private _program: WebGLProgram;
@@ -113,7 +121,14 @@ class ShaderProgram {
         this.setUniformFloat(`${name}.intensity`, light.intensity);
         this.setUniformColorRGB(`${name}.color`, light.color);
     }
+
+    public setUniformPortal(name: string, portal: ShaderPortal) {
+        this.setUniformVector(`${name}.position`, portal.position);
+        this.setUniformFloat(`${name}.radius`, portal.radius);
+        this.setUniformFloat(`${name}.strength`, portal.strength);
+        this.setUniformFloat(`${name}.age`, portal.age);
+    }
 }
 
-export { ShaderProgram, MAX_SHADOWS, MAX_LIGHTS };
-export type { ShaderShadow, ShaderLight };
+export { ShaderProgram, MAX_SHADOWS, MAX_LIGHTS, MAX_PORTALS };
+export type { ShaderShadow, ShaderLight, ShaderPortal };

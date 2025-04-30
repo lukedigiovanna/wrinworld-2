@@ -1,6 +1,6 @@
 import input from "./input";
 import { Vector, MathUtils, Color, Ease } from "./utils";
-import { MAX_LIGHTS, MAX_SHADOWS, ShaderLight, ShaderProgram, ShaderShadow } from "./shader";
+import { MAX_LIGHTS, MAX_PORTALS, MAX_SHADOWS, ShaderLight, ShaderPortal, ShaderProgram, ShaderShadow } from "./shader";
 import { getOrthographicProjection, Matrix4 } from "./matrixutils";
 import { Texture, getTexture } from "./imageLoader";
 import { Game } from "./game";
@@ -127,6 +127,14 @@ class Camera {
             this.shaderProgram.setUniformLight(`lights[${i}]`, lights[i]);
         }
         this.shaderProgram.setUniformInt("numLights", numLights);
+    }
+
+    public setPortals(portals: ShaderPortal[]) {
+        const numPortals = Math.min(MAX_PORTALS, portals.length);
+        for (let i = 0; i < numPortals; i++) {
+            this.shaderProgram.setUniformPortal(`portals[${i}]`, portals[i]);
+        }
+        this.shaderProgram.setUniformInt("numPortals", numPortals);
     }
 
     // Fills a rectangle using the given world coordinates where the x,y denotes the center of the rectangle
