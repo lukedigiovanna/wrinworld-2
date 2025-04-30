@@ -199,7 +199,7 @@ class Inventory {
     // Returns true if the item was successfully added to the inventory
     // false otherwise.
     public addItem(item: Item): boolean {
-        const types: SlotType[] = ["weapon", "quiver", "consumable", "utility", "free"];
+        const types: SlotType[] = ["weapon", "quiver", "consumable", "utility", "buff", "free"];
         // First check if we can stack it anywhere
         let foundIndex: SlotLocator | null = null; // First index of matching item with available space.
         let emptyIndex: SlotLocator | null = null; // First empty valid index.
