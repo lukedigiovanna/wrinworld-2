@@ -114,9 +114,16 @@ window.onload = async () => {
 
         // Props
         loadImageAndTexture(gl, "tree", "assets/images/props/tree.png"),
-        loadImageAndTexture(gl, "evergreen", "assets/images/props/evergreen.png"),
-        loadImageAndTexture(gl, "flower", "assets/images/props/flower.png"),
+        loadImageAndTexture(gl, "evergreen_tree", "assets/images/props/evergreen_tree.png"),
+        loadImageAndTexture(gl, "stone_1", "assets/images/props/stone_1.png"),
+        loadImageAndTexture(gl, "white_stone_1", "assets/images/props/white_stone_1.png"),
+        loadImageAndTexture(gl, "red_wildflower", "assets/images/props/red_wildflower.png"),
+        loadImageAndTexture(gl, "yellow_wildflower", "assets/images/props/yellow_wildflower.png"),
+        loadImageAndTexture(gl, "bush", "assets/images/props/bush.png"),
         loadImageAndTexture(gl, "tall_grass", "assets/images/props/tall_grass.png"),
+        loadImageAndTexture(gl, "unlit_campfire", "assets/images/props/unlit_campfire.png"),
+        loadImageAndTexture(gl, "tree_stump", "assets/images/props/tree_stump.png"),
+        loadImageAndTexture(gl, "mossy_fallen_tree", "assets/images/props/mossy_fallen_tree.png"),
         
         // Projectiles
         loadImageAndTexture(gl, "arrow", "assets/images/projectiles/arrow.png"),

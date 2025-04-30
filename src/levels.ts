@@ -317,7 +317,10 @@ const LEVEL_1: Level = {
         // 7. Place trees
         for (let x = left; x <= right; x++) {
             for (let y = bottom; y <= top; y++) {
-                const c = MathUtils.randomWeightedChoice([PropIndex.TREE, PropIndex.TALL_GRASS, null],[treeRate, grassRate, 1 - treeRate - grassRate])
+                const c = MathUtils.randomWeightedChoice(
+                    [PropIndex.TREE, PropIndex.EVERGREEN_TREE, PropIndex.STONE_1, PropIndex.WHITE_STONE_1, PropIndex.RED_WILDFLOWER, PropIndex.YELLOW_WILDFLOWER, PropIndex.BUSH, PropIndex.TALL_GRASS, PropIndex.UNLIT_CAMPFIRE, PropIndex.TREE_STUMP, PropIndex.MOSSY_FALLEN_TREE, null],
+                    [4,             2,                        1,                 1,                       2,                        1,                           1,              26,                    0.1,                      0.25,                  0.25, 50]
+                )
                 if (c !== null) {
                     const texture = getTexture(propsCodex[c as PropIndex].spriteID);
                     const position = new Vector((x + 0.5) * PIXELS_PER_TILE, y * PIXELS_PER_TILE + texture.height / 2);
@@ -336,28 +339,6 @@ const LEVEL_1: Level = {
                         continue;
                     }
                     game.addGameObject(PropFactory(c, position));
-                }
-            }
-        }
-
-        // 8. Grow flowers
-        for (let i = 0; i < flowerPatches; i++) {
-            // choose a random location in the world
-            const x = MathUtils.randomInt(left, right);
-            const y = MathUtils.randomInt(bottom, top);
-            const R = 8;
-            for (let dx = -R; dx <= R; dx++) {
-                for (let dy = -R; dy <= R; dy++) {
-                    const p = 1 / (dx * dx + dy * dy + 1);
-                    if (Math.random() < p) {
-                        // place a flower
-                        const position = new Vector((x + dx + 0.5) * PIXELS_PER_TILE, (y + dy + 0.5) * PIXELS_PER_TILE);
-                        const tile = game.getTile(position); 
-                        if (!tile.canGrowPlants) {
-                            continue;
-                        }
-                        game.addGameObject(PropFactory(PropIndex.FLOWER, position));
-                    }
                 }
             }
         }
