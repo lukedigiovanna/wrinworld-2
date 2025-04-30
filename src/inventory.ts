@@ -92,7 +92,7 @@ const slotConfigs: Record<SlotType, SlotTypeConfig> = {
         selectable: false,
     },
     trash: {
-        iconID: "inventory_slot",
+        iconID: "trash_slot",
         acceptItemCategory: null,
         equipOnAdd: false,
         selectable: false,
@@ -615,11 +615,6 @@ class Inventory {
         $("#inventory").empty();
         $("#inventory-screen").on("mousemove", this.updateDisplayPositions.bind(this));
 
-        const trashRow = $(inventoryRowHTML());
-        const trashItemSlot = this.createAndAddSlotUI("trash");
-        trashRow.append(trashItemSlot);
-        $("#inventory").append(trashRow);
-
         // Build the upgrade row
         const upgradeRow = $(inventoryRowHTML());
         
@@ -675,6 +670,12 @@ class Inventory {
         }
         activeBarRow.css("margin-top", "15px");
         $("#inventory").append(activeBarRow);
+
+        const trashRow = $(inventoryRowHTML());
+        const trashItemSlot = this.createAndAddSlotUI("trash");
+        trashRow.append(trashItemSlot);
+        trashRow.css("margin-top", "15px");
+        $("#inventory").append(trashRow);
 
         // Create the regular hotbar UI
         this.hotbarSlotDivs = [];
@@ -753,13 +754,14 @@ class Inventory {
         if (this.reference.trash.slots[0] !== null) {
             const trashedItem = this.reference.trash.slots[0].item;
             const slotDiv = this.reference.trash.slotDivs[0];
-            slotDiv.append(
+            const trashedImg = $(
                 `
                     <img class="trashed-item" src="${getImage(trashedItem.iconSpriteID).src}" /> 
                 `
             );
+            slotDiv.append(trashedImg);
             setTimeout(() => {
-                slotDiv.remove(".trashed-item");
+                trashedImg.remove();
             }, 3000);
             this.reference.trash.slots[0] = null;
         }

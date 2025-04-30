@@ -204,6 +204,7 @@ window.onload = async () => {
         loadImage("weapon_slot", "assets/images/ui/weapon_slot.png"),
         loadImage("selected_weapon_slot", "assets/images/ui/selected_weapon_slot.png"),
         loadImage("upgrade_slot", "assets/images/ui/upgrade_slot.png"),
+        loadImage("trash_slot", "assets/images/ui/trash_slot.png"),
         
         loadImage("essence_jar_small_0", "assets/images/ui/essence_jar_small_0.png"),
         loadImage("essence_jar_small_1", "assets/images/ui/essence_jar_small_1.png"),
