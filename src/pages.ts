@@ -3,6 +3,7 @@ import settings from "./settings";
 import { ShaderProgram } from "./shader";
 import { fragmentShaderCode, vertexShaderCode } from "./shaderCode";
 import { loadAssets } from "./loadAssets";
+import { sleep } from "./utils";
 
 enum PageIndex {
     GAME,
@@ -106,7 +107,11 @@ class GamePage implements Page {
             loadPage(PageIndex.MAIN);
         });
 
+        await sleep(settings.sleepTime);
+
         console.log("[starting main game loop]");
+
+        $("#loading-screen").css("opacity", "0%");
 
         this.lastTime = new Date().getTime();
         this.terminate = false;

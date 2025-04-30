@@ -414,12 +414,6 @@
     transition: opacity 0.25s ease-in-out, visibility 0.0s linear;
 }
 
-#death-screen {
-    opacity: 0%;
-    visibility: hidden;
-    transition: opacity 0.75s ease-in-out;
-}
-
 #pause-screen .content {
     font-family: "Matrix-Mono";
     position: relative;
@@ -434,6 +428,12 @@
     font-size: 72px;
     -webkit-text-stroke: 3px #111;
     text-stroke: 3px #111;
+}
+
+#death-screen {
+    opacity: 0%;
+    visibility: hidden;
+    transition: opacity 0.75s ease-in-out;
 }
 
 #death-screen .content {
@@ -456,4 +456,23 @@
 
 #death-screen #score-text {
 
+}
+
+#loading-screen {
+    background-color: black;
+    opacity: 100%;
+    transition: opacity 0.75s ease-in-out;
+}
+
+#loading-screen h1 {
+    font-family: "Matrix-Mono";
+    text-align: center;
+    margin-top: 15%;
+    font-size: 40px;
+}
+
+#loading-screen h2 {
+    font-family: "Matrix-Mono";
+    text-align: center;
+    font-size: 24px;
 }

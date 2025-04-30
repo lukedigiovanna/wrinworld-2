@@ -7,6 +7,7 @@ type Settings = {
     showChunks: boolean;
     showCameraPosition: boolean;
     muted: boolean;
+    sleepTime: number,
 }
 
 const settings: Settings = {
@@ -18,6 +19,7 @@ const settings: Settings = {
     showChunks: false,
     showCameraPosition: false,
     muted: true,
+    sleepTime: 0,
 }
 
 export default settings;

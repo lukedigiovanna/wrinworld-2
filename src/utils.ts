@@ -634,5 +634,10 @@ class Color {
     public static CYAN = new Color(0, 1, 1, 1);
 }
 
+function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export { Vector, MathUtils, PerlinNoise, LinearParametricCurve, 
-         CatmullRomParametricCurve, Ease, NumberRange, Rectangle, Permutation, Color };
+         CatmullRomParametricCurve, Ease, NumberRange, Rectangle, Permutation, 
+         sleep, Color };
