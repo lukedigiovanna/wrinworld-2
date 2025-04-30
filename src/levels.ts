@@ -319,7 +319,7 @@ const LEVEL_1: Level = {
             for (let y = bottom; y <= top; y++) {
                 const c = MathUtils.randomWeightedChoice(
                     [PropIndex.TREE, PropIndex.EVERGREEN_TREE, PropIndex.STONE_1, PropIndex.WHITE_STONE_1, PropIndex.RED_WILDFLOWER, PropIndex.YELLOW_WILDFLOWER, PropIndex.BUSH, PropIndex.TALL_GRASS, PropIndex.UNLIT_CAMPFIRE, PropIndex.TREE_STUMP, PropIndex.MOSSY_FALLEN_TREE, null],
-                    [4,             2,                        1,                 1,                       2,                        1,                           1,              26,                    0.1,                      0.25,                  0.25, 50]
+                    [4,             2,                        1,                 1,                       2,                        1,                           1,              26,                    0.1,                      0.25,                  0.25, 70]
                 )
                 if (c !== null) {
                     const texture = getTexture(propsCodex[c as PropIndex].spriteID);

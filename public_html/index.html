@@ -9,106 +9,10 @@
         <link rel="stylesheet" href="styles.css">
     </head>
     <body>
-        <div class="ui">
-            <div id="hud-screen">
-                <div id="debug-info">
-                    <p>
-                        FPS: <span id="fps">0</span>
-                    </p>
-                    <p>
-                        OBJS: <span id="objs">0</span>
-                    </p>
-                    <p>
-                        ACTIVE OBJS: <span id="active-objs">0</span>
-                    </p>
-                </div>
-                <img id="cooldown-charge-icon" />
-                <div id="notifications-container">
-                    <div id="notifications">
-                    </div>
-                </div>
-                <div id="hud-container">
-                    <div id="hud">
-                        <div id="hud-row">
-                            <div class="hud-row-container">
-                                <div id="status-effect-icon-row">
-                                </div>
-                                <div class="field-value-row">
-                                    <div id="health-bar">
-                                        <div id="health-bar-fill-container">
-                                            <div id="health-bar-fill"></div> 
-                                        </div>
-                                        <img id="health-bar-frame" src="assets/images/ui/health_bar_frame.png" />
-                                    </div>
-                                    <p id="health-text">
-                                        <span id="hp-amount">20</span>/<span id="hp-max">20</span>
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="hud-row-container">
-                                <div class="field-value-row">
-                                    <p id="essence-text">
-                                        <span id="essence-amount">0</span>/<span id="essence-max">100</span>
-                                    </p>
-                                    <img id="essence-jar" />
-                                </div>
-                            </div>
-                        </div>
-                        <div id="hotbar">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="inventory-screen">
-                <div class="background"></div>
-                <div id="inventory">
-                    
-                </div>
-                <div id="held-item-display" class="inventory-slot">
-                    <img class="item" />
-                    <span class="count"></span>
-                    <img class="cooldown-overlay" />
-                </div>
-                <div id="item-display">
-                    <div id="item-title-row">
-                        <div>
-                            <p id="item-name"></p>
-                            <p id="item-category"></p>
-                        </div>
-                        <div>
-                            <img id="item-icon" />
-                        </div>
-                    </div>
-                    <p id="item-description"></p>
-                    <p id="item-stats-title">
-                        Stats:
-                    </p>
-                    <ul id="item-stats-list"></ul>
-                </div>
-            </div>
-            <div id="pause-screen">
-                <div class="background"></div>
-                <div class="content">
-                    <h1>
-                        Paused
-                    </h1>
-                </div>
-            </div>
-            <div id="death-screen">
-                <div class="background"></div>
-                <div class="content">
-                    <h1>
-                        You Died!
-                    </h1>
-                    <p id="score-text">
-                        Score: <span id="score">0</span>
-                    </p>
-                </div>
-            </div>
+        <div id="root">
+            <!-- Load appropriate page content here -->
         </div>
-        <canvas id="game-canvas" width="640" height="480"></canvas>
         <script src="scripts/jquery.js"></script>
-        <!-- <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script> -->
         <script src="scripts/index.js"></script>
     </body>
 </html>

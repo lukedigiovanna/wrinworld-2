@@ -46,6 +46,10 @@ class ShaderProgram {
         gl.linkProgram(this._program);
     }
 
+    public delete() {
+        this.gl.deleteProgram(this._program);
+    }
+
     public use() {
         this.gl.useProgram(this._program);
     }
