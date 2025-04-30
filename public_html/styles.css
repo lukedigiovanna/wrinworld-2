@@ -139,6 +139,27 @@ img {
     font-family: "Matrix-Mono";
 }
 
+@keyframes trashed-item-swirl {
+    from {
+        transform: rotate(0deg);
+        width: 48px;
+        top: 12px;
+        left: 12px;
+    } 
+    to {
+        width: 0px;
+        top: 36px;
+        left: 36px;
+        transform: rotate(720deg);
+    }
+}
+
+.inventory-slot .trashed-item {
+    z-index: 100;
+    position: absolute;
+    animation: trashed-item-swirl 3s;
+}
+
 .upgrade-equation-component {
     margin-block: 0;
     margin-inline: 10px;
@@ -185,6 +206,10 @@ img {
     width: 64px;
     height: 64px;
     pointer-events: none;
+}
+
+#held-item-display img {
+    visibility: hidden;
 }
 
 #cooldown-charge-icon {

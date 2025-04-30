@@ -60,8 +60,6 @@ class Game {
         this._player = PlayerFactory(new Vector(0, 16 * PIXELS_PER_TILE));
         this.addGameObject(this._player);
 
-        this.addGameObject(EnemyFactory(new Vector(0, 400), EnemyIndex.CORRUPTED_DEER));
-        
         this._camera.target = this._player.position;
 
         this.level.generate(this);

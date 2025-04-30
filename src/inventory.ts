@@ -15,7 +15,7 @@ interface InventorySlot {
     lastTimeUsed?: number;
 }
 
-const slotTypes = ["free", "weapon", "quiver", "utility", "consumable", "buff", "upgradable_item", "upgrade_item", "upgrade_result"] as const;
+const slotTypes = ["free", "weapon", "quiver", "utility", "consumable", "buff", "upgradable_item", "upgrade_item", "upgrade_result", "trash"] as const;
 type SlotType = typeof slotTypes[number];
 
 interface SlotTypeConfig {
@@ -90,6 +90,12 @@ const slotConfigs: Record<SlotType, SlotTypeConfig> = {
         acceptItemCategory: [], // Accept no items
         equipOnAdd: false,
         selectable: false,
+    },
+    trash: {
+        iconID: "inventory_slot",
+        acceptItemCategory: null,
+        equipOnAdd: false,
+        selectable: false,
     }
 } as const;
 
@@ -118,6 +124,7 @@ const defaultInventoryCounts: InventorySlotCounts = {
     upgradable_item: 1,
     upgrade_item: 1,
     upgrade_result: 1,
+    trash: 1,
 }
 
 function inventorySlotHTML(type: SlotType) {
@@ -608,6 +615,11 @@ class Inventory {
         $("#inventory").empty();
         $("#inventory-screen").on("mousemove", this.updateDisplayPositions.bind(this));
 
+        const trashRow = $(inventoryRowHTML());
+        const trashItemSlot = this.createAndAddSlotUI("trash");
+        trashRow.append(trashItemSlot);
+        $("#inventory").append(trashRow);
+
         // Build the upgrade row
         const upgradeRow = $(inventoryRowHTML());
         
@@ -636,9 +648,8 @@ class Inventory {
         const upgradeResultSlot = this.createAndAddSlotUI("upgrade_result");
         upgradeRow.append(upgradeResultSlot);
         
-        upgradeRow.css("margin-bottom", "55px");
+        upgradeRow.css("margin-bottom", "35px");
         $("#inventory").append(upgradeRow);
-        
 
         let currentRow;
         for (let i = 0; i < this.reference.free.slots.length; i++) {
@@ -739,6 +750,20 @@ class Inventory {
     }
 
     public updateUI() {
+        if (this.reference.trash.slots[0] !== null) {
+            const trashedItem = this.reference.trash.slots[0].item;
+            const slotDiv = this.reference.trash.slotDivs[0];
+            slotDiv.append(
+                `
+                    <img class="trashed-item" src="${getImage(trashedItem.iconSpriteID).src}" /> 
+                `
+            );
+            setTimeout(() => {
+                slotDiv.remove(".trashed-item");
+            }, 3000);
+            this.reference.trash.slots[0] = null;
+        }
+
         for (const type of slotTypes) {
             for (let i = 0; i < this.reference[type].slots.length; i++) {
                 this.setSlotUIByIndex({
@@ -839,8 +864,6 @@ class Inventory {
             $("#essence-cost-container").hide();
             $("#x").hide();
         }
-
-
     }
 
     public toggleUI() {
