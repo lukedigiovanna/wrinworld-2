@@ -1,4 +1,4 @@
-import { EnemyFactory, EnemyIndex, GameObject, PlayerFactory } from "./gameObjects";
+import { GameObject, PlayerFactory } from "./gameObjects";
 import { Vector, MathUtils, PerlinNoise, Color, Ease } from "./utils";
 import input from "./input";
 import { Camera } from "./camera";
@@ -9,6 +9,7 @@ import { Level, LEVEL_1 } from "./levels";
 import { ShaderProgram, ShaderShadow, MAX_SHADOWS } from "./shader";
 import settings from "./settings";
 import statTracker from "./statTracker";
+import { animationsCodex } from "./animations";
 
 const CHUNK_SIZE = 8;
 const TILES_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE;
@@ -255,19 +256,20 @@ class Game {
                 for (let i = 0; i < TILES_PER_CHUNK; i++) {
                     const tileIndex = chunk.tiles[i];
                     const tile = tileCodex[tileIndex];
-                    if (tile.spriteID) {
-                        let spriteID = tile.spriteID;
+                    let spriteID = tile.animationIndex !== undefined ?
+                                        animationsCodex[tile.animationIndex].getFrame(this.time) :
+                                        tile.spriteID;
+                    if (spriteID) {
                         const tilePosition = new Vector(
                             chunkPos.x + Math.floor(i / CHUNK_SIZE) * PIXELS_PER_TILE + PIXELS_PER_TILE / 2, 
                             chunkPos.y + (i % CHUNK_SIZE) * PIXELS_PER_TILE + PIXELS_PER_TILE / 2
                         );
-                        // if (tileIndex === TileIndex.PATH) {
-                        //     const rightTile = this.getTileIndex(Vector.add(tilePosition, Vector.right()));
-                        //     if (rightTile === TileIndex.GRASS) {
-                        //         spriteID = "edge_merge_path_grass";
-                        //     }
-                        // }
-                        this._camera.drawTexture(getTexture(spriteID), tilePosition.x, tilePosition.y, PIXELS_PER_TILE, PIXELS_PER_TILE, 0);
+                        this._camera.drawTexture(
+                            getTexture(spriteID), 
+                            tilePosition.x, 
+                            tilePosition.y, 
+                            PIXELS_PER_TILE, PIXELS_PER_TILE, 0
+                        );
                     }
                 }
             }

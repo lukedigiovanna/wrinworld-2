@@ -15,6 +15,7 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "cursed_path", "assets/images/tiles/cursed_path.png"),
         loadImageAndTexture(gl, "cursed_sand", "assets/images/tiles/cursed_sand.png"),
         loadImageAndTexture(gl, "cursed_planks", "assets/images/tiles/cursed_planks.png"),
+        loadImageAndTextureSpritesheet(gl, "water", "assets/images/tiles/water_animation.png", 16, 16),
 
         // Entities
         loadImageAndTexture(gl, "character", "assets/images/character.png"),
@@ -127,7 +128,6 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "light_boots", "assets/images/items/light_boots.png"),
         loadImageAndTexture(gl, "essence_magnet", "assets/images/items/essence_magnet.png"),
         loadImageAndTexture(gl, "power_bow", "assets/images/items/power_bow.png"),
-        
 
         // Particle sprites
         loadImageAndTexture(gl, "portal_particle", "assets/images/particles/portal_particle.png"),

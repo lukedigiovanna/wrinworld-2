@@ -326,7 +326,7 @@ const LEVEL_1: Level = {
                     const position = new Vector((x + 0.5) * PIXELS_PER_TILE, y * PIXELS_PER_TILE + texture.height / 2);
                     let tooCloseToPortal = false;
                     for (let j = 0; j < portalPositions.length; j++) {
-                        if (Vector.subtract(portalPositions[j], position).magnitude < 96) {
+                        if (Vector.subtract(portalPositions[j], position).magnitude < 64) {
                             tooCloseToPortal = true;
                             break;
                         }

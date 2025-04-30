@@ -1,7 +1,9 @@
+import { SpriteAnimationIndex } from "./animations";
 import { Color } from "./utils";
 
 interface Tile {
-    spriteID: string | undefined;
+    spriteID?: string;
+    animationIndex?: SpriteAnimationIndex; 
     canGrowPlants: boolean;
     canSpawnPortal: boolean;
     wall: boolean;
@@ -44,7 +46,8 @@ const tileCodex: Record<TileIndex, Tile> = {
     trailColor: Color.hex("#058600"),
 },
 [TileIndex.WATER]: {
-    spriteID: "water",
+    spriteID: "water_0",
+    animationIndex: SpriteAnimationIndex.WATER_TILE,
     canGrowPlants: false,
     canSpawnPortal: false,
     wall: false,
