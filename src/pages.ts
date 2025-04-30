@@ -112,6 +112,9 @@ class GamePage implements Page {
         console.log("[starting main game loop]");
 
         $("#loading-screen").css("opacity", "0%");
+        setTimeout(() => {
+            $("#loading-screen").css("visibility", "hidden");
+        }, 1000);
 
         this.lastTime = new Date().getTime();
         this.terminate = false;

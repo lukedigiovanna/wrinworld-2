@@ -1,7 +1,8 @@
 import { getTexture } from "./imageLoader";
 import { Camera } from "./camera";
 import { GameObject } from "./gameObjects";
-import { Vector } from "./utils";
+import { Color, Vector } from "./utils";
+import { Matrix4 } from "./matrixutils";
 
 type Renderer = {
     render: (camera: Camera, gameObject: GameObject) => void
@@ -15,6 +16,7 @@ function spriteRenderer(id: string): Renderer {
                 const pos = Vector.add(gameObject.position, this.data.offset);
                 camera.color = gameObject.color;
                 camera.drawTexture(getTexture(this.data.spriteID), pos.x, pos.y, gameObject.scale.x, gameObject.scale.y, gameObject.rotation, gameObject.rotationPointOffset);
+                
             }
         },
         data: {

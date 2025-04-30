@@ -213,6 +213,7 @@ class Game {
         this._camera.clear();
 
         const shadows: ShaderShadow[] = [];
+        const shadowCastingObjects = [];
         for (let i = 0; i < this.activeObjects.length; i++) {
             const object = this.activeObjects[i];
             if (object.castsShadow) {
@@ -220,6 +221,7 @@ class Game {
                     position: Vector.add(object.position, new Vector(0, -object.scale.y/2)),
                     size: object.shadowSize,
                 });
+                shadowCastingObjects.push(object);
                 if (shadows.length >= MAX_SHADOWS) break;
             }
         }
@@ -273,6 +275,16 @@ class Game {
                     }
                 }
             }
+        }
+
+        for (const gameObject of shadowCastingObjects) {
+            this._camera.color = new Color(0, 0, 0, 0.75);
+            const pos = Vector.add(gameObject.position, gameObject.renderer!.data.offset);
+            const h = Math.round(gameObject.scale.y * 0.35 * 2) / 2;
+            this._camera.drawTexture(
+                getTexture(gameObject.renderer!.data.spriteID), 
+                pos.x, pos.y - gameObject.scale.y / 2 + h / 2, 
+                gameObject.scale.x, h, gameObject.rotation, gameObject.rotationPointOffset, 1);
         }
 
         this._camera.setShadows([]);

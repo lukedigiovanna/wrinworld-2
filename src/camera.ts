@@ -150,12 +150,7 @@ class Camera {
         this.drawTexture(square, x, y + h / 2, w, this.strokeWidth);
     }
 
-    public drawTexture(texture: Texture, x: number, y: number, w: number, h: number, angle: number=0, rotationPointOffset=Vector.zero()){ 
-        const transformation = Matrix4.transformation(
-            Math.round(x) - Math.floor(w / 2), Math.round(y) - Math.floor(h / 2), 
-            w, h, 
-            angle, w / 2 + rotationPointOffset.x, h / 2 + rotationPointOffset.y
-        );
+    public drawTextureWithCustomTransformation(texture: Texture, transformation: Matrix4) {
         this.shaderProgram.setUniformMatrix4("model", transformation);
         this.shaderProgram.setUniformColor("color", this.color);
         if (texture.clipRect) {
@@ -169,6 +164,15 @@ class Camera {
         this.gl.bindTexture(this.gl.TEXTURE_2D, texture.texture);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.squareVBO);
         this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+    }
+
+    public drawTexture(texture: Texture, x: number, y: number, w: number, h: number, angle: number=0, rotationPointOffset=Vector.zero(), shear: number=0){ 
+        const transformation = Matrix4.transformation(
+            Math.round(x) - Math.floor(w / 2), Math.round(y) - Math.floor(h / 2), 
+            w, h, 
+            angle, w / 2 + rotationPointOffset.x, h / 2 + rotationPointOffset.y, shear
+        );
+        this.drawTextureWithCustomTransformation(texture, transformation);
     }
 
     public get width() {
