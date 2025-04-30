@@ -86,12 +86,39 @@ vec2 swirlUV(vec2 uv, vec2 frag, Portal portal) {
     return uv + delta; // offset UV based on the distortion
 }
 
+vec3 computeShimmerColor(vec2 frag, Portal portal) {
+    vec2 offset = frag - portal.position;
+    float dist = length(offset);
+    if (dist > portal.radius) return vec3(0.0);
+    
+    float factor = 1.0 - dist / portal.radius;
+    
+    float t = portal.age;
+    float s = sin(t);
+    float c = cos(t);
+    vec2 rotated = vec2(
+        offset.x * c - offset.y * s,
+        offset.x * s + offset.y * c
+    );
+    // Color shift using sin-based shimmer
+    float shimmer = (
+        sin(rotated.x / 22.0) * 
+        sin(rotated.y / 22.0) * 
+        sin(t + portal.position.x + portal.position.y)
+    ) * 0.5 + 0.5;
+    vec3 tint = vec3(0.6, 0.3, 0.8) * shimmer; // a bluish shimmer
+
+    return tint * factor; // fade out toward the edge
+}
+
 void main() {
     vec2 distortedUV = texCoord;
 
+    vec3 shimmerColor = vec3(0.0);
     for (int i = 0; i < MAX_PORTALS; i++) {
         if (i >= numPortals) break;
         distortedUV = swirlUV(distortedUV, fragPos, portals[i]);
+        shimmerColor += computeShimmerColor(fragPos, portals[i]);
     }
 
     vec4 textureColor = texture2D(texture, distortedUV * clipSize + clipOffset);
@@ -121,6 +148,8 @@ void main() {
     float shadowMultiplier = max(1.0 - shadowValue, SHADOW_STRENGTH);
     float alpha = textureColor.a * color.a;
     vec3 baseColor = textureColor.rgb * color.rgb * color.a;
+
+    baseColor += shimmerColor;
 
     baseColor *= shadowMultiplier;
     baseColor *= lightColor;
