@@ -22,6 +22,9 @@ enum TileIndex {
     CURSED_PATH,
     CURSED_SAND,
     CURSED_PLANKS,
+    SCHOOL_TILE,
+    SCHOOL_WALL,
+    SCHOOL_WALL_SIDE,
 }
 
 const tileCodex: Record<TileIndex, Tile> = {
@@ -100,6 +103,24 @@ const tileCodex: Record<TileIndex, Tile> = {
     wall: false,
     trailColor: Color.ORANGE,
 },
+[TileIndex.SCHOOL_TILE]: {
+    spriteID: "school_tile",
+    canGrowPlants: false,
+    canSpawnPortal: true,
+    wall: false,
+},
+[TileIndex.SCHOOL_WALL]: {
+    spriteID: "school_wall",
+    canGrowPlants: false,
+    canSpawnPortal: false,
+    wall: true,
+},
+[TileIndex.SCHOOL_WALL_SIDE]: {
+    spriteID: "school_wall_side",
+    canGrowPlants: false,
+    canSpawnPortal: false,
+    wall: true,
+}
 }
 
 export type { Tile };

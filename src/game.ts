@@ -74,7 +74,7 @@ class Game {
 
         this._camera.verticalBoundary = [2 * PIXELS_PER_TILE, (24 + 8 + 96) * PIXELS_PER_TILE];
     
-        this.switchLevel(LevelIndex.FOREST);
+        this.switchLevel(LevelIndex.SCHOOL);
 
         this.timeoutQueue = new PriorityQueue<TimeoutRequest>(
             // The request with less time remaining should come before
