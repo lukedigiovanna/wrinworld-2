@@ -49,6 +49,7 @@ enum WeaponIndex {
     SLINGSHOT,
     REINFORCED_SLINGSHOT,
     MACHINE_GUN_SLINGSHOT,
+    WATER_GUN,
 }
 
 const fireProjectile = (projectile: Projectile, gameObject: GameObject, target: Vector) => {
@@ -301,6 +302,13 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
         fireProjectile(this.attack() as Projectile, gameObject, target);
     }
 },
+[WeaponIndex.WATER_GUN]: {
+    cooldown: 0.0,
+    attack: (props) => projectilesCodex[ProjectileIndex.WATER_DROP],
+    fire(gameObject, target) {
+        fireProjectile(this.attack() as Projectile, gameObject, target);
+    }
+}
 }
 
 export { WeaponIndex, weaponsCodex, fireProjectile, fireMelee };

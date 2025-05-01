@@ -33,7 +33,7 @@
     width: 100%;
     height: 100%;
     background-color: black;
-    opacity: 40%;
+    opacity: 60%;
 }
 
 .inventory-slot {
@@ -426,8 +426,8 @@
 #pause-screen h1 {
     margin-top: 10%;
     font-size: 72px;
-    -webkit-text-stroke: 3px #111;
-    text-stroke: 3px #111;
+    /* -webkit-text-stroke: 3px #111;
+    text-stroke: 3px #111; */
 }
 
 #death-screen {
@@ -450,8 +450,8 @@
     margin-bottom: 8px;
     color: #ab170c;
     font-size: 72px;
-    -webkit-text-stroke: 3px #111;
-    text-stroke: 3px #111;
+    /* -webkit-text-stroke: 3px #111;
+    text-stroke: 3px #111; */
 }
 
 #death-screen #score-text {

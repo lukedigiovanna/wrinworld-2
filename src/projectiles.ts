@@ -26,6 +26,7 @@ enum ProjectileIndex {
     PLAYING_CARD,
     DOVE,
     RUBBER_CHICKEN,
+    WATER_DROP,
 }
 
 interface Projectile {
@@ -529,6 +530,31 @@ const projectilesCodex: Record<ProjectileIndex, Projectile> = {
     rotateToDirectionOfTarget: false,
     drag: 0,
     destroyOnPhysicalCollision: true,
+},
+[ProjectileIndex.WATER_DROP]: {
+    homingSkill: 0,
+    maxHits: 1,
+    ricochetFactor: 0,
+    spriteID: "water_drop",
+    damage: 2,
+    damageReductionPerHit: 0,
+    knockback: 20,
+    lifespan: 4,
+    speed: 180,
+    angularVelocity: 3,
+    rotateToDirectionOfTarget: false,
+    drag: 0.2,
+    destroyOnPhysicalCollision: true,
+    particleEmitter: ParticleEmitter(
+        {
+            spriteID: () => "square",
+            rate: () => MathUtils.random(8, 15),
+            rotation: () => MathUtils.randomAngle(),
+            velocity: () => MathUtils.randomVector(MathUtils.random(24, 32)),
+            lifetime: () => MathUtils.random(0.4, 0.6),
+            color: () => Color.CYAN,
+        }
+    ),
 }
 }
 

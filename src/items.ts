@@ -152,10 +152,13 @@ enum ItemIndex {
     REINFORCED_SLINGSHOT,
     MACHINE_GUN_SLINGSHOT,
     SHURIKEN,
-    // Projectiles
+    WATER_GUN,
+    PRESSURE_WASHER,
+    // Ammo
     ARROW,
     POISON_ARROW,
     FLAME_ARROW,
+    WATER_BOTTLE,
     // Consumables
     HEALING_VIAL,
     ESSENCE_VIAL,
@@ -195,6 +198,7 @@ interface Item {
     description: string;
     category: ItemCategory;
     iconSpriteID: string;
+    iconSpriteScaleIDs?: string[];
     maxStack: number;
     consumable: boolean;
     essenceCost: number;
@@ -916,7 +920,40 @@ const itemsCodex: Record<ItemIndex, Item> = {
         player.getComponent("essence-manager").data.essencePickupDistance -= 256;
     }
 },
-
+[ItemIndex.WATER_GUN]: {
+    itemIndex: ItemIndex.WATER_GUN,
+    displayName: "Water Gun",
+    description: "Squirt squirt!",
+    iconSpriteID: "water_gun",
+    category: "Weapon",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+    usesItem: [ItemIndex.WATER_BOTTLE],
+    ...weaponItem(WeaponIndex.WATER_GUN),
+},
+[ItemIndex.PRESSURE_WASHER]: {
+    itemIndex: ItemIndex.PRESSURE_WASHER,
+    displayName: "Pressure Washer",
+    description: "RYOBI 1800 PSI 1.2 GPM Cold Water Electric Pressure Washer",
+    iconSpriteID: "pressure_washer",
+    category: "Weapon",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 1,
+    usesItem: [ItemIndex.WATER_BOTTLE]
+},
+[ItemIndex.WATER_BOTTLE]: {
+    itemIndex: ItemIndex.WATER_BOTTLE,
+    displayName: "Water Bottle",
+    description: "Do we really need to quench our thirst here?",
+    iconSpriteID: "water_bottle_0",
+    iconSpriteScaleIDs: ["water_bottle_0", "water_bottle_1", "water_bottle_2", "water_bottle_3", "water_bottle_4", "water_bottle_5", "water_bottle_6"],
+    category: "Ammo",
+    consumable: false,
+    essenceCost: 0,
+    maxStack: 100,
+}
 }
 
 export { itemsCodex, ItemIndex, ItemStat, itemStats };

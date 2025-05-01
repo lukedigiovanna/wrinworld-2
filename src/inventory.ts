@@ -718,7 +718,18 @@ class Inventory {
         }
         else {
             item.css("visibility", "visible");
-            item.attr("src", getImage(slot.item.iconSpriteID).src);
+            let spriteID = slot.item.iconSpriteID;
+            if (slot.item.iconSpriteScaleIDs) {
+                if (slot.count <= 1) {
+                    spriteID = slot.item.iconSpriteScaleIDs[0];
+                }
+                else {
+                    const p = slot.count / slot.item.maxStack;
+                    const i = Math.floor(p * (slot.item.iconSpriteScaleIDs.length - 2)) + 1;
+                    spriteID = slot.item.iconSpriteScaleIDs[i];
+                }
+            }
+            item.attr("src", getImage(spriteID).src);
             if (slot.count === 1) {
                 count.text("");
             }

@@ -80,6 +80,7 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "playing_card", "assets/images/projectiles/playing_card.png"),
         loadImageAndTexture(gl, "dove", "assets/images/projectiles/dove.png"),
         loadImageAndTexture(gl, "rubber_chicken", "assets/images/projectiles/rubber_chicken.png"),
+        loadImageAndTexture(gl, "water_drop", "assets/images/projectiles/water_drop.png"),
 
 
         // Item icons
@@ -128,7 +129,16 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "light_boots", "assets/images/items/light_boots.png"),
         loadImageAndTexture(gl, "essence_magnet", "assets/images/items/essence_magnet.png"),
         loadImageAndTexture(gl, "power_bow", "assets/images/items/power_bow.png"),
-
+        loadImageAndTexture(gl, "water_gun", "assets/images/items/water_gun.png"),
+        loadImageAndTexture(gl, "pressure_washer", "assets/images/items/pressure_washer.png"),
+        loadImageAndTexture(gl, "water_bottle_0", "assets/images/items/water_bottle_0.png"),
+        loadImageAndTexture(gl, "water_bottle_1", "assets/images/items/water_bottle_1.png"),
+        loadImageAndTexture(gl, "water_bottle_2", "assets/images/items/water_bottle_2.png"),
+        loadImageAndTexture(gl, "water_bottle_3", "assets/images/items/water_bottle_3.png"),
+        loadImageAndTexture(gl, "water_bottle_4", "assets/images/items/water_bottle_4.png"),
+        loadImageAndTexture(gl, "water_bottle_5", "assets/images/items/water_bottle_5.png"),
+        loadImageAndTexture(gl, "water_bottle_6", "assets/images/items/water_bottle_6.png"),
+        
         // Particle sprites
         loadImageAndTexture(gl, "portal_particle", "assets/images/particles/portal_particle.png"),
         loadImageAndTexture(gl, "sword_spark", "assets/images/particles/sword_spark.png"),
