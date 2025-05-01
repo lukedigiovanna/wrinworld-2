@@ -159,7 +159,7 @@ class SchoolLevel implements Level {
     generate(game: Game) {
         const grid = generateHallwayMap();
         grid.prettyPrint();
-        const gridCellSize = 8;
+        const gridCellSize = 6;
         const gridWorldWidth = grid.width * gridCellSize;
         const gridWorldHeight = grid.height * gridCellSize;
         for (let x = 0; x < gridWorldWidth; x++) {
@@ -170,20 +170,70 @@ class SchoolLevel implements Level {
         for (let row = 0; row < grid.height; row++) {
             for (let col = 0; col < grid.width; col++) {
                 const value = grid.get(row, col);
-                const leftWall = !grid.get(row, col - 1);
-                const rightWall = !grid.get(row, col + 1);
-                const topWall = !grid.get(row + 1, col);
-                const bottomWall = !grid.get(row - 1, col);
                 if (value) {
+                    const leftWall = !grid.get(row, col - 1);
+                    const rightWall = !grid.get(row, col + 1);
+                    const topWall = !grid.get(row + 1, col);
+                    const bottomWall = !grid.get(row - 1, col);
+                    const leftBottomCorner = grid.get(row - 1, col) && grid.get(row, col - 1) && !grid.get(row - 1, col - 1);
+                    const rightBottomCorner = grid.get(row - 1, col) && grid.get(row, col + 1) && !grid.get(row - 1, col + 1);
+                    const leftTopCorner = grid.get(row + 1, col) && grid.get(row, col - 1) && !grid.get(row + 1, col - 1);
+                    const rightTopCorner = grid.get(row + 1, col) && grid.get(row, col + 1) && !grid.get(row + 1, col + 1);
                     for (let dx = 0; dx < gridCellSize; dx++) {
                         for (let dy = 0; dy < gridCellSize; dy++) {
-                            const wall = (dx === 0 && leftWall) || 
-                                         (dx === gridCellSize - 1 && rightWall) ||
-                                         (dy === 0 && bottomWall) ||
-                                         (dy === gridCellSize - 1 && topWall);
+                            let index = TileIndex.SCHOOL_TILE;
+                            let rotation = MathUtils.randomInt(0, 3);
+                            if (dx === 0 && dy === 0 && leftBottomCorner) {
+                                index = TileIndex.SCHOOL_WALL_INSIDE_CORNER;
+                                rotation = 0;
+                            }
+                            else if (dx === gridCellSize - 1 && dy === 0 && rightBottomCorner) {
+                                index = TileIndex.SCHOOL_WALL_INSIDE_CORNER;
+                                rotation = 1;
+                            }
+                            else if (dx === 0 && dy === gridCellSize - 1 && leftTopCorner) {
+                                index = TileIndex.SCHOOL_WALL_INSIDE_CORNER;
+                                rotation = 3;
+                            }
+                            else if (dx === gridCellSize - 1 && dy === gridCellSize - 1 && rightTopCorner) {
+                                index = TileIndex.SCHOOL_WALL_INSIDE_CORNER;
+                                rotation = 2;
+                            }
+                            else if (dx === 0 && dy === 0 && leftWall && bottomWall) {
+                                index = TileIndex.SCHOOL_WALL_OUTSIDE_CORNER;
+                                rotation = 0;
+                            }
+                            else if (dx === gridCellSize - 1 && dy === 0 && rightWall && bottomWall) {
+                                index = TileIndex.SCHOOL_WALL_OUTSIDE_CORNER;
+                                rotation = 1;
+                            }
+                            else if (dx === 0 && dy === gridCellSize - 1 && leftWall && topWall) {
+                                index = TileIndex.SCHOOL_WALL_OUTSIDE_CORNER;
+                                rotation = 3;
+                            }
+                            else if (dx === gridCellSize - 1 && dy === gridCellSize - 1 && rightWall && topWall) {
+                                index = TileIndex.SCHOOL_WALL_OUTSIDE_CORNER;
+                                rotation = 2;
+                            }
+                            else if (dx === 0 && leftWall) {
+                                index = TileIndex.SCHOOL_WALL_SIDE;
+                                rotation = 0;
+                            }
+                            else if (dx === gridCellSize - 1 && rightWall) {
+                                index = TileIndex.SCHOOL_WALL_SIDE;
+                                rotation = 2;
+                            }
+                            else if (dy === 0 && bottomWall) {
+                                index = TileIndex.SCHOOL_WALL_SIDE;
+                                rotation = 1;
+                            }
+                            else if (dy === gridCellSize - 1 && topWall) {
+                                index = TileIndex.SCHOOL_WALL_SIDE;
+                                rotation = 3;
+                            }
                             game.setTileWithTilemapCoordinate(
                                 new Vector(col * gridCellSize + dx - gridWorldWidth / 2, row * gridCellSize + dy), 
-                                wall ? TileIndex.SCHOOL_WALL_SIDE : TileIndex.SCHOOL_TILE
+                                index, rotation as 0 | 1 | 2 | 3
                             );
                         }
                     }

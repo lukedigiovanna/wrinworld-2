@@ -25,6 +25,8 @@ enum TileIndex {
     SCHOOL_TILE,
     SCHOOL_WALL,
     SCHOOL_WALL_SIDE,
+    SCHOOL_WALL_INSIDE_CORNER,
+    SCHOOL_WALL_OUTSIDE_CORNER,
 }
 
 const tileCodex: Record<TileIndex, Tile> = {
@@ -120,7 +122,19 @@ const tileCodex: Record<TileIndex, Tile> = {
     canGrowPlants: false,
     canSpawnPortal: false,
     wall: true,
-}
+},
+[TileIndex.SCHOOL_WALL_INSIDE_CORNER]: {
+    spriteID: "school_wall_inside_corner",
+    canGrowPlants: false,
+    canSpawnPortal: false,
+    wall: true,
+},
+[TileIndex.SCHOOL_WALL_OUTSIDE_CORNER]: {
+    spriteID: "school_wall_outside_corner",
+    canGrowPlants: false,
+    canSpawnPortal: false,
+    wall: true,
+},
 }
 
 export type { Tile };

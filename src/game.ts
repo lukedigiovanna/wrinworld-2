@@ -31,9 +31,14 @@ const getChunkWorldPosition = (chunkIndex: number) => {
     return new Vector(x * PIXELS_PER_TILE, y * PIXELS_PER_TILE);
 }
 
+interface TileIndexRotationPair {
+    index: TileIndex;
+    rotation: 0 | 1 | 2 | 3;
+}
+
 interface Chunk {
     objects: GameObject[];
-    tiles: TileIndex[];
+    tiles: TileIndexRotationPair[];
 }
 
 interface TimeoutRequest {
@@ -91,9 +96,9 @@ class Game {
     }
 
     private generateChunk(chunkIndex: number): void {
-        const tiles: number[] = [];
+        const tiles: TileIndexRotationPair[] = [];
         for (let i = 0; i < TILES_PER_CHUNK; i++) {
-            tiles.push(TileIndex.AIR);
+            tiles.push({ index: TileIndex.AIR, rotation: 0 });
         }
         this.chunks.set(chunkIndex, {
             tiles,
@@ -311,8 +316,8 @@ class Game {
                 const chunkPos = getChunkWorldPosition(chunkIndex);
                 if (!chunk) continue;
                 for (let i = 0; i < TILES_PER_CHUNK; i++) {
-                    const tileIndex = chunk.tiles[i];
-                    const tile = tileCodex[tileIndex];
+                    const pair = chunk.tiles[i];
+                    const tile = tileCodex[pair.index];
                     let spriteID = tile.animationIndex !== undefined ?
                                         animationsCodex[tile.animationIndex].getFrame(this.time) :
                                         tile.spriteID;
@@ -325,7 +330,8 @@ class Game {
                             getTexture(spriteID), 
                             tilePosition.x, 
                             tilePosition.y, 
-                            PIXELS_PER_TILE, PIXELS_PER_TILE, 0
+                            PIXELS_PER_TILE, PIXELS_PER_TILE,
+                            pair.rotation * Math.PI / 2
                         );
                     }
                 }
@@ -520,18 +526,21 @@ class Game {
 
     // Set the tile at the integer tile coordinates to the given tileIndex.
     // will generate the chunk there if it is not generated already.
-    public setTile(position: Vector, tileIndex: TileIndex) {
+    public setTile(position: Vector, tileIndex: TileIndex, rotation: 0 | 1 | 2 | 3 = 0) {
         const { chunkIndex, tilePositionIndex } = this.getTileCoordinate(position);
         if (!this.chunks.has(chunkIndex)) {
             this.generateChunk(chunkIndex);
         }
         const chunk = this.chunks.get(chunkIndex);
         if (!chunk) throw Error("something went wrong");
-        chunk.tiles[tilePositionIndex] = tileIndex;
+        chunk.tiles[tilePositionIndex] = {
+            index: tileIndex,
+            rotation: rotation
+        };
     }
 
-    public setTileWithTilemapCoordinate(position: Vector, tileIndex: TileIndex) {
-        this.setTile(Vector.scaled(position, PIXELS_PER_TILE), tileIndex);
+    public setTileWithTilemapCoordinate(position: Vector, tileIndex: TileIndex, rotation: 0 | 1 | 2 | 3 = 0) {
+        this.setTile(Vector.scaled(position, PIXELS_PER_TILE), tileIndex, rotation);
     }
 
     public getTileIndex(position: Vector): TileIndex {
@@ -541,7 +550,7 @@ class Game {
         }
         const chunk = this.chunks.get(chunkIndex);
         if (!chunk) throw Error("something went wrong");
-        return chunk.tiles[tilePositionIndex];
+        return chunk.tiles[tilePositionIndex].index;
     }
 
     // Get the tile object from the tilemap stored at the given world position
