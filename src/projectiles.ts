@@ -555,6 +555,9 @@ const projectilesCodex: Record<ProjectileIndex, Projectile> = {
             color: () => Color.CYAN,
         }
     ),
+    onDestroy(gameObject) {
+        gameObject.game.addParticleExplosion(gameObject.position, Color.hex("#87ecff"), 12, 24);
+    },
 }
 }
 

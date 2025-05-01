@@ -10,6 +10,7 @@ import { ShaderProgram, ShaderShadow, MAX_SHADOWS } from "./shader";
 import settings from "./settings";
 import statTracker from "./statTracker";
 import { animationsCodex } from "./animations";
+import { PriorityQueue } from "./PriorityQueue";
 
 const CHUNK_SIZE = 8;
 const TILES_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE;
@@ -35,7 +36,14 @@ interface Chunk {
     tiles: TileIndex[];
 }
 
+interface TimeoutRequest {
+    func: () => void;
+    timestamp: number;
+    delay: number;
+}
+
 class Game {
+    private timeoutQueue: PriorityQueue<TimeoutRequest>;
     private objectQueue: GameObject[] = []; // Queue of objects to add on the next frame
     private objectDeleteQueue: GameObject[] = [];
     private _totalObjects = 0;
@@ -65,6 +73,14 @@ class Game {
 
         this.level.generate(this);
         this._camera.verticalBoundary = [2 * PIXELS_PER_TILE, (24 + 8 + 96) * PIXELS_PER_TILE];
+    
+        this.timeoutQueue = new PriorityQueue<TimeoutRequest>(
+            // The request with less time remaining should come before
+            (req1: TimeoutRequest, req2: TimeoutRequest) => {
+                const remaining1 = req1.delay - (this.time - req1.timestamp);
+                const remaining2 = req2.delay - (this.time - req2.timestamp);
+                return remaining1 < remaining2;
+            });
     }
 
     private generateChunk(chunkIndex: number): void {
@@ -90,9 +106,24 @@ class Game {
         return this.activeObjects.length;
     }
 
+    private checkTimeout(): boolean {
+        const current = this.timeoutQueue.peek();
+        if (!current) {
+            return false;
+        }
+        if (this.time - current.timestamp >= current.delay) {
+            current.func();
+            this.timeoutQueue.dequeue();
+            return true;
+        }
+        return false;
+    }
+
     // Performs any boilerplate updates to the game such as removing dead objects
     // adding new objects, updating active chunks, and generating new chunks.
     public preUpdate() {
+        while (this.checkTimeout());
+
         while (this.objectQueue.length > 0) {
             const obj = this.objectQueue.pop();
             if (!obj) {
@@ -550,6 +581,15 @@ class Game {
         this.paused = false;
         $("#pause-screen").css("opacity", "0%");
         $("#pause-screen").css("visibility",  "hidden");
+    }
+
+    // Schedule a function to run after a certain game time delay.
+    public setTimeout(func: () => void, delay: number) {
+        this.timeoutQueue.enqueue({
+            func,
+            delay,
+            timestamp: this.time,
+        })
     }
 }
 

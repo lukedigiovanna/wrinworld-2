@@ -941,7 +941,8 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-    usesItem: [ItemIndex.WATER_BOTTLE]
+    usesItem: [ItemIndex.WATER_BOTTLE],
+    ...weaponItem(WeaponIndex.PRESSURE_WASHER)
 },
 [ItemIndex.WATER_BOTTLE]: {
     itemIndex: ItemIndex.WATER_BOTTLE,

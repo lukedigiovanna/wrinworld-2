@@ -50,6 +50,7 @@ enum WeaponIndex {
     REINFORCED_SLINGSHOT,
     MACHINE_GUN_SLINGSHOT,
     WATER_GUN,
+    PRESSURE_WASHER
 }
 
 const fireProjectile = (projectile: Projectile, gameObject: GameObject, target: Vector) => {
@@ -303,10 +304,28 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
     }
 },
 [WeaponIndex.WATER_GUN]: {
-    cooldown: 0.0,
+    cooldown: 0.2,
     attack: (props) => projectilesCodex[ProjectileIndex.WATER_DROP],
     fire(gameObject, target) {
         fireProjectile(this.attack() as Projectile, gameObject, target);
+    }
+},
+[WeaponIndex.PRESSURE_WASHER]: {
+    cooldown: 0,
+    charge: 0.25,
+    automatic: true,
+    useOnFullCharge: true,
+    attack: (props) => ({
+        ...projectilesCodex[ProjectileIndex.WATER_DROP],
+        damage: 1,
+        speed: 250
+    }),
+    fire(gameObject, target) {
+        for (let i = 0; i < 0.25; i += 0.05) {
+            gameObject.game.setTimeout(() => {
+                fireProjectile(this.attack() as Projectile, gameObject, target);
+            }, i)
+        }
     }
 }
 }
