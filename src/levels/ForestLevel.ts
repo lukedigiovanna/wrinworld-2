@@ -148,6 +148,9 @@ class ForestLevel implements Level {
         [ { itemIndex: ItemIndex.SPROCKET_UPGRADE } ],
         [ { itemIndex: ItemIndex.GHOST_ARROWS }],
     ];
+
+    readonly playerSpawnPosition = new Vector(0, 160);
+
     generate(game: Game) {
         // this desperately needs an overhaul!
         const width = 128;

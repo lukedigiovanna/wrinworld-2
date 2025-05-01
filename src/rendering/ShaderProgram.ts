@@ -1,5 +1,5 @@
-import { Color, Vector } from "./utils";
-import { Matrix4 } from "./matrixutils";
+import { Color, Vector } from "../utils";
+import { Matrix4 } from "../matrixutils";
 
 interface ShaderShadow {
     position: Vector;

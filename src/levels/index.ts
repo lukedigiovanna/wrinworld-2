@@ -1,3 +1,4 @@
+import { Vector } from "../utils";
 import { Game } from "../game";
 import { PortalDrop, PortalProperties } from "../gameObjects";
 import { ForestLevel } from "./ForestLevel";
@@ -9,6 +10,7 @@ interface Level {
     name: string;
     portalTypes: PortalProperties[];
     portalDrops: PortalDropPool[];
+    playerSpawnPosition: Vector;
     generate: (game: Game) => void;    
 }
 

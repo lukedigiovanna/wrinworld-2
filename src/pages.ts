@@ -1,7 +1,7 @@
 import { Game } from "./game";
 import settings from "./settings";
-import { ShaderProgram } from "./shader";
-import { fragmentShaderCode, vertexShaderCode } from "./shaderCode";
+import { ShaderProgram } from "./rendering/ShaderProgram";
+import { fragmentShaderCode, vertexShaderCode } from "./rendering/shaderCode";
 import { loadAssets } from "./loadAssets";
 import { sleep } from "./utils";
 
@@ -40,7 +40,7 @@ class GamePage implements Page {
             return;
         }
 
-        if (!this.game || !this.canvas || !this.gl || !this.shaderProgram) {
+        if (!this.game) {
             throw Error("Cannot run GamePage.mainLoop without canvas, gl, or shaderProgram");
         }
 
@@ -91,14 +91,7 @@ class GamePage implements Page {
             this.canvas.height = window.innerHeight;
         }
 
-        this.shaderProgram = new ShaderProgram(this.gl, vertexShaderCode, fragmentShaderCode);
-
-        this.shaderProgram.use();
-        
-        this.gl.enable(this.gl.BLEND);
-        this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);  
-
-        this.game = new Game(this.canvas, this.gl, this.shaderProgram);
+        this.game = new Game(this.canvas, this.gl);
 
         $("button#resume-game").on("click", () => {
             this.game?.unpause();

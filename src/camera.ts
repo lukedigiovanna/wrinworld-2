@@ -1,11 +1,15 @@
 import input from "./input";
 import { Vector, MathUtils, Color, Ease } from "./utils";
-import { MAX_LIGHTS, MAX_PORTALS, MAX_SHADOWS, ShaderLight, ShaderPortal, ShaderProgram, ShaderShadow } from "./shader";
+import { MAX_LIGHTS, MAX_PORTALS, MAX_SHADOWS, ShaderLight, ShaderPortal, 
+         ShaderProgram, ShaderShadow } from "./rendering/ShaderProgram";
+import { FrameBuffer } from "./rendering/FrameBuffer";
 import { getOrthographicProjection, Matrix4 } from "./matrixutils";
 import { Texture, getTexture } from "./imageLoader";
 import { Game } from "./game";
+import { GameObject } from "./gameObjects";
+import * as ShaderCode from "./rendering/shaderCode";
 
-const squareVertices = new Float32Array([
+const quadVertices = new Float32Array([
     0, 0,  0, 1, // Bottom-left
     1, 0,  1, 1, // Bottom-right
     0, 1,  0, 0, // Top-left
@@ -20,37 +24,47 @@ class Camera {
 
     private canvas: HTMLCanvasElement;
     private gl: WebGLRenderingContext;
-    private shaderProgram: ShaderProgram;
+    private sceneFramebuffer: FrameBuffer;
+    private sceneShader: ShaderProgram;
+    private postProcessingShader: ShaderProgram;
 
     public color: Color = Color.WHITE;
     public strokeWidth: number = 1;
     public ambientLightIntensity: number = 1;
 
-    public target: Vector = Vector.zero();
+    public target?: GameObject;
 
     public verticalBoundary: [number, number] = [-99999, 99999];
 
-    private squareVBO: WebGLBuffer;
+    private quadVBO: WebGLBuffer;
 
     private shakeDuration: number = 0;
     private shakeIntensity: number = 0;
     private shakeStartTime: number = 0;
 
-    constructor(game: Game, canvas: HTMLCanvasElement, gl: WebGLRenderingContext, shaderProgram: ShaderProgram) {
+    constructor(game: Game, canvas: HTMLCanvasElement, gl: WebGLRenderingContext) {
         this.game = game;
         this.canvas = canvas;
         this.gl = gl;
-        this.shaderProgram = shaderProgram;
+        this.sceneShader = new ShaderProgram(this.gl, ShaderCode.vertexShaderCode, ShaderCode.fragmentShaderCode);
+        this.postProcessingShader = new ShaderProgram(this.gl, ShaderCode.postProcessingVertexShaderCode, ShaderCode.invertColorsPostProcessingFragmentShader);
+        this.sceneFramebuffer = new FrameBuffer(gl, canvas);
         this.position = Vector.zero();
         this.height = 256;
 
-        this.squareVBO = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVBO);
-        gl.bufferData(gl.ARRAY_BUFFER, squareVertices, gl.STATIC_DRAW);
-        const posAttribLocation = shaderProgram.getAttribLocation("a_position");
+        this.gl.enable(this.gl.BLEND);
+        this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);  
+
+        let posAttribLocation, texCoordAttribLocation;
+        this.quadVBO = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.quadVBO);
+        gl.bufferData(gl.ARRAY_BUFFER, quadVertices, gl.STATIC_DRAW);
+        
+        this.sceneShader.use();
+        posAttribLocation = this.sceneShader.getAttribLocation("a_position");
         gl.enableVertexAttribArray(posAttribLocation);
         gl.vertexAttribPointer(posAttribLocation, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
-        const texCoordAttribLocation = shaderProgram.getAttribLocation("a_textureCoord");
+        texCoordAttribLocation = this.sceneShader.getAttribLocation("a_textureCoord");
         gl.enableVertexAttribArray(texCoordAttribLocation);
         gl.vertexAttribPointer(texCoordAttribLocation, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
     }
@@ -62,15 +76,16 @@ class Camera {
     }
 
     public update(dt: number) {
-        const diff = Vector.subtract(this.target, this.position);
-        const threshold = this.height / 4;
-        if (diff.magnitude > threshold) {
-            diff.subtract(Vector.scaled(Vector.normalized(diff), threshold));
-            diff.scale(dt * 4);
-            if (diff.magnitude > 0.025)
-                this.position.add(diff);
-        }
-        this.position.set(this.target);
+        // const diff = Vector.subtract(this.target, this.position);
+        // const threshold = this.height / 4;
+        // if (diff.magnitude > threshold) {
+        //     diff.subtract(Vector.scaled(Vector.normalized(diff), threshold));
+        //     diff.scale(dt * 4);
+        //     if (diff.magnitude > 0.025)
+        //         this.position.add(diff);
+        // }
+        if (this.target)
+            this.position.set(this.target.position);
         // this.position.y = MathUtils.clamp(this.position.y, this.verticalBoundary[0], this.verticalBoundary[1]);
 
         if (input.isKeyDown("Equal")) {
@@ -84,6 +99,9 @@ class Camera {
 
     // clears the camera view
     public clear() {
+        this.sceneFramebuffer.checkResize();
+        this.sceneFramebuffer.bind();
+        this.sceneShader.use();
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
         this.gl.clearColor(0, 0, 0, 1);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
@@ -109,32 +127,47 @@ class Camera {
             y - bh, y + th,
             0, 100
         );
-        this.shaderProgram.setUniformMatrix4("projection", projection);
-        this.shaderProgram.setUniformFloat("ambientLightIntensity", this.ambientLightIntensity);
+        this.sceneShader.setUniformMatrix4("projection", projection);
+        this.sceneShader.setUniformFloat("ambientLightIntensity", this.ambientLightIntensity);
+    }
+
+    // Renders the framebuffer to the screen using the active postprocessing shader
+    // should be called after drawing a frame.
+    public renderToScreen() {
+        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+        this.gl.clearColor(1, 0, 0, 1);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+
+        this.postProcessingShader.use();
+        this.sceneFramebuffer.bindTexture();
+        this.postProcessingShader.setUniformInt("texture", 0);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.quadVBO);
+        this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
     }
 
     public setShadows(shadows: ShaderShadow[]) {
         const numShadows = Math.min(MAX_SHADOWS, shadows.length);
         for (let i = 0; i < numShadows; i++) {
-            this.shaderProgram.setUniformShadow(`shadows[${i}]`, shadows[i]);
+            this.sceneShader.setUniformShadow(`shadows[${i}]`, shadows[i]);
         }
-        this.shaderProgram.setUniformInt("numShadows", numShadows);
+        this.sceneShader.setUniformInt("numShadows", numShadows);
     }
 
     public setLights(lights: ShaderLight[]) {
         const numLights = Math.min(MAX_LIGHTS, lights.length);
         for (let i = 0; i < numLights; i++) {
-            this.shaderProgram.setUniformLight(`lights[${i}]`, lights[i]);
+            this.sceneShader.setUniformLight(`lights[${i}]`, lights[i]);
         }
-        this.shaderProgram.setUniformInt("numLights", numLights);
+        this.sceneShader.setUniformInt("numLights", numLights);
     }
 
     public setPortals(portals: ShaderPortal[]) {
         const numPortals = Math.min(MAX_PORTALS, portals.length);
         for (let i = 0; i < numPortals; i++) {
-            this.shaderProgram.setUniformPortal(`portals[${i}]`, portals[i]);
+            this.sceneShader.setUniformPortal(`portals[${i}]`, portals[i]);
         }
-        this.shaderProgram.setUniformInt("numPortals", numPortals);
+        this.sceneShader.setUniformInt("numPortals", numPortals);
     }
 
     // Fills a rectangle using the given world coordinates where the x,y denotes the center of the rectangle
@@ -151,18 +184,18 @@ class Camera {
     }
 
     public drawTextureWithCustomTransformation(texture: Texture, transformation: Matrix4) {
-        this.shaderProgram.setUniformMatrix4("model", transformation);
-        this.shaderProgram.setUniformColor("color", this.color);
+        this.sceneShader.setUniformMatrix4("model", transformation);
+        this.sceneShader.setUniformColor("color", this.color);
         if (texture.clipRect) {
-            this.shaderProgram.setUniform2f("clipOffset", texture.clipRect.left, texture.clipRect.bottom);
-            this.shaderProgram.setUniform2f("clipSize", texture.clipRect.right - texture.clipRect.left, texture.clipRect.top - texture.clipRect.bottom);
+            this.sceneShader.setUniform2f("clipOffset", texture.clipRect.left, texture.clipRect.bottom);
+            this.sceneShader.setUniform2f("clipSize", texture.clipRect.right - texture.clipRect.left, texture.clipRect.top - texture.clipRect.bottom);
         }
         else {
-            this.shaderProgram.setUniform2f("clipOffset", 0, 0);
-            this.shaderProgram.setUniform2f("clipSize", 1, 1);
+            this.sceneShader.setUniform2f("clipOffset", 0, 0);
+            this.sceneShader.setUniform2f("clipSize", 1, 1);
         }
         this.gl.bindTexture(this.gl.TEXTURE_2D, texture.texture);
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.squareVBO);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.quadVBO);
         this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
     }
 

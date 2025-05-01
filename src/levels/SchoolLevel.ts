@@ -156,6 +156,8 @@ class SchoolLevel implements Level {
 
     ];
 
+    readonly playerSpawnPosition = new Vector(0, 200);
+
     generate(game: Game) {
         const grid = generateHallwayMap();
         grid.prettyPrint();
@@ -163,8 +165,8 @@ class SchoolLevel implements Level {
         const gridWorldWidth = grid.width * gridCellSize;
         const gridWorldHeight = grid.height * gridCellSize;
         for (let x = 0; x < gridWorldWidth; x++) {
-            for (let y = 0; y  < gridWorldHeight; y++) {
-                game.setTileWithTilemapCoordinate(new Vector(x - gridWorldWidth / 2, y - gridWorldHeight / 2), TileIndex.SCHOOL_WALL);
+            for (let y = 0; y < gridWorldHeight; y++) {
+                game.setTileWithTilemapCoordinate(new Vector(x - gridWorldWidth / 2, y), TileIndex.SCHOOL_WALL);
             }
         }
         for (let row = 0; row < grid.height; row++) {

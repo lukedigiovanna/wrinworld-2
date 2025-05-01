@@ -6,7 +6,7 @@ import { getTexture } from "./imageLoader";
 import { Particle, ParticleLayer } from "./components";
 import { Tile, tileCodex, TileIndex } from "./tiles";
 import { Level, levels, LevelIndex } from "./levels";
-import { ShaderProgram, ShaderShadow, MAX_SHADOWS } from "./shader";
+import { ShaderProgram, ShaderShadow, MAX_SHADOWS } from "./rendering/ShaderProgram";
 import settings from "./settings";
 import statTracker from "./statTracker";
 import { animationsCodex } from "./animations";
@@ -70,16 +70,16 @@ class Game {
     private level?: Level;
     private dirtyLevel = false;
 
-    constructor(canvas: HTMLCanvasElement, gl: WebGLRenderingContext, shaderProgram: ShaderProgram) {
-        this._camera = new Camera(this, canvas, gl, shaderProgram);
+    constructor(canvas: HTMLCanvasElement, gl: WebGLRenderingContext) {
+        this._camera = new Camera(this, canvas, gl);
         this._player = PlayerFactory(new Vector(0, 16 * PIXELS_PER_TILE));
         this.addGameObject(this._player);
 
-        this._camera.target = this._player.position;
+        this._camera.target = this._player;
 
         this._camera.verticalBoundary = [2 * PIXELS_PER_TILE, (24 + 8 + 96) * PIXELS_PER_TILE];
     
-        this.switchLevel(LevelIndex.SCHOOL);
+        this.switchLevel(LevelIndex.FOREST);
 
         this.timeoutQueue = new PriorityQueue<TimeoutRequest>(
             // The request with less time remaining should come before
@@ -141,11 +141,14 @@ class Game {
             this.particles = [];
             this._totalObjects = 0;
 
+            this.player.position.set(this.level.playerSpawnPosition);
+
             if (this.player.started) {
                 const ci = this.player.chunkIndex;
                 this.addToChunk(this.player, ci);
                 this._totalObjects++;
             }
+
 
             this.level.generate(this);
             this.dirtyLevel = false;
@@ -386,6 +389,8 @@ class Game {
             this._camera.color = Color.ORANGE;
             this._camera.fillRect(this._camera.position.x, this._camera.position.y, 8, 8);
         }
+
+        this._camera.renderToScreen();
     }
 
     public addGameObject(obj: GameObject) {

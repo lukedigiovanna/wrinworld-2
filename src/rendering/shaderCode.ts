@@ -158,4 +158,32 @@ void main() {
 }
 `
 
-export { vertexShaderCode, fragmentShaderCode };
+const postProcessingVertexShaderCode = `
+attribute vec2 a_position;
+attribute vec2 a_textureCoord;
+
+varying vec2 texCoord;
+varying vec2 fragPos;
+
+void main() {
+    gl_Position = vec4((a_position * 2.0 - 1.0) * vec2(1.0, -1.0), 0, 1);
+    texCoord = a_textureCoord;
+}
+`
+
+const invertColorsPostProcessingFragmentShader = `
+precision mediump float;
+
+uniform sampler2D texture;
+varying vec2 texCoord;
+
+void main() {
+    vec4 color = texture2D(texture, texCoord);
+
+    // Example effect: invert colors
+    gl_FragColor = vec4(1.0 - color.rgb, 1.0);
+}
+`
+
+export { vertexShaderCode, fragmentShaderCode, 
+    postProcessingVertexShaderCode, invertColorsPostProcessingFragmentShader };
