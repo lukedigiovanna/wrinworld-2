@@ -39,3 +39,24 @@ img {
     image-rendering: pixelated;
     pointer-events: none;
 }
+
+.menu-button {
+    font-family: "Matrix-Mono";
+    font-weight: bold;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-block: 18px;
+    color: #ddd;
+    font-size: 24px;
+    transition: all 0.15s ease-in-out;
+}
+
+.menu-button:hover {
+    color: rgb(177, 157, 240);
+    text-shadow: 0px 0px 2px white;
+}
+
+.menu-button:active {
+    color: rgb(147, 117, 236);
+}

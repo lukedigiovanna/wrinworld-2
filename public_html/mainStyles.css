@@ -1,7 +1,6 @@
 #main-page h1 {
     color: #eee;
     font-family: "Matrix-Mono";
-    -webkit-text-stroke: 2px rgb(5, 5, 20);
     font-size: 72px;
 }
 
