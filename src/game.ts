@@ -5,7 +5,7 @@ import { Camera } from "./camera";
 import { getTexture } from "./imageLoader";
 import { Particle, ParticleLayer } from "./components";
 import { Tile, tileCodex, TileIndex } from "./tiles";
-import { Level, LEVEL_1 } from "./levels";
+import { Level, levels, LevelIndex } from "./levels";
 import { ShaderProgram, ShaderShadow, MAX_SHADOWS } from "./shader";
 import settings from "./settings";
 import statTracker from "./statTracker";
@@ -62,7 +62,7 @@ class Game {
 
     private paused: boolean = false;
 
-    private level: Level = LEVEL_1;
+    private level: Level | undefined;
 
     constructor(canvas: HTMLCanvasElement, gl: WebGLRenderingContext, shaderProgram: ShaderProgram) {
         this._camera = new Camera(this, canvas, gl, shaderProgram);
@@ -71,9 +71,10 @@ class Game {
 
         this._camera.target = this._player.position;
 
-        this.level.generate(this);
         this._camera.verticalBoundary = [2 * PIXELS_PER_TILE, (24 + 8 + 96) * PIXELS_PER_TILE];
     
+        this.switchLevel(LevelIndex.FOREST);
+
         this.timeoutQueue = new PriorityQueue<TimeoutRequest>(
             // The request with less time remaining should come before
             (req1: TimeoutRequest, req2: TimeoutRequest) => {
@@ -81,6 +82,20 @@ class Game {
                 const remaining2 = req2.delay - (this.time - req2.timestamp);
                 return remaining1 < remaining2;
             });
+    }
+
+    public switchLevel(levelIndex: LevelIndex) {
+        if (this.level) {
+            // Unload everything if there was already a loaded level
+            this.chunks = new Map<number, Chunk>();
+            this.activeObjects = [];
+            this._totalObjects = 0;
+            const ci = this.player.chunkIndex;
+            this.addToChunk(this.player, ci);
+            this._totalObjects++;
+        }
+        this.level = levels[levelIndex];
+        this.level.generate(this);
     }
 
     private generateChunk(chunkIndex: number): void {

@@ -1,168 +1,154 @@
-import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Permutation } from "./utils";
-import { Game, PIXELS_PER_TILE } from "./game";
-import { TileIndex } from "./tiles";
-import { EnemyIndex, PortalFactory, PortalProperties, PortalDrop, PropFactory } from "./gameObjects";
-import { ItemIndex } from "./items";
-import { PropIndex, propsCodex } from "./props";
-import { getTexture } from "./imageLoader";
+import { Level } from "./";
+import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Permutation } from "../utils";
+import { Game, PIXELS_PER_TILE } from "../game";
+import { TileIndex } from "../tiles";
+import { EnemyIndex, PortalFactory, PropFactory } from "../gameObjects";
+import { ItemIndex } from "../items";
+import { PropIndex, propsCodex } from "../props";
+import { getTexture } from "../imageLoader";
 
-interface Level {
-    regionName: string;
-    generate: (game: Game) => void;    
-}
-
-const level1PortalTypes: PortalProperties[] = [
-    { // Slime portal
-        health: 25,
-        difficulty: 0,
-        packs: [
-            {
-                packSizeRange: new NumberRange(2, 4),
-                cooldownRange: new NumberRange(8, 16),
-                maxEnemies: 5,
-                enemyIndex: EnemyIndex.SLIME
-            }
-        ]
-    },
-    { // Red slime portal
-        health: 35,
-        difficulty: 0.1,
-        packs: [
-            {
-                packSizeRange: new NumberRange(4, 8),
-                cooldownRange: new NumberRange(6, 14),
-                maxEnemies: 10,
-                enemyIndex: EnemyIndex.RED_SLIME
-            }
-        ]
-    },
-    { // Ground worm portal
-        health: 35,
-        difficulty: 0.1,
-        packs: [
-            {
-                packSizeRange: new NumberRange(1, 2),
-                cooldownRange: new NumberRange(8, 16),
-                maxEnemies: 6,
-                enemyIndex: EnemyIndex.GROUND_WORM
-            }
-        ]
-    },
-    { // Minion portal
-        difficulty: 0.2,
-        health: 40,
-        packs: [
-            {
-                cooldownRange: new NumberRange(4, 10),
-                packSizeRange: new NumberRange(1, 4),
-                maxEnemies: 10,
-                enemyIndex: EnemyIndex.MINION
-            },
-            {
-                cooldownRange: new NumberRange(12, 24),
-                packSizeRange: new NumberRange(1, 1),
-                maxEnemies: 1,
-                enemyIndex: EnemyIndex.WRETCHED_SKELETON
-            }
-        ]
-    }, 
-    { // Revenant eye portal
-        difficulty: 0.4,
-        health: 60,
-        packs: [
-            {
-                cooldownRange: new NumberRange(12, 20),
-                packSizeRange: new NumberRange(1, 2),
-                maxEnemies: 3,
-                enemyIndex: EnemyIndex.REVENANT_EYE
-            }
-        ]
-    },
-    { // Wraith portal
-        difficulty: 0.6,
-        health: 75,
-        packs: [
-            {
-                cooldownRange: new NumberRange(12, 20),
-                packSizeRange: new NumberRange(1, 1),
-                maxEnemies: 2,
-                enemyIndex: EnemyIndex.WRAITH
-            }
-        ]
-    },
-    { // Bunny portal
-        difficulty: 0.3,
-        health: 35,
-        packs: [
-            {
-                cooldownRange: new NumberRange(8, 16),
-                packSizeRange: new NumberRange(1, 3),
-                maxEnemies: 6,
-                enemyIndex: EnemyIndex.EVIL_BUNNY
-            }
-        ]
-    },
-    { // Husk portal
-        difficulty: 0.6,
-        health: 80,
-        packs: [
-            {
-                cooldownRange: new NumberRange(12, 24),
-                packSizeRange: new NumberRange(1, 2),
-                maxEnemies: 4,
-                enemyIndex: EnemyIndex.FUNGAL_HUSK
-            }
-        ]
-    },
-];
-
-// interface PortalDropPool {
-//     drops: PortalDrop[];
-//     rarity: number; // low number = more rare
-// }
-
-type PortalDropPool = PortalDrop[];
-
-const level1PortalDrops: PortalDropPool[] = [
-    [
-        { itemIndex: ItemIndex.ARROW, count: new NumberRange(20, 36) },
-        { itemIndex: ItemIndex.BOW }
-    ],
-    [ { itemIndex: ItemIndex.SHURIKEN, count: new NumberRange(4, 10) } ],
-    [ { itemIndex: ItemIndex.SLINGSHOT } ],
-    [ { itemIndex: ItemIndex.DAGGERS } ],
-    [ { itemIndex: ItemIndex.BOOMERANG } ],
-    [ { itemIndex: ItemIndex.BATTLE_HAMMER } ],
-    [ { itemIndex: ItemIndex.ESSENCE_DRIPPED_DAGGER } ],
-    [ { itemIndex: ItemIndex.POISON_ARROW, count: new NumberRange(16, 32) } ],
-    [ { itemIndex: ItemIndex.FLAME_ARROW, count: new NumberRange(16, 32) } ],
-    [ { itemIndex: ItemIndex.HEART } ],
-    [ { itemIndex: ItemIndex.HEART_CRYSTAL } ],
-    [ { itemIndex: ItemIndex.BASIC_SHIELD } ],
-    [ { itemIndex: ItemIndex.LIGHT_BOOTS } ],
-    [ { itemIndex: ItemIndex.ESSENCE_MAGNET } ],
-    [ { itemIndex: ItemIndex.CRYSTAL_BOMB } ],
-    [ { itemIndex: ItemIndex.ROOT_SNARE } ],
-    [ { itemIndex: ItemIndex.TELEPORTATION_RUNE } ],
-    [ { itemIndex: ItemIndex.STUN_FIDDLE } ],
-    [ { itemIndex: ItemIndex.FLOWER_POWER } ],
-    [ { itemIndex: ItemIndex.INVINCIBILITY_BUBBLE } ],
-    [ { itemIndex: ItemIndex.HEALING_VIAL } ],
-    [ { itemIndex: ItemIndex.ESSENCE_VIAL } ],
-    [ { itemIndex: ItemIndex.QUICK_HAND_UPGRADE } ],
-    [ { itemIndex: ItemIndex.DICE } ],
-    [ { itemIndex: ItemIndex.RICOCHET_UPGRADE } ],
-    // [ { itemIndex: ItemIndex.FLAME_UPGRADE } ],
-    [ { itemIndex: ItemIndex.POISON_UPGRADE } ],
-    [ { itemIndex: ItemIndex.STRENGTH_UPGRADE } ],
-    [ { itemIndex: ItemIndex.SPROCKET_UPGRADE } ],
-    [ { itemIndex: ItemIndex.GHOST_ARROWS }],
-];
-
-// LEVEL 1
-const LEVEL_1: Level = {
-    regionName: "Corrupted Forest",
-    generate(game) {
+class ForestLevel implements Level {
+    readonly name = "Corrupted Forest";
+    readonly portalTypes = [
+        { // Slime portal
+            health: 25,
+            difficulty: 0,
+            packs: [
+                {
+                    packSizeRange: new NumberRange(2, 4),
+                    cooldownRange: new NumberRange(8, 16),
+                    maxEnemies: 5,
+                    enemyIndex: EnemyIndex.SLIME
+                }
+            ]
+        },
+        { // Red slime portal
+            health: 35,
+            difficulty: 0.1,
+            packs: [
+                {
+                    packSizeRange: new NumberRange(4, 8),
+                    cooldownRange: new NumberRange(6, 14),
+                    maxEnemies: 10,
+                    enemyIndex: EnemyIndex.RED_SLIME
+                }
+            ]
+        },
+        { // Ground worm portal
+            health: 35,
+            difficulty: 0.1,
+            packs: [
+                {
+                    packSizeRange: new NumberRange(1, 2),
+                    cooldownRange: new NumberRange(8, 16),
+                    maxEnemies: 6,
+                    enemyIndex: EnemyIndex.GROUND_WORM
+                }
+            ]
+        },
+        { // Minion portal
+            difficulty: 0.2,
+            health: 40,
+            packs: [
+                {
+                    cooldownRange: new NumberRange(4, 10),
+                    packSizeRange: new NumberRange(1, 4),
+                    maxEnemies: 10,
+                    enemyIndex: EnemyIndex.MINION
+                },
+                {
+                    cooldownRange: new NumberRange(12, 24),
+                    packSizeRange: new NumberRange(1, 1),
+                    maxEnemies: 1,
+                    enemyIndex: EnemyIndex.WRETCHED_SKELETON
+                }
+            ]
+        }, 
+        { // Revenant eye portal
+            difficulty: 0.4,
+            health: 60,
+            packs: [
+                {
+                    cooldownRange: new NumberRange(12, 20),
+                    packSizeRange: new NumberRange(1, 2),
+                    maxEnemies: 3,
+                    enemyIndex: EnemyIndex.REVENANT_EYE
+                }
+            ]
+        },
+        { // Wraith portal
+            difficulty: 0.6,
+            health: 75,
+            packs: [
+                {
+                    cooldownRange: new NumberRange(12, 20),
+                    packSizeRange: new NumberRange(1, 1),
+                    maxEnemies: 2,
+                    enemyIndex: EnemyIndex.WRAITH
+                }
+            ]
+        },
+        { // Bunny portal
+            difficulty: 0.3,
+            health: 35,
+            packs: [
+                {
+                    cooldownRange: new NumberRange(8, 16),
+                    packSizeRange: new NumberRange(1, 3),
+                    maxEnemies: 6,
+                    enemyIndex: EnemyIndex.EVIL_BUNNY
+                }
+            ]
+        },
+        { // Husk portal
+            difficulty: 0.6,
+            health: 80,
+            packs: [
+                {
+                    cooldownRange: new NumberRange(12, 24),
+                    packSizeRange: new NumberRange(1, 2),
+                    maxEnemies: 4,
+                    enemyIndex: EnemyIndex.FUNGAL_HUSK
+                }
+            ]
+        },
+    ];
+    readonly portalDrops = [
+        [
+            { itemIndex: ItemIndex.ARROW, count: new NumberRange(20, 36) },
+            { itemIndex: ItemIndex.BOW }
+        ],
+        [ { itemIndex: ItemIndex.SHURIKEN, count: new NumberRange(4, 10) } ],
+        [ { itemIndex: ItemIndex.SLINGSHOT } ],
+        [ { itemIndex: ItemIndex.DAGGERS } ],
+        [ { itemIndex: ItemIndex.BOOMERANG } ],
+        [ { itemIndex: ItemIndex.BATTLE_HAMMER } ],
+        [ { itemIndex: ItemIndex.ESSENCE_DRIPPED_DAGGER } ],
+        [ { itemIndex: ItemIndex.POISON_ARROW, count: new NumberRange(16, 32) } ],
+        [ { itemIndex: ItemIndex.FLAME_ARROW, count: new NumberRange(16, 32) } ],
+        [ { itemIndex: ItemIndex.HEART } ],
+        [ { itemIndex: ItemIndex.HEART_CRYSTAL } ],
+        [ { itemIndex: ItemIndex.BASIC_SHIELD } ],
+        [ { itemIndex: ItemIndex.LIGHT_BOOTS } ],
+        [ { itemIndex: ItemIndex.ESSENCE_MAGNET } ],
+        [ { itemIndex: ItemIndex.CRYSTAL_BOMB } ],
+        [ { itemIndex: ItemIndex.ROOT_SNARE } ],
+        [ { itemIndex: ItemIndex.TELEPORTATION_RUNE } ],
+        [ { itemIndex: ItemIndex.STUN_FIDDLE } ],
+        [ { itemIndex: ItemIndex.FLOWER_POWER } ],
+        [ { itemIndex: ItemIndex.INVINCIBILITY_BUBBLE } ],
+        [ { itemIndex: ItemIndex.HEALING_VIAL } ],
+        [ { itemIndex: ItemIndex.ESSENCE_VIAL } ],
+        [ { itemIndex: ItemIndex.QUICK_HAND_UPGRADE } ],
+        [ { itemIndex: ItemIndex.DICE } ],
+        [ { itemIndex: ItemIndex.RICOCHET_UPGRADE } ],
+        // [ { itemIndex: ItemIndex.FLAME_UPGRADE } ],
+        [ { itemIndex: ItemIndex.POISON_UPGRADE } ],
+        [ { itemIndex: ItemIndex.STRENGTH_UPGRADE } ],
+        [ { itemIndex: ItemIndex.SPROCKET_UPGRADE } ],
+        [ { itemIndex: ItemIndex.GHOST_ARROWS }],
+    ];
+    generate(game: Game) {
         // this desperately needs an overhaul!
         const width = 128;
         const height = 192;
@@ -261,7 +247,7 @@ const LEVEL_1: Level = {
 
         // 6. Place portals
         const portalPositions = [];
-        const dropsPermutation = new Permutation(level1PortalDrops);
+        const dropsPermutation = new Permutation(this.portalDrops);
         for (let i = 0; i < numPortals; i++) {
             let position;
             let invalid;
@@ -281,7 +267,7 @@ const LEVEL_1: Level = {
                 }
             } while (invalid);
             const progression = (position.y / PIXELS_PER_TILE - marginTrail) / height;
-            const validChoices = level1PortalTypes.filter(type => (type.difficulty ? type.difficulty : 0) <= progression);
+            const validChoices = this.portalTypes.filter(type => (type.difficulty ? type.difficulty : 0) <= progression);
             if (validChoices.length === 0) {
                 throw Error("Cannot generate portal for position: " + position + " progressio " + progression + " because no portal has low enough difficulty");
             }
@@ -345,5 +331,4 @@ const LEVEL_1: Level = {
     }
 };
 
-export { LEVEL_1 };
-export type { Level };
+export { ForestLevel };

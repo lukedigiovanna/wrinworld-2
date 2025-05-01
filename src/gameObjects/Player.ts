@@ -10,6 +10,7 @@ import { SpriteAnimationIndex } from "../animations";
 import { getImage } from "../imageLoader";
 import { ItemIndex, itemsCodex } from "../items";
 import input from "../input";
+import { LevelIndex } from "../levels";
 
 const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const player = new GameObject();
@@ -78,6 +79,9 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                 }
                 if (input.isKeyPressed("KeyT")) {
                     gameObject.getComponent("essence-manager").data.addEssence(100);
+                }
+                if (input.isKeyPressed("KeyL")) {
+                    gameObject.game.switchLevel(LevelIndex.SCHOOL);
                 }
             }
         }
