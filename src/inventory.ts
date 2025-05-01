@@ -115,7 +115,7 @@ interface SlotLocator {
 }
 
 const defaultInventoryCounts: InventorySlotCounts = {
-    free: 45,
+    free: 9,
     weapon: 2,
     quiver: 1,
     utility: 2,

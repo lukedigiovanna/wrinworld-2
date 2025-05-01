@@ -312,7 +312,7 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
 },
 [WeaponIndex.PRESSURE_WASHER]: {
     cooldown: 0,
-    charge: 0.25,
+    charge: 0.15,
     automatic: true,
     useOnFullCharge: true,
     attack: (props) => ({
@@ -321,7 +321,7 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
         speed: 250
     }),
     fire(gameObject, target) {
-        for (let i = 0; i < 0.25; i += 0.05) {
+        for (let i = 0; i < 0.2; i += 0.05) {
             gameObject.game.setTimeout(() => {
                 fireProjectile(this.attack() as Projectile, gameObject, target);
             }, i)
