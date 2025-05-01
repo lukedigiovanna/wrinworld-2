@@ -62,7 +62,8 @@ class Game {
 
     private paused: boolean = false;
 
-    private level: Level | undefined;
+    private level?: Level;
+    private dirtyLevel = false;
 
     constructor(canvas: HTMLCanvasElement, gl: WebGLRenderingContext, shaderProgram: ShaderProgram) {
         this._camera = new Camera(this, canvas, gl, shaderProgram);
@@ -85,17 +86,8 @@ class Game {
     }
 
     public switchLevel(levelIndex: LevelIndex) {
-        if (this.level) {
-            // Unload everything if there was already a loaded level
-            this.chunks = new Map<number, Chunk>();
-            this.activeObjects = [];
-            this._totalObjects = 0;
-            const ci = this.player.chunkIndex;
-            this.addToChunk(this.player, ci);
-            this._totalObjects++;
-        }
+        this.dirtyLevel = true;
         this.level = levels[levelIndex];
-        this.level.generate(this);
     }
 
     private generateChunk(chunkIndex: number): void {
@@ -137,6 +129,23 @@ class Game {
     // Performs any boilerplate updates to the game such as removing dead objects
     // adding new objects, updating active chunks, and generating new chunks.
     public preUpdate() {
+        if (this.dirtyLevel && this.level) {
+            // Unload everything if there was already a loaded level
+            this.chunks = new Map<number, Chunk>();
+            this.activeObjects = [];
+            this.particles = [];
+            this._totalObjects = 0;
+
+            if (this.player.started) {
+                const ci = this.player.chunkIndex;
+                this.addToChunk(this.player, ci);
+                this._totalObjects++;
+            }
+
+            this.level.generate(this);
+            this.dirtyLevel = false;
+        }
+
         while (this.checkTimeout());
 
         while (this.objectQueue.length > 0) {

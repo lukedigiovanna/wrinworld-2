@@ -36,7 +36,7 @@ class GameObject {
 
     public storedInChunkIndex = -1;
 
-    private started: boolean = false;
+    private _started: boolean = false;
     private _destroyed: boolean = false;
 
     public team: Team = Team.UNTEAMED;
@@ -65,6 +65,10 @@ class GameObject {
 
     public get destroyed() {
         return this._destroyed;
+    }
+
+    public get started() {
+        return this._started;
     }
 
     public get chunkIndex() {
@@ -126,7 +130,7 @@ class GameObject {
     }
 
     public addComponent(componentFactory: ComponentFactory): Component {
-        if (this.started) {
+        if (this._started) {
             throw Error("Cannot add component after GameObject has already started");
         }
         const newComponent = componentFactory(this);
@@ -198,7 +202,7 @@ stack trace:`)
                 component.start();
             }
         });
-        this.started = true;
+        this._started = true;
     }
 
     public destroy() {
