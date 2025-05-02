@@ -11,6 +11,8 @@ enum PropIndex {
     UNLIT_CAMPFIRE,
     TREE_STUMP,
     MOSSY_FALLEN_TREE,
+    TOILET,
+    SINK,
 }
 
 interface PropProperties {
@@ -75,6 +77,16 @@ const propsCodex: Record<PropIndex, PropProperties> = {
     hasCollision: false,
     castsShadow: false,
 },
+[PropIndex.TOILET]: {
+    spriteID: "toilet",
+    hasCollision: true,
+    castsShadow: false,
+},
+[PropIndex.SINK]: {
+    spriteID: "sink",
+    hasCollision: true,
+    castsShadow: false,
+}
 }
 
 export { PropIndex, propsCodex };

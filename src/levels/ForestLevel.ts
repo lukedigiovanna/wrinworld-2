@@ -164,9 +164,6 @@ class ForestLevel implements Level {
         const N = 30;
         const numPortals = 15;
         const minDistance = 8 * PIXELS_PER_TILE;
-        const treeRate = 0.05;
-        const grassRate = 0.3;
-        const flowerPatches = 24;
 
         // 1. Set Grass Background
         for (let x = left; x <= right; x++) {
@@ -303,7 +300,7 @@ class ForestLevel implements Level {
             }
         }
 
-        // 7. Place trees
+        // 7. Place props
         for (let x = left; x <= right; x++) {
             for (let y = bottom; y <= top; y++) {
                 const c = MathUtils.randomWeightedChoice(

@@ -1,7 +1,7 @@
 import { SpriteAnimationIndex } from "./animations";
 import { Color } from "./utils";
 
-interface Tile {
+interface TileData {
     spriteID?: string;
     animationIndex?: SpriteAnimationIndex; 
     canGrowPlants: boolean;
@@ -29,7 +29,14 @@ enum TileIndex {
     SCHOOL_WALL_OUTSIDE_CORNER,
 }
 
-const tileCodex: Record<TileIndex, Tile> = {
+type TileRotation = 0 | 1 | 2 | 3;
+
+interface Tile {
+    index: TileIndex;
+    rotation: TileRotation;
+}
+
+const tileCodex: Record<TileIndex, TileData> = {
 [TileIndex.AIR]: {
     spriteID: undefined,
     canGrowPlants: false,
@@ -137,5 +144,5 @@ const tileCodex: Record<TileIndex, Tile> = {
 },
 }
 
-export type { Tile };
+export type { TileData, TileRotation, Tile };
 export { tileCodex, TileIndex };

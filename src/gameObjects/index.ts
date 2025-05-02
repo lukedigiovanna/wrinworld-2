@@ -4,7 +4,7 @@ import { Vector, Rectangle, MathUtils, Color } from "../utils";
 import { Renderer } from "../renderers";
 import { Game, getChunkIndex } from "../game";
 import settings from "../settings";
-import { Tile } from "../tiles";
+import { Tile, TileData } from "../tiles";
 
 enum Team {
     UNTEAMED,
@@ -92,7 +92,7 @@ class GameObject {
         });
     }
 
-    public onPhysicalCollision(collision: GameObject | Tile, isTile: boolean) {
+    public onPhysicalCollision(collision: GameObject | TileData, isTile: boolean) {
         this.components.forEach((component: Component) => {
             if (component.onPhysicalCollision) {
                 component.onPhysicalCollision(collision, isTile);

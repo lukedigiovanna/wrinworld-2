@@ -4,7 +4,7 @@ import input from "./input";
 import { Camera } from "./camera";
 import { getTexture } from "./assets/imageLoader";
 import { Particle, ParticleLayer } from "./components";
-import { Tile, tileCodex, TileIndex } from "./tiles";
+import { Tile, tileCodex, TileData, TileIndex } from "./tiles";
 import { Level, levels, LevelIndex } from "./levels";
 import { ShaderShadow, MAX_SHADOWS } from "./rendering/ShaderProgram";
 import settings from "./settings";
@@ -33,14 +33,9 @@ const getChunkWorldPosition = (chunkIndex: number) => {
     return new Vector(x * PIXELS_PER_TILE, y * PIXELS_PER_TILE);
 }
 
-interface TileIndexRotationPair {
-    index: TileIndex;
-    rotation: 0 | 1 | 2 | 3;
-}
-
 interface Chunk {
     objects: GameObject[];
-    tiles: TileIndexRotationPair[];
+    tiles: Tile[];
 }
 
 interface TimeoutRequest {
@@ -83,7 +78,7 @@ class Game {
 
         this._camera.verticalBoundary = [2 * PIXELS_PER_TILE, (24 + 8 + 96) * PIXELS_PER_TILE];
     
-        this.switchLevel(LevelIndex.FOREST, false);
+        this.switchLevel(LevelIndex.SCHOOL, false);
 
         this.timeoutQueue = new PriorityQueue<TimeoutRequest>(
             // The request with less time remaining should come before
@@ -102,7 +97,7 @@ class Game {
     }
 
     private generateChunk(chunkIndex: number): void {
-        const tiles: TileIndexRotationPair[] = [];
+        const tiles: Tile[] = [];
         for (let i = 0; i < TILES_PER_CHUNK; i++) {
             tiles.push({ index: TileIndex.AIR, rotation: 0 });
         }
@@ -577,7 +572,7 @@ class Game {
 
     // Get the tile object from the tilemap stored at the given world position
     // will generate the chunk there if necessary.
-    public getTile(position: Vector): Tile {
+    public getTile(position: Vector): TileData {
         const tileIndex = this.getTileIndex(position);
         return tileCodex[tileIndex];
     }
@@ -597,7 +592,7 @@ class Game {
 
     // Returns true if any tile in the given radius around the given position 
     // has the given property-value pair.
-    public isTileWithPropertyInArea(position: Vector, radius: number, property: keyof Tile, value: any): boolean {
+    public isTileWithPropertyInArea(position: Vector, radius: number, property: keyof TileData, value: any): boolean {
         for (let xo = -radius; xo <= radius; xo++) {
             for (let yo = -radius; yo <= radius; yo++) {
                 if (this.getTile(Vector.add(position, new Vector(xo, yo)))[property] === value) {

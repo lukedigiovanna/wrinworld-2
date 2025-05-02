@@ -72,6 +72,8 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "unlit_campfire", "assets/images/props/unlit_campfire.png"),
         loadImageAndTexture(gl, "tree_stump", "assets/images/props/tree_stump.png"),
         loadImageAndTexture(gl, "mossy_fallen_tree", "assets/images/props/mossy_fallen_tree.png"),
+        loadImageAndTexture(gl, "toilet", "assets/images/props/toilet.png"),
+        loadImageAndTexture(gl, "sink", "assets/images/props/sink.png"),
         
         // Projectiles
         loadImageAndTexture(gl, "arrow", "assets/images/projectiles/arrow.png"),
