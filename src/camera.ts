@@ -8,6 +8,7 @@ import { Texture, getTexture } from "./imageLoader";
 import { Game } from "./game";
 import { GameObject } from "./gameObjects";
 import * as ShaderCode from "./rendering/shaderCode";
+import { postProcessingFragmentShaderCodes, PostProcessingShaderIndex } from "./rendering/postProcessingShaders";
 
 const quadVertices = new Float32Array([
     0, 0,  0, 1, // Bottom-left
@@ -26,7 +27,8 @@ class Camera {
     private gl: WebGLRenderingContext;
     private sceneFramebuffer: FrameBuffer;
     private sceneShader: ShaderProgram;
-    private postProcessingShader: ShaderProgram;
+    private activePostProcessingShader!: ShaderProgram;
+    private loadedPostProcessingShaders: Map<PostProcessingShaderIndex, ShaderProgram>;
 
     public color: Color = Color.WHITE;
     public strokeWidth: number = 1;
@@ -47,7 +49,8 @@ class Camera {
         this.canvas = canvas;
         this.gl = gl;
         this.sceneShader = new ShaderProgram(this.gl, ShaderCode.vertexShaderCode, ShaderCode.fragmentShaderCode);
-        this.postProcessingShader = new ShaderProgram(this.gl, ShaderCode.postProcessingVertexShaderCode, ShaderCode.invertColorsPostProcessingFragmentShader);
+        this.loadedPostProcessingShaders = new Map<PostProcessingShaderIndex, ShaderProgram>();
+        this.setActivePostProcessingShader(PostProcessingShaderIndex.NO_EFFECT);
         this.sceneFramebuffer = new FrameBuffer(gl, canvas);
         this.position = Vector.zero();
         this.height = 256;
@@ -67,6 +70,13 @@ class Camera {
         texCoordAttribLocation = this.sceneShader.getAttribLocation("a_textureCoord");
         gl.enableVertexAttribArray(texCoordAttribLocation);
         gl.vertexAttribPointer(texCoordAttribLocation, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+    }
+
+    public setActivePostProcessingShader(index: PostProcessingShaderIndex) {
+        if (!this.loadedPostProcessingShaders.has(index)) {
+            this.loadedPostProcessingShaders.set(index, new ShaderProgram(this.gl, ShaderCode.postProcessingVertexShaderCode, postProcessingFragmentShaderCodes[index]))
+        }
+        this.activePostProcessingShader = this.loadedPostProcessingShaders.get(index)!;
     }
 
     public applyShake(duration: number, intensity: number) {
@@ -139,9 +149,9 @@ class Camera {
         this.gl.clearColor(1, 0, 0, 1);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
-        this.postProcessingShader.use();
+        this.activePostProcessingShader.use();
         this.sceneFramebuffer.bindTexture();
-        this.postProcessingShader.setUniformInt("texture", 0);
+        this.activePostProcessingShader.setUniformInt("texture", 0);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.quadVBO);
         this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
     }

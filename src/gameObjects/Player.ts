@@ -11,6 +11,7 @@ import { getImage } from "../imageLoader";
 import { ItemIndex, itemsCodex } from "../items";
 import input from "../input";
 import { LevelIndex } from "../levels";
+import { PostProcessingShaderIndex } from "../rendering/postProcessingShaders";
 
 const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const player = new GameObject();
@@ -82,6 +83,12 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                 }
                 if (input.isKeyPressed("KeyL")) {
                     gameObject.game.switchLevel(LevelIndex.SCHOOL);
+                }
+                if (input.isKeyDown("KeyI")) {
+                    gameObject.game.camera.setActivePostProcessingShader(PostProcessingShaderIndex.INVERT);
+                }
+                else {
+                    gameObject.game.camera.setActivePostProcessingShader(PostProcessingShaderIndex.NO_EFFECT);
                 }
             }
         }
