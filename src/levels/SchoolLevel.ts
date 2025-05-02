@@ -5,7 +5,7 @@ import { Tile, TileIndex, TileRotation } from "../tiles";
 import { MathUtils, Vector } from "../utils";
 import { PropIndex, propsCodex } from "../props";
 import { getTexture } from "../assets/imageLoader";
-import { Pair, Side } from "../utils/types";
+import { Nullable, Pair, Side } from "../utils/types";
 
 class Grid<T> {
     private cells: T[];
@@ -106,14 +106,14 @@ function placeDoor(grid: Grid<Tile>, doorPosition: GridPosition, radius: number,
 
 class Room {
     readonly tileGrid: Grid<Tile>;
-    readonly propGrid: Grid<PropIndex | null>;
+    readonly propGrid: Grid<Nullable<PropIndex>>;
     readonly doorPosition: GridPosition;
     readonly doorSide: Side;
     readonly doorRadius: number;
 
     constructor(width: number, height: number, doorSide: Side, doorOffset: number, doorRadius: number) {
         this.tileGrid = new Grid<Tile>(width, height, { index: TileIndex.SCHOOL_TILE, rotation: 0 });
-        this.propGrid = new Grid<PropIndex | null>(width, height, null);
+        this.propGrid = new Grid<Nullable<PropIndex>>(width, height, null);
         switch (doorSide) {
             case "left": this.doorPosition = { row: doorOffset, col: 0 }; break;
             case "right": this.doorPosition = { row: doorOffset, col: width - 1 }; break;
@@ -175,7 +175,7 @@ class Room {
         this.placeInGrid(this.tileGrid, worldGrid, doorPosition);
     }
 
-    public placePropsInGrid(worldGrid: Grid<PropIndex | null>, doorPosition: GridPosition) {
+    public placePropsInGrid(worldGrid: Grid<Nullable<PropIndex>>, doorPosition: GridPosition) {
         this.placeInGrid(this.propGrid, worldGrid, doorPosition);
     }    
 }
@@ -378,7 +378,7 @@ class SchoolLevel implements Level {
         grid.prettyPrint();
         const gridCellSize = 6;
         const [worldTileGrid, rooms] = convertHallwayMapToWorldGrid(grid, gridCellSize);
-        const worldPropsGrid = new Grid<PropIndex | null>(worldTileGrid.width, worldTileGrid.height, null);
+        const worldPropsGrid = new Grid<Nullable<PropIndex>>(worldTileGrid.width, worldTileGrid.height, null);
         for (const [room, position] of rooms) {
             if (room.canBePlacedAt(worldTileGrid, position)) {
                 switch (room.doorSide) {
