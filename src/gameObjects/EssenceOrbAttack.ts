@@ -1,7 +1,7 @@
 import { spriteRenderer } from "../renderers";
 import { GameObjectFactory, GameObject } from "./index";
 import { MathUtils, Vector, Color } from "../utils";
-import { getSound } from "../soundLoader";
+import { getSound } from "../assets/soundLoader";
 
 const EssenceOrbAttackFactory: GameObjectFactory = (value: number, position: Vector, target: GameObject) => {
     const orb = new GameObject();

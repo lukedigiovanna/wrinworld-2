@@ -2,7 +2,7 @@ import { spriteRenderer } from "../renderers";
 import { GameObjectFactory, GameObject } from "./index";
 import { Vector } from "../utils";
 import { PhysicalCollider } from "../components";
-import { getTexture } from "../imageLoader";
+import { getTexture } from "../assets/imageLoader";
 import { PropIndex, propsCodex } from "../props";
 
 const PropFactory: GameObjectFactory = (propertiesIndex: PropIndex, position: Vector) => {

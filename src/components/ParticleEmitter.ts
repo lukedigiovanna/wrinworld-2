@@ -4,7 +4,7 @@
 import { ComponentFactory } from "./index";
 import { GameObject } from "../gameObjects";
 import { Vector, MathUtils, Color } from "../utils";
-import { getTexture } from "../imageLoader";
+import { getTexture } from "../assets/imageLoader";
 
 enum ParticleLayer {
     ABOVE_OBJECTS,

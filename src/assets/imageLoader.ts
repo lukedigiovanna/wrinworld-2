@@ -1,4 +1,4 @@
-import { Rectangle } from "./utils";
+import { Rectangle } from "../utils";
 
 class Texture {
     private _image: HTMLImageElement;

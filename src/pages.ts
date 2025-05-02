@@ -2,7 +2,7 @@ import { Game } from "./game";
 import settings from "./settings";
 import { ShaderProgram } from "./rendering/ShaderProgram";
 import { fragmentShaderCode, vertexShaderCode } from "./rendering/shaderCode";
-import { loadAssets } from "./loadAssets";
+import { loadAssets } from "./assets/loadAssets";
 import { sleep } from "./utils";
 
 enum PageIndex {

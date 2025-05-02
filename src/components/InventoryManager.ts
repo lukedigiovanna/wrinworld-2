@@ -2,7 +2,7 @@ import { ComponentFactory } from "./index";
 import { GameObject } from "../gameObjects";
 import input, { InputLayer } from "../input";
 import { Inventory, SlotLocator } from "../inventory";
-import { getTexture } from "../imageLoader";
+import { getTexture } from "../assets/imageLoader";
 import { Color, Vector } from "../utils";
 import controls, { Controls } from "../controls";
 

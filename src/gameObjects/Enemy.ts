@@ -6,7 +6,7 @@ import { Health, Hitbox, Physics, PhysicalCollider, ItemDropper,
     MovementData} from "../components";
 import { TileIndex } from "../tiles";
 import { enemiesCodex, EnemyIndex } from "../enemies";
-import { getTexture } from "../imageLoader";
+import { getTexture } from "../assets/imageLoader";
 
 const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyIndex) => {
     const enemyData = enemiesCodex[enemyIndex];

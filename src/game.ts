@@ -2,15 +2,15 @@ import { GameObject, PlayerFactory } from "./gameObjects";
 import { Vector, MathUtils, PerlinNoise, Color, Ease } from "./utils";
 import input from "./input";
 import { Camera } from "./camera";
-import { getTexture } from "./imageLoader";
+import { getTexture } from "./assets/imageLoader";
 import { Particle, ParticleLayer } from "./components";
 import { Tile, tileCodex, TileIndex } from "./tiles";
 import { Level, levels, LevelIndex } from "./levels";
-import { ShaderProgram, ShaderShadow, MAX_SHADOWS } from "./rendering/ShaderProgram";
+import { ShaderShadow, MAX_SHADOWS } from "./rendering/ShaderProgram";
 import settings from "./settings";
 import statTracker from "./statTracker";
 import { animationsCodex } from "./animations";
-import { PriorityQueue } from "./PriorityQueue";
+import { PriorityQueue } from "./utils/PriorityQueue";
 
 const CHUNK_SIZE = 8;
 const TILES_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE;

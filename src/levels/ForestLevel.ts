@@ -5,7 +5,7 @@ import { TileIndex } from "../tiles";
 import { EnemyIndex, PortalFactory, PropFactory } from "../gameObjects";
 import { ItemIndex } from "../items";
 import { PropIndex, propsCodex } from "../props";
-import { getTexture } from "../imageLoader";
+import { getTexture } from "../assets/imageLoader";
 
 class ForestLevel implements Level {
     readonly name = "Corrupted Forest";

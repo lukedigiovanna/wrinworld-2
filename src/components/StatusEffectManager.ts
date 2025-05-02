@@ -2,7 +2,7 @@ import { ComponentFactory, ParticleEmitter } from "./";
 import { GameObject } from "../gameObjects";
 import { StatusEffectIndex, statusEffectsCodex, StatusEffect } from "../statusEffects";
 import { MathUtils, Vector, Color } from "../utils";
-import { getTexture } from "../imageLoader";
+import { getTexture } from "../assets/imageLoader";
 
 interface Effect {
     statusEffect: StatusEffect;

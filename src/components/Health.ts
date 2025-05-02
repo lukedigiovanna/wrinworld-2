@@ -1,4 +1,4 @@
-import { getSound } from "../soundLoader";
+import { getSound } from "../assets/soundLoader";
 import { GameObject } from "../gameObjects/index";
 import { ComponentFactory, Physics } from "./index";
 import { Color, MathUtils } from "../utils";

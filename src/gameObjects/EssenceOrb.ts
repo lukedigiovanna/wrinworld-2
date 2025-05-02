@@ -2,8 +2,7 @@ import { spriteRenderer } from "../renderers";
 import { GameObjectFactory, GameObject } from "./index";
 import { MathUtils, Vector, Color, Ease } from "../utils";
 import { Hitbox } from "../components";
-import { getSound } from "../soundLoader";
-import { PIXELS_PER_TILE } from "../game";
+import { getSound } from "../assets/soundLoader";
 
 const ORB_LIFESPAN = 120;
 

@@ -1,5 +1,5 @@
 import { EssenceOrbAttackFactory, GameObject, PORTAL_ACTIVE_RADIUS } from "../gameObjects";
-import { getImage } from "../imageLoader";
+import { getImage } from "../assets/imageLoader";
 import { ComponentFactory } from "./";
 import input from "../input";
 import controls from "../controls";

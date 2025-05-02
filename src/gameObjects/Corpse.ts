@@ -1,6 +1,6 @@
 import { GameObject, GameObjectFactory } from "./";
 import { Physics } from "../components";
-import { getTexture } from "../imageLoader";
+import { getTexture } from "../assets/imageLoader";
 import { Color, MathUtils } from "../utils";
 import { spriteRenderer } from "../renderers";
 

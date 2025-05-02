@@ -3,7 +3,7 @@ import { Item } from "../items";
 import { GameObjectFactory, GameObject } from "./index";
 import { Vector } from "../utils";
 import { Hitbox, Physics } from "../components";
-import { getSound } from "../soundLoader";
+import { getSound } from "../assets/soundLoader";
 
 const ITEM_LIFESPAN = 180;
 

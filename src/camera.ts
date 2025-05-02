@@ -3,8 +3,8 @@ import { Vector, MathUtils, Color, Ease } from "./utils";
 import { MAX_LIGHTS, MAX_PORTALS, MAX_SHADOWS, ShaderLight, ShaderPortal, 
          ShaderProgram, ShaderShadow } from "./rendering/ShaderProgram";
 import { FrameBuffer } from "./rendering/FrameBuffer";
-import { getOrthographicProjection, Matrix4 } from "./matrixutils";
-import { Texture, getTexture } from "./imageLoader";
+import { getOrthographicProjection, Matrix4 } from "./utils/Matrix4";
+import { Texture, getTexture } from "./assets/imageLoader";
 import { Game } from "./game";
 import { GameObject } from "./gameObjects";
 import * as ShaderCode from "./rendering/shaderCode";

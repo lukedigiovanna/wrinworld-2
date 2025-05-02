@@ -1,7 +1,7 @@
 import { Item, ItemCategory, ItemIndex, itemsCodex, ItemStat, 
          itemStats, 
          ItemStatValue} from "./items";
-import { getImage } from "./imageLoader";
+import { getImage } from "./assets/imageLoader";
 import { GameObject } from "./gameObjects";
 import input, { InputLayer } from "./input";
 import { MathUtils, Vector } from "./utils";

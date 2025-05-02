@@ -1,4 +1,4 @@
-import settings from "./settings";
+import settings from "../settings";
 
 class AudioPool {
     private pool: HTMLAudioElement[];

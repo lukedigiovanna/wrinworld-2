@@ -3,7 +3,7 @@ import { MathUtils, Vector, Color } from "../utils";
 import { Hitbox, Physics, PhysicalCollider } from "../components";
 import { spriteRenderer } from "../renderers";
 import { Projectile } from "../projectiles";
-import { getTexture } from "../imageLoader";
+import { getTexture } from "../assets/imageLoader";
 
 const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: GameObject, position: Vector, target: Vector) => {
     properties = {...properties};
