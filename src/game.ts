@@ -11,6 +11,7 @@ import settings from "./settings";
 import statTracker from "./statTracker";
 import { animationsCodex } from "./animations";
 import { PriorityQueue } from "./utils/PriorityQueue";
+import { PostProcessingShaderIndex } from "./rendering/postProcessingShaders";
 
 const CHUNK_SIZE = 8;
 const TILES_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE;
@@ -18,6 +19,7 @@ const PIXELS_PER_TILE = 16;
 const MAX_NUM_CHUNKS = 1024; // number of chunks along width and height of the world
 const WORLD_SIZE = CHUNK_SIZE * MAX_NUM_CHUNKS;
 const RENDER_DISTANCE = 3;
+const PIXELATION_PERIOD = 5;
 
 const getChunkIndex = (position: Vector) => {
     const c = Vector.add(Vector.scaled(position, 1 / PIXELS_PER_TILE), new Vector(WORLD_SIZE / 2, WORLD_SIZE / 2));
@@ -69,6 +71,8 @@ class Game {
 
     private level?: Level;
     private dirtyLevel = false;
+    private levelStartTime: number = -999;
+    private pixelateLevelStart = false;
 
     constructor(canvas: HTMLCanvasElement, gl: WebGLRenderingContext) {
         this._camera = new Camera(this, canvas, gl);
@@ -79,7 +83,7 @@ class Game {
 
         this._camera.verticalBoundary = [2 * PIXELS_PER_TILE, (24 + 8 + 96) * PIXELS_PER_TILE];
     
-        this.switchLevel(LevelIndex.FOREST);
+        this.switchLevel(LevelIndex.FOREST, false);
 
         this.timeoutQueue = new PriorityQueue<TimeoutRequest>(
             // The request with less time remaining should come before
@@ -90,8 +94,10 @@ class Game {
             });
     }
 
-    public switchLevel(levelIndex: LevelIndex) {
+    public switchLevel(levelIndex: LevelIndex, pixelateLevelStart=true) {
         this.dirtyLevel = true;
+        this.levelStartTime = this.time;
+        this.pixelateLevelStart = pixelateLevelStart;
         this.level = levels[levelIndex];
     }
 
@@ -134,7 +140,7 @@ class Game {
     // Performs any boilerplate updates to the game such as removing dead objects
     // adding new objects, updating active chunks, and generating new chunks.
     public preUpdate() {
-        if (this.dirtyLevel && this.level) {
+        if (this.dirtyLevel && (!this.pixelateLevelStart || this.time - this.levelStartTime > PIXELATION_PERIOD / 2) && this.level) {
             // Unload everything if there was already a loaded level
             this.chunks = new Map<number, Chunk>();
             this.activeObjects = [];
@@ -271,6 +277,17 @@ class Game {
     public draw() {
         if (this.paused) {
             return;
+        }
+        
+        const pixelationTime = (this.time - this.levelStartTime) / PIXELATION_PERIOD;
+        if (this.pixelateLevelStart && 0 <= pixelationTime && pixelationTime <= 1) {
+            let factor = Math.pow(35 * (pixelationTime - 0.5), 2) + 20;
+            this._camera.setActivePostProcessingShader(PostProcessingShaderIndex.PIXELATE);
+            this._camera.getActivePostProcessingShader()
+                        .setUniform2f("pixelationScale", factor * this.camera.width / this.camera.height, factor);
+        }
+        else {
+            this._camera.setActivePostProcessingShader(PostProcessingShaderIndex.NO_EFFECT);
         }
 
         this._camera.clear();

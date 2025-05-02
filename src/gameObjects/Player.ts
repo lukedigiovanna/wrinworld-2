@@ -84,12 +84,12 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                 if (input.isKeyPressed("KeyL")) {
                     gameObject.game.switchLevel(LevelIndex.SCHOOL);
                 }
-                if (input.isKeyDown("KeyI")) {
-                    gameObject.game.camera.setActivePostProcessingShader(PostProcessingShaderIndex.INVERT);
-                }
-                else {
-                    gameObject.game.camera.setActivePostProcessingShader(PostProcessingShaderIndex.NO_EFFECT);
-                }
+                // if (input.isKeyDown("KeyI")) {
+                //     gameObject.game.camera.setActivePostProcessingShader(PostProcessingShaderIndex.INVERT);
+                // }
+                // else {
+                //     gameObject.game.camera.setActivePostProcessingShader(PostProcessingShaderIndex.NO_EFFECT);
+                // }
             }
         }
     });

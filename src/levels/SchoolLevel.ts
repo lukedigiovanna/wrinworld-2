@@ -56,20 +56,6 @@ class Grid<T> {
         return this.cells[row * this.width + col];
     }
 
-    public getLeft(row: number, col: number, direction: Direction): T | undefined {
-        if (direction === "up") return this.get(row, col - 1);
-        if (direction === "down") return this.get(row, col + 1);
-        if (direction === "left") return this.get(row - 1, col);
-        if (direction === "right") return this.get(row + 1, col);
-    }
-
-    public getRight(row: number, col: number, direction: Direction): T | undefined {
-        if (direction === "up") return this.get(row, col + 1);
-        if (direction === "down") return this.get(row, col - 1);
-        if (direction === "left") return this.get(row + 1, col);
-        if (direction === "right") return this.get(row - 1, col);
-    }
-
     public validCoord(row: number, col: number): boolean {
         return row >= 0 && row < this.height && col >= 0 && col < this.width;
     }
@@ -86,8 +72,6 @@ class Grid<T> {
         console.log(out);
     }
 }
-
-type Direction = "up" | "left" | "down" | "right";
 
 interface Endpoint {
     row: number;
@@ -108,7 +92,6 @@ function generateHallwayMap() {
 
     for (let i = 0; i < 45; i++) {
         if (endpoints.length === 0) break;
-        // const index = MathUtils.randomInt(0, endpoints.length - 1);
         const endpoint = endpoints.splice(0, 1)[0];
         
         console.log(endpoint);

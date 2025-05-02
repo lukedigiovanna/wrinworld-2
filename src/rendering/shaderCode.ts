@@ -190,12 +190,27 @@ varying vec2 texCoord;
 
 void main() {
     vec4 color = texture2D(texture, texCoord);
-
-    // Example effect: invert colors
     gl_FragColor = vec4(1.0 - color.rgb, 1.0);
+}
+`
+const pixelatePostProcessingFragmentShader = `
+precision mediump float;
+
+uniform sampler2D texture;
+uniform vec2 pixelationScale;
+varying vec2 texCoord;
+
+float rounded(float v, float scale) {
+    return floor(v * scale) / scale;
+    // return round(v);
+}
+
+void main() {
+    vec2 roundedTexCoord = vec2(rounded(texCoord.x, pixelationScale.x), rounded(texCoord.y, pixelationScale.y));
+    gl_FragColor = texture2D(texture, roundedTexCoord);
 }
 `
 
 export { vertexShaderCode, fragmentShaderCode, 
     postProcessingVertexShaderCode, invertColorsPostProcessingFragmentShader,
-    noEffectPostProcessingFragmentShader };
+    noEffectPostProcessingFragmentShader, pixelatePostProcessingFragmentShader };

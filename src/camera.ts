@@ -50,7 +50,7 @@ class Camera {
         this.gl = gl;
         this.sceneShader = new ShaderProgram(this.gl, ShaderCode.vertexShaderCode, ShaderCode.fragmentShaderCode);
         this.loadedPostProcessingShaders = new Map<PostProcessingShaderIndex, ShaderProgram>();
-        this.setActivePostProcessingShader(PostProcessingShaderIndex.NO_EFFECT);
+        this.setActivePostProcessingShader(PostProcessingShaderIndex.PIXELATE);
         this.sceneFramebuffer = new FrameBuffer(gl, canvas);
         this.position = Vector.zero();
         this.height = 256;
@@ -77,6 +77,10 @@ class Camera {
             this.loadedPostProcessingShaders.set(index, new ShaderProgram(this.gl, ShaderCode.postProcessingVertexShaderCode, postProcessingFragmentShaderCodes[index]))
         }
         this.activePostProcessingShader = this.loadedPostProcessingShaders.get(index)!;
+    }
+
+    public getActivePostProcessingShader() {
+        return this.activePostProcessingShader;
     }
 
     public applyShake(duration: number, intensity: number) {
