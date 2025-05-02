@@ -23,6 +23,7 @@ enum TileIndex {
     CURSED_SAND,
     CURSED_PLANKS,
     SCHOOL_TILE,
+    SCHOOL_TILE_BLACK,
     SCHOOL_WALL,
     SCHOOL_WALL_SIDE,
     SCHOOL_WALL_INSIDE_CORNER,
@@ -114,6 +115,12 @@ const tileCodex: Record<TileIndex, TileData> = {
 },
 [TileIndex.SCHOOL_TILE]: {
     spriteID: "school_tile",
+    canGrowPlants: false,
+    canSpawnPortal: true,
+    wall: false,
+},
+[TileIndex.SCHOOL_TILE_BLACK]: {
+    spriteID: "school_tile_black",
     canGrowPlants: false,
     canSpawnPortal: true,
     wall: false,

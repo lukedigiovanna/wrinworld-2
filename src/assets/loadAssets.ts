@@ -17,6 +17,7 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "cursed_planks", "assets/images/tiles/cursed_planks.png"),
         loadImageAndTextureSpritesheet(gl, "water", "assets/images/tiles/water_animation.png", 16, 16),
         loadImageAndTexture(gl, "school_tile", "assets/images/tiles/school_tile.png"),
+        loadImageAndTexture(gl, "school_tile_black", "assets/images/tiles/school_tile_black.png"),
         loadImageAndTexture(gl, "school_wall", "assets/images/tiles/school_wall.png"),
         loadImageAndTexture(gl, "school_wall_side", "assets/images/tiles/school_wall_side.png"),
         loadImageAndTexture(gl, "school_wall_inside_corner", "assets/images/tiles/school_wall_inside_corner.png"),

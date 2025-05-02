@@ -181,6 +181,13 @@ class Room {
 }
 
 const bathroomTopDoorRoom = new Room(14, 8, "top", 11, 1);
+for (let r = 0; r < bathroomTopDoorRoom.tileGrid.height; r++) {
+    for (let c = 0; c < bathroomTopDoorRoom.tileGrid.width; c++) {
+        if ((r + c) % 2 === 0) {
+            bathroomTopDoorRoom.tileGrid.set(r, c, { index: TileIndex.SCHOOL_TILE_BLACK, rotation: 0 });
+        }
+    }
+}
 bathroomTopDoorRoom.drawWalls();   
 for (let c = 0; c < 5; c++)
 bathroomTopDoorRoom.propGrid.set(6, 2 * c + 1, PropIndex.TOILET);
