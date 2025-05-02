@@ -18,10 +18,10 @@ class Grid<T> {
     }
 
     public drawHorizontalLine(row: number, c0: number, c1: number, value: T) {
-        console.log(`drawHorizontalLine(${row},${c0},${c1},${value})`)
         let d = Math.sign(c1 - c0);
         while (c0 !== c1) {
-            if (this.get(row, c0) ||  (!this.get(row + 1, c0) && !this.get(row - 1, c0))) {
+            // Allow draw if drawing on an existing cell or the sides are clear
+            if (this.get(row, c0) || (!this.get(row + 1, c0) && !this.get(row - 1, c0))) {
                 this.set(row, c0, value);
                 c0 += d;
             }
@@ -33,7 +33,6 @@ class Grid<T> {
     }
     
     public drawVerticalLine(col: number, r0: number, r1: number, value: T) {
-        console.log(`drawVerticalLine(${col},${r0},${r1},${value})`)
         let d = Math.sign(r1 - r0);
         while (r0 !== r1) {
             if (this.get(r0, col) || (!this.get(r0, col + 1) && !this.get(r0, col - 1))) {
@@ -80,24 +79,29 @@ interface GridPosition {
     col: number;
 }
 
-type DoorDirection = "open_up" | "open_down" | "open_right" | "open_left";
+type Side = "left" | "right" | "up" | "down";
 
-function placeDoor(grid: Grid<Tile>, doorPosition: GridPosition, radius: number, direction: DoorDirection) {
-    switch (direction) {
-        case "open_up":
-            grid.set(doorPosition.row, doorPosition.col - radius, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER, rotation: 0 });
-            for (let d = -(radius - 1); d <= radius - 1; d++) {
-                grid.set(doorPosition.row, doorPosition.col + d, { index: TileIndex.SCHOOL_TILE, rotation: 0 })
-            }
-            grid.set(doorPosition.row, doorPosition.col + radius, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER, rotation: 1 });
-            break;
-        case "open_down":
-            grid.set(doorPosition.row, doorPosition.col - radius, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER, rotation: 3 });
-            for (let d = -(radius - 1); d <= radius - 1; d++) {
-                grid.set(doorPosition.row, doorPosition.col + d, { index: TileIndex.SCHOOL_TILE, rotation: 0 })
-            }
-            grid.set(doorPosition.row, doorPosition.col + radius, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER, rotation: 2 });
-            break;
+const rotationsMap: Record<Side, Pair<TileRotation, TileRotation>> = {
+    "up": [3, 2],
+    "down": [0, 1],
+    "left": [0, 3],
+    "right": [1, 2],
+};
+function placeDoor(grid: Grid<Tile>, doorPosition: GridPosition, radius: number, direction: Side) {
+    const [r1, r2] = rotationsMap[direction];
+    if (direction === "up" || direction === "down") {
+        grid.set(doorPosition.row, doorPosition.col - radius, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER, rotation: r1 });
+        for (let d = -(radius - 1); d <= radius - 1; d++) {
+            grid.set(doorPosition.row, doorPosition.col + d, { index: TileIndex.SCHOOL_TILE, rotation: 0 })
+        }
+        grid.set(doorPosition.row, doorPosition.col + radius, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER, rotation: r2 });
+    }
+    else {
+        grid.set(doorPosition.row - radius, doorPosition.col, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER, rotation: r1 });
+        for (let d = -(radius - 1); d <= radius - 1; d++) {
+            grid.set(doorPosition.row + d, doorPosition.col, { index: TileIndex.SCHOOL_TILE, rotation: 0 })
+        }
+        grid.set(doorPosition.row + radius, doorPosition.col, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER, rotation: r2 });
     }
 }
 
@@ -105,11 +109,20 @@ class Room {
     readonly tileGrid: Grid<Tile>;
     readonly propGrid: Grid<PropIndex | null>;
     readonly doorPosition: GridPosition;
+    readonly doorSide: Side;
+    readonly doorRadius: number;
 
-    constructor(width: number, height: number, doorPosition: GridPosition) {
+    constructor(width: number, height: number, doorSide: Side, doorOffset: number, doorRadius: number) {
         this.tileGrid = new Grid<Tile>(width, height, { index: TileIndex.SCHOOL_TILE, rotation: 0 });
         this.propGrid = new Grid<PropIndex | null>(width, height, null);
-        this.doorPosition = doorPosition;
+        switch (doorSide) {
+            case "left": this.doorPosition = { row: doorOffset, col: 0 }; break;
+            case "right": this.doorPosition = { row: doorOffset, col: width - 1 }; break;
+            case "up": this.doorPosition = { row: height - 1, col: doorOffset }; break;
+            case "down": this.doorPosition = { row: 0, col: doorOffset }; break;
+        }
+        this.doorSide = doorSide;
+        this.doorRadius = doorRadius;
     }
 
     // Draws walls around the rectangle of this room.
@@ -127,10 +140,7 @@ class Room {
         this.tileGrid.set(this.tileGrid.height - 1, 0, { index: TileIndex.SCHOOL_WALL_OUTSIDE_CORNER, rotation: 3 });
         this.tileGrid.set(this.tileGrid.height - 1, this.tileGrid.width - 1, { index: TileIndex.SCHOOL_WALL_OUTSIDE_CORNER, rotation: 2 });
         
-        const doorDirection = this.doorPosition.row === 0 ? "open_up" :
-                              this.doorPosition.row === this.tileGrid.height - 1 ? "open_down" :
-                              "open_up"
-        placeDoor(this.tileGrid, this.doorPosition, 1, doorDirection);
+        placeDoor(this.tileGrid, this.doorPosition, this.doorRadius, this.doorSide);
     }
 
     public canBePlacedAt(worldGrid: Grid<Tile>, doorPosition: GridPosition) {
@@ -171,12 +181,40 @@ class Room {
     }    
 }
 
-const bathroomRoom = new Room(14, 8, { row: 7, col: 10});
-bathroomRoom.drawWalls();   
+const bathroomTopDoorRoom = new Room(14, 8, "up", 11, 1);
+bathroomTopDoorRoom.drawWalls();   
 for (let c = 0; c < 5; c++)
-bathroomRoom.propGrid.set(6, 2 * c + 1, PropIndex.TOILET);
-bathroomRoom.propGrid.set(5, 12, PropIndex.SINK);
-bathroomRoom.propGrid.set(3, 12, PropIndex.SINK);
+bathroomTopDoorRoom.propGrid.set(6, 2 * c + 1, PropIndex.TOILET);
+bathroomTopDoorRoom.propGrid.set(5, 12, PropIndex.SINK);
+bathroomTopDoorRoom.propGrid.set(3, 12, PropIndex.SINK);
+
+const bathroomBottomDoorRoom = new Room(14, 8, "down", 11, 1);
+bathroomBottomDoorRoom.drawWalls();
+for (let c = 0; c < 5; c++)
+bathroomBottomDoorRoom.propGrid.set(6, 2 * c + 1, PropIndex.TOILET);
+bathroomBottomDoorRoom.propGrid.set(5, 12, PropIndex.SINK);
+bathroomBottomDoorRoom.propGrid.set(3, 12, PropIndex.SINK);
+
+const bathroomLeftDoorRoom = new Room(14, 8, "left", 2, 1);
+bathroomLeftDoorRoom.drawWalls();
+for (let c = 0; c < 5; c++)
+bathroomLeftDoorRoom.propGrid.set(6, 2 * c + 1, PropIndex.TOILET);
+bathroomLeftDoorRoom.propGrid.set(5, 12, PropIndex.SINK);
+bathroomLeftDoorRoom.propGrid.set(3, 12, PropIndex.SINK);
+
+const bathroomRightDoorRoom = new Room(14, 8, "right", 2, 1);
+bathroomRightDoorRoom.drawWalls();
+for (let c = 0; c < 5; c++)
+bathroomRightDoorRoom.propGrid.set(6, 2 * c + 1, PropIndex.TOILET);
+bathroomRightDoorRoom.propGrid.set(5, 12, PropIndex.SINK);
+bathroomRightDoorRoom.propGrid.set(3, 12, PropIndex.SINK);
+
+const possibleRooms: Record<Side, Room[]> = {
+    "down": [bathroomBottomDoorRoom],
+    "up": [bathroomTopDoorRoom],
+    "left": [bathroomLeftDoorRoom],
+    "right": [bathroomRightDoorRoom]
+};
 
 type Pair<A, B> = [A, B];
 
@@ -255,7 +293,16 @@ function convertHallwayMapToWorldGrid(grid: Grid<number>, gridCellSize: number):
                 const leftTopCorner = grid.get(row + 1, col) && grid.get(row, col - 1) && !grid.get(row + 1, col - 1);
                 const rightTopCorner = grid.get(row + 1, col) && grid.get(row, col + 1) && !grid.get(row + 1, col + 1);
                 if (bottomWall && Math.random() < 0.5) {
-                    rooms.push([bathroomRoom, { row: row * gridCellSize - 1, col: col * gridCellSize + gridCellSize / 2 }])
+                    rooms.push([MathUtils.randomChoice(possibleRooms.up), { row: row * gridCellSize - 1, col: col * gridCellSize + gridCellSize / 2 }])
+                }
+                if (topWall && Math.random() < 0.5) {
+                    rooms.push([MathUtils.randomChoice(possibleRooms.down), { row: (row + 1) * gridCellSize, col: col * gridCellSize + gridCellSize / 2 }])
+                }
+                if (leftWall && Math.random() < 0.5) {
+                    rooms.push([MathUtils.randomChoice(possibleRooms.right), { row: row * gridCellSize + gridCellSize / 2, col: col * gridCellSize - 1 }])
+                }
+                if (rightWall && Math.random() < 0.5) {
+                    rooms.push([MathUtils.randomChoice(possibleRooms.left), { row: row * gridCellSize + gridCellSize / 2, col: (col + 1) * gridCellSize }])
                 }
                 for (let dc = 0; dc < gridCellSize; dc++) {
                     for (let dr = 0; dr < gridCellSize; dr++) {
@@ -337,7 +384,21 @@ class SchoolLevel implements Level {
         const worldPropsGrid = new Grid<PropIndex | null>(worldTileGrid.width, worldTileGrid.height, null);
         for (const [room, position] of rooms) {
             if (room.canBePlacedAt(worldTileGrid, position)) {
-                placeDoor(worldTileGrid, {row: position.row + 1, col: position.col}, 1, "open_up");
+                switch (room.doorSide) {
+                case "up":
+                    placeDoor(worldTileGrid, {row: position.row + 1, col: position.col}, room.doorRadius, "down");
+                    break;
+                case "down":
+                    placeDoor(worldTileGrid, {row: position.row - 1, col: position.col}, room.doorRadius, "up");
+                    break;
+                case "right":
+                    placeDoor(worldTileGrid, {row: position.row, col: position.col + 1}, room.doorRadius, "left");
+                    break;
+                case "left":
+                    placeDoor(worldTileGrid, {row: position.row, col: position.col - 1}, room.doorRadius, "right");
+                    break;
+                }
+                
                 room.placeTilesInGrid(worldTileGrid, position);
                 room.placePropsInGrid(worldPropsGrid, position);
             }

@@ -53,7 +53,7 @@ class Camera {
         this.setActivePostProcessingShader(PostProcessingShaderIndex.PIXELATE);
         this.sceneFramebuffer = new FrameBuffer(gl, canvas);
         this.position = Vector.zero();
-        this.height = 256;
+        this.height = 200;
 
         this.gl.enable(this.gl.BLEND);
         this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);  
