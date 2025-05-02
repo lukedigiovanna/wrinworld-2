@@ -5,6 +5,7 @@ import { Tile, TileIndex, TileRotation } from "../tiles";
 import { MathUtils, Vector } from "../utils";
 import { PropIndex, propsCodex } from "../props";
 import { getTexture } from "../assets/imageLoader";
+import { Pair, Side } from "../utils/types";
 
 class Grid<T> {
     private cells: T[];
@@ -79,17 +80,15 @@ interface GridPosition {
     col: number;
 }
 
-type Side = "left" | "right" | "up" | "down";
-
 const rotationsMap: Record<Side, Pair<TileRotation, TileRotation>> = {
-    "up": [3, 2],
-    "down": [0, 1],
+    "top": [3, 2],
+    "bottom": [0, 1],
     "left": [0, 3],
     "right": [1, 2],
 };
 function placeDoor(grid: Grid<Tile>, doorPosition: GridPosition, radius: number, direction: Side) {
     const [r1, r2] = rotationsMap[direction];
-    if (direction === "up" || direction === "down") {
+    if (direction === "top" || direction === "bottom") {
         grid.set(doorPosition.row, doorPosition.col - radius, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER, rotation: r1 });
         for (let d = -(radius - 1); d <= radius - 1; d++) {
             grid.set(doorPosition.row, doorPosition.col + d, { index: TileIndex.SCHOOL_TILE, rotation: 0 })
@@ -118,8 +117,8 @@ class Room {
         switch (doorSide) {
             case "left": this.doorPosition = { row: doorOffset, col: 0 }; break;
             case "right": this.doorPosition = { row: doorOffset, col: width - 1 }; break;
-            case "up": this.doorPosition = { row: height - 1, col: doorOffset }; break;
-            case "down": this.doorPosition = { row: 0, col: doorOffset }; break;
+            case "top": this.doorPosition = { row: height - 1, col: doorOffset }; break;
+            case "bottom": this.doorPosition = { row: 0, col: doorOffset }; break;
         }
         this.doorSide = doorSide;
         this.doorRadius = doorRadius;
@@ -181,14 +180,14 @@ class Room {
     }    
 }
 
-const bathroomTopDoorRoom = new Room(14, 8, "up", 11, 1);
+const bathroomTopDoorRoom = new Room(14, 8, "top", 11, 1);
 bathroomTopDoorRoom.drawWalls();   
 for (let c = 0; c < 5; c++)
 bathroomTopDoorRoom.propGrid.set(6, 2 * c + 1, PropIndex.TOILET);
 bathroomTopDoorRoom.propGrid.set(5, 12, PropIndex.SINK);
 bathroomTopDoorRoom.propGrid.set(3, 12, PropIndex.SINK);
 
-const bathroomBottomDoorRoom = new Room(14, 8, "down", 11, 1);
+const bathroomBottomDoorRoom = new Room(14, 8, "bottom", 11, 1);
 bathroomBottomDoorRoom.drawWalls();
 for (let c = 0; c < 5; c++)
 bathroomBottomDoorRoom.propGrid.set(6, 2 * c + 1, PropIndex.TOILET);
@@ -210,13 +209,11 @@ bathroomRightDoorRoom.propGrid.set(5, 12, PropIndex.SINK);
 bathroomRightDoorRoom.propGrid.set(3, 12, PropIndex.SINK);
 
 const possibleRooms: Record<Side, Room[]> = {
-    "down": [bathroomBottomDoorRoom],
-    "up": [bathroomTopDoorRoom],
+    "bottom": [bathroomBottomDoorRoom],
+    "top": [bathroomTopDoorRoom],
     "left": [bathroomLeftDoorRoom],
     "right": [bathroomRightDoorRoom]
 };
-
-type Pair<A, B> = [A, B];
 
 interface Endpoint {
     row: number;
@@ -293,10 +290,10 @@ function convertHallwayMapToWorldGrid(grid: Grid<number>, gridCellSize: number):
                 const leftTopCorner = grid.get(row + 1, col) && grid.get(row, col - 1) && !grid.get(row + 1, col - 1);
                 const rightTopCorner = grid.get(row + 1, col) && grid.get(row, col + 1) && !grid.get(row + 1, col + 1);
                 if (bottomWall && Math.random() < 0.5) {
-                    rooms.push([MathUtils.randomChoice(possibleRooms.up), { row: row * gridCellSize - 1, col: col * gridCellSize + gridCellSize / 2 }])
+                    rooms.push([MathUtils.randomChoice(possibleRooms.top), { row: row * gridCellSize - 1, col: col * gridCellSize + gridCellSize / 2 }])
                 }
                 if (topWall && Math.random() < 0.5) {
-                    rooms.push([MathUtils.randomChoice(possibleRooms.down), { row: (row + 1) * gridCellSize, col: col * gridCellSize + gridCellSize / 2 }])
+                    rooms.push([MathUtils.randomChoice(possibleRooms.bottom), { row: (row + 1) * gridCellSize, col: col * gridCellSize + gridCellSize / 2 }])
                 }
                 if (leftWall && Math.random() < 0.5) {
                     rooms.push([MathUtils.randomChoice(possibleRooms.right), { row: row * gridCellSize + gridCellSize / 2, col: col * gridCellSize - 1 }])
@@ -385,11 +382,11 @@ class SchoolLevel implements Level {
         for (const [room, position] of rooms) {
             if (room.canBePlacedAt(worldTileGrid, position)) {
                 switch (room.doorSide) {
-                case "up":
-                    placeDoor(worldTileGrid, {row: position.row + 1, col: position.col}, room.doorRadius, "down");
+                case "top":
+                    placeDoor(worldTileGrid, {row: position.row + 1, col: position.col}, room.doorRadius, "bottom");
                     break;
-                case "down":
-                    placeDoor(worldTileGrid, {row: position.row - 1, col: position.col}, room.doorRadius, "up");
+                case "bottom":
+                    placeDoor(worldTileGrid, {row: position.row - 1, col: position.col}, room.doorRadius, "top");
                     break;
                 case "right":
                     placeDoor(worldTileGrid, {row: position.row, col: position.col + 1}, room.doorRadius, "left");
