@@ -242,8 +242,6 @@ function generateHallwayMap() {
     for (let i = 0; i < 45; i++) {
         if (endpoints.length === 0) break;
         const endpoint = endpoints.splice(0, 1)[0];
-        
-        console.log(endpoint);
         let dLow = MathUtils.randomInt(0, 12);
         let dHigh = MathUtils.randomInt(0, 12);
         if (dLow < 3) dLow = 0;
@@ -273,8 +271,8 @@ function generateHallwayMap() {
             }
         }
         grid.set(endpoint.row, endpoint.col, 2);
-        grid.prettyPrint();
     }
+    grid.prettyPrint();
 
     return grid;
 }
@@ -382,7 +380,6 @@ class SchoolLevel implements Level {
 
     generate(game: Game) {
         const grid = generateHallwayMap();
-        grid.prettyPrint();
         const gridCellSize = 6;
         const [worldTileGrid, rooms] = convertHallwayMapToWorldGrid(grid, gridCellSize);
         const worldPropsGrid = new Grid<Nullable<PropIndex>>(worldTileGrid.width, worldTileGrid.height, null);
