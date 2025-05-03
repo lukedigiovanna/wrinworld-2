@@ -276,9 +276,9 @@ class MathUtils {
         return Math.floor(Math.random() * (b - a + 1) + a);
     }
 
-    public static randomChoice(options: any[]) {
+    public static randomChoice<T>(options: T[]) {
         if (options.length === 0) {
-            return undefined;
+            throw Error("Cannot give empty array")
         }
         return options[this.randomInt(0, options.length - 1)];
     }

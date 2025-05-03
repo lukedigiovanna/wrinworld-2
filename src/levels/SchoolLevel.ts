@@ -5,7 +5,7 @@ import { Tile, TileIndex, TileRotation } from "../tiles";
 import { MathUtils, Vector } from "../utils";
 import { PropIndex, propsCodex } from "../props";
 import { getTexture } from "../assets/imageLoader";
-import { Nullable, Pair, Side } from "../utils/types";
+import { Direction, Nullable, Pair, Side } from "../utils/types";
 
 class Grid<T> {
     private cells: T[];
@@ -62,6 +62,19 @@ class Grid<T> {
         return row >= 0 && row < this.height && col >= 0 && col < this.width;
     }
 
+    // Applies the given function over the grid.
+    public iterate(func: (row: number, col: number) => void) {
+        for (let r = 0; r < this.height; r++) {
+            for (let c = 0; c < this.width; c++) {
+                func(r, c);
+            }
+        }
+    }
+
+    public copy(): Grid<T> {
+        return Object.assign(Object.create(Object.getPrototypeOf(this)), this);
+    }
+
     public prettyPrint() {
         let out = "";
         for (let r = this.height - 1; r >= 0; r--) {
@@ -80,71 +93,48 @@ interface GridPosition {
     col: number;
 }
 
-const rotationsMap: Record<Side, Pair<TileRotation, TileRotation>> = {
-    "top": [3, 2],
-    "bottom": [0, 1],
-    "left": [0, 3],
-    "right": [1, 2],
-};
-function placeDoor(grid: Grid<Tile>, doorPosition: GridPosition, radius: number, direction: Side) {
-    const [r1, r2] = rotationsMap[direction];
-    if (direction === "top" || direction === "bottom") {
-        grid.set(doorPosition.row, doorPosition.col - radius, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER, rotation: r1 });
-        for (let d = -(radius - 1); d <= radius - 1; d++) {
-            grid.set(doorPosition.row, doorPosition.col + d, { index: TileIndex.SCHOOL_TILE, rotation: 0 })
-        }
-        grid.set(doorPosition.row, doorPosition.col + radius, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER, rotation: r2 });
-    }
-    else {
-        grid.set(doorPosition.row - radius, doorPosition.col, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER, rotation: r1 });
-        for (let d = -(radius - 1); d <= radius - 1; d++) {
-            grid.set(doorPosition.row + d, doorPosition.col, { index: TileIndex.SCHOOL_TILE, rotation: 0 })
-        }
-        grid.set(doorPosition.row + radius, doorPosition.col, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER, rotation: r2 });
-    }
+interface DoorConfig {
+    side: Side,
+    offset: number,
+    radius: number;
 }
 
 class Room {
+    readonly width: number;
+    readonly height: number;
     readonly tileGrid: Grid<Tile>;
     readonly propGrid: Grid<Nullable<PropIndex>>;
-    readonly doorPosition: GridPosition;
-    readonly doorSide: Side;
-    readonly doorRadius: number;
+    private _doorPosition: GridPosition;
 
-    constructor(width: number, height: number, doorSide: Side, doorOffset: number, doorRadius: number) {
+    constructor(width: number, height: number, doorConfig: DoorConfig) {
+        this.width = width;
+        this.height = height;
         this.tileGrid = new Grid<Tile>(width, height, { index: TileIndex.SCHOOL_TILE, rotation: 0 });
         this.propGrid = new Grid<Nullable<PropIndex>>(width, height, null);
-        switch (doorSide) {
-            case "left": this.doorPosition = { row: doorOffset, col: 0 }; break;
-            case "right": this.doorPosition = { row: doorOffset, col: width - 1 }; break;
-            case "top": this.doorPosition = { row: height - 1, col: doorOffset }; break;
-            case "bottom": this.doorPosition = { row: 0, col: doorOffset }; break;
-        }
-        this.doorSide = doorSide;
-        this.doorRadius = doorRadius;
+        this._doorPosition = this.computeDoorPosition(doorConfig);
     }
 
-    // Draws walls around the rectangle of this room.
-    public drawWalls() {
-        for (let c = 0; c < this.tileGrid.width; c++) {
-            this.tileGrid.set(0, c, { index: TileIndex.SCHOOL_WALL_SIDE, rotation: 1 })
-            this.tileGrid.set(this.tileGrid.height - 1, c, { index: TileIndex.SCHOOL_WALL_SIDE, rotation: 3 });
+    private computeDoorPosition(doorConfig: DoorConfig): GridPosition {
+        switch (doorConfig.side) {
+            case "left": return { row: doorConfig.offset, col: 0 };
+            case "right": return { row: doorConfig.offset, col: this.width - 1 };
+            case "top": return { row: this.height - 1, col: doorConfig.offset };
+            case "bottom": return { row: 0, col: doorConfig.offset };
         }
-        for (let r = 0; r < this.tileGrid.height; r++) {
-            this.tileGrid.set(r, 0, { index: TileIndex.SCHOOL_WALL_SIDE, rotation: 0 });
-            this.tileGrid.set(r, this.tileGrid.width - 1, { index: TileIndex.SCHOOL_WALL_SIDE, rotation: 2 });
-        }
-        this.tileGrid.set(0, 0, { index: TileIndex.SCHOOL_WALL_OUTSIDE_CORNER, rotation: 0 });
-        this.tileGrid.set(0, this.tileGrid.width - 1, { index: TileIndex.SCHOOL_WALL_OUTSIDE_CORNER, rotation: 1 });
-        this.tileGrid.set(this.tileGrid.height - 1, 0, { index: TileIndex.SCHOOL_WALL_OUTSIDE_CORNER, rotation: 3 });
-        this.tileGrid.set(this.tileGrid.height - 1, this.tileGrid.width - 1, { index: TileIndex.SCHOOL_WALL_OUTSIDE_CORNER, rotation: 2 });
-        
-        placeDoor(this.tileGrid, this.doorPosition, this.doorRadius, this.doorSide);
     }
 
-    public canBePlacedAt(worldGrid: Grid<Tile>, doorPosition: GridPosition) {
-        for (let r = 0; r < this.tileGrid.height; r++) {
-            for (let c = 0; c < this.tileGrid.width; c++) {
+    public setDoor(doorConfig: DoorConfig): Room {
+        this._doorPosition = this.computeDoorPosition(doorConfig);
+        return this;
+    }
+
+    public get doorPosition() {
+        return this._doorPosition;
+    }
+
+    public canBePlacedAt(worldGrid: Grid<Tile>, doorPosition: GridPosition, padding=0) {
+        for (let r = -padding; r < this.tileGrid.height + padding; r++) {
+            for (let c = -padding; c < this.tileGrid.width + padding; c++) {
                 const offR = r - this.doorPosition.row;
                 const offC = c - this.doorPosition.col;
                 const gridR = doorPosition.row + offR;
@@ -177,49 +167,35 @@ class Room {
 
     public placePropsInGrid(worldGrid: Grid<Nullable<PropIndex>>, doorPosition: GridPosition) {
         this.placeInGrid(this.propGrid, worldGrid, doorPosition);
-    }    
+    }
+
+    public copy(): Room {
+        const newRoom = Object.assign(Object.create(Object.getPrototypeOf(this)), this);
+        return newRoom;
+    }
 }
 
-const bathroomTopDoorRoom = new Room(14, 8, "top", 11, 1);
-for (let r = 0; r < bathroomTopDoorRoom.tileGrid.height; r++) {
-    for (let c = 0; c < bathroomTopDoorRoom.tileGrid.width; c++) {
+const bathroomNorth = new Room(12, 6, { side: "bottom", offset: 10, radius: 1 });
+for (let r = 0; r < bathroomNorth.tileGrid.height; r++) {
+    for (let c = 0; c < bathroomNorth.tileGrid.width; c++) {
         if ((r + c) % 2 === 0) {
-            bathroomTopDoorRoom.tileGrid.set(r, c, { index: TileIndex.SCHOOL_TILE_BLACK, rotation: 0 });
+            bathroomNorth.tileGrid.set(r, c, { index: TileIndex.SCHOOL_TILE_BLACK, rotation: 0 });
         }
     }
 }
-bathroomTopDoorRoom.drawWalls();   
 for (let c = 0; c < 5; c++)
-bathroomTopDoorRoom.propGrid.set(6, 2 * c + 1, PropIndex.TOILET);
-bathroomTopDoorRoom.propGrid.set(5, 12, PropIndex.SINK);
-bathroomTopDoorRoom.propGrid.set(3, 12, PropIndex.SINK);
+    bathroomNorth.propGrid.set(5, 2 * c, PropIndex.TOILET);
+bathroomNorth.propGrid.set(4, 11, PropIndex.SINK);
+bathroomNorth.propGrid.set(2, 11, PropIndex.SINK);
+const bathroomSouth = bathroomNorth.copy().setDoor({ side: "top", offset: 10, radius: 1 });
+const bathroomEast = bathroomNorth.copy().setDoor({ side: "left", offset: 1, radius: 1 });
+const bathroomWest = bathroomNorth.copy().setDoor({ side: "right", offset: 1, radius: 1 });
 
-const bathroomBottomDoorRoom = new Room(14, 8, "bottom", 11, 1);
-bathroomBottomDoorRoom.drawWalls();
-for (let c = 0; c < 5; c++)
-bathroomBottomDoorRoom.propGrid.set(6, 2 * c + 1, PropIndex.TOILET);
-bathroomBottomDoorRoom.propGrid.set(5, 12, PropIndex.SINK);
-bathroomBottomDoorRoom.propGrid.set(3, 12, PropIndex.SINK);
-
-const bathroomLeftDoorRoom = new Room(14, 8, "left", 2, 1);
-bathroomLeftDoorRoom.drawWalls();
-for (let c = 0; c < 5; c++)
-bathroomLeftDoorRoom.propGrid.set(6, 2 * c + 1, PropIndex.TOILET);
-bathroomLeftDoorRoom.propGrid.set(5, 12, PropIndex.SINK);
-bathroomLeftDoorRoom.propGrid.set(3, 12, PropIndex.SINK);
-
-const bathroomRightDoorRoom = new Room(14, 8, "right", 2, 1);
-bathroomRightDoorRoom.drawWalls();
-for (let c = 0; c < 5; c++)
-bathroomRightDoorRoom.propGrid.set(6, 2 * c + 1, PropIndex.TOILET);
-bathroomRightDoorRoom.propGrid.set(5, 12, PropIndex.SINK);
-bathroomRightDoorRoom.propGrid.set(3, 12, PropIndex.SINK);
-
-const possibleRooms: Record<Side, Room[]> = {
-    "bottom": [bathroomBottomDoorRoom],
-    "top": [bathroomTopDoorRoom],
-    "left": [bathroomLeftDoorRoom],
-    "right": [bathroomRightDoorRoom]
+const possibleRooms: Record<Direction, Room[]> = {
+    "north": [bathroomNorth],
+    "south": [bathroomSouth],
+    "east": [bathroomEast],
+    "west": [bathroomWest]
 };
 
 interface Endpoint {
@@ -228,6 +204,7 @@ interface Endpoint {
     direction: "horizontal" | "vertical";
 }
 
+// Generates a grid representing the hallway map
 function generateHallwayMap() {
     const W = 31;
     const grid = new Grid<number>(W, W, 0);
@@ -277,94 +254,73 @@ function generateHallwayMap() {
     return grid;
 }
 
-function convertHallwayMapToWorldGrid(grid: Grid<number>, gridCellSize: number): Pair<Grid<Tile>,Pair<Room, GridPosition>[]>  {
-    const gridWorldWidth = grid.width * gridCellSize;
-    const gridWorldHeight = grid.height * gridCellSize;
-    const worldGrid = new Grid<Tile>(gridWorldWidth, gridWorldHeight, { index: TileIndex.SCHOOL_WALL, rotation: 0 });
-    const rooms: Pair<Room, GridPosition>[] = [];
-    for (let row = 0; row < grid.height; row++) {
-        for (let col = 0; col < grid.width; col++) {
-            const value = grid.get(row, col);
-            if (value) {
-                const leftWall = !grid.get(row, col - 1);
-                const rightWall = !grid.get(row, col + 1);
-                const topWall = !grid.get(row + 1, col);
-                const bottomWall = !grid.get(row - 1, col);
-                const leftBottomCorner = grid.get(row - 1, col) && grid.get(row, col - 1) && !grid.get(row - 1, col - 1);
-                const rightBottomCorner = grid.get(row - 1, col) && grid.get(row, col + 1) && !grid.get(row - 1, col + 1);
-                const leftTopCorner = grid.get(row + 1, col) && grid.get(row, col - 1) && !grid.get(row + 1, col - 1);
-                const rightTopCorner = grid.get(row + 1, col) && grid.get(row, col + 1) && !grid.get(row + 1, col + 1);
-                if (bottomWall && Math.random() < 0.5) {
-                    rooms.push([MathUtils.randomChoice(possibleRooms.top), { row: row * gridCellSize - 1, col: col * gridCellSize + gridCellSize / 2 }])
-                }
-                if (topWall && Math.random() < 0.5) {
-                    rooms.push([MathUtils.randomChoice(possibleRooms.bottom), { row: (row + 1) * gridCellSize, col: col * gridCellSize + gridCellSize / 2 }])
-                }
-                if (leftWall && Math.random() < 0.5) {
-                    rooms.push([MathUtils.randomChoice(possibleRooms.right), { row: row * gridCellSize + gridCellSize / 2, col: col * gridCellSize - 1 }])
-                }
-                if (rightWall && Math.random() < 0.5) {
-                    rooms.push([MathUtils.randomChoice(possibleRooms.left), { row: row * gridCellSize + gridCellSize / 2, col: (col + 1) * gridCellSize }])
-                }
-                for (let dc = 0; dc < gridCellSize; dc++) {
-                    for (let dr = 0; dr < gridCellSize; dr++) {
-                        let index = TileIndex.SCHOOL_TILE;
-                        let rotation: TileRotation = MathUtils.randomInt(0, 3) as TileRotation;
-                        if (dc === 0 && dr === 0 && leftBottomCorner) {
-                            index = TileIndex.SCHOOL_WALL_INSIDE_CORNER;
-                            rotation = 0;
-                        }
-                        else if (dc === gridCellSize - 1 && dr === 0 && rightBottomCorner) {
-                            index = TileIndex.SCHOOL_WALL_INSIDE_CORNER;
-                            rotation = 1;
-                        }
-                        else if (dc === 0 && dr === gridCellSize - 1 && leftTopCorner) {
-                            index = TileIndex.SCHOOL_WALL_INSIDE_CORNER;
-                            rotation = 3;
-                        }
-                        else if (dc === gridCellSize - 1 && dr === gridCellSize - 1 && rightTopCorner) {
-                            index = TileIndex.SCHOOL_WALL_INSIDE_CORNER;
-                            rotation = 2;
-                        }
-                        else if (dc === 0 && dr === 0 && leftWall && bottomWall) {
-                            index = TileIndex.SCHOOL_WALL_OUTSIDE_CORNER;
-                            rotation = 0;
-                        }
-                        else if (dc === gridCellSize - 1 && dr === 0 && rightWall && bottomWall) {
-                            index = TileIndex.SCHOOL_WALL_OUTSIDE_CORNER;
-                            rotation = 1;
-                        }
-                        else if (dc === 0 && dr === gridCellSize - 1 && leftWall && topWall) {
-                            index = TileIndex.SCHOOL_WALL_OUTSIDE_CORNER;
-                            rotation = 3;
-                        }
-                        else if (dc === gridCellSize - 1 && dr === gridCellSize - 1 && rightWall && topWall) {
-                            index = TileIndex.SCHOOL_WALL_OUTSIDE_CORNER;
-                            rotation = 2;
-                        }
-                        else if (dc === 0 && leftWall) {
-                            index = TileIndex.SCHOOL_WALL_SIDE;
-                            rotation = 0;
-                        }
-                        else if (dc === gridCellSize - 1 && rightWall) {
-                            index = TileIndex.SCHOOL_WALL_SIDE;
-                            rotation = 2;
-                        }
-                        else if (dr === 0 && bottomWall) {
-                            index = TileIndex.SCHOOL_WALL_SIDE;
-                            rotation = 1;
-                        }
-                        else if (dr === gridCellSize - 1 && topWall) {
-                            index = TileIndex.SCHOOL_WALL_SIDE;
-                            rotation = 3;
-                        }
-                        worldGrid.set(row * gridCellSize + dr, col * gridCellSize + dc, { index, rotation });
-                    }
-                }
+// Places appropriate wall tiles along any *regular* wall tile adjacent to a non-wall tile.
+function placeSchoolWalls(tileGrid: Grid<Tile>) {
+    const isWall = (r: number, c: number) => {
+        const value = tileGrid.get(r, c);
+        if (value === undefined) {
+            return true;
+        }
+        else {
+            const index = value.index;
+            return index === TileIndex.SCHOOL_WALL || 
+                   index === TileIndex.SCHOOL_WALL_SIDE || 
+                   index === TileIndex.SCHOOL_WALL_INSIDE_CORNER || 
+                   index === TileIndex.SCHOOL_WALL_OUTSIDE_CORNER
+        }
+    }
+    for (let r = 0; r < tileGrid.height; r++) {
+        for (let c = 0; c < tileGrid.width; c++) {
+            const tileIndex = tileGrid.get(r, c)!.index;
+            if (tileIndex !== TileIndex.SCHOOL_WALL) {
+                continue;
+            }
+            const n =  !isWall(r + 1, c);
+            const ne = !isWall(r + 1, c + 1);
+            const e =  !isWall(r, c + 1);
+            const se = !isWall(r - 1, c + 1);
+            const s =  !isWall(r - 1, c);
+            const sw = !isWall(r - 1, c - 1);
+            const w =  !isWall(r, c - 1);
+            const nw = !isWall(r + 1, c - 1);
+            if (n && e) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER, rotation: 0 });
+            }
+            else if (e && s) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER, rotation: 3 });
+            }
+            else if (s && w) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER, rotation: 2 });
+            }
+            else if (w && n) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER, rotation: 1 });
+            }
+            else if (n) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_SIDE, rotation: 1 });
+            }
+            else if (e) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_SIDE, rotation: 0 });
+            }
+            else if (s) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_SIDE, rotation: 3 });
+            }
+            else if (w) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_SIDE, rotation: 2 });
+            }
+            else if (ne) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_OUTSIDE_CORNER, rotation: 0 });
+            }
+            else if (se){
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_OUTSIDE_CORNER, rotation: 3 });
+            }
+            else if (sw) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_OUTSIDE_CORNER, rotation: 2 });
+            }
+            else if (nw) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_OUTSIDE_CORNER, rotation: 1 });
             }
         }
     }
-    return [worldGrid, rooms];
 }
 
 class SchoolLevel implements Level {
@@ -376,50 +332,74 @@ class SchoolLevel implements Level {
 
     ];
 
-    readonly playerSpawnPosition = new Vector(0, 200);
+    readonly playerSpawnPosition = new Vector(0, 400);
 
     generate(game: Game) {
-        const grid = generateHallwayMap();
-        const gridCellSize = 6;
-        const [worldTileGrid, rooms] = convertHallwayMapToWorldGrid(grid, gridCellSize);
-        const worldPropsGrid = new Grid<Nullable<PropIndex>>(worldTileGrid.width, worldTileGrid.height, null);
-        for (const [room, position] of rooms) {
-            if (room.canBePlacedAt(worldTileGrid, position)) {
-                switch (room.doorSide) {
-                case "top":
-                    placeDoor(worldTileGrid, {row: position.row + 1, col: position.col}, room.doorRadius, "bottom");
-                    break;
-                case "bottom":
-                    placeDoor(worldTileGrid, {row: position.row - 1, col: position.col}, room.doorRadius, "top");
-                    break;
-                case "right":
-                    placeDoor(worldTileGrid, {row: position.row, col: position.col + 1}, room.doorRadius, "left");
-                    break;
-                case "left":
-                    placeDoor(worldTileGrid, {row: position.row, col: position.col - 1}, room.doorRadius, "right");
-                    break;
-                }
-                
-                room.placeTilesInGrid(worldTileGrid, position);
-                room.placePropsInGrid(worldPropsGrid, position);
+        const hallwayMap = generateHallwayMap();
+        const padding = 16;
+        const gridCellSize = 4;
+        // convert hallwayMap to a world grid
+        const worldTileGrid = new Grid<Tile>(padding * 2 + hallwayMap.width * gridCellSize, padding * 2 + hallwayMap.height * gridCellSize, {index: TileIndex.SCHOOL_WALL, rotation: 0});
+        const worldPropGrid = new Grid<Nullable<PropIndex>>(padding * 2 + hallwayMap.width * gridCellSize, padding * 2 + hallwayMap.height * gridCellSize, null);
+        // Place the hallway into the grid
+        hallwayMap.iterate((r, c) => {
+            const hasHallway = hallwayMap.get(r, c);
+            if (!hasHallway) {
+                return;
             }
-        }
+            for (let dr = 0; dr < gridCellSize; dr++) {
+                for (let dc = 0; dc < gridCellSize; dc++) {
+                    worldTileGrid.set(padding + r * gridCellSize + dr, padding + c * gridCellSize + dc, { index: TileIndex.SCHOOL_TILE, rotation: 0 });
+                }
+            }
+        });
+        hallwayMap.iterate((r, c) => {
+            const hasHallway = hallwayMap.get(r, c);
+            if (!hasHallway) {
+                return;
+            }
+            const directions: [Direction, number, number][] = [["east",0,1],["west",0,-1],["north",1,0],["south",-1,0]];
+            for (const [direction, dr, dc] of directions) {
+                if (!hallwayMap.get(r + dr, c + dc)) {
+                    if (Math.random() < 0.5) {
+                        const room = MathUtils.randomChoice(possibleRooms[direction]);
+                        const roomPosition = {
+                            row: padding + (r + dr) * gridCellSize, 
+                            col: padding + (c + dc) * gridCellSize
+                        };
+                        switch (direction) {
+                            case "north": roomPosition.row += 2; break;
+                            case "south": roomPosition.row += gridCellSize - 3; break;
+                            case "east": roomPosition.col += 2; break;
+                            case "west": roomPosition.col += gridCellSize - 3; break;
+                        }
+                        if (room.canBePlacedAt(worldTileGrid, roomPosition, 1)) {
+                            worldTileGrid.set(roomPosition.row - dr, roomPosition.col - dc, { index: TileIndex.SCHOOL_TILE, rotation: 0 })
+                            worldTileGrid.set(roomPosition.row - 2 * dr, roomPosition.col - 2 * dc, { index: TileIndex.SCHOOL_TILE, rotation: 0 })
+                            room.placeTilesInGrid(worldTileGrid, roomPosition);
+                            room.placePropsInGrid(worldPropGrid, roomPosition);
+                        }
+                    }
+                }
+            }
+        })
+
+        placeSchoolWalls(worldTileGrid);
 
         // Convert world grids to actual game world
-        for (let r = 0; r < worldTileGrid.height; r++) {
-            for (let c = 0; c < worldTileGrid.width; c++) {
-                let x = c - worldTileGrid.width / 2;
-                let y = r;
-                const tile = worldTileGrid.get(r, c)!;
-                game.setTileWithTilemapCoordinate(new Vector(x, y), tile.index, tile.rotation);
-                const prop = worldPropsGrid.get(r, c);
-                if (prop !== null) {
-                    const texture = getTexture(propsCodex[prop as PropIndex].spriteID);
-                    const position = new Vector((x + 0.5) * PIXELS_PER_TILE, y * PIXELS_PER_TILE + texture.height / 2);
-                    game.addGameObject(PropFactory(prop, position));
-                }
+        worldTileGrid.iterate((r, c) => {
+            let x = c - worldTileGrid.width / 2;
+            let y = r;
+            const tile = worldTileGrid.get(r, c)!;
+            game.setTileWithTilemapCoordinate(new Vector(x, y), tile.index, tile.rotation);
+            
+            const prop = worldPropGrid.get(r, c);
+            if (prop !== null) {
+                const texture = getTexture(propsCodex[prop as PropIndex].spriteID);
+                const position = new Vector((x + 0.5) * PIXELS_PER_TILE, y * PIXELS_PER_TILE + texture.height / 2);
+                game.addGameObject(PropFactory(prop, position));
             }
-        }
+        });
     }
 }
 
