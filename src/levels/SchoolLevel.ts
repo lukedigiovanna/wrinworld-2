@@ -264,9 +264,11 @@ function placeSchoolWalls(tileGrid: Grid<Tile>) {
         else {
             const index = value.index;
             return index === TileIndex.SCHOOL_WALL || 
+                   index === TileIndex.SCHOOL_WALL_DOUBLE_SIDE ||
                    index === TileIndex.SCHOOL_WALL_SIDE || 
                    index === TileIndex.SCHOOL_WALL_INSIDE_CORNER || 
-                   index === TileIndex.SCHOOL_WALL_OUTSIDE_CORNER
+                   index === TileIndex.SCHOOL_WALL_OUTSIDE_CORNER ||
+                   index === TileIndex.SCHOOL_WALL_U;
         }
     }
     for (let r = 0; r < tileGrid.height; r++) {
@@ -283,7 +285,19 @@ function placeSchoolWalls(tileGrid: Grid<Tile>) {
             const sw = !isWall(r - 1, c - 1);
             const w =  !isWall(r, c - 1);
             const nw = !isWall(r + 1, c - 1);
-            if (n && e) {
+            if (w && n && e) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_U, rotation: 0 });
+            }
+            else if (n && e && s) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_U, rotation: 3 });
+            }
+            else if (e && s && w) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_U, rotation: 2 });
+            }
+            else if (s && w && n) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_U, rotation: 1 });
+            }
+            else if (n && e) {
                 tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER, rotation: 0 });
             }
             else if (e && s) {
@@ -294,6 +308,12 @@ function placeSchoolWalls(tileGrid: Grid<Tile>) {
             }
             else if (w && n) {
                 tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER, rotation: 1 });
+            }
+            else if (n && s) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_DOUBLE_SIDE, rotation: 1 });
+            }
+            else if (e && w) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_DOUBLE_SIDE, rotation: 0 });
             }
             else if (n) {
                 tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_SIDE, rotation: 1 });
@@ -368,10 +388,10 @@ class SchoolLevel implements Level {
                             col: padding + (c + dc) * gridCellSize
                         };
                         switch (direction) {
-                            case "north": roomPosition.row += 2; break;
-                            case "south": roomPosition.row += gridCellSize - 3; break;
-                            case "east": roomPosition.col += 2; break;
-                            case "west": roomPosition.col += gridCellSize - 3; break;
+                            case "north": roomPosition.row += 1; break;
+                            case "south": roomPosition.row += gridCellSize - 2; break;
+                            case "east": roomPosition.col += 1; break;
+                            case "west": roomPosition.col += gridCellSize - 2; break;
                         }
                         if (room.canBePlacedAt(worldTileGrid, roomPosition, 1)) {
                             worldTileGrid.set(roomPosition.row - dr, roomPosition.col - dc, { index: TileIndex.SCHOOL_TILE, rotation: 0 })

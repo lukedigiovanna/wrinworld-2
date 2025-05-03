@@ -26,8 +26,10 @@ enum TileIndex {
     SCHOOL_TILE_BLACK,
     SCHOOL_WALL,
     SCHOOL_WALL_SIDE,
+    SCHOOL_WALL_DOUBLE_SIDE,
     SCHOOL_WALL_INSIDE_CORNER,
     SCHOOL_WALL_OUTSIDE_CORNER,
+    SCHOOL_WALL_U,
 }
 
 type TileRotation = 0 | 1 | 2 | 3;
@@ -137,6 +139,12 @@ const tileCodex: Record<TileIndex, TileData> = {
     canSpawnPortal: false,
     wall: true,
 },
+[TileIndex.SCHOOL_WALL_DOUBLE_SIDE]: {
+    spriteID: "school_wall_double_side",
+    canGrowPlants: false,
+    canSpawnPortal: false,
+    wall: true,
+},
 [TileIndex.SCHOOL_WALL_INSIDE_CORNER]: {
     spriteID: "school_wall_inside_corner",
     canGrowPlants: false,
@@ -145,6 +153,12 @@ const tileCodex: Record<TileIndex, TileData> = {
 },
 [TileIndex.SCHOOL_WALL_OUTSIDE_CORNER]: {
     spriteID: "school_wall_outside_corner",
+    canGrowPlants: false,
+    canSpawnPortal: false,
+    wall: true,
+},
+[TileIndex.SCHOOL_WALL_U]: {
+    spriteID: "school_wall_u",
     canGrowPlants: false,
     canSpawnPortal: false,
     wall: true,
