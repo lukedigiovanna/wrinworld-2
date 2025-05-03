@@ -25,10 +25,13 @@ class Camera {
 
     private canvas: HTMLCanvasElement;
     private gl: WebGLRenderingContext;
+    // The buffer we are actively drawing to
     private sceneFramebuffer: FrameBuffer;
+    // Used to swap with sceneFramebuffer when applying multiple postprocessing effects
+    private backSceneFramebuffer: FrameBuffer;
     private sceneShader: ShaderProgram;
-    private activePostProcessingShader!: ShaderProgram;
-    private loadedPostProcessingShaders: Map<PostProcessingShaderIndex, ShaderProgram>;
+    private postProcessingShaders: Map<PostProcessingShaderIndex, ShaderProgram>;
+    private shaderPipeline: PostProcessingShaderIndex[] = [PostProcessingShaderIndex.VIGNETTE];
 
     public color: Color = Color.WHITE;
     public strokeWidth: number = 1;
@@ -49,9 +52,10 @@ class Camera {
         this.canvas = canvas;
         this.gl = gl;
         this.sceneShader = new ShaderProgram(this.gl, ShaderCode.vertexShaderCode, ShaderCode.fragmentShaderCode);
-        this.loadedPostProcessingShaders = new Map<PostProcessingShaderIndex, ShaderProgram>();
-        this.setActivePostProcessingShader(PostProcessingShaderIndex.PIXELATE);
+        this.postProcessingShaders = new Map<PostProcessingShaderIndex, ShaderProgram>();
         this.sceneFramebuffer = new FrameBuffer(gl, canvas);
+        this.backSceneFramebuffer = new FrameBuffer(gl, canvas);
+        
         this.position = Vector.zero();
         this.height = 200;
 
@@ -72,15 +76,15 @@ class Camera {
         gl.vertexAttribPointer(texCoordAttribLocation, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
     }
 
-    public setActivePostProcessingShader(index: PostProcessingShaderIndex) {
-        if (!this.loadedPostProcessingShaders.has(index)) {
-            this.loadedPostProcessingShaders.set(index, new ShaderProgram(this.gl, ShaderCode.postProcessingVertexShaderCode, postProcessingFragmentShaderCodes[index]))
+    private getPostProcessingShader(index: PostProcessingShaderIndex) {
+        if (!this.postProcessingShaders.has(index)) {
+            this.postProcessingShaders.set(index, new ShaderProgram(this.gl, ShaderCode.postProcessingVertexShaderCode, postProcessingFragmentShaderCodes[index]))
         }
-        this.activePostProcessingShader = this.loadedPostProcessingShaders.get(index)!;
+        return this.postProcessingShaders.get(index)!;
     }
 
-    public getActivePostProcessingShader() {
-        return this.activePostProcessingShader;
+    public setPostProcessingShaderPipeline(pipeline: PostProcessingShaderIndex[]) {
+        this.shaderPipeline = pipeline;
     }
 
     public applyShake(duration: number, intensity: number) {
@@ -114,6 +118,7 @@ class Camera {
     // clears the camera view
     public clear() {
         this.sceneFramebuffer.checkResize();
+        this.backSceneFramebuffer.checkResize();
         this.sceneFramebuffer.bind();
         this.sceneShader.use();
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
@@ -148,16 +153,30 @@ class Camera {
     // Renders the framebuffer to the screen using the active postprocessing shader
     // should be called after drawing a frame.
     public renderToScreen() {
-        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
-        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-        this.gl.clearColor(1, 0, 0, 1);
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-
-        this.activePostProcessingShader.use();
-        this.sceneFramebuffer.bindTexture();
-        this.activePostProcessingShader.setUniformInt("texture", 0);
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.quadVBO);
-        this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+        // If there are no shaders in the pipeline, just use the NO_EFFECT shader.
+        const pipeline = this.shaderPipeline.length === 0 ? [PostProcessingShaderIndex.NO_EFFECT] : 
+                                                            this.shaderPipeline
+        for (let i = 0; i < pipeline.length; i++) {
+            // Swap the buffers
+            [this.sceneFramebuffer, this.backSceneFramebuffer] = [this.backSceneFramebuffer, this.sceneFramebuffer];
+            // The last shader should render directly to the screen
+            if (i === pipeline.length - 1) {
+                this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+            }
+            else {
+                // Draw what is now the back scene to the main scene framebuffer
+                this.sceneFramebuffer.bind();
+            }
+            this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+            this.gl.clearColor(0, 0, 0, 1);
+            this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+            const shader = this.getPostProcessingShader(pipeline[i]);
+            shader.use();
+            this.backSceneFramebuffer.bindTexture();
+            shader.setUniformInt("texture", 0);
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.quadVBO);
+            this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+        }
     }
 
     public setShadows(shadows: ShaderShadow[]) {

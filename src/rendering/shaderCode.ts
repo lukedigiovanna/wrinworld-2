@@ -211,6 +211,25 @@ void main() {
 }
 `
 
+const vignettePostProcessingFragmentShader = `
+precision mediump float;
+
+uniform sampler2D texture;
+varying vec2 texCoord;
+
+void main() {
+    vec2 uv = texCoord * (1.0 - texCoord.yx);   //vec2(1.0)- uv.yx; -> 1.-u.yx; Thanks FabriceNeyret !
+    
+    float vig = uv.x*uv.y * 15.0; // multiply with sth for intensity
+    
+    vig = pow(vig, 0.25); // change pow for modifying the extend of the  vignette
+
+    vec4 color = texture2D(texture, texCoord);
+    gl_FragColor = vec4(vig * color.rgb, 1.0);
+}
+`
+
 export { vertexShaderCode, fragmentShaderCode, 
     postProcessingVertexShaderCode, invertColorsPostProcessingFragmentShader,
-    noEffectPostProcessingFragmentShader, pixelatePostProcessingFragmentShader };
+    noEffectPostProcessingFragmentShader, pixelatePostProcessingFragmentShader,
+    vignettePostProcessingFragmentShader };

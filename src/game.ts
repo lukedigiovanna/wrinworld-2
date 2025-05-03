@@ -274,16 +274,16 @@ class Game {
             return;
         }
         
-        const pixelationTime = (this.time - this.levelStartTime) / PIXELATION_PERIOD;
-        if (this.pixelateLevelStart && 0 <= pixelationTime && pixelationTime <= 1) {
-            let factor = Math.pow(35 * (pixelationTime - 0.5), 2) + 20;
-            this._camera.setActivePostProcessingShader(PostProcessingShaderIndex.PIXELATE);
-            this._camera.getActivePostProcessingShader()
-                        .setUniform2f("pixelationScale", factor * this.camera.width / this.camera.height, factor);
-        }
-        else {
-            this._camera.setActivePostProcessingShader(PostProcessingShaderIndex.NO_EFFECT);
-        }
+        // const pixelationTime = (this.time - this.levelStartTime) / PIXELATION_PERIOD;
+        // if (this.pixelateLevelStart && 0 <= pixelationTime && pixelationTime <= 1) {
+        //     let factor = Math.pow(35 * (pixelationTime - 0.5), 2) + 20;
+        //     this._camera.setActivePostProcessingShader(PostProcessingShaderIndex.PIXELATE);
+        //     this._camera.getActivePostProcessingShader()
+        //                 .setUniform2f("pixelationScale", factor * this.camera.width / this.camera.height, factor);
+        // }
+        // else {
+        //     this._camera.setActivePostProcessingShader(PostProcessingShaderIndex.NO_EFFECT);
+        // }
 
         this._camera.clear();
 
