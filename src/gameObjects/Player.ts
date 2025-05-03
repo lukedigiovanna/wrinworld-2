@@ -1,5 +1,5 @@
 import { GameObjectFactory, GameObject, Team, PORTAL_ACTIVE_RADIUS, CorpseFactory } from "./";
-import { Vector, MathUtils } from "../utils";
+import { Vector, MathUtils, Color } from "../utils";
 import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager, 
          Health, EssenceManager, HealthBarDisplayMode,
          StatusEffectManager, ParticleEmitter, ParticleLayer,
@@ -84,6 +84,9 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                 if (input.isKeyPressed("KeyL")) {
                     gameObject.game.switchLevel(LevelIndex.SCHOOL);
                 }
+                if (input.isKeyPressed("KeyH")) {
+                    gameObject.getComponent("health").data.damage(1);
+                }
                 // if (input.isKeyDown("KeyI")) {
                 //     gameObject.game.camera.setActivePostProcessingShader(PostProcessingShaderIndex.INVERT);
                 // }
@@ -149,6 +152,17 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                         icon.css("opacity", `${MathUtils.rescale(Math.sin(elapsed * 4), -1, 1, 50, 100)}%`);
                     }
                     $("#status-effect-icon-row").append(icon);
+                }
+                if (percent <= 25) {
+                    const p = MathUtils.rescale(Math.sin(gameObject.age * 6), -1, 1, 0.7, 1);
+                    gameObject.game.camera.getPostProcessingShader(PostProcessingShaderIndex.VIGNETTE)
+                                          .setUniformColorRGB(
+                                            "color", new Color((0.75 - 0.5 * percent / 25) * p, 0, 0, 1.0));
+                }
+                else {
+                    gameObject.game.camera.getPostProcessingShader(PostProcessingShaderIndex.VIGNETTE)
+                                          .setUniformColorRGB("color", new Color(0, 0, 0, 1.0));
+
                 }
             }
         }

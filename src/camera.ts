@@ -76,7 +76,7 @@ class Camera {
         gl.vertexAttribPointer(texCoordAttribLocation, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
     }
 
-    private getPostProcessingShader(index: PostProcessingShaderIndex) {
+    public getPostProcessingShader(index: PostProcessingShaderIndex) {
         if (!this.postProcessingShaders.has(index)) {
             this.postProcessingShaders.set(index, new ShaderProgram(this.gl, ShaderCode.postProcessingVertexShaderCode, postProcessingFragmentShaderCodes[index]))
         }

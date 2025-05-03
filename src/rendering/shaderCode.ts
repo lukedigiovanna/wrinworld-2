@@ -217,6 +217,8 @@ precision mediump float;
 uniform sampler2D texture;
 varying vec2 texCoord;
 
+uniform vec3 color;
+
 void main() {
     vec2 uv = texCoord * (1.0 - texCoord.yx);   //vec2(1.0)- uv.yx; -> 1.-u.yx; Thanks FabriceNeyret !
     
@@ -224,8 +226,8 @@ void main() {
     
     vig = pow(vig, 0.25); // change pow for modifying the extend of the  vignette
 
-    vec4 color = texture2D(texture, texCoord);
-    gl_FragColor = vec4(vig * color.rgb, 1.0);
+    vec4 texColor = texture2D(texture, texCoord);
+    gl_FragColor = vec4(mix(texColor.rgb, color, 1.0 - vig), texColor.a);
 }
 `
 
