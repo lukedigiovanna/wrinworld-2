@@ -3,9 +3,9 @@ import { GameObjectFactory, GameObject, ItemDropFactory } from "./index";
 import { Vector, MathUtils, NumberRange, Color } from "../utils";
 import { ParticleEmitter, Health, HealthBarDisplayMode } from "../components";
 import { EnemyFactory, EnemyIndex } from "./Enemy";
-import { enemiesCodex } from "../enemies";
 import { getSound } from "../assets/soundLoader";
 import { ItemIndex, itemsCodex } from "../items";
+import { getTexture } from "../assets/imageLoader";
 
 const PORTAL_ACTIVE_RADIUS = 180;
 
@@ -16,10 +16,13 @@ interface PortalSpawnPack {
     enemyIndex: EnemyIndex; // Type of enemy to spawn in this pack
 }
 
+type PortalSize = "small" | "medium";
+
 interface PortalProperties {
-    difficulty?: number; // 0/undefined means portal can spawn anywhere, higher number means portal can only spawn further in the level
-    health: number;
     packs: PortalSpawnPack[];
+    size: PortalSize;
+    health: number;
+    difficulty?: number; // 0/undefined means portal can spawn anywhere, higher number means portal can only spawn further in the level
 }
 
 interface PortalDrop {
@@ -29,9 +32,12 @@ interface PortalDrop {
 
 const PortalFactory: GameObjectFactory = (properties: PortalProperties, drops: PortalDrop[],  position: Vector) => {
     const portal = new GameObject();
-    portal.renderer = spriteRenderer("portal");
+    const spriteID = `portal_${properties.size}`;
+    const texture = getTexture(spriteID);
+    portal.renderer = spriteRenderer(spriteID);
     portal.position.set(position);
-    portal.scale.scale(80);
+    const radius = texture.width / 2;
+    portal.scale.setComponents(texture.width, texture.height);
     portal.addComponent(ParticleEmitter(
         {
             spriteID: () => "portal_particle",
@@ -59,7 +65,6 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, drops: P
         return {
             id: "portal-repulsive-effect",
             update(dt) {
-                const radius = 48;
                 const nearby = gameObject.game.getGameObjectsByFilter((obj) => obj.hasComponent("physics") && gameObject.position.distanceTo(obj.position) <= radius)
                 for (let i = 0; i < nearby.length; i++) {
                     const obj = nearby[i];
@@ -76,6 +81,7 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, drops: P
     portal.addComponent((gameObject: GameObject) => {
         const data: any = {
             health: undefined,
+            radius: radius
         };
         return {
             id: "portal-effects",
@@ -191,4 +197,4 @@ const PortalFactory: GameObjectFactory = (properties: PortalProperties, drops: P
 }
 
 export { PortalFactory, PORTAL_ACTIVE_RADIUS };
-export type { PortalSpawnPack, PortalProperties, PortalDrop };
+export type { PortalSpawnPack, PortalProperties, PortalDrop, PortalSize };

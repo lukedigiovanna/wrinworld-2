@@ -191,6 +191,7 @@ class Room {
 }
 
 const slimePortal: PortalProperties = {
+    size: "small",
     health: 1,
     packs: [
         {

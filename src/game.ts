@@ -78,7 +78,7 @@ class Game {
 
         this._camera.verticalBoundary = [2 * PIXELS_PER_TILE, (24 + 8 + 96) * PIXELS_PER_TILE];
     
-        this.switchLevel(LevelIndex.SCHOOL, false);
+        this.switchLevel(LevelIndex.FOREST, false);
 
         this.timeoutQueue = new PriorityQueue<TimeoutRequest>(
             // The request with less time remaining should come before
@@ -317,7 +317,7 @@ class Game {
         this._camera.setPortals(this.getGameObjectsByFilter((obj) => obj.tag === "portal").map(portal =>
             ({
                 position: portal.position,
-                radius: 50,
+                radius: portal.getComponent("portal-effects").data.radius + 8,
                 strength: 5,
                 age: portal.age
             })

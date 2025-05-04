@@ -2,15 +2,16 @@ import { Level } from "./";
 import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Permutation } from "../utils";
 import { Game, PIXELS_PER_TILE } from "../game";
 import { TileIndex } from "../tiles";
-import { EnemyIndex, PortalFactory, PropFactory } from "../gameObjects";
+import { EnemyIndex, PortalFactory, PortalProperties, PropFactory } from "../gameObjects";
 import { ItemIndex } from "../items";
 import { PropIndex, propsCodex } from "../props";
 import { getTexture } from "../assets/imageLoader";
 
 class ForestLevel implements Level {
     readonly name = "Corrupted Forest";
-    readonly portalTypes = [
+    readonly portalTypes: PortalProperties[] = [
         { // Slime portal
+            size: "medium",
             health: 25,
             difficulty: 0,
             packs: [
@@ -23,6 +24,7 @@ class ForestLevel implements Level {
             ]
         },
         { // Red slime portal
+            size: "medium",
             health: 35,
             difficulty: 0.1,
             packs: [
@@ -35,6 +37,7 @@ class ForestLevel implements Level {
             ]
         },
         { // Ground worm portal
+            size: "medium",
             health: 35,
             difficulty: 0.1,
             packs: [
@@ -47,6 +50,7 @@ class ForestLevel implements Level {
             ]
         },
         { // Minion portal
+            size: "medium",
             difficulty: 0.2,
             health: 40,
             packs: [
@@ -65,6 +69,7 @@ class ForestLevel implements Level {
             ]
         }, 
         { // Revenant eye portal
+            size: "medium",
             difficulty: 0.4,
             health: 60,
             packs: [
@@ -77,6 +82,7 @@ class ForestLevel implements Level {
             ]
         },
         { // Wraith portal
+            size: "medium",
             difficulty: 0.6,
             health: 75,
             packs: [
@@ -89,6 +95,7 @@ class ForestLevel implements Level {
             ]
         },
         { // Bunny portal
+            size: "medium",
             difficulty: 0.3,
             health: 35,
             packs: [
@@ -101,6 +108,7 @@ class ForestLevel implements Level {
             ]
         },
         { // Husk portal
+            size: "medium",
             difficulty: 0.6,
             health: 80,
             packs: [

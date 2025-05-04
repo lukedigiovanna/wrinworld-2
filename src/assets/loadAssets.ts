@@ -64,7 +64,8 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "fungal_husk_attack", "assets/images/enemies/fungal_husk_attack.png"),
         loadImageAndTexture(gl, "fungal_spirit", "assets/images/enemies/fungal_spirit.png"),
 
-        loadImageAndTexture(gl, "portal", "assets/images/portal_medium.png"),
+        loadImageAndTexture(gl, "portal_small", "assets/images/portal_small.png"),
+        loadImageAndTexture(gl, "portal_medium", "assets/images/portal_medium.png"),
         loadImageAndTexture(gl, "essence_orb_small", "assets/images/essence_orb_small.png"),
 
         // Props
