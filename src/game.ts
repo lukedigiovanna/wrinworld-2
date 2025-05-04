@@ -243,7 +243,7 @@ class Game {
             }
             else {
                 particle.position.add(Vector.scaled(particle.velocity, dt));
-                particle.rotation += particle.angularVelocity;
+                particle.rotation += particle.angularVelocity * dt;
                 if (particle.update)
                     particle.update(particle, dt);
             }
@@ -509,7 +509,7 @@ class Game {
                     layer: ParticleLayer.ABOVE_OBJECTS,
                     scale: MathUtils.random(1, scaleBound),
                     velocity: MathUtils.randomVector(MathUtils.random(2, radius)),
-                    angularVelocity: MathUtils.random(-3, 3),
+                    angularVelocity: MathUtils.random(-6, 6),
                     color: new Color(color.r + f, color.g + f, color.b + f, color.a),
                 }
             )

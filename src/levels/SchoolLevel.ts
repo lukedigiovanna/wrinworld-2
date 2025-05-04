@@ -175,7 +175,7 @@ class Room {
     }
 }
 
-const bathroomNorth = new Room(13, 6, { side: "bottom", offset: 11, radius: 1 });
+const bathroomNorth = new Room(12, 6, { side: "bottom", offset: 10, radius: 1 });
 for (let r = 0; r < bathroomNorth.tileGrid.height; r++) {
     for (let c = 0; c < bathroomNorth.tileGrid.width; c++) {
         if ((r + c) % 2 === 0) {
@@ -187,7 +187,7 @@ for (let c = 0; c < 5; c++)
     bathroomNorth.propGrid.set(5, 2 * c, PropIndex.TOILET);
 bathroomNorth.propGrid.set(4, 11, PropIndex.SINK);
 bathroomNorth.propGrid.set(2, 11, PropIndex.SINK);
-const bathroomSouth = bathroomNorth.copy().setDoor({ side: "top", offset: 11, radius: 1 });
+const bathroomSouth = bathroomNorth.copy().setDoor({ side: "top", offset: 10, radius: 1 });
 const bathroomEast = bathroomNorth.copy().setDoor({ side: "left", offset: 1, radius: 1 });
 const bathroomWest = bathroomNorth.copy().setDoor({ side: "right", offset: 1, radius: 1 });
 
@@ -195,6 +195,11 @@ const courtyardNorth = new Room(13, 13, { side: "bottom", offset: 6, radius: 1 }
 courtyardNorth.tileGrid.iterate((self, r, c) => {
     self.set(r, c, { index: TileIndex.GRASS, rotation: 0 });
 });
+courtyardNorth.propGrid.set(6, 6, PropIndex.EVERGREEN_TREE);
+courtyardNorth.propGrid.set(5, 6, PropIndex.RED_WILDFLOWER);
+courtyardNorth.propGrid.set(7, 6, PropIndex.RED_WILDFLOWER);
+courtyardNorth.propGrid.set(6, 5, PropIndex.RED_WILDFLOWER);
+courtyardNorth.propGrid.set(6, 7, PropIndex.RED_WILDFLOWER);
 
 const possibleRooms: Record<Direction, Room[]> = {
     "north": [bathroomNorth, courtyardNorth],
