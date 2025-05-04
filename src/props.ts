@@ -13,6 +13,8 @@ enum PropIndex {
     MOSSY_FALLEN_TREE,
     TOILET,
     SINK,
+    CHALK_BOARD,
+    SCHOOL_DESK
 }
 
 interface PropProperties {
@@ -84,6 +86,16 @@ const propsCodex: Record<PropIndex, PropProperties> = {
 },
 [PropIndex.SINK]: {
     spriteID: "sink",
+    hasCollision: true,
+    castsShadow: false,
+},
+[PropIndex.CHALK_BOARD]: {
+    spriteID: "chalk_board",
+    hasCollision: true,
+    castsShadow: false,
+},
+[PropIndex.SCHOOL_DESK]: {
+    spriteID: "school_desk",
     hasCollision: true,
     castsShadow: false,
 }

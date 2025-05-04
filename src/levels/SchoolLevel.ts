@@ -248,8 +248,16 @@ courtyardNorth.propGrid.set(2, 10, PropIndex.BUSH);
 courtyardNorth.propGrid.set(10, 2, PropIndex.BUSH);
 courtyardNorth.propGrid.set(10, 10, PropIndex.BUSH);
 
+const classroomNorth = new Room(bathroomPortals, 13, 11, { side: "bottom", offset: 2, radius: 1 });
+classroomNorth.propGrid.set(10, 6, PropIndex.CHALK_BOARD);
+for (let r = 0; r < 4; r++) {
+    for (let c = 0; c < 5; c++) {
+        classroomNorth.propGrid.set(2 + r * 2, 2 + c * 2, PropIndex.SCHOOL_DESK);
+    }
+}
+
 const possibleRooms: Record<Direction, Room[]> = {
-    "north": [bathroomNorth, courtyardNorth],
+    "north": [bathroomNorth, classroomNorth],
     "south": [bathroomSouth],
     "east": [bathroomEast],
     "west": [bathroomWest]
