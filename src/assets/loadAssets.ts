@@ -22,8 +22,12 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "school_wall_side", "assets/images/tiles/school_wall_side.png"),
         loadImageAndTexture(gl, "school_wall_double_side", "assets/images/tiles/school_wall_double_side.png"),
         loadImageAndTexture(gl, "school_wall_inside_corner", "assets/images/tiles/school_wall_inside_corner.png"),
-        loadImageAndTexture(gl, "school_wall_outside_corner", "assets/images/tiles/school_wall_outside_corner.png"),
+        loadImageAndTexture(gl, "school_wall_inside_corner_outside_corner", "assets/images/tiles/school_wall_inside_corner_outside_corner.png"),
         loadImageAndTexture(gl, "school_wall_u", "assets/images/tiles/school_wall_u.png"),
+        loadImageAndTexture(gl, "school_wall_outside_corner", "assets/images/tiles/school_wall_outside_corner.png"),
+        loadImageAndTexture(gl, "school_wall_side_outside_corner_top", "assets/images/tiles/school_wall_side_outside_corner_top.png"),
+        loadImageAndTexture(gl, "school_wall_side_outside_corner_bottom", "assets/images/tiles/school_wall_side_outside_corner_bottom.png"),
+        loadImageAndTexture(gl, "school_wall_side_double_outside_corner", "assets/images/tiles/school_wall_side_double_outside_corner.png"),
         
         // Entities
         loadImageAndTexture(gl, "character", "assets/images/character.png"),

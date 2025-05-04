@@ -28,8 +28,12 @@ enum TileIndex {
     SCHOOL_WALL_SIDE,
     SCHOOL_WALL_DOUBLE_SIDE,
     SCHOOL_WALL_INSIDE_CORNER,
-    SCHOOL_WALL_OUTSIDE_CORNER,
+    SCHOOL_WALL_INSIDE_CORNER_OUTSIDE_CORNER,
     SCHOOL_WALL_U,
+    SCHOOL_WALL_OUTSIDE_CORNER,
+    SCHOOL_WALL_SIDE_OUTSIDE_CORNER_TOP,
+    SCHOOL_WALL_SIDE_OUTSIDE_CORNER_BOTTOM,
+    SCHOOL_WALL_SIDE_DOUBLE_OUTSIDE_CORNER,
 }
 
 type TileRotation = 0 | 1 | 2 | 3;
@@ -151,14 +155,38 @@ const tileCodex: Record<TileIndex, TileData> = {
     canSpawnPortal: false,
     wall: true,
 },
-[TileIndex.SCHOOL_WALL_OUTSIDE_CORNER]: {
-    spriteID: "school_wall_outside_corner",
+[TileIndex.SCHOOL_WALL_INSIDE_CORNER_OUTSIDE_CORNER]: {
+    spriteID: "school_wall_inside_corner_outside_corner",
     canGrowPlants: false,
     canSpawnPortal: false,
     wall: true,
 },
 [TileIndex.SCHOOL_WALL_U]: {
     spriteID: "school_wall_u",
+    canGrowPlants: false,
+    canSpawnPortal: false,
+    wall: true,
+},
+[TileIndex.SCHOOL_WALL_OUTSIDE_CORNER]: {
+    spriteID: "school_wall_outside_corner",
+    canGrowPlants: false,
+    canSpawnPortal: false,
+    wall: true,
+},
+[TileIndex.SCHOOL_WALL_SIDE_OUTSIDE_CORNER_TOP]: {
+    spriteID: "school_wall_side_outside_corner_top",
+    canGrowPlants: false,
+    canSpawnPortal: false,
+    wall: true,
+},
+[TileIndex.SCHOOL_WALL_SIDE_OUTSIDE_CORNER_BOTTOM]: {
+    spriteID: "school_wall_side_outside_corner_bottom",
+    canGrowPlants: false,
+    canSpawnPortal: false,
+    wall: true,
+},
+[TileIndex.SCHOOL_WALL_SIDE_DOUBLE_OUTSIDE_CORNER]: {
+    spriteID: "school_wall_side_double_outside_corner",
     canGrowPlants: false,
     canSpawnPortal: false,
     wall: true,

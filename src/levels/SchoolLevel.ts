@@ -63,10 +63,10 @@ class Grid<T> {
     }
 
     // Applies the given function over the grid.
-    public iterate(func: (row: number, col: number) => void) {
+    public iterate(func: (self: Grid<T>, row: number, col: number) => void) {
         for (let r = 0; r < this.height; r++) {
             for (let c = 0; c < this.width; c++) {
-                func(r, c);
+                func(this, r, c);
             }
         }
     }
@@ -175,7 +175,7 @@ class Room {
     }
 }
 
-const bathroomNorth = new Room(12, 6, { side: "bottom", offset: 10, radius: 1 });
+const bathroomNorth = new Room(13, 6, { side: "bottom", offset: 11, radius: 1 });
 for (let r = 0; r < bathroomNorth.tileGrid.height; r++) {
     for (let c = 0; c < bathroomNorth.tileGrid.width; c++) {
         if ((r + c) % 2 === 0) {
@@ -187,12 +187,17 @@ for (let c = 0; c < 5; c++)
     bathroomNorth.propGrid.set(5, 2 * c, PropIndex.TOILET);
 bathroomNorth.propGrid.set(4, 11, PropIndex.SINK);
 bathroomNorth.propGrid.set(2, 11, PropIndex.SINK);
-const bathroomSouth = bathroomNorth.copy().setDoor({ side: "top", offset: 10, radius: 1 });
+const bathroomSouth = bathroomNorth.copy().setDoor({ side: "top", offset: 11, radius: 1 });
 const bathroomEast = bathroomNorth.copy().setDoor({ side: "left", offset: 1, radius: 1 });
 const bathroomWest = bathroomNorth.copy().setDoor({ side: "right", offset: 1, radius: 1 });
 
+const courtyardNorth = new Room(13, 13, { side: "bottom", offset: 6, radius: 1 });
+courtyardNorth.tileGrid.iterate((self, r, c) => {
+    self.set(r, c, { index: TileIndex.GRASS, rotation: 0 });
+});
+
 const possibleRooms: Record<Direction, Room[]> = {
-    "north": [bathroomNorth],
+    "north": [bathroomNorth, courtyardNorth],
     "south": [bathroomSouth],
     "east": [bathroomEast],
     "west": [bathroomWest]
@@ -267,8 +272,12 @@ function placeSchoolWalls(tileGrid: Grid<Tile>) {
                    index === TileIndex.SCHOOL_WALL_DOUBLE_SIDE ||
                    index === TileIndex.SCHOOL_WALL_SIDE || 
                    index === TileIndex.SCHOOL_WALL_INSIDE_CORNER || 
+                   index === TileIndex.SCHOOL_WALL_INSIDE_CORNER_OUTSIDE_CORNER || 
+                   index === TileIndex.SCHOOL_WALL_U ||
                    index === TileIndex.SCHOOL_WALL_OUTSIDE_CORNER ||
-                   index === TileIndex.SCHOOL_WALL_U;
+                   index === TileIndex.SCHOOL_WALL_SIDE_OUTSIDE_CORNER_TOP ||
+                   index === TileIndex.SCHOOL_WALL_SIDE_OUTSIDE_CORNER_BOTTOM ||
+                   index === TileIndex.SCHOOL_WALL_SIDE_DOUBLE_OUTSIDE_CORNER;
         }
     }
     for (let r = 0; r < tileGrid.height; r++) {
@@ -297,6 +306,18 @@ function placeSchoolWalls(tileGrid: Grid<Tile>) {
             else if (s && w && n) {
                 tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_U, rotation: 1 });
             }
+            else if (n && e && sw) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER_OUTSIDE_CORNER, rotation: 0 });
+            }
+            else if (e && s && nw) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER_OUTSIDE_CORNER, rotation: 3 });
+            }
+            else if (s && w && ne) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER_OUTSIDE_CORNER, rotation: 2 });   
+            }
+            else if (w && n && se) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER_OUTSIDE_CORNER, rotation: 1 });
+            }
             else if (n && e) {
                 tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_INSIDE_CORNER, rotation: 0 });
             }
@@ -314,6 +335,30 @@ function placeSchoolWalls(tileGrid: Grid<Tile>) {
             }
             else if (e && w) {
                 tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_DOUBLE_SIDE, rotation: 0 });
+            }
+            else if (e && nw) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_SIDE_OUTSIDE_CORNER_TOP, rotation: 0 });
+            }
+            else if (e && sw) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_SIDE_OUTSIDE_CORNER_BOTTOM, rotation: 0 });
+            }
+            else if (s && ne) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_SIDE_OUTSIDE_CORNER_TOP, rotation: 3 });
+            }
+            else if (s && nw) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_SIDE_OUTSIDE_CORNER_BOTTOM, rotation: 3 });
+            }
+            else if (w && se) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_SIDE_OUTSIDE_CORNER_TOP, rotation: 2 });
+            }
+            else if (w && ne) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_SIDE_OUTSIDE_CORNER_BOTTOM, rotation: 2 });
+            }
+            else if (n && sw) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_SIDE_OUTSIDE_CORNER_TOP, rotation: 1 });
+            }
+            else if (n && se) {
+                tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_SIDE_OUTSIDE_CORNER_BOTTOM, rotation: 1 });
             }
             else if (n) {
                 tileGrid.set(r, c, { index: TileIndex.SCHOOL_WALL_SIDE, rotation: 1 });
@@ -352,18 +397,18 @@ class SchoolLevel implements Level {
 
     ];
 
-    readonly playerSpawnPosition = new Vector(0, 400);
+    readonly playerSpawnPosition = new Vector(0, 600);
 
     generate(game: Game) {
         const hallwayMap = generateHallwayMap();
-        const padding = 16;
+        const padding = 32;
         const gridCellSize = 4;
         // convert hallwayMap to a world grid
         const worldTileGrid = new Grid<Tile>(padding * 2 + hallwayMap.width * gridCellSize, padding * 2 + hallwayMap.height * gridCellSize, {index: TileIndex.SCHOOL_WALL, rotation: 0});
         const worldPropGrid = new Grid<Nullable<PropIndex>>(padding * 2 + hallwayMap.width * gridCellSize, padding * 2 + hallwayMap.height * gridCellSize, null);
         // Place the hallway into the grid
-        hallwayMap.iterate((r, c) => {
-            const hasHallway = hallwayMap.get(r, c);
+        hallwayMap.iterate((self, r, c) => {
+            const hasHallway = self.get(r, c);
             if (!hasHallway) {
                 return;
             }
@@ -373,14 +418,14 @@ class SchoolLevel implements Level {
                 }
             }
         });
-        hallwayMap.iterate((r, c) => {
-            const hasHallway = hallwayMap.get(r, c);
+        hallwayMap.iterate((self, r, c) => {
+            const hasHallway = self.get(r, c);
             if (!hasHallway) {
                 return;
             }
             const directions: [Direction, number, number][] = [["east",0,1],["west",0,-1],["north",1,0],["south",-1,0]];
             for (const [direction, dr, dc] of directions) {
-                if (!hallwayMap.get(r + dr, c + dc)) {
+                if (!self.get(r + dr, c + dc)) {
                     if (Math.random() < 0.5) {
                         const room = MathUtils.randomChoice(possibleRooms[direction]);
                         const roomPosition = {
@@ -407,10 +452,10 @@ class SchoolLevel implements Level {
         placeSchoolWalls(worldTileGrid);
 
         // Convert world grids to actual game world
-        worldTileGrid.iterate((r, c) => {
-            let x = c - worldTileGrid.width / 2;
+        worldTileGrid.iterate((self, r, c) => {
+            let x = c - self.width / 2;
             let y = r;
-            const tile = worldTileGrid.get(r, c)!;
+            const tile = self.get(r, c)!;
             game.setTileWithTilemapCoordinate(new Vector(x, y), tile.index, tile.rotation);
             
             const prop = worldPropGrid.get(r, c);
