@@ -78,7 +78,7 @@ class Game {
 
         this._camera.verticalBoundary = [2 * PIXELS_PER_TILE, (24 + 8 + 96) * PIXELS_PER_TILE];
     
-        this.switchLevel(LevelIndex.SCHOOL, false);
+        this.switchLevel(LevelIndex.FOREST, false);
 
         this.timeoutQueue = new PriorityQueue<TimeoutRequest>(
             // The request with less time remaining should come before
@@ -274,16 +274,20 @@ class Game {
             return;
         }
         
-        // const pixelationTime = (this.time - this.levelStartTime) / PIXELATION_PERIOD;
-        // if (this.pixelateLevelStart && 0 <= pixelationTime && pixelationTime <= 1) {
-        //     let factor = Math.pow(35 * (pixelationTime - 0.5), 2) + 20;
-        //     this._camera.setActivePostProcessingShader(PostProcessingShaderIndex.PIXELATE);
-        //     this._camera.getActivePostProcessingShader()
-        //                 .setUniform2f("pixelationScale", factor * this.camera.width / this.camera.height, factor);
-        // }
-        // else {
-        //     this._camera.setActivePostProcessingShader(PostProcessingShaderIndex.NO_EFFECT);
-        // }
+        const pixelationTime = (this.time - this.levelStartTime) / PIXELATION_PERIOD;
+        if (this.pixelateLevelStart && 0 <= pixelationTime && pixelationTime <= 1) {
+            let factor = pixelationTime < 0.5 ? Ease.inQuart(pixelationTime / 0.5) : Ease.inQuart(1.0 - (pixelationTime - 0.5) / 0.5);
+            this._camera.getPostProcessingShader(PostProcessingShaderIndex.PIXELATE)
+                        .setUniformFloat("intensity", factor * 0.35);
+            this._camera.getPostProcessingShader(PostProcessingShaderIndex.PIXELATE)
+                        .setUniformVector("screenSize", new Vector(this._camera.canvas.width, this._camera.canvas.height));
+                    }
+        else {
+            this._camera.getPostProcessingShader(PostProcessingShaderIndex.PIXELATE)
+                        .setUniformVector("screenSize", new Vector(this._camera.canvas.width, this._camera.canvas.height));
+            this._camera.getPostProcessingShader(PostProcessingShaderIndex.PIXELATE)
+                        .setUniformFloat("intensity", 0);
+        }
 
         this._camera.clear();
 

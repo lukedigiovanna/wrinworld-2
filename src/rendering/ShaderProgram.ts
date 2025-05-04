@@ -28,8 +28,13 @@ class ShaderProgram {
     private _program: WebGLProgram;
     private gl: WebGLRenderingContext;
 
+    public readonly vertexSrc;
+    public readonly fragmentSrc;
+
     constructor(gl: WebGLRenderingContext, vertexShaderSource: string, fragmentShaderSource: string) {
         this.gl = gl;
+        this.vertexSrc = vertexShaderSource;
+        this.fragmentSrc = fragmentShaderSource;
 
         const vertexShader = gl.createShader(gl.VERTEX_SHADER);
         if (!vertexShader) throw Error("Failed to create vertex shader");
@@ -71,6 +76,7 @@ class ShaderProgram {
     }
 
     private loc(name: string) {
+        this.use();
         return this.gl.getUniformLocation(this._program, name);
     }
 

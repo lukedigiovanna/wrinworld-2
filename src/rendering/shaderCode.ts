@@ -196,18 +196,24 @@ void main() {
 const pixelatePostProcessingFragmentShader = `
 precision mediump float;
 
-uniform sampler2D texture;
-uniform vec2 pixelationScale;
 varying vec2 texCoord;
 
-float rounded(float v, float scale) {
-    return floor(v * scale) / scale;
-    // return round(v);
+uniform sampler2D texture;
+uniform vec2 screenSize;
+uniform float intensity; // 0 is no effect, 1 is full zoomed pixelation
+
+float rescale(float x, float a0, float b0, float a1, float b1) {
+    return (x - a0) / b0 * (b1 - a1) + a1;
 }
 
 void main() {
-    vec2 roundedTexCoord = vec2(rounded(texCoord.x, pixelationScale.x), rounded(texCoord.y, pixelationScale.y));
-    gl_FragColor = texture2D(texture, roundedTexCoord);
+    float i2 = intensity / 2.0;
+    vec2 zoomedTexCoord = vec2(rescale(texCoord.x, 0.0, 1.0, i2, 1.0 - i2), rescale(texCoord.y, 0.0, 1.0, i2, 1.0 - i2));
+    float pixelSize = max(1.0, screenSize.y * intensity);
+    vec2 screenPos = zoomedTexCoord * screenSize;
+    vec2 blockPos = floor(screenPos / pixelSize + vec2(0.5)) * pixelSize;
+    vec2 uv = blockPos / screenSize;
+    gl_FragColor = texture2D(texture, uv);
 }
 `
 

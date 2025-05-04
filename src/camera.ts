@@ -23,7 +23,7 @@ class Camera {
     public position: Vector; // center of camera view
     public height: number;
 
-    private canvas: HTMLCanvasElement;
+    public readonly canvas: HTMLCanvasElement;
     private gl: WebGLRenderingContext;
     // The buffer we are actively drawing to
     private sceneFramebuffer: FrameBuffer;
@@ -31,7 +31,7 @@ class Camera {
     private backSceneFramebuffer: FrameBuffer;
     private sceneShader: ShaderProgram;
     private postProcessingShaders: Map<PostProcessingShaderIndex, ShaderProgram>;
-    private shaderPipeline: PostProcessingShaderIndex[] = [PostProcessingShaderIndex.VIGNETTE];
+    private shaderPipeline: PostProcessingShaderIndex[] = [PostProcessingShaderIndex.PIXELATE, PostProcessingShaderIndex.VIGNETTE];
 
     public color: Color = Color.WHITE;
     public strokeWidth: number = 1;
