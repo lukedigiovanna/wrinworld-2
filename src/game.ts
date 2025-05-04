@@ -19,7 +19,7 @@ const PIXELS_PER_TILE = 16;
 const MAX_NUM_CHUNKS = 1024; // number of chunks along width and height of the world
 const WORLD_SIZE = CHUNK_SIZE * MAX_NUM_CHUNKS;
 const RENDER_DISTANCE = 3;
-const PIXELATION_PERIOD = 5;
+const PIXELATION_PERIOD = 3;
 
 const getChunkIndex = (position: Vector) => {
     const c = Vector.add(Vector.scaled(position, 1 / PIXELS_PER_TILE), new Vector(WORLD_SIZE / 2, WORLD_SIZE / 2));
@@ -78,7 +78,7 @@ class Game {
 
         this._camera.verticalBoundary = [2 * PIXELS_PER_TILE, (24 + 8 + 96) * PIXELS_PER_TILE];
     
-        this.switchLevel(LevelIndex.FOREST, false);
+        this.switchLevel(LevelIndex.SCHOOL, false);
 
         this.timeoutQueue = new PriorityQueue<TimeoutRequest>(
             // The request with less time remaining should come before
@@ -277,7 +277,7 @@ class Game {
         const pixelationTime = (this.time - this.levelStartTime) / PIXELATION_PERIOD;
         if (this.pixelateLevelStart && 0 <= pixelationTime && pixelationTime <= 1) {
             this._camera.enableShader(PostProcessingShaderIndex.PIXELATE);
-            let factor = pixelationTime < 0.5 ? Ease.inQuart(pixelationTime / 0.5) : Ease.inQuart(1.0 - (pixelationTime - 0.5) / 0.5);
+            let factor = pixelationTime < 0.5 ? Ease.inOutSine(pixelationTime / 0.5) : Ease.inOutSine(1.0 - (pixelationTime - 0.5) / 0.5);
             this._camera.getPostProcessingShader(PostProcessingShaderIndex.PIXELATE)
                         .setUniformFloat("intensity", factor * 0.35);
             this._camera.getPostProcessingShader(PostProcessingShaderIndex.PIXELATE)

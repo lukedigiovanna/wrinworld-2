@@ -949,7 +949,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     itemIndex: ItemIndex.WATER_BOTTLE,
     displayName: "Water Bottle",
     description: "Do we really need to quench our thirst here?",
-    iconSpriteID: "water_bottle_0",
+    iconSpriteID: "water_bottle_6",
     iconSpriteScaleIDs: ["water_bottle_0", "water_bottle_1", "water_bottle_2", "water_bottle_3", "water_bottle_4", "water_bottle_5", "water_bottle_6"],
     category: "Ammo",
     consumable: false,

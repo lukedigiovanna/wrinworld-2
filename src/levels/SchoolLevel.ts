@@ -1,11 +1,12 @@
 import { Level, PortalDropPool } from "./";
-import { PortalProperties, PropFactory } from "../gameObjects";
+import { EnemyIndex, PortalFactory, PortalProperties, PropFactory } from "../gameObjects";
 import { Game, PIXELS_PER_TILE } from "../game";
 import { Tile, TileIndex, TileRotation } from "../tiles";
-import { MathUtils, Vector } from "../utils";
+import { MathUtils, NumberRange, Permutation, Vector } from "../utils";
 import { PropIndex, propsCodex } from "../props";
 import { getTexture } from "../assets/imageLoader";
 import { Direction, Nullable, Pair, Side } from "../utils/types";
+import { ItemIndex } from "../items";
 
 class Grid<T> {
     private cells: T[];
@@ -100,13 +101,15 @@ interface DoorConfig {
 }
 
 class Room {
+    readonly portalTypes: PortalProperties[];
     readonly width: number;
     readonly height: number;
     readonly tileGrid: Grid<Tile>;
     readonly propGrid: Grid<Nullable<PropIndex>>;
     private _doorPosition: GridPosition;
 
-    constructor(width: number, height: number, doorConfig: DoorConfig) {
+    constructor(portalTypes: PortalProperties[], width: number, height: number, doorConfig: DoorConfig) {
+        this.portalTypes = portalTypes;
         this.width = width;
         this.height = height;
         this.tileGrid = new Grid<Tile>(width, height, { index: TileIndex.SCHOOL_TILE, rotation: 0 });
@@ -148,17 +151,15 @@ class Room {
     }
 
     private placeInGrid<T>(grid: Grid<T>, worldGrid: Grid<T>, doorPosition: GridPosition) {
-        for (let r = 0; r < this.tileGrid.height; r++) {
-            for (let c = 0; c < this.tileGrid.width; c++) {
-                const offR = r - this.doorPosition.row;
-                const offC = c - this.doorPosition.col;
-                const gridR = doorPosition.row + offR;
-                const gridC = doorPosition.col + offC;
-                if (worldGrid.validCoord(gridR, gridC)) {
-                    worldGrid.set(gridR, gridC, grid.get(r, c)!);
-                }
+        this.tileGrid.iterate((self, r, c) => {
+            const offR = r - this.doorPosition.row;
+            const offC = c - this.doorPosition.col;
+            const gridR = doorPosition.row + offR;
+            const gridC = doorPosition.col + offC;
+            if (worldGrid.validCoord(gridR, gridC)) {
+                worldGrid.set(gridR, gridC, grid.get(r, c)!);
             }
-        }
+        });
     }
 
     public placeTilesInGrid(worldGrid: Grid<Tile>, doorPosition: GridPosition) {
@@ -169,13 +170,43 @@ class Room {
         this.placeInGrid(this.propGrid, worldGrid, doorPosition);
     }
 
+    public placePortalTypeInGrid(worldGrid: Grid<Nullable<PortalProperties[]>>, doorPosition: GridPosition) {
+        for (let r = 0; r < this.height; r++) {
+            for (let c = 0; c < this.width; c++) {
+                const offR = r - this.doorPosition.row;
+                const offC = c - this.doorPosition.col;
+                const gridR = doorPosition.row + offR;
+                const gridC = doorPosition.col + offC;
+                if (worldGrid.validCoord(gridR, gridC)) {
+                    worldGrid.set(gridR, gridC, this.portalTypes);
+                }
+            }
+        }
+    }
+
     public copy(): Room {
         const newRoom = Object.assign(Object.create(Object.getPrototypeOf(this)), this);
         return newRoom;
     }
 }
 
-const bathroomNorth = new Room(12, 6, { side: "bottom", offset: 10, radius: 1 });
+const slimePortal: PortalProperties = {
+    health: 1,
+    packs: [
+        {
+            enemyIndex: EnemyIndex.SLIME,
+            cooldownRange: new NumberRange(10, 15),
+            packSizeRange: new NumberRange(1, 3),
+            maxEnemies: 10,
+        }
+    ]
+}
+
+const bathroomPortals = [slimePortal];
+const courtyardPortals = [slimePortal];
+const hallwayPortals = [slimePortal];
+
+const bathroomNorth = new Room(bathroomPortals, 12, 6, { side: "bottom", offset: 10, radius: 1 });
 for (let r = 0; r < bathroomNorth.tileGrid.height; r++) {
     for (let c = 0; c < bathroomNorth.tileGrid.width; c++) {
         if ((r + c) % 2 === 0) {
@@ -191,7 +222,7 @@ const bathroomSouth = bathroomNorth.copy().setDoor({ side: "top", offset: 10, ra
 const bathroomEast = bathroomNorth.copy().setDoor({ side: "left", offset: 1, radius: 1 });
 const bathroomWest = bathroomNorth.copy().setDoor({ side: "right", offset: 1, radius: 1 });
 
-const courtyardNorth = new Room(13, 13, { side: "bottom", offset: 6, radius: 1 });
+const courtyardNorth = new Room(courtyardPortals, 13, 13, { side: "bottom", offset: 6, radius: 1 });
 courtyardNorth.tileGrid.iterate((self, r, c) => {
     self.set(r, c, { index: TileIndex.GRASS, rotation: 0 });
 });
@@ -395,11 +426,9 @@ function placeSchoolWalls(tileGrid: Grid<Tile>) {
 
 class SchoolLevel implements Level {
     readonly name = "School";
-    readonly portalTypes: PortalProperties[] = [
-
-    ];
+    readonly portalTypes: PortalProperties[] = [];
     readonly portalDrops: PortalDropPool[] = [
-
+        [ { itemIndex: ItemIndex.WATER_BOTTLE, count: new NumberRange(12, 30) } ] 
     ];
 
     readonly playerSpawnPosition = new Vector(0, 600);
@@ -409,8 +438,11 @@ class SchoolLevel implements Level {
         const padding = 32;
         const gridCellSize = 4;
         // convert hallwayMap to a world grid
-        const worldTileGrid = new Grid<Tile>(padding * 2 + hallwayMap.width * gridCellSize, padding * 2 + hallwayMap.height * gridCellSize, {index: TileIndex.SCHOOL_WALL, rotation: 0});
-        const worldPropGrid = new Grid<Nullable<PropIndex>>(padding * 2 + hallwayMap.width * gridCellSize, padding * 2 + hallwayMap.height * gridCellSize, null);
+        const worldWidth = padding * 2 + hallwayMap.width * gridCellSize;
+        const worldHeight = padding * 2 + hallwayMap.height * gridCellSize;
+        const worldTileGrid = new Grid<Tile>(worldWidth, worldHeight, {index: TileIndex.SCHOOL_WALL, rotation: 0});
+        const worldPropGrid = new Grid<Nullable<PropIndex>>(worldWidth, worldHeight, null);
+        const worldPortalTypeGrid = new Grid<Nullable<PortalProperties[]>>(worldWidth, worldHeight, null);
         // Place the hallway into the grid
         hallwayMap.iterate((self, r, c) => {
             const hasHallway = self.get(r, c);
@@ -419,7 +451,10 @@ class SchoolLevel implements Level {
             }
             for (let dr = 0; dr < gridCellSize; dr++) {
                 for (let dc = 0; dc < gridCellSize; dc++) {
-                    worldTileGrid.set(padding + r * gridCellSize + dr, padding + c * gridCellSize + dc, { index: TileIndex.SCHOOL_TILE, rotation: 0 });
+                    const nr = padding + r * gridCellSize + dr;
+                    const nc = padding + c * gridCellSize + dc;
+                    worldTileGrid.set(nr, nc, { index: TileIndex.SCHOOL_TILE, rotation: 0 });
+                    // worldPortalTypeGrid.set(nr, nc, hallwayPortals);
                 }
             }
         });
@@ -448,6 +483,7 @@ class SchoolLevel implements Level {
                             worldTileGrid.set(roomPosition.row - 2 * dr, roomPosition.col - 2 * dc, { index: TileIndex.SCHOOL_TILE, rotation: 0 })
                             room.placeTilesInGrid(worldTileGrid, roomPosition);
                             room.placePropsInGrid(worldPropGrid, roomPosition);
+                            room.placePortalTypeInGrid(worldPortalTypeGrid, roomPosition);
                         }
                     }
                 }
@@ -470,6 +506,25 @@ class SchoolLevel implements Level {
                 game.addGameObject(PropFactory(prop, position));
             }
         });
+
+        let numPortals = 0;
+        // const dropsPermutation = new Permutation(this.portalDrops);
+        while (numPortals < 16) {
+            const r = MathUtils.randomInt(0, worldHeight);
+            const c = MathUtils.randomInt(0, worldWidth);
+            const portalTypes = worldPortalTypeGrid.get(r, c);
+            if (!portalTypes) {
+                continue;
+            }
+            const portalProps = MathUtils.randomChoice(portalTypes);
+            const position = new Vector((c - worldWidth / 2) * PIXELS_PER_TILE, r * PIXELS_PER_TILE);
+            if (game.isTileWithPropertyInArea(position, 2, "canSpawnPortal", false)) {
+                continue;
+            }
+            const portal = PortalFactory(portalProps, this.portalDrops[0], position);
+            game.addGameObject(portal);
+            numPortals++;
+        }
     }
 }
 

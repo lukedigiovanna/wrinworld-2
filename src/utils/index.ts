@@ -573,6 +573,10 @@ class Ease {
              : x < 1 ? x 
              : 1;
     }
+
+    public static inOutSine(x: number): number {
+        return -(Math.cos(Math.PI * x) - 1) / 2;
+    }
 }
 
 class Color {
