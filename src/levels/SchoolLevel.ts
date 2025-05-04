@@ -227,11 +227,26 @@ const courtyardNorth = new Room(courtyardPortals, 13, 13, { side: "bottom", offs
 courtyardNorth.tileGrid.iterate((self, r, c) => {
     self.set(r, c, { index: TileIndex.GRASS, rotation: 0 });
 });
+for (let x = 0; x < 13; x++) {
+    if (Math.abs(x - 6) <= 1) continue;
+    courtyardNorth.tileGrid.set(6, x, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
+    courtyardNorth.tileGrid.set(x, 6, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
+}
+for (let x = 0; x < 5; x++) {
+    courtyardNorth.tileGrid.set(4, 4+x, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
+    courtyardNorth.tileGrid.set(8, 4+x, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
+    courtyardNorth.tileGrid.set(4+x, 4, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
+    courtyardNorth.tileGrid.set(4+x, 8, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
+}
 courtyardNorth.propGrid.set(6, 6, PropIndex.EVERGREEN_TREE);
 courtyardNorth.propGrid.set(5, 6, PropIndex.RED_WILDFLOWER);
 courtyardNorth.propGrid.set(7, 6, PropIndex.RED_WILDFLOWER);
 courtyardNorth.propGrid.set(6, 5, PropIndex.RED_WILDFLOWER);
 courtyardNorth.propGrid.set(6, 7, PropIndex.RED_WILDFLOWER);
+courtyardNorth.propGrid.set(2, 2, PropIndex.BUSH);
+courtyardNorth.propGrid.set(2, 10, PropIndex.BUSH);
+courtyardNorth.propGrid.set(10, 2, PropIndex.BUSH);
+courtyardNorth.propGrid.set(10, 10, PropIndex.BUSH);
 
 const possibleRooms: Record<Direction, Room[]> = {
     "north": [bathroomNorth, courtyardNorth],
