@@ -9,6 +9,7 @@ import { Game } from "./game";
 import { GameObject } from "./gameObjects";
 import * as ShaderCode from "./rendering/shaderCode";
 import { postProcessingFragmentShaderCodes, PostProcessingShaderIndex } from "./rendering/postProcessingShaders";
+import { Pair } from "utils/types";
 
 const quadVertices = new Float32Array([
     0, 0,  0, 1, // Bottom-left
@@ -31,7 +32,11 @@ class Camera {
     private backSceneFramebuffer: FrameBuffer;
     private sceneShader: ShaderProgram;
     private postProcessingShaders: Map<PostProcessingShaderIndex, ShaderProgram>;
-    private shaderPipeline: PostProcessingShaderIndex[] = [PostProcessingShaderIndex.PIXELATE, PostProcessingShaderIndex.VIGNETTE];
+    private shaderPipeline: Pair<PostProcessingShaderIndex, boolean>[] = [
+        [PostProcessingShaderIndex.INVERT, false],
+        [PostProcessingShaderIndex.PIXELATE, false],
+        [PostProcessingShaderIndex.VIGNETTE, true],
+    ];
 
     public color: Color = Color.WHITE;
     public strokeWidth: number = 1;
@@ -83,8 +88,22 @@ class Camera {
         return this.postProcessingShaders.get(index)!;
     }
 
-    public setPostProcessingShaderPipeline(pipeline: PostProcessingShaderIndex[]) {
-        this.shaderPipeline = pipeline;
+    public enableShader(index: PostProcessingShaderIndex) {
+        for (const shader of this.shaderPipeline) {
+            if (shader[0] === index) {
+                shader[1] = true;
+                return;
+            }
+        }
+    }
+    
+    public disableShader(index: PostProcessingShaderIndex) {
+        for (const shader of this.shaderPipeline) {
+            if (shader[0] === index) {
+                shader[1] = false;
+                return;
+            }
+        }
     }
 
     public applyShake(duration: number, intensity: number) {
@@ -154,8 +173,9 @@ class Camera {
     // should be called after drawing a frame.
     public renderToScreen() {
         // If there are no shaders in the pipeline, just use the NO_EFFECT shader.
-        const pipeline = this.shaderPipeline.length === 0 ? [PostProcessingShaderIndex.NO_EFFECT] : 
-                                                            this.shaderPipeline
+        const filteredPipeline = this.shaderPipeline.filter(([_, enabled]) => enabled).map(([shader, _]) => shader);
+        const pipeline = filteredPipeline.length === 0 ? [PostProcessingShaderIndex.NO_EFFECT] : 
+                                                          filteredPipeline;
         for (let i = 0; i < pipeline.length; i++) {
             // Swap the buffers
             [this.sceneFramebuffer, this.backSceneFramebuffer] = [this.backSceneFramebuffer, this.sceneFramebuffer];

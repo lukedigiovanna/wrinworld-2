@@ -276,6 +276,7 @@ class Game {
         
         const pixelationTime = (this.time - this.levelStartTime) / PIXELATION_PERIOD;
         if (this.pixelateLevelStart && 0 <= pixelationTime && pixelationTime <= 1) {
+            this._camera.enableShader(PostProcessingShaderIndex.PIXELATE);
             let factor = pixelationTime < 0.5 ? Ease.inQuart(pixelationTime / 0.5) : Ease.inQuart(1.0 - (pixelationTime - 0.5) / 0.5);
             this._camera.getPostProcessingShader(PostProcessingShaderIndex.PIXELATE)
                         .setUniformFloat("intensity", factor * 0.35);
@@ -283,10 +284,7 @@ class Game {
                         .setUniformVector("screenSize", new Vector(this._camera.canvas.width, this._camera.canvas.height));
                     }
         else {
-            this._camera.getPostProcessingShader(PostProcessingShaderIndex.PIXELATE)
-                        .setUniformVector("screenSize", new Vector(this._camera.canvas.width, this._camera.canvas.height));
-            this._camera.getPostProcessingShader(PostProcessingShaderIndex.PIXELATE)
-                        .setUniformFloat("intensity", 0);
+            this._camera.disableShader(PostProcessingShaderIndex.PIXELATE);
         }
 
         this._camera.clear();
