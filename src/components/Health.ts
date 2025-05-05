@@ -118,8 +118,13 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
                 gameObject.position.x, 
                 gameObject.position.y + gameObject.scale.y / 2 + topMargin, 
                 barWidth, barHeight);
-            camera.color = new Color(data.barColor.r, data.barColor.g, data.barColor.b, opacity);
-            const realWidth = barWidth * data.hp / data.maximumHP - borderWidth * 2;
+            const p = data.hp / data.maximumHP;
+            camera.color = Color.lerp(
+                new Color(1, 0, 0, 1), 
+                new Color(data.barColor.r, data.barColor.g, data.barColor.b, opacity), 
+                p
+            );
+            const realWidth = barWidth * p - borderWidth * 2;
             camera.fillRect(
                 gameObject.position.x - barWidth / 2 + borderWidth + realWidth / 2, 
                 gameObject.position.y + gameObject.scale.y / 2 + topMargin, 

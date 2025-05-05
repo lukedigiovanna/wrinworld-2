@@ -316,7 +316,7 @@ class MathUtils {
         else return Math.ceil(a);
     }
 
-    public static interpolate(p: number, a: number, b: number) {
+    public static lerp(a: number, b: number, p: number) {
         return a + p * (b - a);
     }
 
@@ -406,13 +406,13 @@ class PerlinNoise {
 
         const i0 = dotGridGradient(this._seed, x0, y0, x, y);
         const i1 = dotGridGradient(this._seed, x1, y0, x, y);
-        const a = MathUtils.interpolate(sx, i0, i1);
+        const a = MathUtils.lerp(i0, i1, sx);
 
         const j0 = dotGridGradient(this._seed, x0, y1, x, y);
         const j1 = dotGridGradient(this._seed, x1, y1, x, y);
-        const b = MathUtils.interpolate(sx, j0, j1);
+        const b = MathUtils.lerp(j0, j1, sx);
 
-        return MathUtils.interpolate(sy, a, b) * 0.5 + 0.5;
+        return MathUtils.lerp(a, b, sy) * 0.5 + 0.5;
     }
 }
 
@@ -610,6 +610,15 @@ class Color {
 
     public static add(color1: Color, color2: Color) {
         return new Color(color1.r + color2.r, color1.g + color2.g, color1.b + color2.b, Math.max(color1.a, color2.a));
+    }
+
+    public static lerp(color1: Color, color2: Color, p: number): Color {
+        return new Color(
+            MathUtils.lerp(color1.r, color2.r, p),
+            MathUtils.lerp(color1.g, color2.g, p),
+            MathUtils.lerp(color1.b, color2.b, p),
+            Math.min(color1.a, color2.a),
+        );
     }
 
     public static hex(hexString: string) {
