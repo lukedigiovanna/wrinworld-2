@@ -103,7 +103,7 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
             id: "add-starter-items",
             start() {
                 const inventoryManager = gameObject.getComponent("inventory-manager");
-                const items = [ItemIndex.WATER_GUN, ItemIndex.PRESSURE_WASHER, ItemIndex.WATER_BOTTLE, ItemIndex.SPROCKET_UPGRADE];
+                const items = [ItemIndex.COMPOSITION_NOTEBOOK, ItemIndex.FIRE_ALARM, ItemIndex.LUNCH_BOX, ItemIndex.MECHANICAL_PENCIL, ItemIndex.MILK_CARTON, ItemIndex.MYSTERY_PUDDING, ItemIndex.PENCIL, ItemIndex.SCISSORS, ItemIndex.SODA_GRENADE, ItemIndex.SPRAY_PAINT, ItemIndex.TEXTBOOK, ItemIndex.VOLCANO];
                 for (const i of items) {
                     const item = itemsCodex[i as ItemIndex];
                     for (let j = 0; j < item.maxStack; j++) {

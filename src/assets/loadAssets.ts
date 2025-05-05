@@ -159,6 +159,18 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "water_bottle_4", "assets/images/items/water_bottle_4.png"),
         loadImageAndTexture(gl, "water_bottle_5", "assets/images/items/water_bottle_5.png"),
         loadImageAndTexture(gl, "water_bottle_6", "assets/images/items/water_bottle_6.png"),
+        loadImageAndTexture(gl, "composition_notebook", "assets/images/items/composition_notebook.png"),
+        loadImageAndTexture(gl, "fire_alarm", "assets/images/items/fire_alarm.png"),
+        loadImageAndTexture(gl, "lunch_box", "assets/images/items/lunch_box.png"),
+        loadImageAndTexture(gl, "mechanical_pencil", "assets/images/items/mechanical_pencil.png"),
+        loadImageAndTexture(gl, "milk_carton", "assets/images/items/milk_carton.png"),
+        loadImageAndTexture(gl, "mystery_pudding", "assets/images/items/mystery_pudding.png"),
+        loadImageAndTexture(gl, "pencil", "assets/images/items/pencil.png"),
+        loadImageAndTexture(gl, "scissors", "assets/images/items/scissors.png"),
+        loadImageAndTexture(gl, "soda_grenade", "assets/images/items/soda_grenade.png"),
+        loadImageAndTexture(gl, "spray_paint", "assets/images/items/spray_paint.png"),
+        loadImageAndTexture(gl, "textbook", "assets/images/items/textbook.png"),
+        loadImageAndTexture(gl, "volcano", "assets/images/items/volcano.png"),
         
         // Particle sprites
         loadImageAndTexture(gl, "portal_particle", "assets/images/particles/portal_particle.png"),

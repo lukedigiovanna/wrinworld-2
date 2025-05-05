@@ -1,12 +1,35 @@
 import { Level, PortalDropPool } from "./";
 import { EnemyIndex, PortalFactory, PortalProperties, PropFactory } from "../gameObjects";
 import { Game, PIXELS_PER_TILE } from "../game";
-import { Tile, TileIndex, TileRotation } from "../tiles";
+import { Tile, TileIndex } from "../tiles";
 import { MathUtils, NumberRange, Permutation, Vector } from "../utils";
 import { PropIndex, propsCodex } from "../props";
 import { getTexture } from "../assets/imageLoader";
-import { Direction, Nullable, Pair, Side } from "../utils/types";
+import { Nullable, Side } from "../utils/types";
 import { ItemIndex } from "../items";
+
+// school item ideas.. goal: 40 obtainable items
+// also; need to ensure no duplicates with previously obtained items. each item
+// should have a max obtainable prop (ex: upgrades can have multiple occurrences)
+
+// reuse:
+// boomerang, flower power, stun fiddle, water gun, sprocket upgrade, strength upgrade,
+// essence_magnet, quick hand upgrade, invincibility bubble, slingshot, dice
+
+// new:
+// lunch box: heal consumable + temp speed boost
+// milk carton: heal some but has a chance to also poison you
+// orange soda: throw and explode on hit
+// mystery pudding: applies a random buff, or maybe a debuff!
+// pencil: melee -- sticks into enemy
+// mechanical pencil: medium range -- shoots piercing lead
+// fire alarm: panics nearby enemies
+// spray paint: 
+// composition notebook:
+// textbook: 
+// scissors: momentarily decapitate your head to move and attack without being damaged
+// science fair volcano: spawns a vocano that randomly spews lava globs
+
 
 class Grid<T> {
     private cells: T[];
@@ -291,8 +314,7 @@ for (let r = 0; r < 3; r++) {
     }
 }
 
-// const rooms = [bathroom, classroom, courtyard, gym, cafeteria];
-const rooms = [cafeteria];
+const rooms = [bathroom, classroom, courtyard, gym, cafeteria];
 
 interface Endpoint {
     row: number;
