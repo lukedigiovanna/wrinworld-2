@@ -1,7 +1,7 @@
-import { Camera } from "../camera";
+import { Camera } from "../rendering/camera";
 import { Component, ComponentFactory, ComponentID } from "../components/index";
 import { Vector, Rectangle, MathUtils, Color } from "../utils";
-import { Renderer } from "../renderers";
+import { Renderer } from "../rendering/renderers";
 import { Game, getChunkIndex } from "../game";
 import settings from "../settings";
 import { Tile, TileData } from "../tiles";

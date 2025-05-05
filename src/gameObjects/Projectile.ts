@@ -1,7 +1,7 @@
 import { GameObject, GameObjectFactory, Team } from "./index";
 import { MathUtils, Vector, Color } from "../utils";
 import { Hitbox, Physics, PhysicalCollider } from "../components";
-import { spriteRenderer } from "../renderers";
+import { spriteRenderer } from "../rendering/renderers";
 import { Projectile } from "../projectiles";
 import { getTexture } from "../assets/imageLoader";
 

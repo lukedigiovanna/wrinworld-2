@@ -1,5 +1,5 @@
 import { GameObject, GameObjectFactory, EssenceOrbFactory, Team, CorpseFactory } from "./";
-import { spriteRenderer } from "../renderers";
+import { spriteRenderer } from "../rendering/renderers";
 import { Vector, MathUtils } from "../utils";
 import { Health, Hitbox, Physics, PhysicalCollider, ItemDropper, 
     HealthBarDisplayMode, ParticleEmitter, ParticleLayer, StatusEffectManager, 

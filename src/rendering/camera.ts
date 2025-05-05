@@ -1,15 +1,15 @@
-import input from "./input";
-import { Vector, MathUtils, Color, Ease } from "./utils";
+import input from "../input";
+import { Vector, MathUtils, Color, Ease } from "../utils";
+import { Pair } from "../utils/types";
+import { getOrthographicProjection, Matrix4 } from "../utils/Matrix4";
+import { Texture, getTexture } from "../assets/imageLoader";
+import { Game } from "../game";
+import { GameObject } from "../gameObjects";
+import * as ShaderCode from "./shaderCode";
+import { postProcessingFragmentShaderCodes, PostProcessingShaderIndex } from "./postProcessingShaders";
+import { FrameBuffer } from "./FrameBuffer";
 import { MAX_LIGHTS, MAX_PORTALS, MAX_SHADOWS, ShaderLight, ShaderPortal, 
-         ShaderProgram, ShaderShadow } from "./rendering/ShaderProgram";
-import { FrameBuffer } from "./rendering/FrameBuffer";
-import { getOrthographicProjection, Matrix4 } from "./utils/Matrix4";
-import { Texture, getTexture } from "./assets/imageLoader";
-import { Game } from "./game";
-import { GameObject } from "./gameObjects";
-import * as ShaderCode from "./rendering/shaderCode";
-import { postProcessingFragmentShaderCodes, PostProcessingShaderIndex } from "./rendering/postProcessingShaders";
-import { Pair } from "utils/types";
+         ShaderProgram, ShaderShadow } from "./ShaderProgram";
 
 const quadVertices = new Float32Array([
     0, 0,  0, 1, // Bottom-left

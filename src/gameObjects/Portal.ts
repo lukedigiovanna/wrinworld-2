@@ -1,4 +1,4 @@
-import { spriteRenderer } from "../renderers";
+import { spriteRenderer } from "../rendering/renderers";
 import { GameObjectFactory, GameObject, ItemDropFactory } from "./index";
 import { Vector, MathUtils, NumberRange, Color } from "../utils";
 import { ParticleEmitter, Health, HealthBarDisplayMode } from "../components";

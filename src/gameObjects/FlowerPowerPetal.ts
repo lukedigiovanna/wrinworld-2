@@ -1,6 +1,6 @@
 import { fireProjectile } from "../weapons";
 import { getTexture } from "../assets/imageLoader";
-import { spriteRenderer } from "../renderers";
+import { spriteRenderer } from "../rendering/renderers";
 import { Ease, Vector, MathUtils } from "../utils";
 import { GameObject, GameObjectFactory } from "./";
 import { ProjectileIndex, projectilesCodex } from "../projectiles";

@@ -2,7 +2,7 @@ import { GameObject, GameObjectFactory } from "./";
 import { Physics } from "../components";
 import { getTexture } from "../assets/imageLoader";
 import { Color, MathUtils } from "../utils";
-import { spriteRenderer } from "../renderers";
+import { spriteRenderer } from "../rendering/renderers";
 
 const CorpseFactory: GameObjectFactory = (gameObject: GameObject, spriteID: string) => {
     const corpse = new GameObject();

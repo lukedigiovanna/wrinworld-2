@@ -1,7 +1,7 @@
 import { GameObject, PlayerFactory } from "./gameObjects";
 import { Vector, MathUtils, PerlinNoise, Color, Ease } from "./utils";
 import input from "./input";
-import { Camera } from "./camera";
+import { Camera } from "./rendering/camera";
 import { getTexture } from "./assets/imageLoader";
 import { Particle, ParticleLayer } from "./components";
 import { Tile, tileCodex, TileData, TileIndex } from "./tiles";

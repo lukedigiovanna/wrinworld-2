@@ -1,8 +1,7 @@
-import { getTexture } from "./assets/imageLoader";
+import { getTexture } from "../assets/imageLoader";
 import { Camera } from "./camera";
-import { GameObject } from "./gameObjects";
-import { Color, Vector } from "./utils";
-import { Matrix4 } from "./utils/Matrix4";
+import { GameObject } from "../gameObjects";
+import { Vector } from "../utils";
 
 type Renderer = {
     render: (camera: Camera, gameObject: GameObject) => void

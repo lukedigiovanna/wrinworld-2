@@ -5,7 +5,7 @@ import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager,
          StatusEffectManager, ParticleEmitter, ParticleLayer,
          MovementData,
          AnimationManager} from "../components";
-import { spriteRenderer } from "../renderers";
+import { spriteRenderer } from "../rendering/renderers";
 import { SpriteAnimationIndex } from "../animations";
 import { getImage } from "../assets/imageLoader";
 import { ItemIndex, itemsCodex } from "../items";

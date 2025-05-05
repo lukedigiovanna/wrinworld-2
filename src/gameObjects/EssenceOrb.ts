@@ -1,4 +1,4 @@
-import { spriteRenderer } from "../renderers";
+import { spriteRenderer } from "../rendering/renderers";
 import { GameObjectFactory, GameObject } from "./index";
 import { MathUtils, Vector, Color, Ease } from "../utils";
 import { Hitbox } from "../components";

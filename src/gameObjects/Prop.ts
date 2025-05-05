@@ -1,4 +1,4 @@
-import { spriteRenderer } from "../renderers";
+import { spriteRenderer } from "../rendering/renderers";
 import { GameObjectFactory, GameObject } from "./index";
 import { Vector } from "../utils";
 import { PhysicalCollider } from "../components";
