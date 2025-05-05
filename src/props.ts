@@ -16,6 +16,7 @@ enum PropIndex {
     CHALK_BOARD,
     SCHOOL_DESK,
     BASKETBALL,
+    LUNCH_TABLE,
 }
 
 interface PropProperties {
@@ -104,7 +105,12 @@ const propsCodex: Record<PropIndex, PropProperties> = {
     spriteID: "basketball",
     hasCollision: false,
     castsShadow: true,
-}
+},
+[PropIndex.LUNCH_TABLE]: {
+    spriteID: "lunch_table",
+    hasCollision: true,
+    castsShadow: false,
+},
 }
 
 export { PropIndex, propsCodex };

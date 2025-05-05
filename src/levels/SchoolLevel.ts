@@ -285,8 +285,14 @@ cafeteria.tileGrid.iterate((self, r, c) => {
         self.set(r, c, { index: TileIndex.SCHOOL_TILE_BLACK, rotation: 0 });
     }
 });
+for (let r = 0; r < 3; r++) {
+    for (let c = 0; c < 3; c++) {
+        cafeteria.propGrid.set(3 + r * 5, 3 + c * 5, PropIndex.LUNCH_TABLE);
+    }
+}
 
-const rooms = [bathroom, classroom, courtyard, gym, cafeteria];
+// const rooms = [bathroom, classroom, courtyard, gym, cafeteria];
+const rooms = [cafeteria];
 
 interface Endpoint {
     row: number;

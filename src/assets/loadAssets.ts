@@ -87,6 +87,7 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "chalk_board", "assets/images/props/chalk_board.png"),
         loadImageAndTexture(gl, "school_desk", "assets/images/props/school_desk.png"),
         loadImageAndTexture(gl, "basketball", "assets/images/props/basketball.png"),
+        loadImageAndTexture(gl, "lunch_table", "assets/images/props/lunch_table.png"),
         
         // Projectiles
         loadImageAndTexture(gl, "arrow", "assets/images/projectiles/arrow.png"),
