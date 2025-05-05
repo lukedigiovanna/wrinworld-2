@@ -97,7 +97,6 @@ interface GridPosition {
 interface DoorConfig {
     side: Side,
     offset: number,
-    radius: number;
 }
 
 class Room {
@@ -106,15 +105,15 @@ class Room {
     readonly height: number;
     readonly tileGrid: Grid<Tile>;
     readonly propGrid: Grid<Nullable<PropIndex>>;
-    private _doorPosition: GridPosition;
+    readonly doorConfigs: DoorConfig[];
 
-    constructor(portalTypes: PortalProperties[], width: number, height: number, doorConfig: DoorConfig) {
+    constructor(portalTypes: PortalProperties[], width: number, height: number, doorConfigs: DoorConfig[]) {
         this.portalTypes = portalTypes;
         this.width = width;
         this.height = height;
         this.tileGrid = new Grid<Tile>(width, height, { index: TileIndex.SCHOOL_TILE, rotation: 0 });
         this.propGrid = new Grid<Nullable<PropIndex>>(width, height, null);
-        this._doorPosition = this.computeDoorPosition(doorConfig);
+        this.doorConfigs = doorConfigs;
     }
 
     private computeDoorPosition(doorConfig: DoorConfig): GridPosition {
@@ -126,22 +125,14 @@ class Room {
         }
     }
 
-    public setDoor(doorConfig: DoorConfig): Room {
-        this._doorPosition = this.computeDoorPosition(doorConfig);
-        return this;
-    }
-
-    public get doorPosition() {
-        return this._doorPosition;
-    }
-
-    public canBePlacedAt(worldGrid: Grid<Tile>, doorPosition: GridPosition, padding=0) {
+    public canBePlacedAt(worldGrid: Grid<Tile>, position: GridPosition, doorConfig: DoorConfig, padding=0) {
+        const doorPosition = this.computeDoorPosition(doorConfig);
         for (let r = -padding; r < this.tileGrid.height + padding; r++) {
             for (let c = -padding; c < this.tileGrid.width + padding; c++) {
-                const offR = r - this.doorPosition.row;
-                const offC = c - this.doorPosition.col;
-                const gridR = doorPosition.row + offR;
-                const gridC = doorPosition.col + offC;
+                const offR = r - doorPosition.row;
+                const offC = c - doorPosition.col;
+                const gridR = position.row + offR;
+                const gridC = position.col + offC;
                 if (!worldGrid.validCoord(gridR, gridC) || worldGrid.get(gridR, gridC)!.index !== TileIndex.SCHOOL_WALL) {
                     return false;
                 }
@@ -150,33 +141,35 @@ class Room {
         return true;
     }
 
-    private placeInGrid<T>(grid: Grid<T>, worldGrid: Grid<T>, doorPosition: GridPosition) {
+    private placeInGrid<T>(grid: Grid<T>, worldGrid: Grid<T>, position: GridPosition, doorConfig: DoorConfig) {
+        const doorPosition = this.computeDoorPosition(doorConfig);
         this.tileGrid.iterate((self, r, c) => {
-            const offR = r - this.doorPosition.row;
-            const offC = c - this.doorPosition.col;
-            const gridR = doorPosition.row + offR;
-            const gridC = doorPosition.col + offC;
+            const offR = r - doorPosition.row;
+            const offC = c - doorPosition.col;
+            const gridR = position.row + offR;
+            const gridC = position.col + offC;
             if (worldGrid.validCoord(gridR, gridC)) {
                 worldGrid.set(gridR, gridC, grid.get(r, c)!);
             }
         });
     }
 
-    public placeTilesInGrid(worldGrid: Grid<Tile>, doorPosition: GridPosition) {
-        this.placeInGrid(this.tileGrid, worldGrid, doorPosition);
+    public placeTilesInGrid(worldGrid: Grid<Tile>, position: GridPosition, doorConfig: DoorConfig) {
+        this.placeInGrid(this.tileGrid, worldGrid, position, doorConfig);
     }
 
-    public placePropsInGrid(worldGrid: Grid<Nullable<PropIndex>>, doorPosition: GridPosition) {
-        this.placeInGrid(this.propGrid, worldGrid, doorPosition);
+    public placePropsInGrid(worldGrid: Grid<Nullable<PropIndex>>, position: GridPosition, doorConfig: DoorConfig) {
+        this.placeInGrid(this.propGrid, worldGrid, position, doorConfig);
     }
 
-    public placePortalTypeInGrid(worldGrid: Grid<Nullable<PortalProperties[]>>, doorPosition: GridPosition) {
+    public placePortalTypeInGrid(worldGrid: Grid<Nullable<PortalProperties[]>>, position: GridPosition, doorConfig: DoorConfig) {
+        const doorPosition = this.computeDoorPosition(doorConfig);
         for (let r = 0; r < this.height; r++) {
             for (let c = 0; c < this.width; c++) {
-                const offR = r - this.doorPosition.row;
-                const offC = c - this.doorPosition.col;
-                const gridR = doorPosition.row + offR;
-                const gridC = doorPosition.col + offC;
+                const offR = r - doorPosition.row;
+                const offC = c - doorPosition.col;
+                const gridR = position.row + offR;
+                const gridC = position.col + offC;
                 if (worldGrid.validCoord(gridR, gridC)) {
                     worldGrid.set(gridR, gridC, this.portalTypes);
                 }
@@ -207,61 +200,93 @@ const bathroomPortals = [slimePortal];
 const courtyardPortals = [slimePortal];
 const hallwayPortals = [slimePortal];
 
-const bathroomNorth = new Room(bathroomPortals, 12, 6, { side: "bottom", offset: 10, radius: 1 });
-for (let r = 0; r < bathroomNorth.tileGrid.height; r++) {
-    for (let c = 0; c < bathroomNorth.tileGrid.width; c++) {
+const bathroom = new Room(bathroomPortals, 12, 6, [
+    { side: "top", offset: 10 },
+    { side: "bottom", offset: 10 },
+    { side: "left", offset: 1 },
+    { side: "right", offset: 1 },
+]);
+for (let r = 0; r < bathroom.tileGrid.height; r++) {
+    for (let c = 0; c < bathroom.tileGrid.width; c++) {
         if ((r + c) % 2 === 0) {
-            bathroomNorth.tileGrid.set(r, c, { index: TileIndex.SCHOOL_TILE_BLACK, rotation: 0 });
+            bathroom.tileGrid.set(r, c, { index: TileIndex.SCHOOL_TILE_BLACK, rotation: 0 });
         }
     }
 }
 for (let c = 0; c < 5; c++)
-    bathroomNorth.propGrid.set(5, 2 * c, PropIndex.TOILET);
-bathroomNorth.propGrid.set(4, 11, PropIndex.SINK);
-bathroomNorth.propGrid.set(2, 11, PropIndex.SINK);
-const bathroomSouth = bathroomNorth.copy().setDoor({ side: "top", offset: 10, radius: 1 });
-const bathroomEast = bathroomNorth.copy().setDoor({ side: "left", offset: 1, radius: 1 });
-const bathroomWest = bathroomNorth.copy().setDoor({ side: "right", offset: 1, radius: 1 });
+    bathroom.propGrid.set(5, 2 * c, PropIndex.TOILET);
+bathroom.propGrid.set(4, 11, PropIndex.SINK);
+bathroom.propGrid.set(2, 11, PropIndex.SINK);
 
-const courtyardNorth = new Room(courtyardPortals, 13, 13, { side: "bottom", offset: 6, radius: 1 });
-courtyardNorth.tileGrid.iterate((self, r, c) => {
+const courtyard = new Room(courtyardPortals, 13, 13, [
+    { side: "top", offset: 6 },
+    { side: "bottom", offset: 6 },
+    { side: "left", offset: 6 },
+    { side: "right", offset: 6 },
+]);
+courtyard.tileGrid.iterate((self, r, c) => {
     self.set(r, c, { index: TileIndex.GRASS, rotation: 0 });
 });
 for (let x = 0; x < 13; x++) {
     if (Math.abs(x - 6) <= 1) continue;
-    courtyardNorth.tileGrid.set(6, x, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
-    courtyardNorth.tileGrid.set(x, 6, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
+    courtyard.tileGrid.set(6, x, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
+    courtyard.tileGrid.set(x, 6, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
 }
 for (let x = 0; x < 5; x++) {
-    courtyardNorth.tileGrid.set(4, 4+x, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
-    courtyardNorth.tileGrid.set(8, 4+x, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
-    courtyardNorth.tileGrid.set(4+x, 4, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
-    courtyardNorth.tileGrid.set(4+x, 8, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
+    courtyard.tileGrid.set(4, 4+x, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
+    courtyard.tileGrid.set(8, 4+x, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
+    courtyard.tileGrid.set(4+x, 4, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
+    courtyard.tileGrid.set(4+x, 8, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
 }
-courtyardNorth.propGrid.set(6, 6, PropIndex.EVERGREEN_TREE);
-courtyardNorth.propGrid.set(5, 6, PropIndex.RED_WILDFLOWER);
-courtyardNorth.propGrid.set(7, 6, PropIndex.RED_WILDFLOWER);
-courtyardNorth.propGrid.set(6, 5, PropIndex.RED_WILDFLOWER);
-courtyardNorth.propGrid.set(6, 7, PropIndex.RED_WILDFLOWER);
-courtyardNorth.propGrid.set(2, 2, PropIndex.BUSH);
-courtyardNorth.propGrid.set(2, 10, PropIndex.BUSH);
-courtyardNorth.propGrid.set(10, 2, PropIndex.BUSH);
-courtyardNorth.propGrid.set(10, 10, PropIndex.BUSH);
+courtyard.propGrid.set(6, 6, PropIndex.EVERGREEN_TREE);
+courtyard.propGrid.set(5, 6, PropIndex.RED_WILDFLOWER);
+courtyard.propGrid.set(7, 6, PropIndex.RED_WILDFLOWER);
+courtyard.propGrid.set(6, 5, PropIndex.RED_WILDFLOWER);
+courtyard.propGrid.set(6, 7, PropIndex.RED_WILDFLOWER);
+courtyard.propGrid.set(2, 2, PropIndex.BUSH);
+courtyard.propGrid.set(2, 10, PropIndex.BUSH);
+courtyard.propGrid.set(10, 2, PropIndex.BUSH);
+courtyard.propGrid.set(10, 10, PropIndex.BUSH);
 
-const classroomNorth = new Room(bathroomPortals, 13, 11, { side: "bottom", offset: 2, radius: 1 });
-classroomNorth.propGrid.set(10, 6, PropIndex.CHALK_BOARD);
+const classroom = new Room(bathroomPortals, 13, 11, [
+    { side: "top", offset: 2 },
+    { side: "bottom", offset: 10 },
+    { side: "left", offset: 8 },
+    { side: "right", offset: 8 },
+]);
+classroom.propGrid.set(10, 6, PropIndex.CHALK_BOARD);
 for (let r = 0; r < 4; r++) {
     for (let c = 0; c < 5; c++) {
-        classroomNorth.propGrid.set(2 + r * 2, 2 + c * 2, PropIndex.SCHOOL_DESK);
+        classroom.propGrid.set(2 + r * 2, 2 + c * 2, PropIndex.SCHOOL_DESK);
     }
 }
 
-const possibleRooms: Record<Direction, Room[]> = {
-    "north": [bathroomNorth, classroomNorth],
-    "south": [bathroomSouth],
-    "east": [bathroomEast],
-    "west": [bathroomWest]
-};
+const gym = new Room(bathroomPortals, 20, 10, [
+    { side: "top", offset: 18 },
+    { side: "bottom", offset: 18 },
+    { side: "left", offset: 8 },
+    { side: "right", offset: 8 },
+]);
+gym.tileGrid.iterate((self, r, c) => {
+    self.set(r, c, { index: TileIndex.GYM_FLOOR, rotation: 0 });
+});
+gym.propGrid.set(3, 5, PropIndex.BASKETBALL);
+gym.propGrid.set(5, 2, PropIndex.BASKETBALL);
+gym.propGrid.set(6, 13, PropIndex.BASKETBALL);
+
+const cafeteria = new Room(bathroomPortals, 17, 17, [
+    { side: "top", offset: 8 },
+    { side: "bottom", offset: 8 },
+    { side: "left", offset: 8 },
+    { side: "right", offset: 8 },
+]);
+cafeteria.tileGrid.iterate((self, r, c) => {
+    if ((r + c) % 2 === 0) {
+        self.set(r, c, { index: TileIndex.SCHOOL_TILE_BLACK, rotation: 0 });
+    }
+});
+
+const rooms = [bathroom, classroom, courtyard, gym, cafeteria];
 
 interface Endpoint {
     row: number;
@@ -487,27 +512,32 @@ class SchoolLevel implements Level {
             if (!hasHallway) {
                 return;
             }
-            const directions: [Direction, number, number][] = [["east",0,1],["west",0,-1],["north",1,0],["south",-1,0]];
-            for (const [direction, dr, dc] of directions) {
+            const directions: [Side, number, number][] = [["left",0,1],["right",0,-1],["bottom",1,0],["top",-1,0]];
+            for (const [side, dr, dc] of directions) {
                 if (!self.get(r + dr, c + dc)) {
                     if (Math.random() < 0.5) {
-                        const room = MathUtils.randomChoice(possibleRooms[direction]);
+                        const room = MathUtils.randomChoice(rooms);
+                        const possibleDoorConfigs = room.doorConfigs.filter(config => config.side === side)
+                        if (possibleDoorConfigs.length === 0) {
+                            continue;
+                        }
+                        const doorConfig = MathUtils.randomChoice(possibleDoorConfigs);
                         const roomPosition = {
                             row: padding + (r + dr) * gridCellSize, 
                             col: padding + (c + dc) * gridCellSize
                         };
-                        switch (direction) {
-                            case "north": roomPosition.row += 1; break;
-                            case "south": roomPosition.row += gridCellSize - 2; break;
-                            case "east": roomPosition.col += 1; break;
-                            case "west": roomPosition.col += gridCellSize - 2; break;
+                        switch (side) {
+                            case "bottom": roomPosition.row += 1; break;
+                            case "top": roomPosition.row += gridCellSize - 2; break;
+                            case "left": roomPosition.col += 1; break;
+                            case "right": roomPosition.col += gridCellSize - 2; break;
                         }
-                        if (room.canBePlacedAt(worldTileGrid, roomPosition, 1)) {
+                        if (room.canBePlacedAt(worldTileGrid, roomPosition, doorConfig, 1)) {
                             worldTileGrid.set(roomPosition.row - dr, roomPosition.col - dc, { index: TileIndex.SCHOOL_TILE, rotation: 0 })
                             worldTileGrid.set(roomPosition.row - 2 * dr, roomPosition.col - 2 * dc, { index: TileIndex.SCHOOL_TILE, rotation: 0 })
-                            room.placeTilesInGrid(worldTileGrid, roomPosition);
-                            room.placePropsInGrid(worldPropGrid, roomPosition);
-                            room.placePortalTypeInGrid(worldPortalTypeGrid, roomPosition);
+                            room.placeTilesInGrid(worldTileGrid, roomPosition, doorConfig);
+                            room.placePropsInGrid(worldPropGrid, roomPosition, doorConfig);
+                            room.placePortalTypeInGrid(worldPortalTypeGrid, roomPosition, doorConfig);
                         }
                     }
                 }

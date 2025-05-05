@@ -14,7 +14,8 @@ enum PropIndex {
     TOILET,
     SINK,
     CHALK_BOARD,
-    SCHOOL_DESK
+    SCHOOL_DESK,
+    BASKETBALL,
 }
 
 interface PropProperties {
@@ -98,6 +99,11 @@ const propsCodex: Record<PropIndex, PropProperties> = {
     spriteID: "school_desk",
     hasCollision: true,
     castsShadow: false,
+},
+[PropIndex.BASKETBALL]: {
+    spriteID: "basketball",
+    hasCollision: false,
+    castsShadow: true,
 }
 }
 

@@ -29,6 +29,7 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "school_wall_side_outside_corner_bottom", "assets/images/tiles/school_wall_side_outside_corner_bottom.png"),
         loadImageAndTexture(gl, "school_wall_side_double_outside_corner", "assets/images/tiles/school_wall_side_double_outside_corner.png"),
         loadImageAndTexture(gl, "gray_bricks", "assets/images/tiles/gray_bricks.png"),
+        loadImageAndTexture(gl, "gym_floor", "assets/images/tiles/gym_floor.png"),
         
         // Entities
         loadImageAndTexture(gl, "character", "assets/images/character.png"),
@@ -85,6 +86,7 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "sink", "assets/images/props/sink.png"),
         loadImageAndTexture(gl, "chalk_board", "assets/images/props/chalk_board.png"),
         loadImageAndTexture(gl, "school_desk", "assets/images/props/school_desk.png"),
+        loadImageAndTexture(gl, "basketball", "assets/images/props/basketball.png"),
         
         // Projectiles
         loadImageAndTexture(gl, "arrow", "assets/images/projectiles/arrow.png"),
