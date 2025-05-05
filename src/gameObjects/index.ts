@@ -215,7 +215,6 @@ stack trace:`)
             if (component.destroy)
                 component.destroy();
         });
-        this.components = [];
     }
 
     // gets all objects within a 1 chunk radius of this object
