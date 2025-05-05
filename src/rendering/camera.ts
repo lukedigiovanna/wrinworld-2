@@ -113,16 +113,19 @@ class Camera {
     }
 
     public update(dt: number) {
-        // const diff = Vector.subtract(this.target, this.position);
-        // const threshold = this.height / 4;
-        // if (diff.magnitude > threshold) {
-        //     diff.subtract(Vector.scaled(Vector.normalized(diff), threshold));
-        //     diff.scale(dt * 4);
-        //     if (diff.magnitude > 0.025)
-        //         this.position.add(diff);
-        // }
-        if (this.target)
-            this.position.set(this.target.position);
+        if (this.target) {
+
+            const diff = Vector.subtract(this.target.position, this.position);
+            const threshold = this.height / 12;
+            if (diff.magnitude > threshold) {
+                diff.subtract(Vector.scaled(Vector.normalized(diff), threshold));
+                diff.scale(dt * 10);
+                if (diff.magnitude > 0.025)
+                    this.position.add(diff);
+            }
+        }
+        // if (this.target)
+        //     this.position.set(this.target.position);
         // this.position.y = MathUtils.clamp(this.position.y, this.verticalBoundary[0], this.verticalBoundary[1]);
 
         if (input.isKeyDown("Equal")) {
@@ -151,18 +154,15 @@ class Camera {
             const shake = MathUtils.randomVector(MathUtils.random(0, I));
             position.add(shake);
         }
-        // Set the appropriate projection matrix
-        const pixelsPerUnit = this.canvas.height / this.height;
-        const modifiedPPU = Math.floor(pixelsPerUnit);
-        const height = Math.round(this.canvas.height / modifiedPPU);
-        const width = Math.round(this.canvas.width / modifiedPPU);
-        const x = Math.round(position.x);
-        const y = Math.round(position.y);
-        const lw = Math.floor(width / 2), rw = Math.ceil(width / 2);
-        const bh = Math.floor(height / 2), th = Math.ceil(height / 2);
+        const scale = Math.floor(this.canvas.height / this.height); // pixels per world unit
+        const height = Math.floor(this.canvas.height / scale);
+        const width = Math.floor(this.canvas.width / scale);
+        // const heightOverage = this.canvas.height - height * scale;
+        // const widthOverage = this.canvas.width - width * scale;
+        // console.log(scale, width, height, widthOverage, heightOverage);
         const projection = getOrthographicProjection(
-            x - lw, x + rw,
-            y - bh, y + th,
+            position.x - width / 2, position.x + width / 2,
+            position.y - height / 2, position.y + height / 2,
             0, 100
         );
         this.sceneShader.setUniformMatrix4("projection", projection);
