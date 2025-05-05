@@ -1,3 +1,4 @@
+import { ArealEffect } from "./arealEffect";
 import { SpriteAnimationIndex } from "./animations";
 import { Color } from "./utils";
 
@@ -8,6 +9,7 @@ interface TileData {
     canSpawnPortal: boolean;
     wall: boolean;
     trailColor?: Color;
+    arealEffects?: Set<ArealEffect>;
 }
 
 enum TileIndex {
@@ -72,6 +74,7 @@ const tileCodex: Record<TileIndex, TileData> = {
     canGrowPlants: false,
     canSpawnPortal: false,
     wall: false,
+    arealEffects: new Set<ArealEffect>([ArealEffect.WATER]),
 },
 [TileIndex.ROCKS]: {
     spriteID: "rocks",

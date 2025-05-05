@@ -5,6 +5,7 @@ import { Renderer } from "../rendering/renderers";
 import { Game, getChunkIndex } from "../game";
 import settings from "../settings";
 import { Tile, TileData } from "../tiles";
+import { ArealEffect } from "arealEffect";
 
 enum Team {
     UNTEAMED,
@@ -274,6 +275,11 @@ stack trace:`)
         else {
             return this.position.copy();
         }
+    }
+
+    public hasArealEffect(effect: ArealEffect) {
+        const tile = this.game.getTile(this.hitboxCenter);
+        return tile.arealEffects?.has(effect);
     }
 }
 

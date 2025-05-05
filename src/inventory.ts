@@ -299,8 +299,12 @@ class Inventory {
         if (item.usesItem) {
             const quiver = this.reference.quiver.slots;
             for (let i = 0; i < quiver.length; i++) {
+                const quiverSlot = quiver[i];
+                if (!quiverSlot) {
+                    continue;
+                }
                 for (const useItem of item.usesItem) {
-                    if (quiver[i]?.item.itemIndex === useItem) {
+                    if ((!quiverSlot.item.retainLastItem || quiverSlot.count > 1) && quiverSlot.item.itemIndex === useItem) {
                         useIndex = {
                             type: "quiver",
                             index: i

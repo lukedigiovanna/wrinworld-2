@@ -3,14 +3,17 @@ import { GameObject } from "../gameObjects";
 import input, { InputLayer } from "../input";
 import { Inventory, SlotLocator } from "../inventory";
 import { getTexture } from "../assets/imageLoader";
-import { Color, Vector } from "../utils";
+import { Color } from "../utils";
 import controls, { Controls } from "../controls";
+import { ArealEffect } from "../arealEffect";
+import { ItemIndex } from "../items";
 
 const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {
         inventory: undefined,
         inventoryDisplayed: false,
         movementData: undefined,
+        waterTimer: 0,
         setSelectedWeaponIndex(i: number) {
             this.inventory.selectSlot({
                 type: "weapon",
@@ -48,7 +51,9 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
             data.movementData = gameObject.getComponent("movement-data");
         },
         update(dt: number) {
-            data.movementData.data.charging = data.inventory.charging;
+            const inventory = data.inventory as Inventory;
+
+            data.movementData.data.charging = inventory.charging;
 
             if (input.isKeyPressed(controls.selectWeapon1.code)) {
                 data.setSelectedWeaponIndex(0);
@@ -71,30 +76,45 @@ const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
             });
 
             if (input.isKeyPressed(controls.toggleInventory.code)) {
-                data.inventory.toggleUI();
+                inventory.toggleUI();
             }
             if (input.isKeyPressed(controls.toggleInventory.code, InputLayer.INVENTORY)) {
-                data.inventory.toggleUI();
+                inventory.toggleUI();
             }
             if (input.isKeyPressed("Escape", InputLayer.INVENTORY)) {
-                data.inventory.toggleUI();
+                inventory.toggleUI();
             }
             
             const mousePos = gameObject.game.camera.screenToWorldPosition(input.mousePosition);
             if (input.mousePressed()) {
-                data.inventory.pressItem({
+                inventory.pressItem({
                     type: "weapon",
-                    index: data.inventory.getSelectedIndex("weapon")
+                    index: inventory.getSelectedIndex("weapon") as number
                 }, mousePos);
             }
             if (input.mouseReleased()) {
                 data.inventory.releaseItem({
                     type: "weapon",
-                    index: data.inventory.getSelectedIndex("weapon")
+                    index: inventory.getSelectedIndex("weapon")
                 }, mousePos);
             }
 
-            data.inventory.checkChargedItem(mousePos);
+            inventory.checkChargedItem(mousePos);
+
+            const quiver = inventory.getSlot({ index: 0, type: "quiver" });
+            if (quiver && 
+                quiver.count < quiver.item.maxStack && 
+                quiver.item.itemIndex === ItemIndex.WATER_BOTTLE &&
+                gameObject.hasArealEffect(ArealEffect.WATER)) {
+                data.waterTimer += dt;
+                while (data.waterTimer >= 0.2) {
+                    inventory.addItemIndex(ItemIndex.WATER_BOTTLE);
+                    data.waterTimer -= 0.2;
+                }
+            }
+            else {
+                data.waterTimer = 0;
+            }
 
             data.inventory.updateUI();
         },

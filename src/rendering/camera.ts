@@ -173,7 +173,8 @@ class Camera {
     // should be called after drawing a frame.
     public renderToScreen() {
         // If there are no shaders in the pipeline, just use the NO_EFFECT shader.
-        const filteredPipeline = this.shaderPipeline.filter(([_, enabled]) => enabled).map(([shader, _]) => shader);
+        const filteredPipeline = this.shaderPipeline.filter(([_, enabled]) => enabled)
+                                                    .map(([shader, _]) => shader);
         const pipeline = filteredPipeline.length === 0 ? [PostProcessingShaderIndex.NO_EFFECT] : 
                                                           filteredPipeline;
         for (let i = 0; i < pipeline.length; i++) {

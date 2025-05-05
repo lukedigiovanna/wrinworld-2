@@ -225,6 +225,7 @@ interface Item {
     equipItem?: EquipItemFunction;
     unequipItem?: EquipItemFunction;
     getStats?: () => ItemStatValue[];
+    retainLastItem?: boolean;
 }
 
 interface ItemDropChance {
@@ -967,6 +968,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 100,
+    retainLastItem: true,
 },
 [ItemIndex.COMPOSITION_NOTEBOOK]: {
     itemIndex: ItemIndex.COMPOSITION_NOTEBOOK,
