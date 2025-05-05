@@ -511,6 +511,10 @@ class Inventory {
         const { index, type } = slotIndex;
         const slotGroup = this.reference[type];
         const slot = slotGroup.slots[slotIndex.index];
+        // If the slot is on cooldown, then it is disabled (i.e. cannot be moved)
+        if (slot && slot.item.cooldown && slot.lastTimeUsed && this.player.game.time - slot.lastTimeUsed < slot.item.cooldown) {
+            return;
+        }
         if (this.heldSlot === null) {
             if (slot !== null) { 
                 // "pick up" the item in the slot.
@@ -749,8 +753,10 @@ class Inventory {
                     const image = getImage(id);
                     cooldown.attr("src", image.src);
                     cooldown.css("visibility", "visible");
+                    slotDiv.css("cursor", "not-allowed")
                 }
                 else {
+                    slotDiv.css("cursor", "pointer")
                     cooldown.css("visibility", "hidden");
                 }
             }
