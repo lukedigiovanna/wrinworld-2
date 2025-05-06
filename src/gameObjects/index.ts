@@ -1,4 +1,4 @@
-import { Camera } from "../rendering/Camera";
+import { Camera } from "../rendering/temp";
 import { Component, ComponentFactory, ComponentID } from "../components/index";
 import { Vector, Rectangle, MathUtils, Color } from "../utils";
 import { Renderer } from "../rendering/renderers";
