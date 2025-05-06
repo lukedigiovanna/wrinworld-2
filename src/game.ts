@@ -1,17 +1,19 @@
+import { getTexture } from "./assets/imageLoader";
 import { GameObject, PlayerFactory } from "./gameObjects";
 import { Vector, MathUtils, PerlinNoise, Color, Ease } from "./utils";
 import input from "./input";
-import { Camera } from "./rendering/Camera";
-import { getTexture } from "./assets/imageLoader";
 import { Particle, ParticleLayer } from "./components";
 import { Tile, tileCodex, TileData, TileIndex } from "./tiles";
 import { Level, levels, LevelIndex } from "./levels";
-import { ShaderShadow, MAX_SHADOWS } from "./rendering/ShaderProgram";
 import settings from "./settings";
 import statTracker from "./statTracker";
 import { animationsCodex } from "./animations";
 import { PriorityQueue } from "./utils/PriorityQueue";
+import { Camera } from "./rendering/Camera";
+import { ShaderShadow, MAX_SHADOWS } from "./rendering/ShaderProgram";
 import { PostProcessingShaderIndex } from "./rendering/postProcessingShaders";
+import { FrameBuffer } from "./rendering/FrameBuffer";
+import { Matrix4 } from "./utils/Matrix4";
 
 const CHUNK_SIZE = 8;
 const TILES_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE;
@@ -33,9 +35,32 @@ const getChunkWorldPosition = (chunkIndex: number) => {
     return new Vector(x * PIXELS_PER_TILE, y * PIXELS_PER_TILE);
 }
 
-interface Chunk {
-    objects: GameObject[];
-    tiles: Tile[];
+class Chunk {
+    public objects: GameObject[];
+    public tiles: Tile[];
+    public dirty: boolean; // Marked true if the tileFramebuffer does not match the tiles
+    public tileFramebuffer: FrameBuffer;
+    private gl: WebGLRenderingContext;
+
+    constructor(gl: WebGLRenderingContext, tiles: Tile[]) {
+        this.gl = gl;
+        this.tiles = tiles;
+        this.objects = [];
+        this.dirty = true;
+        this.tileFramebuffer = new FrameBuffer(gl, CHUNK_SIZE * PIXELS_PER_TILE, CHUNK_SIZE * PIXELS_PER_TILE);
+    }
+
+    public renderFramebuffer() {
+        if (!this.dirty) {
+            return;
+        }
+        console.log("rendering chunk framebuffer");
+        this.tileFramebuffer.bind();
+        this.gl.viewport(0, 0, this.tileFramebuffer.width, this.tileFramebuffer.height);
+        this.gl.clearColor(0, 0.1, 0.8, 1.0);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+        this.dirty = false;
+    }
 }
 
 interface TimeoutRequest {
@@ -101,10 +126,7 @@ class Game {
         for (let i = 0; i < TILES_PER_CHUNK; i++) {
             tiles.push({ index: TileIndex.AIR, rotation: 0 });
         }
-        this.chunks.set(chunkIndex, {
-            tiles,
-            objects: []
-        });
+        this.chunks.set(chunkIndex, new Chunk(this.camera.gl, tiles));
     }
 
     public get time() {
@@ -295,6 +317,17 @@ class Game {
             this._camera.disableShader(PostProcessingShaderIndex.PIXELATE);
         }
 
+        const playerCI = getChunkIndex(this.player.position);
+
+        for (let xo = -RENDER_DISTANCE; xo <= RENDER_DISTANCE; xo++) {
+            for (let yo = -RENDER_DISTANCE; yo <= RENDER_DISTANCE; yo++) {
+                const chunkIndex = playerCI + yo + xo * MAX_NUM_CHUNKS;
+                const chunk = this.chunks.get(chunkIndex);
+                if (!chunk) continue;
+                chunk.renderFramebuffer();
+            }
+        }
+
         this._camera.clear();
 
         const shadows: ShaderShadow[] = [];
@@ -331,8 +364,6 @@ class Game {
             })
         ));
 
-        const playerCI = getChunkIndex(this.player.position);
-
         this._camera.color = Color.WHITE;
         for (let xo = -RENDER_DISTANCE; xo <= RENDER_DISTANCE; xo++) {
             for (let yo = -RENDER_DISTANCE; yo <= RENDER_DISTANCE; yo++) {
@@ -340,26 +371,29 @@ class Game {
                 const chunk = this.chunks.get(chunkIndex);
                 const chunkPos = getChunkWorldPosition(chunkIndex);
                 if (!chunk) continue;
-                for (let i = 0; i < TILES_PER_CHUNK; i++) {
-                    const pair = chunk.tiles[i];
-                    const tile = tileCodex[pair.index];
-                    let spriteID = tile.animationIndex !== undefined ?
-                                        animationsCodex[tile.animationIndex].getFrame(this.time) :
-                                        tile.spriteID;
-                    if (spriteID) {
-                        const tilePosition = new Vector(
-                            chunkPos.x + Math.floor(i / CHUNK_SIZE) * PIXELS_PER_TILE + PIXELS_PER_TILE / 2, 
-                            chunkPos.y + (i % CHUNK_SIZE) * PIXELS_PER_TILE + PIXELS_PER_TILE / 2
-                        );
-                        this._camera.drawTexture(
-                            getTexture(spriteID), 
-                            tilePosition.x, 
-                            tilePosition.y, 
-                            PIXELS_PER_TILE, PIXELS_PER_TILE,
-                            pair.rotation * Math.PI / 2
-                        );
-                    }
-                }
+                const texture = chunk.tileFramebuffer.texture;
+                if (texture === null) continue;
+                this._camera.drawTextureRaw(texture, undefined, Matrix4.transformation(chunkPos.x, chunkPos.y, 16, 16, 0, 0, 0, 0));
+                // for (let i = 0; i < TILES_PER_CHUNK; i+=TILES_PER_CHUNK) {
+                //     const pair = chunk.tiles[i];
+                //     const tile = tileCodex[pair.index];
+                //     let spriteID = tile.animationIndex !== undefined ?
+                //                         animationsCodex[tile.animationIndex].getFrame(this.time) :
+                //                         tile.spriteID;
+                //     if (spriteID) {
+                //         const tilePosition = new Vector(
+                //             chunkPos.x + Math.floor(i / CHUNK_SIZE) * PIXELS_PER_TILE + PIXELS_PER_TILE / 2, 
+                //             chunkPos.y + (i % CHUNK_SIZE) * PIXELS_PER_TILE + PIXELS_PER_TILE / 2
+                //         );
+                //         this._camera.drawTexture(
+                //             getTexture(spriteID), 
+                //             tilePosition.x, 
+                //             tilePosition.y, 
+                //             PIXELS_PER_TILE, PIXELS_PER_TILE,
+                //             pair.rotation * Math.PI / 2
+                //         );
+                //     }
+                // }
             }
         }
 

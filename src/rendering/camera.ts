@@ -25,7 +25,7 @@ class Camera {
     public height: number;
 
     public readonly canvas: HTMLCanvasElement;
-    private gl: WebGLRenderingContext;
+    public readonly gl: WebGLRenderingContext;
     // The buffer we are actively drawing to
     private sceneFramebuffer: FrameBuffer;
     // Used to swap with sceneFramebuffer when applying multiple postprocessing effects
@@ -58,8 +58,8 @@ class Camera {
         this.gl = gl;
         this.sceneShader = new ShaderProgram(this.gl, ShaderCode.vertexShaderCode, ShaderCode.fragmentShaderCode);
         this.postProcessingShaders = new Map<PostProcessingShaderIndex, ShaderProgram>();
-        this.sceneFramebuffer = new FrameBuffer(gl, canvas);
-        this.backSceneFramebuffer = new FrameBuffer(gl, canvas);
+        this.sceneFramebuffer = new FrameBuffer(gl, canvas.width, canvas.height);
+        this.backSceneFramebuffer = new FrameBuffer(gl, canvas.width, canvas.height);
         
         this.position = Vector.zero();
         this.height = 200;
@@ -114,7 +114,6 @@ class Camera {
 
     public update(dt: number) {
         if (this.target) {
-
             const diff = Vector.subtract(this.target.position, this.position);
             const threshold = this.height / 12;
             if (diff.magnitude > threshold) {
@@ -124,8 +123,6 @@ class Camera {
                     this.position.add(diff);
             }
         }
-        // if (this.target)
-        //     this.position.set(this.target.position);
         if (this.bounds) {
             this.position.y = MathUtils.clamp(this.position.y, this.bounds.bottom + this.height / 2, this.bounds.top - this.height / 2);
             this.position.x = MathUtils.clamp(this.position.x, this.bounds.left + this.width / 2, this.bounds.right - this.width / 2);
@@ -137,13 +134,13 @@ class Camera {
         if (input.isKeyDown("Minus")) {
             this.height *= 1 / 0.95;
         }
-        this.height = MathUtils.clamp(this.height, 1, 3000);
+        this.height = MathUtils.clamp(this.height, 16, this.canvas.height);
     }
 
     // clears the camera view
     public clear() {
-        this.sceneFramebuffer.checkResize();
-        this.backSceneFramebuffer.checkResize();
+        this.sceneFramebuffer.checkResize(this.canvas.width, this.canvas.height);
+        this.backSceneFramebuffer.checkResize(this.canvas.width, this.canvas.height);
         this.sceneFramebuffer.bind();
         this.sceneShader.use();
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
@@ -240,18 +237,18 @@ class Camera {
         this.drawTexture(square, x, y + h / 2, w, this.strokeWidth);
     }
 
-    public drawTextureWithCustomTransformation(texture: Texture, transformation: Matrix4) {
+    public drawTextureRaw(texture: WebGLTexture, clipRect: Rectangle | undefined, transformation: Matrix4) {
         this.sceneShader.setUniformMatrix4("model", transformation);
         this.sceneShader.setUniformColor("color", this.color);
-        if (texture.clipRect) {
-            this.sceneShader.setUniform2f("clipOffset", texture.clipRect.left, texture.clipRect.bottom);
-            this.sceneShader.setUniform2f("clipSize", texture.clipRect.right - texture.clipRect.left, texture.clipRect.top - texture.clipRect.bottom);
+        if (clipRect) {
+            this.sceneShader.setUniform2f("clipOffset", clipRect.left, clipRect.bottom);
+            this.sceneShader.setUniform2f("clipSize", clipRect.right - clipRect.left, clipRect.top - clipRect.bottom);
         }
         else {
             this.sceneShader.setUniform2f("clipOffset", 0, 0);
             this.sceneShader.setUniform2f("clipSize", 1, 1);
         }
-        this.gl.bindTexture(this.gl.TEXTURE_2D, texture.texture);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.quadVBO);
         this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
     }
@@ -262,7 +259,7 @@ class Camera {
             w, h, 
             angle, w / 2 + rotationPointOffset.x, h / 2 + rotationPointOffset.y, shear
         );
-        this.drawTextureWithCustomTransformation(texture, transformation);
+        this.drawTextureRaw(texture.texture, texture.clipRect, transformation);
     }
 
     public get width() {

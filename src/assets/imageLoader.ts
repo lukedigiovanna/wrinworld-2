@@ -2,10 +2,10 @@ import { Rectangle } from "../utils";
 
 class Texture {
     private _image: HTMLImageElement;
-    private _texture: WebGLTexture | null;
+    private _texture: WebGLTexture;
     private _clipRect?: Rectangle;
 
-    constructor(image: HTMLImageElement, texture: WebGLTexture | null, clipRect?: Rectangle) {
+    constructor(image: HTMLImageElement, texture: WebGLTexture, clipRect?: Rectangle) {
         this._image = image;
         this._texture = texture;
         this._clipRect = clipRect;

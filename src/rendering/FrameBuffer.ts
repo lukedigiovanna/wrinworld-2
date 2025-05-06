@@ -1,25 +1,25 @@
 class FrameBuffer {
     private framebuffer: WebGLFramebuffer | null = null;
-    private texture: WebGLTexture | null = null;
+    private _texture: WebGLTexture | null = null;
     private gl: WebGLRenderingContext;
-    private canvas: HTMLCanvasElement;
-    private width?: number;
-    private height?: number;
+    private _width: number;
+    private _height: number;
 
-    constructor(gl: WebGLRenderingContext, canvas: HTMLCanvasElement) {
+    constructor(gl: WebGLRenderingContext, width: number, height: number) {
         this.gl = gl;
-        this.canvas = canvas;
-        this.initializeBufferAndTexture();
+        this._width = width;
+        this._height = height;
+        this.initializeBufferAndTexture(width, height);
     }
     
-    private initializeBufferAndTexture() {
+    private initializeBufferAndTexture(width: number, height: number) {
         this.framebuffer = this.gl.createFramebuffer();
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framebuffer);
-        this.texture = this.gl.createTexture();
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+        this._texture = this.gl.createTexture();
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this._texture);
         this.gl.texImage2D(
             this.gl.TEXTURE_2D, 0, this.gl.RGBA,
-            this.canvas.width, this.canvas.height,
+            width, height,
             0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, null
           );
         this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
@@ -27,27 +27,27 @@ class FrameBuffer {
         this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
         this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
           
-        this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, this.gl.TEXTURE_2D, this.texture, 0);
+        this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, this.gl.TEXTURE_2D, this._texture, 0);
         
         const status = this.gl.checkFramebufferStatus(this.gl.FRAMEBUFFER);
         if (status !== this.gl.FRAMEBUFFER_COMPLETE) {
             console.error('Framebuffer not complete:', status.toString(16));
         }
 
-        this.width = this.canvas.width;
-        this.height = this.canvas.height;
+        this._width = width;
+        this._height = height;
     }
 
-    public checkResize() {
-        if (this.width === this.canvas.width && this.height === this.canvas.height) {
+    public checkResize(width: number, height: number) {
+        if (this._width === width && this._height === height) {
             return;
         }
 
         // Delete and recreate the old buffer/texture
         this.gl.deleteFramebuffer(this.framebuffer);
-        this.gl.deleteTexture(this.texture);
+        this.gl.deleteTexture(this._texture);
         
-        this.initializeBufferAndTexture();
+        this.initializeBufferAndTexture(width, height);
     }
 
     public bind() {
@@ -55,8 +55,19 @@ class FrameBuffer {
     }
 
     public bindTexture() {
-        this.gl.activeTexture(this.gl.TEXTURE0);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this._texture);
+    }
+
+    public get width() {
+        return this._width;
+    }
+
+    public get height() {
+        return this._height;
+    }
+
+    public get texture() {
+        return this._texture;
     }
 }
 
