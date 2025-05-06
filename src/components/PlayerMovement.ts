@@ -2,8 +2,8 @@ import { ComponentFactory } from "./index";
 import { GameObject } from "../gameObjects";
 import input from "../input";
 import { Color, MathUtils, Vector } from "../utils";
-import { tileCodex, TileIndex } from "../tiles";
-import { SpriteAnimationIndex } from "../animations";
+import { tileCodex, TileIndex } from "../game/tiles";
+import { SpriteAnimationIndex } from "../game/animations";
 
 const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {

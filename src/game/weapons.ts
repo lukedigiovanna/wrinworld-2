@@ -1,5 +1,5 @@
-import { MathUtils, Vector } from "./utils";
-import { ProjectileFactory, GameObject, MeleeAttackFactory } from "./gameObjects";
+import { MathUtils, Vector } from "../utils";
+import { ProjectileFactory, GameObject, MeleeAttackFactory } from "../gameObjects";
 import { Projectile, projectilesCodex, ProjectileIndex } from "./projectiles";
 import { MeleeAttack, meleeAttacksCodex, MeleeAttackIndex } from "./meleeAttacks";
 import { Item, ItemIndex } from "./items";

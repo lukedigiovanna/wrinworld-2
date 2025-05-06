@@ -1,5 +1,5 @@
 import { spriteRenderer } from "../rendering/renderers";
-import { Item } from "../items";
+import { Item } from "../game/items";
 import { GameObjectFactory, GameObject } from "./index";
 import { Vector } from "../utils";
 import { Hitbox, Physics } from "../components";

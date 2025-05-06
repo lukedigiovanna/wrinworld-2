@@ -1,12 +1,12 @@
 import { Level, PortalDropPool } from "./";
 import { EnemyIndex, PortalFactory, PortalProperties, PropFactory } from "../gameObjects";
-import { Game, PIXELS_PER_TILE } from "../game";
-import { Tile, TileIndex } from "../tiles";
+import { Game, PIXELS_PER_TILE } from "../game/game";
+import { Tile, TileIndex } from "../game/tiles";
 import { MathUtils, NumberRange, Permutation, Rectangle, Vector } from "../utils";
-import { PropIndex, propsCodex } from "../props";
+import { PropIndex, propsCodex } from "../game/props";
 import { getTexture } from "../assets/imageLoader";
 import { Nullable, Side } from "../utils/types";
-import { ItemIndex } from "../items";
+import { ItemIndex } from "../game/items";
 
 // school item ideas.. goal: 40 obtainable items
 // also; need to ensure no duplicates with previously obtained items. each item

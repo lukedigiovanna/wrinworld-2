@@ -1,6 +1,6 @@
-import { MathUtils, NumberRange, Vector } from "./utils";
-import { ComponentFactory, ParticleEmitter, ParticleLayer } from "./components"
-import * as AI from "./components/EnemyAI";
+import { MathUtils, NumberRange, Vector } from "../utils";
+import { ComponentFactory, ParticleEmitter, ParticleLayer } from "../components"
+import * as AI from "../components/EnemyAI";
 import { ItemDropChance } from "./items";
 
 enum EnemyIndex {

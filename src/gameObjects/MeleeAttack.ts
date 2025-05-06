@@ -1,7 +1,7 @@
 import { GameObject, GameObjectFactory } from "./index";
 import { Vector, MathUtils } from "../utils";
 import { Hitbox, ParticleEmitter } from "../components";
-import { MeleeAttack } from "../meleeAttacks";
+import { MeleeAttack } from "../game/meleeAttacks";
 import { Team } from "./index";
 
 const MeleeAttackFactory: GameObjectFactory = (properties: MeleeAttack, owner: GameObject, target: Vector) => {

@@ -1,6 +1,6 @@
 import { GameObject } from "../gameObjects";
 import { Camera } from "../rendering/Camera";
-import { TileData } from "tiles";
+import { TileData } from "../game/tiles";
 
 type ComponentID = "physics" | string;
 

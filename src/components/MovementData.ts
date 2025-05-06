@@ -1,6 +1,6 @@
 import { ComponentFactory } from "./index";
 import { GameObject } from "../gameObjects";
-import { TileIndex } from "../tiles";
+import { TileIndex } from "../game/tiles";
 
 // Very simple component to centrally store movement data for objects that have
 // variable speeds like enemies and players.

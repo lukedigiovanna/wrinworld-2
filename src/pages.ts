@@ -1,4 +1,4 @@
-import { Game } from "./game";
+import { Game } from "./game/game";
 import settings from "./settings";
 import { ShaderProgram } from "./rendering/ShaderProgram";
 import { fragmentShaderCode, vertexShaderCode } from "./rendering/shaderCode";

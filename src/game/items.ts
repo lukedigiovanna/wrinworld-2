@@ -2,13 +2,13 @@
 
 // NOTE: items are exclusively used by the player
 
-import { Color, MathUtils, Vector } from "./utils";
-import { FlowerPowerPetalFactory, GameObject, Team } from "./gameObjects";
+import { Color, MathUtils, Vector } from "../utils";
+import { FlowerPowerPetalFactory, GameObject, Team } from "../gameObjects";
 import { fireProjectile, WeaponIndex, weaponsCodex } from "./weapons";
-import { addNotification } from "./notifications";
+import { addNotification } from "../notifications";
 import { ProjectileIndex, projectilesCodex } from "./projectiles";
 import { StatusEffectIndex } from "./statusEffects";
-import { ParticleLayer } from "./components";
+import { ParticleLayer } from "../components";
 
 enum ItemStat {
     // Weapon based

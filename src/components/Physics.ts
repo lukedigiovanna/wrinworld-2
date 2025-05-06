@@ -1,7 +1,7 @@
 import { Vector } from "../utils";
 import { GameObject } from "../gameObjects/index";
 import { ComponentFactory } from "./index";
-import { PIXELS_PER_TILE } from "../game";
+import { PIXELS_PER_TILE } from "../game/game";
 
 const Physics: ComponentFactory = (gameObject: GameObject) => {
     const data = {

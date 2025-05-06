@@ -2,10 +2,10 @@ import { Camera } from "../rendering/Camera";
 import { Component, ComponentFactory, ComponentID } from "../components/index";
 import { Vector, Rectangle, MathUtils, Color } from "../utils";
 import { Renderer } from "../rendering/renderers";
-import { Game, getChunkIndex } from "../game";
+import { Game, getChunkIndex } from "../game/game";
 import settings from "../settings";
-import { Tile, TileData } from "../tiles";
-import { ArealEffect } from "arealEffect";
+import { Tile, TileData } from "../game/tiles";
+import { ArealEffect } from "game/arealEffect";
 
 enum Team {
     UNTEAMED,

@@ -1,9 +1,9 @@
-import { fireProjectile } from "../weapons";
+import { fireProjectile } from "../game/weapons";
 import { getTexture } from "../assets/imageLoader";
 import { spriteRenderer } from "../rendering/renderers";
 import { Ease, Vector, MathUtils } from "../utils";
 import { GameObject, GameObjectFactory } from "./";
-import { ProjectileIndex, projectilesCodex } from "../projectiles";
+import { ProjectileIndex, projectilesCodex } from "../game/projectiles";
 
 const FlowerPowerPetalFactory: GameObjectFactory = (owner: GameObject, p: number) => {
     const petal = new GameObject();

@@ -1,4 +1,4 @@
-import { GameObject } from "./gameObjects";
+import { GameObject } from "../gameObjects";
 
 enum MeleeAttackIndex {
     BROAD_SWORD, // Sweeping attack for broad sword types

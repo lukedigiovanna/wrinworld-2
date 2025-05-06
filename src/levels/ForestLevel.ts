@@ -1,10 +1,10 @@
 import { Level } from "./";
 import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Permutation, Rectangle } from "../utils";
-import { Game, PIXELS_PER_TILE } from "../game";
-import { TileIndex } from "../tiles";
+import { Game, PIXELS_PER_TILE } from "../game/game";
+import { TileIndex } from "../game/tiles";
 import { EnemyIndex, PortalFactory, PortalProperties, PropFactory } from "../gameObjects";
-import { ItemIndex } from "../items";
-import { PropIndex, propsCodex } from "../props";
+import { ItemIndex } from "../game/items";
+import { PropIndex, propsCodex } from "../game/props";
 import { getTexture } from "../assets/imageLoader";
 
 const portalTypes: PortalProperties[] = [

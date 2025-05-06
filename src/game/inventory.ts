@@ -1,12 +1,12 @@
 import { Item, ItemCategory, ItemIndex, itemsCodex, ItemStat, 
          itemStats, 
          ItemStatValue} from "./items";
-import { getImage } from "./assets/imageLoader";
-import { GameObject } from "./gameObjects";
-import input, { InputLayer } from "./input";
-import { MathUtils, Vector } from "./utils";
-import { addNotification } from "./notifications";
-import controls, { Controls } from "./controls";
+import { getImage } from "../assets/imageLoader";
+import { GameObject } from "../gameObjects";
+import input, { InputLayer } from "../input";
+import { MathUtils, Vector } from "../utils";
+import { addNotification } from "../notifications";
+import controls, { Controls } from "../controls";
 import { getUpgradeCombination } from "./upgrades";
 
 interface InventorySlot {

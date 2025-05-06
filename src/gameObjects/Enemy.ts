@@ -4,8 +4,8 @@ import { Vector, MathUtils } from "../utils";
 import { Health, Hitbox, Physics, PhysicalCollider, ItemDropper, 
     HealthBarDisplayMode, ParticleEmitter, ParticleLayer, StatusEffectManager, 
     MovementData} from "../components";
-import { TileIndex } from "../tiles";
-import { enemiesCodex, EnemyIndex } from "../enemies";
+import { TileIndex } from "../game/tiles";
+import { enemiesCodex, EnemyIndex } from "../game/enemies";
 import { getTexture } from "../assets/imageLoader";
 
 const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyIndex) => {

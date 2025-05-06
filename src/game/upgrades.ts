@@ -1,5 +1,5 @@
 import { ItemIndex } from "./items";
-import { MathUtils } from "./utils";
+import { MathUtils } from "../utils";
 
 type UpgradeCombinationTuple = [ItemIndex, ItemIndex];
 
@@ -16,7 +16,7 @@ function setCombo(item: ItemIndex, upgrade: ItemIndex, result: UpgradeResultFunc
     upgradeCombinations.set(hash, result);
 }
 
-function getUpgradeCombination(item: ItemIndex, upgrade: ItemIndex) {
+function getUpgradeCombination(item: ItemIndex, upgrade: ItemIndex): ItemIndex | undefined {
     const hash = hashUpgradeCombinationTuple([item, upgrade]);
     const resultFunc = upgradeCombinations.get(hash);
     if (resultFunc) {

@@ -3,7 +3,7 @@ import { Vector, MathUtils, Color, Ease, Rectangle } from "../utils";
 import { Pair } from "../utils/types";
 import { getOrthographicProjection, Matrix4 } from "../utils/Matrix4";
 import { Texture, getTexture } from "../assets/imageLoader";
-import { Game } from "../game";
+import { Game } from "../game/game";
 import { GameObject } from "../gameObjects";
 import * as ShaderCode from "./shaderCode";
 import { postProcessingFragmentShaderCodes, PostProcessingShaderIndex } from "./postProcessingShaders";

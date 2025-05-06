@@ -1,10 +1,10 @@
-import { MeleeAttackIndex, meleeAttacksCodex } from "../meleeAttacks";
+import { MeleeAttackIndex, meleeAttacksCodex } from "../game/meleeAttacks";
 import { Component, ComponentFactory, ParticleLayer } from "./index";
 import { EnemyFactory, EnemyIndex, GameObject } from "../gameObjects";
 import { Color, Ease, MathUtils, Vector } from "../utils";
-import { fireMelee, fireProjectile } from "../weapons";
-import { projectilesCodex, ProjectileIndex } from "../projectiles";
-import { StatusEffectIndex } from "../statusEffects";
+import { fireMelee, fireProjectile } from "../game/weapons";
+import { projectilesCodex, ProjectileIndex } from "../game/projectiles";
+import { StatusEffectIndex } from "../game/statusEffects";
 
 const states = ["idle", "set_search_position", "search", "follow", "attack_windup", "attack", "slime_throw_self", "husk_shake"] as const;
 type EnemyAIState = typeof states[number];

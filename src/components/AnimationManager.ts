@@ -1,4 +1,4 @@
-import { animationsCodex, SpriteAnimationIndex } from "../animations";
+import { animationsCodex, SpriteAnimationIndex } from "../game/animations";
 import { GameObject } from "../gameObjects";
 import { ComponentFactory } from "./";
 

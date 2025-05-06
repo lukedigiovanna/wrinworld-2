@@ -1,6 +1,6 @@
 import { ComponentFactory, ParticleEmitter } from "./";
 import { GameObject } from "../gameObjects";
-import { StatusEffectIndex, statusEffectsCodex, StatusEffect } from "../statusEffects";
+import { StatusEffectIndex, statusEffectsCodex, StatusEffect } from "../game/statusEffects";
 import { MathUtils, Vector, Color } from "../utils";
 import { getTexture } from "../assets/imageLoader";
 

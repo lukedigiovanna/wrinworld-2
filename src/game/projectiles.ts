@@ -1,11 +1,10 @@
-import { ItemDropFactory, ProjectileFactory, Team } from "./gameObjects";
-import { GameObject } from "./gameObjects";
-import { Vector, MathUtils, Color } from "./utils";
+import { GameObject, ItemDropFactory, ProjectileFactory, Team } from "../gameObjects";
+import { Vector, MathUtils, Color } from "../utils";
 import { Item, ItemIndex, itemsCodex } from "./items";
 import { StatusEffectIndex } from "./statusEffects";
-import { ComponentFactory } from "./components";
+import { ComponentFactory } from "../components";
 // Own import to avoid circular dependency error in webpack.
-import { ParticleEmitter } from "./components/ParticleEmitter";
+import { ParticleEmitter } from "../components/ParticleEmitter";
 
 enum ProjectileIndex {
     SHURIKEN,

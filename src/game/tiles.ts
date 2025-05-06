@@ -1,6 +1,6 @@
 import { ArealEffect } from "./arealEffect";
 import { SpriteAnimationIndex } from "./animations";
-import { Color } from "./utils";
+import { Color } from "../utils";
 
 interface TileData {
     spriteID?: string;

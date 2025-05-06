@@ -6,9 +6,9 @@ import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager,
          MovementData,
          AnimationManager} from "../components";
 import { spriteRenderer } from "../rendering/renderers";
-import { SpriteAnimationIndex } from "../animations";
+import { SpriteAnimationIndex } from "../game/animations";
 import { getImage, getTexture } from "../assets/imageLoader";
-import { ItemIndex, itemsCodex } from "../items";
+import { ItemIndex, itemsCodex } from "../game/items";
 import input from "../input";
 import { LevelIndex } from "../levels";
 import { PostProcessingShaderIndex } from "../rendering/postProcessingShaders";

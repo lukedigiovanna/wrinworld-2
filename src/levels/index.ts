@@ -1,5 +1,5 @@
 import { Rectangle, Vector } from "../utils";
-import { Game } from "../game";
+import { Game } from "../game/game";
 import { PortalDrop, PortalProperties } from "../gameObjects";
 import { ForestLevel } from "./ForestLevel";
 import { SchoolLevel } from "./SchoolLevel";

@@ -1,12 +1,12 @@
 import { ComponentFactory } from "./index";
 import { GameObject } from "../gameObjects";
 import input, { InputLayer } from "../input";
-import { Inventory, SlotLocator } from "../inventory";
+import { Inventory, SlotLocator } from "../game/inventory";
 import { getTexture } from "../assets/imageLoader";
 import { Color } from "../utils";
 import controls, { Controls } from "../controls";
-import { ArealEffect } from "../arealEffect";
-import { ItemIndex } from "../items";
+import { ArealEffect } from "../game/arealEffect";
+import { ItemIndex } from "../game/items";
 
 const InventoryManager: ComponentFactory = (gameObject: GameObject) => {
     const data: any = {

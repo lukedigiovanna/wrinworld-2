@@ -4,7 +4,7 @@ import { Vector, MathUtils, NumberRange, Color } from "../utils";
 import { ParticleEmitter, Health, HealthBarDisplayMode } from "../components";
 import { EnemyFactory, EnemyIndex } from "./Enemy";
 import { getSound } from "../assets/soundLoader";
-import { ItemIndex, itemsCodex } from "../items";
+import { ItemIndex, itemsCodex } from "../game/items";
 import { getTexture } from "../assets/imageLoader";
 
 const PORTAL_ACTIVE_RADIUS = 180;

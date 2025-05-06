@@ -1,5 +1,4 @@
-import { Color } from "./utils";
-import { GameObject, Team } from "./gameObjects";
+import { GameObject, Team } from "../gameObjects";
 
 enum StatusEffectIndex {
     POISON,

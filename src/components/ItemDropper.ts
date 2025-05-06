@@ -1,6 +1,6 @@
 import { GameObject } from "../gameObjects";
 import { ComponentFactory } from "./index";
-import { ItemDropChance, itemsCodex } from "../items";
+import { ItemDropChance, itemsCodex } from "../game/items";
 import { ItemDropFactory } from "../gameObjects/ItemDrop";
 import { MathUtils, Vector } from "../utils";
 
