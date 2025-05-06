@@ -6,7 +6,6 @@ async function loadAssets(gl: WebGLRenderingContext) {
     await Promise.all([
         // Tiles
         loadImageAndTexture(gl, "grass", "assets/images/tiles/grass.png"),
-        loadImageAndTexture(gl, "water", "assets/images/tiles/water.png"),
         loadImageAndTexture(gl, "rocks", "assets/images/tiles/rocks.png"),
         loadImageAndTexture(gl, "path", "assets/images/tiles/path.png"),
         loadImageAndTexture(gl, "sand", "assets/images/tiles/sand.png"),
@@ -16,6 +15,7 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "cursed_sand", "assets/images/tiles/cursed_sand.png"),
         loadImageAndTexture(gl, "cursed_planks", "assets/images/tiles/cursed_planks.png"),
         loadImageAndTextureSpritesheet(gl, "water", "assets/images/tiles/water_animation.png", 16, 16),
+        loadImageAndTexture(gl, "static_water", "assets/images/tiles/water.png"),
         loadImageAndTexture(gl, "school_tile", "assets/images/tiles/school_tile.png"),
         loadImageAndTexture(gl, "school_tile_black", "assets/images/tiles/school_tile_black.png"),
         loadImageAndTexture(gl, "school_wall", "assets/images/tiles/school_wall.png"),

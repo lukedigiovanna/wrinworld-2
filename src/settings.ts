@@ -16,7 +16,7 @@ const settings: Settings = {
     showHitboxes: false,
     showObjectCenters: false,
     showRotationPoint: false,
-    showChunks: true,
+    showChunks: false,
     showCameraPosition: false,
     muted: true,
     sleepTime: 0,

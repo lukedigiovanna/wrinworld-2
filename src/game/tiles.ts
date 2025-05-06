@@ -69,8 +69,8 @@ const tileCodex: Record<TileIndex, TileData> = {
     trailColor: Color.hex("#058600"),
 },
 [TileIndex.WATER]: {
-    spriteID: "water_0",
-    animationIndex: SpriteAnimationIndex.WATER_TILE,
+    spriteID: "static_water",
+    // animationIndex: SpriteAnimationIndex.WATER_TILE,
     canGrowPlants: false,
     canSpawnPortal: false,
     wall: false,

@@ -321,26 +321,6 @@ class Game {
                     ChunkConstants.PIXELS_PER_CHUNK, ChunkConstants.PIXELS_PER_CHUNK, 
                     0, 0, 0, 0
                 ));
-                // for (let i = 0; i < TILES_PER_CHUNK; i+=TILES_PER_CHUNK) {
-                //     const pair = chunk.tiles[i];
-                //     const tile = tileCodex[pair.index];
-                //     let spriteID = tile.animationIndex !== undefined ?
-                //                         animationsCodex[tile.animationIndex].getFrame(this.time) :
-                //                         tile.spriteID;
-                //     if (spriteID) {
-                //         const tilePosition = new Vector(
-                //             chunkPos.x + Math.floor(i / CHUNK_SIZE) * PIXELS_PER_TILE + PIXELS_PER_TILE / 2, 
-                //             chunkPos.y + (i % CHUNK_SIZE) * PIXELS_PER_TILE + PIXELS_PER_TILE / 2
-                //         );
-                //         this._camera.drawTexture(
-                //             getTexture(spriteID), 
-                //             tilePosition.x, 
-                //             tilePosition.y, 
-                //             PIXELS_PER_TILE, PIXELS_PER_TILE,
-                //             pair.rotation * Math.PI / 2
-                //         );
-                //     }
-                // }
             }
         }
 

@@ -62,11 +62,11 @@ class Chunk {
             const y = i % ChunkConstants.CHUNK_SIZE;
             const tile = tileCodex[this.tiles[i].index];
             let spriteID = "undefined";
+            if (tile.spriteID) spriteID = tile.spriteID;
             if (tile.animationIndex) {
                 const animation = animationsCodex[tile.animationIndex];
                 // spriteID = animation.getFrame()
             }
-            else if (tile.spriteID) spriteID = tile.spriteID;
             const texture = getTexture(spriteID);
             this.gl.activeTexture(this.gl.TEXTURE0);
             this.gl.bindTexture(this.gl.TEXTURE_2D, texture.texture);
