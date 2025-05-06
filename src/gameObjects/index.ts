@@ -1,12 +1,13 @@
 import { Camera } from "../rendering/Camera";
 import { Component, ComponentFactory, ComponentID } from "../components/index";
-import { Vector, Rectangle, MathUtils, Color } from "../utils";
+import { Vector, Rectangle, MathUtils, Color, Point } from "../utils";
 import { Renderer } from "../rendering/renderers";
 import { Game } from "../game/game";
 import { ChunkConstants } from "../game/Chunk";
 import settings from "../settings";
 import { Tile, TileData } from "../game/tiles";
-import { ArealEffect } from "game/arealEffect";
+import { ArealEffect } from "../game/arealEffect";
+import { Optional } from "../utils/types";
 
 enum Team {
     UNTEAMED,
@@ -21,7 +22,7 @@ class GameObject {
     public rotationPointOffset: Vector;
     public zIndex: number = 0;
 
-    public lifespan: number | undefined = undefined;
+    public lifespan: Optional<number> = undefined;
 
     public tag: string = "object"; // default tag is just 'object'
 
@@ -29,14 +30,14 @@ class GameObject {
     
     private components: Component[] = [];
     
-    public renderer: Renderer | undefined = undefined;
+    public renderer: Optional<Renderer> = undefined;
     public castsShadow: boolean = false;
     public shadowSize: number = 8;
     public color: Color = Color.WHITE;
 
-    private _game: Game | undefined;
+    private _game: Optional<Game>;
 
-    public storedInChunkIndex = -1;
+    public storedInChunkPosition: Optional<Point>;
 
     private _started: boolean = false;
     private _destroyed: boolean = false;
@@ -73,9 +74,8 @@ class GameObject {
         return this._started;
     }
 
-    public get chunkIndex() {
-        // transform position into chunk index
-        return ChunkConstants.getChunkIndex(this.position);
+    public get chunkPosition() {
+        return ChunkConstants.getChunkPositionFromWorldPosition(this.position);
     }
 
     public onHitboxCollisionEnter(collision: GameObject) {
@@ -192,9 +192,9 @@ stack trace:`)
             this.destroy();
         }
 
-        const currentCI = this.chunkIndex;
-        if (currentCI !== this.storedInChunkIndex) {
-            this.game.changeChunk(this, this.storedInChunkIndex); // change our chunk from where we were to where we are.
+        const currentChunkPosition = this.chunkPosition;
+        if (!this.storedInChunkPosition || !currentChunkPosition.equals(this.storedInChunkPosition)) {
+            this.game.changeChunk(this, this.storedInChunkPosition); // change our chunk from where we were to where we are.
         }
     } 
 

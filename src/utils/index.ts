@@ -655,6 +655,20 @@ function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+class Point {
+    readonly x: number;
+    readonly y: number;
+
+    constructor(x: number, y: number) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public equals(other: Point) {
+        return this.x === other.x && this.y === other.y;
+    }
+}
+
 export { Vector, MathUtils, PerlinNoise, LinearParametricCurve, 
          CatmullRomParametricCurve, Ease, NumberRange, Rectangle, Permutation, 
-         sleep, Color };
+         sleep, Color, Point };

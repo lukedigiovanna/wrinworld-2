@@ -1,4 +1,4 @@
-import { Vector, MathUtils } from "../utils";
+import { Vector, MathUtils, Point } from "../utils";
 import { GameObject } from "../gameObjects";
 import { tileCodex, Tile, TileIndex } from "../game/tiles";
 import { Camera } from "../rendering/Camera";
@@ -14,22 +14,19 @@ class ChunkConstants {
     static readonly TILES_PER_CHUNK = ChunkConstants.CHUNK_SIZE * ChunkConstants.CHUNK_SIZE;
     static readonly PIXELS_PER_TILE = 16;
     static readonly PIXELS_PER_CHUNK = ChunkConstants.CHUNK_SIZE * ChunkConstants.PIXELS_PER_TILE;
-    static readonly MAX_NUM_CHUNKS = 1024; // number of chunks along width and height of the world
-    static readonly WORLD_SIZE = ChunkConstants.CHUNK_SIZE * ChunkConstants.MAX_NUM_CHUNKS;
     
-    static getChunkIndex(position: Vector) {
-        const c = Vector.add(
-            Vector.scaled(position, 1 / ChunkConstants.PIXELS_PER_TILE), 
-            new Vector(ChunkConstants.WORLD_SIZE / 2, ChunkConstants.WORLD_SIZE / 2)
+    static getChunkPositionFromWorldPosition(position: Vector): Point {
+        return new Point(
+            Math.floor(position.x / ChunkConstants.PIXELS_PER_CHUNK),
+            Math.floor(position.y / ChunkConstants.PIXELS_PER_CHUNK),
         );
-        c.scale(1 / ChunkConstants.CHUNK_SIZE);
-        return Math.floor(c.x) * ChunkConstants.MAX_NUM_CHUNKS + Math.floor(c.y);
     }
     
-    static getChunkWorldPosition(chunkIndex: number) {
-        const x = Math.floor(chunkIndex / ChunkConstants.MAX_NUM_CHUNKS) * ChunkConstants.CHUNK_SIZE - ChunkConstants.WORLD_SIZE / 2;
-        const y = (chunkIndex % ChunkConstants.MAX_NUM_CHUNKS) * ChunkConstants.CHUNK_SIZE - ChunkConstants.WORLD_SIZE / 2;
-        return new Vector(x * ChunkConstants.PIXELS_PER_TILE, y * ChunkConstants.PIXELS_PER_TILE);
+    static getChunkWorldPosition(chunkX: number, chunkY: number) {
+        return new Vector(
+            chunkX * ChunkConstants.PIXELS_PER_CHUNK, 
+            chunkY * ChunkConstants.PIXELS_PER_CHUNK
+        );
     }
 }
 
@@ -40,9 +37,9 @@ class Chunk {
     public tileFramebuffer: FrameBuffer;
     private gl: WebGLRenderingContext;
 
-    constructor(gl: WebGLRenderingContext, tiles: Tile[]) {
+    constructor(gl: WebGLRenderingContext, tiles: Grid<Tile>) {
         this.gl = gl;
-        this.tiles = Grid.from(tiles, ChunkConstants.CHUNK_SIZE, ChunkConstants.CHUNK_SIZE);
+        this.tiles = tiles;
         this.objects = [];
         this.dirty = true;
         this.tileFramebuffer = new FrameBuffer(gl, ChunkConstants.PIXELS_PER_CHUNK, ChunkConstants.PIXELS_PER_CHUNK);

@@ -46,7 +46,7 @@ class Grid<T> {
 
     public get(row: number, col: number): T {
         if (!this.validCoord(row, col)) {
-            throw Error("Invalid coordinate");
+            throw Error(`Invalid coordinate: row=${row} col=${col}`);
         }
         return this.cells[row * this.width + col];
     }
