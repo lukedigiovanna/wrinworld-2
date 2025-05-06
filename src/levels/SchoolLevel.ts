@@ -1,6 +1,7 @@
 import { Level, PortalDropPool } from "./";
 import { EnemyIndex, PortalFactory, PortalProperties, PropFactory } from "../gameObjects";
-import { Game, PIXELS_PER_TILE } from "../game/game";
+import { Game } from "../game/game";
+import { ChunkConstants } from "../game/Chunk";
 import { Tile, TileIndex } from "../game/tiles";
 import { MathUtils, NumberRange, Permutation, Rectangle, Vector } from "../utils";
 import { PropIndex, propsCodex } from "../game/props";
@@ -518,10 +519,10 @@ class SchoolLevel implements Level {
         const worldWidth = padding * 2 + hallwayMap.width * gridCellSize;
         const worldHeight = padding * 2 + hallwayMap.height * gridCellSize;
         this.cameraBounds = new Rectangle(
-            -worldWidth / 2 * PIXELS_PER_TILE, 
-            worldWidth / 2 * PIXELS_PER_TILE, 
-            padding * PIXELS_PER_TILE, 
-            (padding + (hallwayMap.height * gridCellSize)) * PIXELS_PER_TILE
+            -worldWidth / 2 * ChunkConstants.PIXELS_PER_TILE, 
+            worldWidth / 2 * ChunkConstants.PIXELS_PER_TILE, 
+            padding * ChunkConstants.PIXELS_PER_TILE, 
+            (padding + (hallwayMap.height * gridCellSize)) * ChunkConstants.PIXELS_PER_TILE
         );
         const worldTileGrid = new Grid<Tile>(worldWidth, worldHeight, {index: TileIndex.SCHOOL_WALL, rotation: 0});
         const worldPropGrid = new Grid<Nullable<PropIndex>>(worldWidth, worldHeight, null);
@@ -590,7 +591,7 @@ class SchoolLevel implements Level {
             const prop = worldPropGrid.get(r, c);
             if (prop !== null) {
                 const texture = getTexture(propsCodex[prop as PropIndex].spriteID);
-                const position = new Vector((x + 0.5) * PIXELS_PER_TILE, y * PIXELS_PER_TILE + texture.height / 2);
+                const position = new Vector((x + 0.5) * ChunkConstants.PIXELS_PER_TILE, y * ChunkConstants.PIXELS_PER_TILE + texture.height / 2);
                 game.addGameObject(PropFactory(prop, position));
             }
         });
@@ -605,7 +606,7 @@ class SchoolLevel implements Level {
                 continue;
             }
             const portalProps = MathUtils.randomChoice(portalTypes);
-            const position = new Vector((c - worldWidth / 2) * PIXELS_PER_TILE, r * PIXELS_PER_TILE);
+            const position = new Vector((c - worldWidth / 2) * ChunkConstants.PIXELS_PER_TILE, r * ChunkConstants.PIXELS_PER_TILE);
             if (game.isTileWithPropertyInArea(position, 2, "canSpawnPortal", false)) {
                 continue;
             }

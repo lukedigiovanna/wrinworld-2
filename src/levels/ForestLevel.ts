@@ -1,6 +1,7 @@
 import { Level } from "./";
 import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Permutation, Rectangle } from "../utils";
-import { Game, PIXELS_PER_TILE } from "../game/game";
+import { Game } from "../game/game";
+import { ChunkConstants } from "../game/Chunk";
 import { TileIndex } from "../game/tiles";
 import { EnemyIndex, PortalFactory, PortalProperties, PropFactory } from "../gameObjects";
 import { ItemIndex } from "../game/items";
@@ -173,7 +174,7 @@ class ForestLevel implements Level {
         const end = new Vector(0, top);
         const N = 30;
         const numPortals = 15;
-        const minDistance = 8 * PIXELS_PER_TILE;
+        const minDistance = 8 * ChunkConstants.PIXELS_PER_TILE;
 
         // 1. Set Grass Background
         for (let x = left; x <= right; x++) {
@@ -263,8 +264,8 @@ class ForestLevel implements Level {
             let invalid;
             do {
                 position = new Vector(
-                    (MathUtils.randomInt(left, right) + 0.5) * PIXELS_PER_TILE,
-                    (MathUtils.randomInt(bottom + marginTrail, top - marginTrail) + 0.5) * PIXELS_PER_TILE
+                    (MathUtils.randomInt(left, right) + 0.5) * ChunkConstants.PIXELS_PER_TILE,
+                    (MathUtils.randomInt(bottom + marginTrail, top - marginTrail) + 0.5) * ChunkConstants.PIXELS_PER_TILE
                 );
                 invalid = game.isTileWithPropertyInArea(position, 2, "canSpawnPortal", false);
                 if (!invalid) {
@@ -276,7 +277,7 @@ class ForestLevel implements Level {
                     }
                 }
             } while (invalid);
-            const progression = (position.y / PIXELS_PER_TILE - marginTrail) / height;
+            const progression = (position.y / ChunkConstants.PIXELS_PER_TILE - marginTrail) / height;
             const validChoices = portalTypes.filter(type => (type.difficulty ? type.difficulty : 0) <= progression);
             if (validChoices.length === 0) {
                 throw Error("Cannot generate portal for position: " + position + " progressio " + progression + " because no portal has low enough difficulty");
@@ -291,7 +292,7 @@ class ForestLevel implements Level {
                     const dist = Math.sqrt(xo * xo + yo * yo);
                     const chance = 1 - dist / 4;
                     if (Math.random() < chance) {
-                        const po = Vector.add(new Vector(xo * PIXELS_PER_TILE, yo * PIXELS_PER_TILE), position);
+                        const po = Vector.add(new Vector(xo * ChunkConstants.PIXELS_PER_TILE, yo * ChunkConstants.PIXELS_PER_TILE), position);
                         const tile = game.getTileIndex(po);
                         if (tile === TileIndex.GRASS) {
                             game.setTile(po, TileIndex.CURSED_GRASS);
@@ -319,7 +320,7 @@ class ForestLevel implements Level {
                 )
                 if (c !== null) {
                     const texture = getTexture(propsCodex[c as PropIndex].spriteID);
-                    const position = new Vector((x + 0.5) * PIXELS_PER_TILE, y * PIXELS_PER_TILE + texture.height / 2);
+                    const position = new Vector((x + 0.5) * ChunkConstants.PIXELS_PER_TILE, y * ChunkConstants.PIXELS_PER_TILE + texture.height / 2);
                     let tooCloseToPortal = false;
                     for (let j = 0; j < portalPositions.length; j++) {
                         if (Vector.subtract(portalPositions[j], position).magnitude < 64) {
@@ -330,7 +331,7 @@ class ForestLevel implements Level {
                     if (tooCloseToPortal) {
                         continue;
                     }
-                    const tile = game.getTile(new Vector((x + 0.5) * PIXELS_PER_TILE, (y + 0.5) * PIXELS_PER_TILE)); 
+                    const tile = game.getTile(new Vector((x + 0.5) * ChunkConstants.PIXELS_PER_TILE, (y + 0.5) * ChunkConstants.PIXELS_PER_TILE)); 
                     if (!tile.canGrowPlants) {
                         continue;
                     }

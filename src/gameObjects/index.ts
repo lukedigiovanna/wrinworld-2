@@ -2,7 +2,8 @@ import { Camera } from "../rendering/Camera";
 import { Component, ComponentFactory, ComponentID } from "../components/index";
 import { Vector, Rectangle, MathUtils, Color } from "../utils";
 import { Renderer } from "../rendering/renderers";
-import { Game, getChunkIndex } from "../game/game";
+import { Game } from "../game/game";
+import { ChunkConstants } from "../game/Chunk";
 import settings from "../settings";
 import { Tile, TileData } from "../game/tiles";
 import { ArealEffect } from "game/arealEffect";
@@ -74,7 +75,7 @@ class GameObject {
 
     public get chunkIndex() {
         // transform position into chunk index
-        return getChunkIndex(this.position);
+        return ChunkConstants.getChunkIndex(this.position);
     }
 
     public onHitboxCollisionEnter(collision: GameObject) {
