@@ -1,3 +1,4 @@
+import { MathUtils } from "./";
 import { Optional } from "./types";
 
 class Grid<T> {
@@ -12,10 +13,12 @@ class Grid<T> {
     }
 
     public drawHorizontalLine(row: number, c0: number, c1: number, value: T) {
+        c0 = MathUtils.clamp(c0, 0, this.width - 1);
+        c1 = MathUtils.clamp(c1, 0, this.width - 1);
         let d = Math.sign(c1 - c0);
         while (c0 !== c1) {
             // Allow draw if drawing on an existing cell or the sides are clear
-            if (this.get(row, c0) || (!this.get(row + 1, c0) && !this.get(row - 1, c0))) {
+            if (this.getOptional(row, c0) || (!this.getOptional(row + 1, c0) && !this.getOptional(row - 1, c0))) {
                 this.set(row, c0, value);
                 c0 += d;
             }
@@ -27,9 +30,11 @@ class Grid<T> {
     }
     
     public drawVerticalLine(col: number, r0: number, r1: number, value: T) {
+        r0 = MathUtils.clamp(r0, 0, this.height - 1);
+        r1 = MathUtils.clamp(r1, 0, this.height - 1);
         let d = Math.sign(r1 - r0);
         while (r0 !== r1) {
-            if (this.get(r0, col) || (!this.get(r0, col + 1) && !this.get(r0, col - 1))) {
+            if (this.getOptional(r0, col) || (!this.getOptional(r0, col + 1) && !this.getOptional(r0, col - 1))) {
                 this.set(r0, col, value);
                 r0 += d;
             }

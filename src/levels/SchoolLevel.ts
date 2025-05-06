@@ -3,7 +3,7 @@ import { EnemyIndex, PortalFactory, PortalProperties, PropFactory } from "../gam
 import { Game } from "../game/game";
 import { ChunkConstants } from "../game/Chunk";
 import { Tile, TileIndex } from "../game/tiles";
-import { MathUtils, NumberRange, Permutation, Rectangle, Vector } from "../utils";
+import { MathUtils, NumberRange, Permutation, Point, Rectangle, Vector } from "../utils";
 import { PropIndex, propsCodex } from "../game/props";
 import { getTexture } from "../assets/imageLoader";
 import { Nullable, Side } from "../utils/types";
@@ -290,7 +290,7 @@ function generateHallwayMap() {
 // Places appropriate wall tiles along any *regular* wall tile adjacent to a non-wall tile.
 function placeSchoolWalls(tileGrid: Grid<Tile>) {
     const isWall = (r: number, c: number) => {
-        const value = tileGrid.get(r, c);
+        const value = tileGrid.getOptional(r, c);
         if (value === undefined) {
             return true;
         }
@@ -463,7 +463,7 @@ class SchoolLevel implements Level {
             }
             const directions: [Side, number, number][] = [["left",0,1],["right",0,-1],["bottom",1,0],["top",-1,0]];
             for (const [side, dr, dc] of directions) {
-                if (!self.get(r + dr, c + dc)) {
+                if (!self.getOptional(r + dr, c + dc)) {
                     if (Math.random() < 0.5) {
                         const room = MathUtils.randomChoice(rooms);
                         const possibleDoorConfigs = room.doorConfigs.filter(config => config.side === side)
@@ -500,7 +500,7 @@ class SchoolLevel implements Level {
             let x = c - self.width / 2;
             let y = r;
             const tile = self.get(r, c)!;
-            game.setTileAtTilePosition(new Vector(x, y), tile.index, tile.rotation);
+            game.setTileAtTilePosition(new Point(x, y), tile.index, tile.rotation);
             
             const prop = worldPropGrid.get(r, c);
             if (prop !== null) {
@@ -513,8 +513,8 @@ class SchoolLevel implements Level {
         let numPortals = 0;
         // const dropsPermutation = new Permutation(this.portalDrops);
         while (numPortals < 16) {
-            const r = MathUtils.randomInt(0, worldHeight);
-            const c = MathUtils.randomInt(0, worldWidth);
+            const r = MathUtils.randomInt(0, worldHeight - 1);
+            const c = MathUtils.randomInt(0, worldWidth - 1);
             const portalTypes = worldPortalTypeGrid.get(r, c);
             if (!portalTypes) {
                 continue;
