@@ -119,7 +119,7 @@ class Camera {
             if (diff.magnitude > threshold) {
                 diff.subtract(Vector.scaled(Vector.normalized(diff), threshold));
                 diff.scale(dt * 10);
-                if (diff.magnitude > 0.025)
+                if (diff.magnitude > 1)
                     this.position.add(diff);
             }
         }
@@ -154,6 +154,8 @@ class Camera {
             const shake = MathUtils.randomVector(MathUtils.random(0, I));
             position.add(shake);
         }
+        // position.x = Math.round(position.x);
+        // position.y = Math.round(position.y);
         const scale = Math.floor(this.canvas.height / this.height); // pixels per world unit
         const height = Math.floor(this.canvas.height / scale);
         const width = Math.floor(this.canvas.width / scale);
@@ -247,6 +249,7 @@ class Camera {
             this.sceneShader.setUniform2f("clipOffset", 0, 0);
             this.sceneShader.setUniform2f("clipSize", 1, 1);
         }
+        this.gl.activeTexture(this.gl.TEXTURE0);
         this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
         this.renderQuad();
     }

@@ -6,6 +6,7 @@ import { FrameBuffer } from "../rendering/FrameBuffer";
 import { ShaderProgram } from "../rendering/ShaderProgram";
 import { animationsCodex } from "../game/animations";
 import { getTexture } from "../assets/imageLoader";
+import { Grid } from "../utils/Grid";
 
 class ChunkConstants {
     static readonly CHUNK_SIZE = 8;
@@ -33,14 +34,14 @@ class ChunkConstants {
 
 class Chunk {
     public objects: GameObject[];
-    public tiles: Tile[];
+    public tiles: Grid<Tile>;
     public dirty: boolean; // Marked true if the tileFramebuffer does not match the tiles
     public tileFramebuffer: FrameBuffer;
     private gl: WebGLRenderingContext;
 
     constructor(gl: WebGLRenderingContext, tiles: Tile[]) {
         this.gl = gl;
-        this.tiles = tiles;
+        this.tiles = Grid.from(tiles, ChunkConstants.CHUNK_SIZE, ChunkConstants.CHUNK_SIZE);
         this.objects = [];
         this.dirty = true;
         this.tileFramebuffer = new FrameBuffer(gl, ChunkConstants.PIXELS_PER_CHUNK, ChunkConstants.PIXELS_PER_CHUNK);
@@ -57,25 +58,31 @@ class Chunk {
         // this.gl.clearColor(MathUtils.random(0, 1), 0.1, 0.8, 1.0);
         this.gl.clearColor(0, 0, 0, 1.0);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-        for (let i = 0; i < this.tiles.length; i++) {
-            const x = Math.floor(i / ChunkConstants.CHUNK_SIZE);
-            const y = i % ChunkConstants.CHUNK_SIZE;
-            const tile = tileCodex[this.tiles[i].index];
+        this.tiles.iterate((self, r, c) => {
+            const x = c;
+            const y = r;
+            const tile = this.tiles.get(r, c);
+            const tileData = tileCodex[tile.index];
             let spriteID = "undefined";
-            if (tile.spriteID) spriteID = tile.spriteID;
-            if (tile.animationIndex) {
-                const animation = animationsCodex[tile.animationIndex];
+            if (tileData.spriteID) spriteID = tileData.spriteID;
+            if (tileData.animationIndex) {
+                const animation = animationsCodex[tileData.animationIndex];
                 // spriteID = animation.getFrame()
             }
             const texture = getTexture(spriteID);
             this.gl.activeTexture(this.gl.TEXTURE0);
             this.gl.bindTexture(this.gl.TEXTURE_2D, texture.texture);
+            const mask = "square";
+            this.gl.activeTexture(this.gl.TEXTURE1);
+            this.gl.bindTexture(this.gl.TEXTURE_2D, getTexture(mask).texture);
+            chunkShader.setUniformInt("texture", 0);
+            chunkShader.setUniformInt("mask", 1);
             chunkShader.setUniformFloat("chunkSize", ChunkConstants.CHUNK_SIZE);
             chunkShader.setUniform2f("position", x, ChunkConstants.CHUNK_SIZE - 1 - y);
-            chunkShader.setUniformInt("rotation", this.tiles[i].rotation);
+            chunkShader.setUniformInt("rotation", tile.rotation);
             camera.renderQuad();
             console.log(spriteID);
-        }
+        });
         this.dirty = false;
     }
 }

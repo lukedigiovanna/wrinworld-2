@@ -3,7 +3,7 @@ import { GameObject, PlayerFactory } from "../gameObjects";
 import { Vector, MathUtils, PerlinNoise, Color, Ease } from "../utils";
 import input from "../input";
 import { Particle, ParticleLayer } from "../components";
-import { Tile, tileCodex, TileData, TileIndex } from "./tiles";
+import { Tile, tileCodex, TileData, TileIndex, TileRotation } from "./tiles";
 import { Level, levels, LevelIndex } from "../levels";
 import settings from "../settings";
 import statTracker from "../statTracker";
@@ -14,6 +14,7 @@ import { PostProcessingShaderIndex } from "../rendering/postProcessingShaders";
 import { Matrix4 } from "../utils/Matrix4";
 import * as ShaderCode from "../rendering/shaderCode";
 import { Chunk, ChunkConstants } from "./Chunk";
+import { GridPosition } from "utils/Grid";
 
 const RENDER_DISTANCE = 3;
 const PIXELATION_PERIOD = 3;
@@ -504,58 +505,45 @@ class Game {
         );
     }
 
-    private getTileCoordinate(position: Vector): { chunkIndex: number, tilePositionIndex: number } {
+    private getTileCoordinate(position: Vector): { chunkIndex: number, tilePosition: GridPosition } {
         const chunkIndex = ChunkConstants.getChunkIndex(position);
         const chunkPosition = ChunkConstants.getChunkWorldPosition(chunkIndex);
-        const offset = Vector.scaled(Vector.subtract(position, chunkPosition), 1 / ChunkConstants.PIXELS_PER_TILE);
+        const offset = position.minus(chunkPosition).scaled(1 / ChunkConstants.PIXELS_PER_TILE);
         const offsetX = Math.max(0, Math.floor(offset.x));
         const offsetY = Math.max(0, Math.floor(offset.y));
-        const tilePositionIndex = offsetX * ChunkConstants.CHUNK_SIZE + offsetY;
-        if (tilePositionIndex < 0) {
-            console.error(`
-                Bug report:
-                position: ${position.x}, ${position.y}
-                chunkIndex: ${chunkIndex}
-                offset: ${offset.x}, ${offset.y}
-                offsetX: ${offsetX}
-                offsetY: ${offsetY}
-                tilePositionIndex: ${tilePositionIndex}
-            `)
-            throw Error("Some bug occurred");
-        }
         return {
             chunkIndex,
-            tilePositionIndex
+            tilePosition: { row: offsetY, col: offsetX }
         };
     }
 
     // Set the tile at the integer tile coordinates to the given tileIndex.
     // will generate the chunk there if it is not generated already.
-    public setTile(position: Vector, tileIndex: TileIndex, rotation: 0 | 1 | 2 | 3 = 0) {
-        const { chunkIndex, tilePositionIndex } = this.getTileCoordinate(position);
+    public setTile(position: Vector, tileIndex: TileIndex, rotation: TileRotation = 0) {
+        const { chunkIndex, tilePosition } = this.getTileCoordinate(position);
         if (!this.chunks.has(chunkIndex)) {
             this.generateChunk(chunkIndex);
         }
         const chunk = this.chunks.get(chunkIndex);
         if (!chunk) throw Error("something went wrong");
-        chunk.tiles[tilePositionIndex] = {
+        chunk.tiles.set(tilePosition.row, tilePosition.col, {
             index: tileIndex,
             rotation: rotation
-        };
+        });
     }
 
-    public setTileWithTilemapCoordinate(position: Vector, tileIndex: TileIndex, rotation: 0 | 1 | 2 | 3 = 0) {
+    public setTileWithTilemapCoordinate(position: Vector, tileIndex: TileIndex, rotation: TileRotation = 0) {
         this.setTile(Vector.scaled(position, ChunkConstants.PIXELS_PER_TILE), tileIndex, rotation);
     }
 
     public getTileIndex(position: Vector): TileIndex {
-        const { chunkIndex, tilePositionIndex } = this.getTileCoordinate(position);
+        const { chunkIndex, tilePosition } = this.getTileCoordinate(position);
         if (!this.chunks.has(chunkIndex)) {
             this.generateChunk(chunkIndex);
         }
         const chunk = this.chunks.get(chunkIndex);
         if (!chunk) throw Error("something went wrong");
-        return chunk.tiles[tilePositionIndex].index;
+        return chunk.tiles.get(tilePosition.row, tilePosition.col).index;
     }
 
     // Get the tile object from the tilemap stored at the given world position
