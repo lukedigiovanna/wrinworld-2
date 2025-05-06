@@ -1,5 +1,5 @@
 import { getTexture } from "../assets/imageLoader";
-import { Camera } from "./camera";
+import { Camera } from "./Camera";
 import { GameObject } from "../gameObjects";
 import { Vector } from "../utils";
 

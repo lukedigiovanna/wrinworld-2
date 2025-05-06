@@ -1,5 +1,5 @@
 import { Level } from "./";
-import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Permutation } from "../utils";
+import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Permutation, Rectangle } from "../utils";
 import { Game, PIXELS_PER_TILE } from "../game";
 import { TileIndex } from "../tiles";
 import { EnemyIndex, PortalFactory, PortalProperties, PropFactory } from "../gameObjects";
@@ -7,120 +7,121 @@ import { ItemIndex } from "../items";
 import { PropIndex, propsCodex } from "../props";
 import { getTexture } from "../assets/imageLoader";
 
+const portalTypes: PortalProperties[] = [
+    { // Slime portal
+        size: "medium",
+        health: 25,
+        difficulty: 0,
+        packs: [
+            {
+                packSizeRange: new NumberRange(2, 4),
+                cooldownRange: new NumberRange(8, 16),
+                maxEnemies: 5,
+                enemyIndex: EnemyIndex.SLIME
+            }
+        ]
+    },
+    { // Red slime portal
+        size: "medium",
+        health: 35,
+        difficulty: 0.1,
+        packs: [
+            {
+                packSizeRange: new NumberRange(4, 8),
+                cooldownRange: new NumberRange(6, 14),
+                maxEnemies: 10,
+                enemyIndex: EnemyIndex.RED_SLIME
+            }
+        ]
+    },
+    { // Ground worm portal
+        size: "medium",
+        health: 35,
+        difficulty: 0.1,
+        packs: [
+            {
+                packSizeRange: new NumberRange(1, 2),
+                cooldownRange: new NumberRange(8, 16),
+                maxEnemies: 6,
+                enemyIndex: EnemyIndex.GROUND_WORM
+            }
+        ]
+    },
+    { // Minion portal
+        size: "medium",
+        difficulty: 0.2,
+        health: 40,
+        packs: [
+            {
+                cooldownRange: new NumberRange(4, 10),
+                packSizeRange: new NumberRange(1, 4),
+                maxEnemies: 10,
+                enemyIndex: EnemyIndex.MINION
+            },
+            {
+                cooldownRange: new NumberRange(12, 24),
+                packSizeRange: new NumberRange(1, 1),
+                maxEnemies: 1,
+                enemyIndex: EnemyIndex.WRETCHED_SKELETON
+            }
+        ]
+    }, 
+    { // Revenant eye portal
+        size: "medium",
+        difficulty: 0.4,
+        health: 60,
+        packs: [
+            {
+                cooldownRange: new NumberRange(12, 20),
+                packSizeRange: new NumberRange(1, 2),
+                maxEnemies: 3,
+                enemyIndex: EnemyIndex.REVENANT_EYE
+            }
+        ]
+    },
+    { // Wraith portal
+        size: "medium",
+        difficulty: 0.6,
+        health: 75,
+        packs: [
+            {
+                cooldownRange: new NumberRange(12, 20),
+                packSizeRange: new NumberRange(1, 1),
+                maxEnemies: 2,
+                enemyIndex: EnemyIndex.WRAITH
+            }
+        ]
+    },
+    { // Bunny portal
+        size: "medium",
+        difficulty: 0.3,
+        health: 35,
+        packs: [
+            {
+                cooldownRange: new NumberRange(8, 16),
+                packSizeRange: new NumberRange(1, 3),
+                maxEnemies: 6,
+                enemyIndex: EnemyIndex.EVIL_BUNNY
+            }
+        ]
+    },
+    { // Husk portal
+        size: "medium",
+        difficulty: 0.6,
+        health: 80,
+        packs: [
+            {
+                cooldownRange: new NumberRange(12, 24),
+                packSizeRange: new NumberRange(1, 2),
+                maxEnemies: 4,
+                enemyIndex: EnemyIndex.FUNGAL_HUSK
+            }
+        ]
+    },
+];
+
 class ForestLevel implements Level {
     readonly name = "Corrupted Forest";
-    readonly portalTypes: PortalProperties[] = [
-        { // Slime portal
-            size: "medium",
-            health: 25,
-            difficulty: 0,
-            packs: [
-                {
-                    packSizeRange: new NumberRange(2, 4),
-                    cooldownRange: new NumberRange(8, 16),
-                    maxEnemies: 5,
-                    enemyIndex: EnemyIndex.SLIME
-                }
-            ]
-        },
-        { // Red slime portal
-            size: "medium",
-            health: 35,
-            difficulty: 0.1,
-            packs: [
-                {
-                    packSizeRange: new NumberRange(4, 8),
-                    cooldownRange: new NumberRange(6, 14),
-                    maxEnemies: 10,
-                    enemyIndex: EnemyIndex.RED_SLIME
-                }
-            ]
-        },
-        { // Ground worm portal
-            size: "medium",
-            health: 35,
-            difficulty: 0.1,
-            packs: [
-                {
-                    packSizeRange: new NumberRange(1, 2),
-                    cooldownRange: new NumberRange(8, 16),
-                    maxEnemies: 6,
-                    enemyIndex: EnemyIndex.GROUND_WORM
-                }
-            ]
-        },
-        { // Minion portal
-            size: "medium",
-            difficulty: 0.2,
-            health: 40,
-            packs: [
-                {
-                    cooldownRange: new NumberRange(4, 10),
-                    packSizeRange: new NumberRange(1, 4),
-                    maxEnemies: 10,
-                    enemyIndex: EnemyIndex.MINION
-                },
-                {
-                    cooldownRange: new NumberRange(12, 24),
-                    packSizeRange: new NumberRange(1, 1),
-                    maxEnemies: 1,
-                    enemyIndex: EnemyIndex.WRETCHED_SKELETON
-                }
-            ]
-        }, 
-        { // Revenant eye portal
-            size: "medium",
-            difficulty: 0.4,
-            health: 60,
-            packs: [
-                {
-                    cooldownRange: new NumberRange(12, 20),
-                    packSizeRange: new NumberRange(1, 2),
-                    maxEnemies: 3,
-                    enemyIndex: EnemyIndex.REVENANT_EYE
-                }
-            ]
-        },
-        { // Wraith portal
-            size: "medium",
-            difficulty: 0.6,
-            health: 75,
-            packs: [
-                {
-                    cooldownRange: new NumberRange(12, 20),
-                    packSizeRange: new NumberRange(1, 1),
-                    maxEnemies: 2,
-                    enemyIndex: EnemyIndex.WRAITH
-                }
-            ]
-        },
-        { // Bunny portal
-            size: "medium",
-            difficulty: 0.3,
-            health: 35,
-            packs: [
-                {
-                    cooldownRange: new NumberRange(8, 16),
-                    packSizeRange: new NumberRange(1, 3),
-                    maxEnemies: 6,
-                    enemyIndex: EnemyIndex.EVIL_BUNNY
-                }
-            ]
-        },
-        { // Husk portal
-            size: "medium",
-            difficulty: 0.6,
-            health: 80,
-            packs: [
-                {
-                    cooldownRange: new NumberRange(12, 24),
-                    packSizeRange: new NumberRange(1, 2),
-                    maxEnemies: 4,
-                    enemyIndex: EnemyIndex.FUNGAL_HUSK
-                }
-            ]
-        },
-    ];
     readonly portalDrops = [
         [
             { itemIndex: ItemIndex.ARROW, count: new NumberRange(20, 36) },
@@ -157,6 +158,7 @@ class ForestLevel implements Level {
         [ { itemIndex: ItemIndex.GHOST_ARROWS }],
     ];
 
+    readonly cameraBounds: Rectangle = new Rectangle(-1024, 1024, 100, 3640);
     readonly playerSpawnPosition = new Vector(0, 160);
 
     generate(game: Game) {
@@ -275,7 +277,7 @@ class ForestLevel implements Level {
                 }
             } while (invalid);
             const progression = (position.y / PIXELS_PER_TILE - marginTrail) / height;
-            const validChoices = this.portalTypes.filter(type => (type.difficulty ? type.difficulty : 0) <= progression);
+            const validChoices = portalTypes.filter(type => (type.difficulty ? type.difficulty : 0) <= progression);
             if (validChoices.length === 0) {
                 throw Error("Cannot generate portal for position: " + position + " progressio " + progression + " because no portal has low enough difficulty");
             }

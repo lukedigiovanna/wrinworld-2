@@ -1,5 +1,5 @@
 import input from "../input";
-import { Vector, MathUtils, Color, Ease } from "../utils";
+import { Vector, MathUtils, Color, Ease, Rectangle } from "../utils";
 import { Pair } from "../utils/types";
 import { getOrthographicProjection, Matrix4 } from "../utils/Matrix4";
 import { Texture, getTexture } from "../assets/imageLoader";
@@ -44,7 +44,7 @@ class Camera {
 
     public target?: GameObject;
 
-    public verticalBoundary: [number, number] = [-99999, 99999];
+    public bounds?: Rectangle;
 
     private quadVBO: WebGLBuffer;
 
@@ -126,7 +126,10 @@ class Camera {
         }
         // if (this.target)
         //     this.position.set(this.target.position);
-        // this.position.y = MathUtils.clamp(this.position.y, this.verticalBoundary[0], this.verticalBoundary[1]);
+        if (this.bounds) {
+            this.position.y = MathUtils.clamp(this.position.y, this.bounds.bottom + this.height / 2, this.bounds.top - this.height / 2);
+            this.position.x = MathUtils.clamp(this.position.x, this.bounds.left + this.width / 2, this.bounds.right - this.width / 2);
+        }
 
         if (input.isKeyDown("Equal")) {
             this.height *= 0.95;

@@ -207,6 +207,13 @@ interface Rectangle {
 }
 
 class Rectangle {
+    constructor(left: number, right: number, bottom: number, top: number) {
+        this.left = left;
+        this.right = right;
+        this.bottom = bottom;
+        this.top = top;
+    }
+
     public static from(position: Vector, scale: Vector): Rectangle {
         const width2 = Math.abs(scale.x) / 2;
         const height2 = Math.abs(scale.y) / 2;

@@ -1,7 +1,7 @@
 import { GameObject, PlayerFactory } from "./gameObjects";
 import { Vector, MathUtils, PerlinNoise, Color, Ease } from "./utils";
 import input from "./input";
-import { Camera } from "./rendering/camera";
+import { Camera } from "./rendering/Camera";
 import { getTexture } from "./assets/imageLoader";
 import { Particle, ParticleLayer } from "./components";
 import { Tile, tileCodex, TileData, TileIndex } from "./tiles";
@@ -73,11 +73,8 @@ class Game {
         this._camera = new Camera(this, canvas, gl);
         this._player = PlayerFactory(new Vector(0, 16 * PIXELS_PER_TILE));
         this.addGameObject(this._player);
-
         this._camera.target = this._player;
 
-        this._camera.verticalBoundary = [2 * PIXELS_PER_TILE, (24 + 8 + 96) * PIXELS_PER_TILE];
-    
         this.switchLevel(LevelIndex.FOREST, false);
 
         this.timeoutQueue = new PriorityQueue<TimeoutRequest>(
@@ -90,6 +87,9 @@ class Game {
     }
 
     public switchLevel(levelIndex: LevelIndex, pixelateLevelStart=true) {
+        if (this.dirtyLevel) {
+            return;
+        }
         this.dirtyLevel = true;
         this.levelStartTime = this.time;
         this.pixelateLevelStart = pixelateLevelStart;
@@ -135,6 +135,10 @@ class Game {
     // Performs any boilerplate updates to the game such as removing dead objects
     // adding new objects, updating active chunks, and generating new chunks.
     public preUpdate() {
+        if (this.paused) {
+            return;
+        }
+
         if (this.dirtyLevel && (!this.pixelateLevelStart || this.time - this.levelStartTime > PIXELATION_PERIOD / 2) && this.level) {
             // Unload everything if there was already a loaded level
             this.chunks = new Map<number, Chunk>();
@@ -150,9 +154,13 @@ class Game {
                 this._totalObjects++;
             }
 
-
             this.level.generate(this);
+            this._camera.bounds = this.level.cameraBounds;
             this.dirtyLevel = false;
+        }
+        
+        if (this.level && this.player.hitboxCenter.y >= this.level.cameraBounds.top) {  
+            this.switchLevel(LevelIndex.SCHOOL);
         }
 
         while (this.checkTimeout());

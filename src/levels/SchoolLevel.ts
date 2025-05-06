@@ -2,7 +2,7 @@ import { Level, PortalDropPool } from "./";
 import { EnemyIndex, PortalFactory, PortalProperties, PropFactory } from "../gameObjects";
 import { Game, PIXELS_PER_TILE } from "../game";
 import { Tile, TileIndex } from "../tiles";
-import { MathUtils, NumberRange, Permutation, Vector } from "../utils";
+import { MathUtils, NumberRange, Permutation, Rectangle, Vector } from "../utils";
 import { PropIndex, propsCodex } from "../props";
 import { getTexture } from "../assets/imageLoader";
 import { Nullable, Side } from "../utils/types";
@@ -503,11 +503,11 @@ function placeSchoolWalls(tileGrid: Grid<Tile>) {
 
 class SchoolLevel implements Level {
     readonly name = "School";
-    readonly portalTypes: PortalProperties[] = [];
     readonly portalDrops: PortalDropPool[] = [
         [ { itemIndex: ItemIndex.WATER_BOTTLE, count: new NumberRange(12, 30) } ] 
     ];
 
+    public cameraBounds = new Rectangle(0, 0, 0, 0);
     readonly playerSpawnPosition = new Vector(0, 600);
 
     generate(game: Game) {
@@ -517,6 +517,12 @@ class SchoolLevel implements Level {
         // convert hallwayMap to a world grid
         const worldWidth = padding * 2 + hallwayMap.width * gridCellSize;
         const worldHeight = padding * 2 + hallwayMap.height * gridCellSize;
+        this.cameraBounds = new Rectangle(
+            -worldWidth / 2 * PIXELS_PER_TILE, 
+            worldWidth / 2 * PIXELS_PER_TILE, 
+            padding * PIXELS_PER_TILE, 
+            (padding + (hallwayMap.height * gridCellSize)) * PIXELS_PER_TILE
+        );
         const worldTileGrid = new Grid<Tile>(worldWidth, worldHeight, {index: TileIndex.SCHOOL_WALL, rotation: 0});
         const worldPropGrid = new Grid<Nullable<PropIndex>>(worldWidth, worldHeight, null);
         const worldPortalTypeGrid = new Grid<Nullable<PortalProperties[]>>(worldWidth, worldHeight, null);
