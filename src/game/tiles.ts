@@ -83,7 +83,7 @@ const tileCodex: Record<TileIndex, TileData> = {
     canGrowPlants: false,
     canSpawnPortal: false,
     wall: true,
-    leaks: [TileIndex.GRASS],
+    leaks: [TileIndex.GRASS, TileIndex.PATH, TileIndex.SAND],
 },
 [TileIndex.PATH]: {
     spriteID: "path",
@@ -91,6 +91,7 @@ const tileCodex: Record<TileIndex, TileData> = {
     canSpawnPortal: true,
     wall: false,
     trailColor: Color.hex("#886e2a"),
+    leaks: [TileIndex.WATER]
 },
 [TileIndex.CURSED_PATH]: {
     spriteID: "cursed_path",

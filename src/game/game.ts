@@ -96,7 +96,8 @@ class Game {
             ChunkConstants.CHUNK_SIZE, ChunkConstants.CHUNK_SIZE, 
             { index: TileIndex.CURSED_SAND, rotation: 0 }
         );
-        this.chunks.set(chunkX, chunkY, new Chunk(this.camera.gl, tiles));
+        const chunk = new Chunk(this.camera.gl, tiles, new Point(chunkX, chunkY));
+        this.chunks.set(chunkX, chunkY, chunk);
     }
 
     public get time() {
@@ -600,7 +601,7 @@ class Game {
         }
         const chunk = this.chunks.get(chunkPosition.x, chunkPosition.y);
         if (!chunk) throw Error("something went wrong");
-        return chunk.tiles.get(tilePosition.row, tilePosition.col).index;
+        return chunk.tiles.get(tilePosition.row, tilePosition.col);
     }
 
     // Returns true if any tile in the given radius around the given position is

@@ -49,8 +49,10 @@ class Chunk {
     public dirty: boolean; // Marked true if the tileFramebuffer does not match the tiles
     public tileFramebuffer: FrameBuffer;
     private gl: WebGLRenderingContext;
+    private readonly position: Point;
 
-    constructor(gl: WebGLRenderingContext, tiles: Grid<Tile>) {
+    constructor(gl: WebGLRenderingContext, tiles: Grid<Tile>, position: Point) {
+        this.position = position;
         this.gl = gl;
         this.tiles = tiles;
         this.objects = [];
@@ -77,9 +79,8 @@ class Chunk {
         // this.gl.clearColor(MathUtils.random(0, 1), 0.1, 0.8, 1.0);
         this.gl.clearColor(0, 0, 0, 1.0);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+        const tilePosition = ChunkConstants.getChunkTilePosition(this.position.x, this.position.y);
         this.tiles.iterate((self, r, c) => {
-            const x = c;
-            const y = r;
             const tile = this.tiles.get(r, c);
             const tileData = tileCodex[tile.index];
             let spriteID = "undefined";
@@ -91,26 +92,54 @@ class Chunk {
             chunkShader.setUniformInt("texture", 0);
             chunkShader.setUniformInt("mask", 1);
             chunkShader.setUniformFloat("chunkSize", ChunkConstants.CHUNK_SIZE);
-            chunkShader.setUniform2f("position", x, ChunkConstants.CHUNK_SIZE - 1 - y);
+            chunkShader.setUniform2f("position", c, ChunkConstants.CHUNK_SIZE - 1 - r);
             chunkShader.setUniformInt("rotation", tile.rotation);
             this.renderTile(camera, spriteID, "square");
 
             if (tileData.leaks && tileData.leaks.length > 0) {
-                const n = self.getOptional(r + 1, c)?.index;
-                const e = self.getOptional(r, c + 1)?.index;
-                const s = self.getOptional(r - 1, c)?.index;
-                const w = self.getOptional(r, c - 1)?.index;
-                const ne = self.getOptional(r + 1, c + 1)?.index;
-                const se = self.getOptional(r - 1, c + 1)?.index;
-                const sw = self.getOptional(r - 1, c - 1)?.index;
-                const nw = self.getOptional(r + 1, c - 1)?.index;
+                const x = tilePosition.x + c;
+                const y = tilePosition.y + r;
+                const n = game.getTileAtTilePosition(new Point(x, y + 1)).index;
+                const e = game.getTileAtTilePosition(new Point(x + 1, y)).index;
+                const s = game.getTileAtTilePosition(new Point(x, y - 1)).index;
+                const w = game.getTileAtTilePosition(new Point(x - 1, y)).index;
+                const ne = game.getTileAtTilePosition(new Point(x + 1, y + 1)).index;
+                const se = game.getTileAtTilePosition(new Point(x + 1, y - 1)).index;
+                const sw = game.getTileAtTilePosition(new Point(x - 1, y - 1)).index;
+                const nw = game.getTileAtTilePosition(new Point(x - 1, y + 1)).index;
                 for (const leakTileIndex of tileData.leaks) {
-                    if (e !== undefined && leakTileIndex === e) {
+                    if (leakTileIndex === e) {
+                        chunkShader.setUniformInt("rotation", 0);
                         this.renderTile(camera, tileCodex[leakTileIndex].spriteID, "tile_mask_side");
                     }
-                    if (ne !== undefined && leakTileIndex === ne) {
-                        this.renderTile(camera, tileCodex[leakTileIndex].spriteID, "tile_mask_corner");
+                    if (leakTileIndex === s) {
+                        chunkShader.setUniformInt("rotation", 3);
+                        this.renderTile(camera, tileCodex[leakTileIndex].spriteID, "tile_mask_side");
                     }
+                    if (leakTileIndex === w) {
+                        chunkShader.setUniformInt("rotation", 2);
+                        this.renderTile(camera, tileCodex[leakTileIndex].spriteID, "tile_mask_side");
+                    }
+                    if (leakTileIndex === n) {
+                        chunkShader.setUniformInt("rotation", 1);
+                        this.renderTile(camera, tileCodex[leakTileIndex].spriteID, "tile_mask_side");
+                    }
+                    // if (leakTileIndex === ne) {
+                    //     chunkShader.setUniformInt("rotation", 0);
+                    //     this.renderTile(camera, tileCodex[leakTileIndex].spriteID, "tile_mask_corner");
+                    // }
+                    // if (leakTileIndex === se) {
+                    //     chunkShader.setUniformInt("rotation", 3);
+                    //     this.renderTile(camera, tileCodex[leakTileIndex].spriteID, "tile_mask_corner");
+                    // }
+                    // if (leakTileIndex === sw) {
+                    //     chunkShader.setUniformInt("rotation", 2);
+                    //     this.renderTile(camera, tileCodex[leakTileIndex].spriteID, "tile_mask_corner");
+                    // }
+                    // if (leakTileIndex === nw) {
+                    //     chunkShader.setUniformInt("rotation", 1);
+                    //     this.renderTile(camera, tileCodex[leakTileIndex].spriteID, "tile_mask_corner");
+                    // }
                 }
             }
         });
