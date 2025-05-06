@@ -9,7 +9,7 @@ import settings from "./settings";
 import statTracker from "./statTracker";
 import { animationsCodex } from "./animations";
 import { PriorityQueue } from "./utils/PriorityQueue";
-import { Camera } from "./rendering/temp";
+import { Camera } from "./rendering/Camera";
 import { ShaderShadow, MAX_SHADOWS, ShaderProgram } from "./rendering/ShaderProgram";
 import { PostProcessingShaderIndex } from "./rendering/postProcessingShaders";
 import { FrameBuffer } from "./rendering/FrameBuffer";
