@@ -31,8 +31,6 @@ class ChunkConstants {
     }
 }
 
-
-
 class Chunk {
     public objects: GameObject[];
     public tiles: Tile[];
@@ -56,7 +54,8 @@ class Chunk {
         this.tileFramebuffer.bind();
         chunkShader.use();
         this.gl.viewport(0, 0, this.tileFramebuffer.width, this.tileFramebuffer.height);
-        this.gl.clearColor(MathUtils.random(0, 1), 0.1, 0.8, 1.0);
+        // this.gl.clearColor(MathUtils.random(0, 1), 0.1, 0.8, 1.0);
+        this.gl.clearColor(0, 0, 0, 1.0);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
         for (let i = 0; i < this.tiles.length; i++) {
             const x = Math.floor(i / ChunkConstants.CHUNK_SIZE);
@@ -72,7 +71,8 @@ class Chunk {
             this.gl.activeTexture(this.gl.TEXTURE0);
             this.gl.bindTexture(this.gl.TEXTURE_2D, texture.texture);
             chunkShader.setUniformFloat("chunkSize", ChunkConstants.CHUNK_SIZE);
-            chunkShader.setUniform2f("position", ChunkConstants.CHUNK_SIZE - 1 - x, ChunkConstants.CHUNK_SIZE - 1 - y);
+            chunkShader.setUniform2f("position", x, ChunkConstants.CHUNK_SIZE - 1 - y);
+            chunkShader.setUniformInt("rotation", this.tiles[i].rotation);
             camera.renderQuad();
             console.log(spriteID);
         }

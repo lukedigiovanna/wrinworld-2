@@ -167,13 +167,25 @@ varying vec2 fragPos;
 
 uniform float chunkSize;
 uniform vec2 position;
+uniform int rotation;
 
 void main() {
     float tileWidth = 2.0 / chunkSize;
     vec2 offset = position * tileWidth;
     gl_Position = vec4(vec2(-1.0) + a_position * tileWidth + offset, 0, 1);
 
-    texCoord = a_textureCoord;
+    vec2 flippedCoord = vec2(a_textureCoord.x, 1.0 - a_textureCoord.y);
+    vec2 rotatedCoord = flippedCoord;
+    if (rotation == 1) {
+        rotatedCoord = vec2(1.0 - flippedCoord.y, flippedCoord.x);
+    }
+    else if (rotation == 2) {        
+        rotatedCoord = vec2(1.0 - flippedCoord.x, 1.0 - flippedCoord.y);
+    }
+    else if (rotation == 3) {       
+        rotatedCoord = vec2(flippedCoord.y, 1.0 - flippedCoord.x);
+    }
+    texCoord = rotatedCoord;
 }
 `
 

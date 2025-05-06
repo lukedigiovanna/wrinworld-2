@@ -241,23 +241,6 @@ class Game {
         this._camera.update(dt);
     }
 
-    private drawParticle(particle: Particle) {
-        const pos = particle.position.copy();
-        if (particle.useRelativePosition && particle.gameObject) {
-            pos.add(particle.gameObject.position);
-        }
-        this._camera.color = particle.color;
-        const texture = getTexture(particle.spriteID);
-        this._camera.drawTexture(
-            texture, 
-            pos.x,
-            pos.y,
-            particle.scale * texture.width, 
-            particle.scale * texture.height, 
-            particle.rotation
-        );
-    }
-
     public draw() {
         if (this.paused) {
             return;
@@ -333,8 +316,8 @@ class Game {
                 const texture = chunk.tileFramebuffer.texture;
                 if (texture === null) continue;
                 this._camera.drawTextureRaw(texture, undefined, Matrix4.transformation(
-                    chunkPos.x + ChunkConstants.PIXELS_PER_CHUNK / 2, 
-                    chunkPos.y + ChunkConstants.PIXELS_PER_CHUNK / 2, 
+                    chunkPos.x, 
+                    chunkPos.y,
                     ChunkConstants.PIXELS_PER_CHUNK, ChunkConstants.PIXELS_PER_CHUNK, 
                     0, 0, 0, 0
                 ));
@@ -390,7 +373,7 @@ class Game {
         
         if (settings.showChunks) {
             this._camera.color = Color.GREEN;
-            const chunkPos = ChunkConstants.getChunkWorldPosition(ChunkConstants.getChunkIndex(this._camera.position));
+            const chunkPos = ChunkConstants.getChunkWorldPosition(playerCI);
             for (let xo = -RENDER_DISTANCE; xo <= RENDER_DISTANCE; xo++) {
                 for (let yo = -RENDER_DISTANCE; yo <= RENDER_DISTANCE; yo++) {
                     const chunkIndex = ChunkConstants.getChunkIndex(new Vector(chunkPos.x + xo * ChunkConstants.CHUNK_SIZE, chunkPos.y + yo * ChunkConstants.CHUNK_SIZE));
@@ -522,6 +505,23 @@ class Game {
                 }
             )
         }
+    }
+
+    private drawParticle(particle: Particle) {
+        const pos = particle.position.copy();
+        if (particle.useRelativePosition && particle.gameObject) {
+            pos.add(particle.gameObject.position);
+        }
+        this._camera.color = particle.color;
+        const texture = getTexture(particle.spriteID);
+        this._camera.drawTexture(
+            texture, 
+            pos.x,
+            pos.y,
+            particle.scale * texture.width, 
+            particle.scale * texture.height, 
+            particle.rotation
+        );
     }
 
     private getTileCoordinate(position: Vector): { chunkIndex: number, tilePositionIndex: number } {
