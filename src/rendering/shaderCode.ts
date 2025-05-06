@@ -158,6 +158,36 @@ void main() {
 }
 `
 
+const chunkVertexShaderCode = `
+attribute vec2 a_position;
+attribute vec2 a_textureCoord;
+
+varying vec2 texCoord;
+varying vec2 fragPos;
+
+uniform float chunkSize;
+uniform vec2 position;
+
+void main() {
+    float tileWidth = 2.0 / chunkSize;
+    vec2 offset = position * tileWidth;
+    gl_Position = vec4(vec2(-1.0) + a_position * tileWidth + offset, 0, 1);
+
+    texCoord = a_textureCoord;
+}
+`
+
+const chunkFragmentShaderCode = `
+precision mediump float;
+
+uniform sampler2D texture;
+varying vec2 texCoord;
+
+void main() {
+    gl_FragColor = texture2D(texture, texCoord);
+}
+`
+
 const postProcessingVertexShaderCode = `
 attribute vec2 a_position;
 attribute vec2 a_textureCoord;
@@ -237,7 +267,7 @@ void main() {
 }
 `
 
-export { vertexShaderCode, fragmentShaderCode, 
+export { vertexShaderCode, fragmentShaderCode, chunkVertexShaderCode, chunkFragmentShaderCode,
     postProcessingVertexShaderCode, invertColorsPostProcessingFragmentShader,
     noEffectPostProcessingFragmentShader, pixelatePostProcessingFragmentShader,
     vignettePostProcessingFragmentShader };

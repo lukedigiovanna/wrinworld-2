@@ -10,10 +10,11 @@ import statTracker from "./statTracker";
 import { animationsCodex } from "./animations";
 import { PriorityQueue } from "./utils/PriorityQueue";
 import { Camera } from "./rendering/Camera";
-import { ShaderShadow, MAX_SHADOWS } from "./rendering/ShaderProgram";
+import { ShaderShadow, MAX_SHADOWS, ShaderProgram } from "./rendering/ShaderProgram";
 import { PostProcessingShaderIndex } from "./rendering/postProcessingShaders";
 import { FrameBuffer } from "./rendering/FrameBuffer";
 import { Matrix4 } from "./utils/Matrix4";
+import * as ShaderCode from "./rendering/shaderCode";
 
 const CHUNK_SIZE = 8;
 const TILES_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE;
@@ -50,15 +51,34 @@ class Chunk {
         this.tileFramebuffer = new FrameBuffer(gl, CHUNK_SIZE * PIXELS_PER_TILE, CHUNK_SIZE * PIXELS_PER_TILE);
     }
 
-    public renderFramebuffer() {
+    public renderFramebuffer(camera: Camera, chunkShader: ShaderProgram) {
         if (!this.dirty) {
             return;
         }
         console.log("rendering chunk framebuffer");
         this.tileFramebuffer.bind();
+        chunkShader.use();
         this.gl.viewport(0, 0, this.tileFramebuffer.width, this.tileFramebuffer.height);
-        this.gl.clearColor(0, 0.1, 0.8, 1.0);
+        this.gl.clearColor(MathUtils.random(0, 1), 0.1, 0.8, 1.0);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+        for (let i = 0; i < this.tiles.length; i++) {
+            const x = Math.floor(i / CHUNK_SIZE);
+            const y = i % CHUNK_SIZE;
+            const tile = tileCodex[this.tiles[i].index];
+            let spriteID = "undefined";
+            if (tile.animationIndex) {
+                const animation = animationsCodex[tile.animationIndex];
+                // spriteID = animation.getFrame()
+            }
+            else if (tile.spriteID) spriteID = tile.spriteID;
+            const texture = getTexture(spriteID);
+            this.gl.activeTexture(this.gl.TEXTURE0);
+            this.gl.bindTexture(this.gl.TEXTURE_2D, texture.texture);
+            chunkShader.setUniformFloat("chunkSize", CHUNK_SIZE);
+            chunkShader.setUniform2f("position", CHUNK_SIZE - 1 - x, CHUNK_SIZE - 1 - y);
+            camera.renderQuad();
+            console.log(spriteID);
+        }
         this.dirty = false;
     }
 }
@@ -94,6 +114,8 @@ class Game {
     private levelStartTime: number = -999;
     private pixelateLevelStart = false;
 
+    private chunkShader: ShaderProgram;
+
     constructor(canvas: HTMLCanvasElement, gl: WebGLRenderingContext) {
         this._camera = new Camera(this, canvas, gl);
         this._player = PlayerFactory(new Vector(0, 16 * PIXELS_PER_TILE));
@@ -109,6 +131,8 @@ class Game {
                 const remaining2 = req2.delay - (this.time - req2.timestamp);
                 return remaining1 < remaining2;
             });
+
+        this.chunkShader = new ShaderProgram(gl, ShaderCode.chunkVertexShaderCode, ShaderCode.chunkFragmentShaderCode);
     }
 
     public switchLevel(levelIndex: LevelIndex, pixelateLevelStart=true) {
@@ -324,7 +348,7 @@ class Game {
                 const chunkIndex = playerCI + yo + xo * MAX_NUM_CHUNKS;
                 const chunk = this.chunks.get(chunkIndex);
                 if (!chunk) continue;
-                chunk.renderFramebuffer();
+                chunk.renderFramebuffer(this.camera, this.chunkShader);
             }
         }
 
@@ -373,7 +397,12 @@ class Game {
                 if (!chunk) continue;
                 const texture = chunk.tileFramebuffer.texture;
                 if (texture === null) continue;
-                this._camera.drawTextureRaw(texture, undefined, Matrix4.transformation(chunkPos.x, chunkPos.y, 16, 16, 0, 0, 0, 0));
+                this._camera.drawTextureRaw(texture, undefined, Matrix4.transformation(
+                    chunkPos.x + CHUNK_SIZE / 2 * PIXELS_PER_TILE, 
+                    chunkPos.y + CHUNK_SIZE / 2 * PIXELS_PER_TILE, 
+                    CHUNK_SIZE * PIXELS_PER_TILE, CHUNK_SIZE * PIXELS_PER_TILE, 
+                    0, 0, 0, 0
+                ));
                 // for (let i = 0; i < TILES_PER_CHUNK; i+=TILES_PER_CHUNK) {
                 //     const pair = chunk.tiles[i];
                 //     const tile = tileCodex[pair.index];

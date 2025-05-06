@@ -195,8 +195,7 @@ class Camera {
             shader.use();
             this.backSceneFramebuffer.bindTexture();
             shader.setUniformInt("texture", 0);
-            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.quadVBO);
-            this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+            this.renderQuad();
         }
     }
 
@@ -249,8 +248,7 @@ class Camera {
             this.sceneShader.setUniform2f("clipSize", 1, 1);
         }
         this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.quadVBO);
-        this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+        this.renderQuad();
     }
 
     public drawTexture(texture: Texture, x: number, y: number, w: number, h: number, angle: number=0, rotationPointOffset=Vector.zero(), shear: number=0){ 
@@ -273,6 +271,11 @@ class Camera {
         p.subtract(new Vector(this.width / 2, this.height / 2));
         p.y = 2 * this.position.y - p.y;
         return p;
+    }
+
+    public renderQuad() {
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.quadVBO);
+        this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
     }
 }
 
