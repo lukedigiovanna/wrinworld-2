@@ -267,7 +267,7 @@ class Game {
                 const chunkIndex = playerCI + yo + xo * ChunkConstants.MAX_NUM_CHUNKS;
                 const chunk = this.chunks.get(chunkIndex);
                 if (!chunk) continue;
-                chunk.renderFramebuffer(this.camera, this.chunkShader);
+                chunk.renderFramebuffer(this, this.camera, this.chunkShader);
             }
         }
 

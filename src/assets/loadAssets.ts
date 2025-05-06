@@ -32,6 +32,7 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "gym_floor", "assets/images/tiles/gym_floor.png"),
 
         loadImageAndTexture(gl, "tile_mask_side", "assets/images/tiles/tile_mask_side.png"),
+        loadImageAndTexture(gl, "tile_mask_corner", "assets/images/tiles/tile_mask_corner.png"),
         
         // Entities
         loadImageAndTexture(gl, "character", "assets/images/character.png"),

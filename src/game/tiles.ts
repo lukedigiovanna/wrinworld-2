@@ -3,13 +3,14 @@ import { SpriteAnimationIndex } from "./animations";
 import { Color } from "../utils";
 
 interface TileData {
-    spriteID?: string;
+    spriteID: string;
     animationIndex?: SpriteAnimationIndex; 
     canGrowPlants: boolean;
     canSpawnPortal: boolean;
     wall: boolean;
     trailColor?: Color;
     arealEffects?: Set<ArealEffect>;
+    leaks?: TileIndex[];
 }
 
 enum TileIndex {
@@ -49,7 +50,7 @@ interface Tile {
 
 const tileCodex: Record<TileIndex, TileData> = {
 [TileIndex.AIR]: {
-    spriteID: undefined,
+    spriteID: "square",
     canGrowPlants: false,
     canSpawnPortal: false,
     wall: false,
@@ -60,6 +61,7 @@ const tileCodex: Record<TileIndex, TileData> = {
     canSpawnPortal: true,
     wall: false,
     trailColor: Color.hex("#058600"),
+    leaks: [TileIndex.PATH, TileIndex.SAND, TileIndex.WATER],
 },
 [TileIndex.CURSED_GRASS]: {
     spriteID: "cursed_grass",
@@ -81,6 +83,7 @@ const tileCodex: Record<TileIndex, TileData> = {
     canGrowPlants: false,
     canSpawnPortal: false,
     wall: true,
+    leaks: [TileIndex.GRASS],
 },
 [TileIndex.PATH]: {
     spriteID: "path",
@@ -102,6 +105,7 @@ const tileCodex: Record<TileIndex, TileData> = {
     canSpawnPortal: true,
     wall: false,
     trailColor: Color.hex("#d9cb4c"),
+    leaks: [TileIndex.PATH, TileIndex.WATER]
 },
 [TileIndex.CURSED_SAND]: {
     spriteID: "cursed_sand",
