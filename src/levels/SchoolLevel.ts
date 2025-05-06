@@ -500,7 +500,7 @@ class SchoolLevel implements Level {
             let x = c - self.width / 2;
             let y = r;
             const tile = self.get(r, c)!;
-            game.setTileWithTilemapCoordinate(new Vector(x, y), tile.index, tile.rotation);
+            game.setTileAtTilePosition(new Vector(x, y), tile.index, tile.rotation);
             
             const prop = worldPropGrid.get(r, c);
             if (prop !== null) {

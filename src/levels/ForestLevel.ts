@@ -1,5 +1,5 @@
 import { Level } from "./";
-import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Permutation, Rectangle } from "../utils";
+import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Permutation, Rectangle, Point } from "../utils";
 import { Game } from "../game/game";
 import { ChunkConstants } from "../game/Chunk";
 import { TileIndex } from "../game/tiles";
@@ -179,7 +179,7 @@ class ForestLevel implements Level {
         // 1. Set Grass Background
         for (let x = left; x <= right; x++) {
             for (let y = bottom; y < top; y++) {
-                game.setTileWithTilemapCoordinate(new Vector(x, y), TileIndex.GRASS);
+                game.setTileAtTilePosition(new Point(x, y), TileIndex.GRASS);
             }
         }
         
@@ -188,10 +188,10 @@ class ForestLevel implements Level {
             for (let y = marginTrail; y <= height + marginTrail; y++) {
                 const noise = game.noise.get(x / 16.32 + 1000, y / 16.543 + 1000);
                 if (noise > 0.6) {
-                    game.setTileWithTilemapCoordinate(new Vector(x, y), TileIndex.WATER);
+                    game.setTileAtTilePosition(new Point(x, y), TileIndex.WATER);
                 }
                 else if (noise > 0.55) {
-                    game.setTileWithTilemapCoordinate(new Vector(x, y), TileIndex.SAND);
+                    game.setTileAtTilePosition(new Point(x, y), TileIndex.SAND);
                 }
             }
         }
@@ -221,7 +221,7 @@ class ForestLevel implements Level {
             for (let xo = -R; xo <= R; xo++) {
                 for (let yo = -R; yo <= R; yo++) {
                     const po = Vector.add(position, new Vector(xo, yo));
-                    const currTile = game.getTileIndex(po);
+                    const currTile = game.getTileAtWorldPosition(po);
                     if (currTile === TileIndex.PATH || currTile === TileIndex.PLANKS) {
                         continue;
                     }
@@ -229,7 +229,7 @@ class ForestLevel implements Level {
                     if (currTile === TileIndex.WATER || currTile === TileIndex.SAND) {
                         tile = TileIndex.PLANKS;
                     }
-                    game.setTileWithTilemapCoordinate(po, tile);
+                    game.setTileAtTilePosition(new Point(Math.floor(po.x), Math.floor(po.y)), tile);
                 }
             }
         }
@@ -242,17 +242,17 @@ class ForestLevel implements Level {
                 if (Math.abs(x) + xoff <= 7) {
                     continue;
                 }
-                game.setTileWithTilemapCoordinate(new Vector(x, y), TileIndex.ROCKS);
-                game.setTileWithTilemapCoordinate(new Vector(x, top - y), TileIndex.ROCKS);
+                game.setTileAtTilePosition(new Point(x, y), TileIndex.ROCKS);
+                game.setTileAtTilePosition(new Point(x, top - y), TileIndex.ROCKS);
             }
         }
 
         // 5. Put rock wall in side margins
         for (let y = bottom; y <= top; y++) {
             const offset = game.noise.get(0.342, y / 4) * 12 - 12;
-            for (let x = offset; x <= marginSidesRocks; x++) {
-                game.setTileWithTilemapCoordinate(new Vector(left - 1 - x, y), TileIndex.ROCKS);
-                game.setTileWithTilemapCoordinate(new Vector(right + 1 + x, y), TileIndex.ROCKS);
+            for (let x = Math.floor(offset); x <= marginSidesRocks; x++) {
+                game.setTileAtTilePosition(new Point(left - 1 - x, y), TileIndex.ROCKS);
+                game.setTileAtTilePosition(new Point(right + 1 + x, y), TileIndex.ROCKS);
             }
         }
 
@@ -293,18 +293,18 @@ class ForestLevel implements Level {
                     const chance = 1 - dist / 4;
                     if (Math.random() < chance) {
                         const po = Vector.add(new Vector(xo * ChunkConstants.PIXELS_PER_TILE, yo * ChunkConstants.PIXELS_PER_TILE), position);
-                        const tile = game.getTileIndex(po);
+                        const tile = game.getTileAtWorldPosition(po);
                         if (tile === TileIndex.GRASS) {
-                            game.setTile(po, TileIndex.CURSED_GRASS);
+                            game.setTileAtWorldPosition(po, TileIndex.CURSED_GRASS);
                         }
                         else if (tile === TileIndex.PATH) {
-                            game.setTile(po, TileIndex.CURSED_PATH);
+                            game.setTileAtWorldPosition(po, TileIndex.CURSED_PATH);
                         }
                         else if (tile === TileIndex.SAND) {
-                            game.setTile(po, TileIndex.CURSED_SAND);
+                            game.setTileAtWorldPosition(po, TileIndex.CURSED_SAND);
                         }
                         else if (tile === TileIndex.PLANKS) {
-                            game.setTile(po, TileIndex.CURSED_PLANKS);
+                            game.setTileAtWorldPosition(po, TileIndex.CURSED_PLANKS);
                         }
                     }
                 }
@@ -331,7 +331,7 @@ class ForestLevel implements Level {
                     if (tooCloseToPortal) {
                         continue;
                     }
-                    const tile = game.getTile(new Vector((x + 0.5) * ChunkConstants.PIXELS_PER_TILE, (y + 0.5) * ChunkConstants.PIXELS_PER_TILE)); 
+                    const tile = game.getTileDataAtWorldPosition(new Vector((x + 0.5) * ChunkConstants.PIXELS_PER_TILE, (y + 0.5) * ChunkConstants.PIXELS_PER_TILE)); 
                     if (!tile.canGrowPlants) {
                         continue;
                     }

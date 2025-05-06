@@ -27,8 +27,9 @@ interface TimeoutRequest {
     delay: number;
 }
 
-interface TilePosition {
+interface ChunkTilePair {
     chunkPosition: Point;
+    // Position of tile in the chunk
     tilePosition: GridPosition;
 }
 
@@ -524,13 +525,12 @@ class Game {
         );
     }
 
-    private getTileCoordinate(position: Vector): TilePosition {
+    private getTileCoordinateFromWorldPosition(position: Vector): ChunkTilePair {
         const chunkPosition = ChunkConstants.getChunkPositionFromWorldPosition(position);
         const chunkWorldPosition = ChunkConstants.getChunkWorldPosition(chunkPosition.x, chunkPosition.y);
         const offset = position.minus(chunkWorldPosition).scaled(1 / ChunkConstants.PIXELS_PER_TILE);
-        const offsetX = Math.max(0, Math.floor(offset.x));
-        const offsetY = Math.max(0, Math.floor(offset.y));
-        // console.log(position, chunkPosition, chunkWorldPosition, offset, offsetX, offsetY)
+        const offsetX = MathUtils.clamp(Math.floor(offset.x), 0, ChunkConstants.CHUNK_SIZE - 1);
+        const offsetY = MathUtils.clamp(Math.floor(offset.y), 0, ChunkConstants.CHUNK_SIZE - 1);
         return {
             chunkPosition,
             tilePosition: { row: offsetY, col: offsetX }
@@ -539,8 +539,8 @@ class Game {
 
     // Set the tile at the integer tile coordinates to the given tileIndex.
     // will generate the chunk there if it is not generated already.
-    public setTile(position: Vector, tileIndex: TileIndex, rotation: TileRotation = 0) {
-        const { chunkPosition, tilePosition } = this.getTileCoordinate(position);
+    public setTileAtWorldPosition(position: Vector, tileIndex: TileIndex, rotation: TileRotation = 0) {
+        const { chunkPosition, tilePosition } = this.getTileCoordinateFromWorldPosition(position);
         if (!this.chunks.has(chunkPosition.x, chunkPosition.y)) {
             this.generateChunk(chunkPosition.x, chunkPosition.y);
         }
@@ -552,12 +552,8 @@ class Game {
         });
     }
 
-    public setTileWithTilemapCoordinate(position: Vector, tileIndex: TileIndex, rotation: TileRotation = 0) {
-        this.setTile(Vector.scaled(position, ChunkConstants.PIXELS_PER_TILE), tileIndex, rotation);
-    }
-
-    public getTileIndex(position: Vector): TileIndex {
-        const { chunkPosition, tilePosition } = this.getTileCoordinate(position);
+    public getTileAtWorldPosition(position: Vector): TileIndex {
+        const { chunkPosition, tilePosition } = this.getTileCoordinateFromWorldPosition(position);
         if (!this.chunks.has(chunkPosition.x, chunkPosition.y)) {
             this.generateChunk(chunkPosition.x, chunkPosition.y);
         }
@@ -568,9 +564,43 @@ class Game {
 
     // Get the tile object from the tilemap stored at the given world position
     // will generate the chunk there if necessary.
-    public getTile(position: Vector): TileData {
-        const tileIndex = this.getTileIndex(position);
+    public getTileDataAtWorldPosition(position: Vector): TileData {
+        const tileIndex = this.getTileAtWorldPosition(position);
         return tileCodex[tileIndex];
+    }
+
+    private getTileCoordinateFromTilePosition(position: Point): ChunkTilePair {
+        const chunkPosition = ChunkConstants.getChunkPositionFromTilePosition(position);
+        const chunkWorldPosition = ChunkConstants.getChunkTilePosition(chunkPosition.x, chunkPosition.y);
+        const offsetX = position.x - chunkWorldPosition.x;
+        const offsetY = position.y - chunkWorldPosition.y;
+        return {
+            chunkPosition,
+            tilePosition: { row: offsetY, col: offsetX }
+        };
+    }
+
+    public setTileAtTilePosition(position: Point, tileIndex: TileIndex, rotation: TileRotation = 0) {
+        const { chunkPosition, tilePosition } = this.getTileCoordinateFromTilePosition(position);
+        if (!this.chunks.has(chunkPosition.x, chunkPosition.y)) {
+            this.generateChunk(chunkPosition.x, chunkPosition.y);
+        }
+        const chunk = this.chunks.get(chunkPosition.x, chunkPosition.y);
+        if (!chunk) throw Error("something went wrong");
+        chunk.tiles.set(tilePosition.row, tilePosition.col, {
+            index: tileIndex,
+            rotation: rotation
+        });
+    }
+
+    public getTileAtTilePosition(position: Point) {
+        const { chunkPosition, tilePosition } = this.getTileCoordinateFromTilePosition(position);
+        if (!this.chunks.has(chunkPosition.x, chunkPosition.y)) {
+            this.generateChunk(chunkPosition.x, chunkPosition.y);
+        }
+        const chunk = this.chunks.get(chunkPosition.x, chunkPosition.y);
+        if (!chunk) throw Error("something went wrong");
+        return chunk.tiles.get(tilePosition.row, tilePosition.col).index;
     }
 
     // Returns true if any tile in the given radius around the given position is
@@ -578,7 +608,7 @@ class Game {
     public isTileInArea(position: Vector, radius: number, tileIndex: TileIndex): boolean {
         for (let xo = -radius; xo <= radius; xo++) {
             for (let yo = -radius; yo <= radius; yo++) {
-                if (this.getTileIndex(Vector.add(position, new Vector(xo, yo))) === tileIndex) {
+                if (this.getTileAtWorldPosition(Vector.add(position, new Vector(xo, yo))) === tileIndex) {
                     return true;
                 }
             }
@@ -591,7 +621,7 @@ class Game {
     public isTileWithPropertyInArea(position: Vector, radius: number, property: keyof TileData, value: any): boolean {
         for (let xo = -radius; xo <= radius; xo++) {
             for (let yo = -radius; yo <= radius; yo++) {
-                if (this.getTile(Vector.add(position, new Vector(xo, yo)))[property] === value) {
+                if (this.getTileDataAtWorldPosition(Vector.add(position, new Vector(xo, yo)))[property] === value) {
                     return true;
                 }
             }

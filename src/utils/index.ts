@@ -660,6 +660,9 @@ class Point {
     readonly y: number;
 
     constructor(x: number, y: number) {
+        if (!Number.isInteger(x) || !Number.isInteger(y)) {
+            throw Error(`Point must be integer valued: x=${x} y=${y}`)
+        }
         this.x = x;
         this.y = y;
     }

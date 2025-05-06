@@ -77,7 +77,7 @@ const Physics: ComponentFactory = (gameObject: GameObject) => {
                     });
                     const corners = [new Vector(l, t), new Vector(r, t), new Vector(l, b), new Vector(r, b)];
                     for (const corner of corners) {
-                        const tile = gameObject.game.getTile(corner);
+                        const tile = gameObject.game.getTileDataAtWorldPosition(corner);
                         if (tile.wall) {
                             // correct the collision
                             const x = Math.floor(corner.x / ChunkConstants.PIXELS_PER_TILE) * ChunkConstants.PIXELS_PER_TILE;

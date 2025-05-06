@@ -70,7 +70,7 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
                 }
             }
 
-            const tileIndex = gameObject.game.getTileIndex(Vector.add(gameObject.position, data.collider.data.boxOffset));
+            const tileIndex = gameObject.game.getTileAtWorldPosition(Vector.add(gameObject.position, data.collider.data.boxOffset));
             if (tileIndex === TileIndex.WATER) {
                 data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_IDLE_WATER;
                 gameObject.castsShadow = false;

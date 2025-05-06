@@ -56,7 +56,7 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
             },
             update(dt) {
                 // TODO: refactor this to repeat self less
-                const inWater = gameObject.game.getTileIndex(gameObject.position) === TileIndex.WATER;
+                const inWater = gameObject.game.getTileAtWorldPosition(gameObject.position) === TileIndex.WATER;
                 const attacking = data.ai.data.attacking;
                 if (inWater) {
                     if (attacking) { // water + attacking

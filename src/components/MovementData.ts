@@ -34,7 +34,7 @@ const MovementData: ComponentFactory = (gameObject: GameObject) => {
                 if (gameObject.hasComponent("hitbox")) {
                     pos.add(gameObject.getComponent("hitbox").data.boxOffset);
                 }
-                if (gameObject.game.getTileIndex(pos) === TileIndex.WATER) {
+                if (gameObject.game.getTileAtWorldPosition(pos) === TileIndex.WATER) {
                     realModifier *= this.waterModifier;
                 }
                 return this.baseSpeed * realModifier;

@@ -279,7 +279,7 @@ stack trace:`)
     }
 
     public hasArealEffect(effect: ArealEffect) {
-        const tile = this.game.getTile(this.hitboxCenter);
+        const tile = this.game.getTileDataAtWorldPosition(this.hitboxCenter);
         return tile.arealEffects?.has(effect);
     }
 }

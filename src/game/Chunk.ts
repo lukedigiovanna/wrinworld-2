@@ -11,7 +11,6 @@ import { Game } from "./game";
 
 class ChunkConstants {
     static readonly CHUNK_SIZE = 8;
-    static readonly TILES_PER_CHUNK = ChunkConstants.CHUNK_SIZE * ChunkConstants.CHUNK_SIZE;
     static readonly PIXELS_PER_TILE = 16;
     static readonly PIXELS_PER_CHUNK = ChunkConstants.CHUNK_SIZE * ChunkConstants.PIXELS_PER_TILE;
     
@@ -21,12 +20,26 @@ class ChunkConstants {
             Math.floor(position.y / ChunkConstants.PIXELS_PER_CHUNK),
         );
     }
+
+    static getChunkPositionFromTilePosition(tilePosition: Point): Point {
+        return new Point(
+            Math.floor(tilePosition.x / ChunkConstants.CHUNK_SIZE),
+            Math.floor(tilePosition.y / ChunkConstants.CHUNK_SIZE),
+        );
+    }
     
     static getChunkWorldPosition(chunkX: number, chunkY: number) {
         return new Vector(
             chunkX * ChunkConstants.PIXELS_PER_CHUNK, 
             chunkY * ChunkConstants.PIXELS_PER_CHUNK
         );
+    }
+
+    static getChunkTilePosition(chunkX: number, chunkY: number) {
+        return new Point(
+            chunkX * ChunkConstants.CHUNK_SIZE,
+            chunkY * ChunkConstants.CHUNK_SIZE,
+        )
     }
 }
 
