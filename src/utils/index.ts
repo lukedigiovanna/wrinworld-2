@@ -264,9 +264,6 @@ class MathUtils {
 
     // Rescale the given number from the range [a1, b1] to [a2, b2]
     public static rescale(x: number, a1: number, b1: number, a2: number, b2:number) {
-        if (b1 < a1 || b2 < a2) {
-            throw new Error("Lower bound of range must be less than upper bound");
-        }
         return ((x - a1) / (b1 - a1)) * (b2 - a2) + a2;
     }
 

@@ -7,11 +7,13 @@ import { Physics, PlayerMovement, PhysicalCollider, Hitbox, InventoryManager,
          AnimationManager} from "../components";
 import { spriteRenderer } from "../rendering/renderers";
 import { SpriteAnimationIndex } from "../animations";
-import { getImage } from "../assets/imageLoader";
+import { getImage, getTexture } from "../assets/imageLoader";
 import { ItemIndex, itemsCodex } from "../items";
 import input from "../input";
 import { LevelIndex } from "../levels";
 import { PostProcessingShaderIndex } from "../rendering/postProcessingShaders";
+import controls from "../controls";
+import { addNotification } from "../notifications";
 
 const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const player = new GameObject();
@@ -118,6 +120,67 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                 //     }
                 // }
             }
+        }
+    });
+
+    player.addComponent((gameObject) => {
+        return {
+            id: "portal-finder",
+            data: {
+                lastFindPortalRequestTime: -999,
+                searching: false,
+                found: false,
+                arrowAngle: 0,
+            },
+            update(dt) {
+                if (input.isKeyPressed(controls.findPortal.code) && !this.data.searching) {
+                    this.data.lastFindPortalRequestTime = gameObject.game.time;
+                    this.data.searching = true;
+                }
+                if (this.data.searching) {
+                    const elapsed = gameObject.game.time - this.data.lastFindPortalRequestTime;
+                    if (elapsed >= 2.5) {
+                        const nearestPortal = gameObject.game.getNearestGameObjectWithFilter(player.position, (obj) => obj.tag === "portal");
+                        if (nearestPortal) {
+                            this.data.arrowAngle = gameObject.hitboxCenter.directionTowards(nearestPortal.object.position).angle;
+                            this.data.found = true;
+                        }
+                        else {
+                            addNotification({
+                                color: "red",
+                                text: "No portals found in range!",
+                            })
+                            this.data.found = false;
+                        }
+                        this.data.searching = false;
+                    }
+                }
+
+            },
+            render(camera) {
+                const elapsed = gameObject.game.time - this.data.lastFindPortalRequestTime;
+                if (elapsed < 2.5) {
+                    const angle = MathUtils.rescale(Math.sin(elapsed * 4), -1, 1, 0, -0.4);
+                    const texture = getTexture("antenna");
+                    camera.drawTexture(
+                        texture, 
+                        gameObject.position.x + texture.width / 2 - 4, 
+                        gameObject.position.y + gameObject.scale.y / 2 + texture.height / 2 - 4 , 
+                        texture.width, texture.height,
+                        angle, new Vector(-texture.width / 2, -texture.height / 2)
+                    );
+                }
+                else if (this.data.found && elapsed < 5) {
+                    const texture = getTexture("right_arrow");
+                    camera.drawTexture(
+                        texture,
+                        gameObject.position.x + texture.width / 2,
+                        gameObject.position.y,
+                        texture.width, texture.height,
+                        this.data.arrowAngle, new Vector(-texture.width / 2, 0)
+                    )
+                }
+            },
         }
     })
 

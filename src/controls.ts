@@ -11,6 +11,7 @@ interface Controls {
     consumable: ControlProps;
     attackPortal: ControlProps;
     toggleInventory: ControlProps;
+    findPortal: ControlProps;
 }
 
 const controls: Controls = {
@@ -40,7 +41,11 @@ const controls: Controls = {
     },
     toggleInventory: {
         code: "Tab",
-        display: "TAB"
+        display: "Tab"
+    },
+    findPortal: {
+        code: "KeyF",
+        display: "F",
     }
 }
 
