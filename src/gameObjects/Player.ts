@@ -129,8 +129,7 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
             data: {
                 lastFindPortalRequestTime: -999,
                 searching: false,
-                found: false,
-                arrowAngle: 0,
+                nearest: undefined,
             },
             update(dt) {
                 if (input.isKeyPressed(controls.findPortal.code) && !this.data.searching) {
@@ -140,17 +139,25 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                 if (this.data.searching) {
                     const elapsed = gameObject.game.time - this.data.lastFindPortalRequestTime;
                     if (elapsed >= 2.5) {
-                        const nearestPortal = gameObject.game.getNearestGameObjectWithFilter(player.position, (obj) => obj.tag === "portal");
-                        if (nearestPortal) {
-                            this.data.arrowAngle = gameObject.hitboxCenter.directionTowards(nearestPortal.object.position).angle;
-                            this.data.found = true;
+                        const portals = gameObject.game.portals;
+                        let nearestPortal = undefined;
+                        let minDistance = 0;
+                        for (const portal of portals) {
+                            const distance = gameObject.hitboxCenter.distanceTo(portal.position);
+                            if (!nearestPortal || distance < minDistance) {
+                                nearestPortal = portal;
+                                minDistance = distance;
+                            }
+                        }
+                        if (minDistance < 480 && nearestPortal) {
+                            this.data.nearest = nearestPortal;
                         }
                         else {
                             addNotification({
                                 color: "red",
                                 text: "No portals found in range!",
                             })
-                            this.data.found = false;
+                            this.data.nearest = undefined;
                         }
                         this.data.searching = false;
                     }
@@ -170,14 +177,15 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                         angle, new Vector(-texture.width / 2, -texture.height / 2)
                     );
                 }
-                else if (this.data.found && elapsed < 5) {
+                else if (this.data.nearest && elapsed < 5) {
+                    const arrowAngle = gameObject.hitboxCenter.directionTowards(this.data.nearest.position).angle;
                     const texture = getTexture("right_arrow");
                     camera.drawTexture(
                         texture,
                         gameObject.position.x + texture.width / 2,
                         gameObject.position.y,
                         texture.width, texture.height,
-                        this.data.arrowAngle, new Vector(-texture.width / 2, 0)
+                        arrowAngle, new Vector(-texture.width / 2, 0)
                     )
                 }
             },
