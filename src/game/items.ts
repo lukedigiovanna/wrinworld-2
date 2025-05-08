@@ -1054,7 +1054,37 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-    cooldown: 30,
+    cooldown: 10,
+    charge: 1,
+    requireFullCharge: true,
+    useOnFullCharge: true,
+    useItem(player, target) {
+        if (Math.random() < 0.1) {
+            addNotification({
+                text: "Yuck, it's spoiled!",
+                color: "#009c10",
+            });
+            player.getComponent("status-effect-manager").data.applyEffect(StatusEffectIndex.POISON, 1, 3);
+            return true;
+        }
+        else {
+            if (attemptHeal(player, 5)) {
+                player.getComponent("status-effect-manager").data.applyEffect(StatusEffectIndex.RESISTANCE, 1, 3);
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+    },
+    getStats() {
+        return [
+            {
+                stat: ItemStat.HEAL,
+                value: 5,
+            }
+        ]
+    }
 },
 [ItemIndex.MYSTERY_PUDDING]: {
     itemIndex: ItemIndex.MYSTERY_PUDDING,

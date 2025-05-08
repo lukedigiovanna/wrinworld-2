@@ -7,6 +7,7 @@ enum StatusEffectIndex {
     ROOT_SNARE,
     INVINCIBILITY,
     SPEED,
+    RESISTANCE,
 }
 
 interface StatusEffect {
@@ -125,6 +126,22 @@ const statusEffectsCodex: Record<StatusEffectIndex, StatusEffect> = {
     end(gameObject, level) {
         if (gameObject.hasComponent("movement-data")) {
             gameObject.getComponent("movement-data").data.miscellaneousModifier -= level * 0.5;
+        }
+    }
+},
+[StatusEffectIndex.RESISTANCE]: {
+    displayName: "Resistance",
+    iconSpriteID: "resistance_effect_icon",
+    particleID: "resistance",
+    rate: 1,
+    start(gameObject, level) {
+        if (gameObject.hasComponent("health")) {
+            gameObject.getComponent("health").data.resistance += level * 0.1;
+        }
+    },
+    end(gameObject, level) {
+        if (gameObject.hasComponent("health")) {
+            gameObject.getComponent("health").data.resistance -= level * 0.1;
         }
     }
 }
