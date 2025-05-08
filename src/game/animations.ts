@@ -3,6 +3,7 @@ enum SpriteAnimationIndex {
     CHARACTER_RUN,
     CHARACTER_IDLE_WATER,
     WATER_TILE,
+    VOLCANO,
 }
 
 class SpriteAnimation {
@@ -37,7 +38,8 @@ const animationsCodex: Record<SpriteAnimationIndex, SpriteAnimation> = {
         ["character_run_0", "character_run_1"], 3),
     [SpriteAnimationIndex.CHARACTER_IDLE_WATER]: new SpriteAnimation(
         ["character_idle_water_0", "character_idle_water_1"], 2),
-    [SpriteAnimationIndex.WATER_TILE]: SpriteAnimation.fromSpritesheet("water", 40, 8)
+    [SpriteAnimationIndex.WATER_TILE]: SpriteAnimation.fromSpritesheet("water", 40, 8),
+    [SpriteAnimationIndex.VOLCANO]: SpriteAnimation.fromSpritesheet("volcano", 13, 2.5),
 }
 
 export { SpriteAnimationIndex, animationsCodex };

@@ -95,7 +95,9 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "basketball", "assets/images/props/basketball.png"),
         loadImageAndTexture(gl, "lunch_table", "assets/images/props/lunch_table.png"),
         
-        loadImageAndTexture(gl, "volcano", "assets/images/volcano.png"),
+        loadImageAndTextureSpritesheet(gl, "volcano", "assets/images/volcano.png", 24, 26),
+        loadImageAndTexture(gl, "magma_ball", "assets/images/magma_ball.png"),
+        loadImageAndTexture(gl, "magma_floor", "assets/images/magma_floor.png"),
         
         // Projectiles
         loadImageAndTexture(gl, "arrow", "assets/images/projectiles/arrow.png"),

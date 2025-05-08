@@ -1163,9 +1163,10 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
+    cooldown: 75,
     useItem(player, target) {
         if (player.position.distanceTo(target) < 64) {
-            player.game.addGameObject(VolcanoFactory(target));
+            player.game.addGameObject(VolcanoFactory(target, player));
             return true;
         }
         else {
