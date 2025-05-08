@@ -438,6 +438,7 @@
     opacity: 0%;
     visibility: hidden;
     transition: opacity 0.75s ease-in-out;
+    cursor: auto;
 }
 
 #death-screen .content {

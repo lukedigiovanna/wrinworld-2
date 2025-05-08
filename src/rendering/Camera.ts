@@ -154,11 +154,10 @@ class Camera {
             const shake = MathUtils.randomVector(MathUtils.random(0, I));
             position.add(shake);
         }
-        // position.x = Math.round(position.x);
-        // position.y = Math.round(position.y);
-        const scale = Math.floor(this.canvas.height / this.height); // pixels per world unit
-        const height = Math.floor(this.canvas.height / scale);
-        const width = Math.floor(this.canvas.width / scale);
+        position.x = Math.round(position.x);
+        position.y = Math.round(position.y);
+        const height = this.renderHeight;
+        const width = this.renderWidth;
         // const heightOverage = this.canvas.height - height * scale;
         // const widthOverage = this.canvas.width - width * scale;
         // console.log(scale, width, height, widthOverage, heightOverage);
@@ -169,6 +168,16 @@ class Camera {
         );
         this.sceneShader.setUniformMatrix4("projection", projection);
         this.sceneShader.setUniformFloat("ambientLightIntensity", this.ambientLightIntensity);
+    }
+
+    public get renderWidth() {
+        const scale = Math.floor(this.canvas.height / this.height); // pixels per world unit
+        return Math.floor(this.canvas.width / scale);
+    }
+
+    public get renderHeight() {
+        const scale = Math.floor(this.canvas.height / this.height); // pixels per world unit
+        return Math.floor(this.canvas.height / scale);
     }
 
     // Renders the framebuffer to the screen using the active postprocessing shader
@@ -268,10 +277,12 @@ class Camera {
     }
 
     public screenToWorldPosition(pos: Vector) {
+        const width = this.renderWidth;
+        const height = this.renderHeight;
         const p = Vector.divide(pos, new Vector(this.canvas.width, this.canvas.height));
-        p.multiply(new Vector(this.width, this.height));
+        p.multiply(new Vector(width, height));
         p.add(this.position);
-        p.subtract(new Vector(this.width / 2, this.height / 2));
+        p.subtract(new Vector(width / 2, height / 2));
         p.y = 2 * this.position.y - p.y;
         return p;
     }
