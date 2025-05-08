@@ -4,7 +4,7 @@ import * as AI from "../components/EnemyAI";
 import { ItemDropChance } from "./items";
 
 enum EnemyIndex {
-    // Level 1 Enemies
+    // Forest
     MINION,
     SLIME,
     REVENANT_EYE,
@@ -16,6 +16,8 @@ enum EnemyIndex {
     GROUND_WORM,
     FUNGAL_HUSK,
     FUNGAL_SPIRIT,
+    // School specific enemies
+    POP_QUIZ_TEACHER,
 }
 
 interface Enemy {
@@ -153,6 +155,14 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
     essenceAmount: new NumberRange(1, 2),
     ai: AI.EnemyAI(AI.fungalSpiritAI),
 },
+[EnemyIndex.POP_QUIZ_TEACHER]: {
+    spriteID: "pop_quiz_teacher",
+    hp: 25,
+    waterSpeedModifier: 0.4,
+    drops: [],
+    essenceAmount: new NumberRange(10, 14),
+    ai: AI.EnemyAI(AI.popQuizTeacherAI),
+}
 }
 
 

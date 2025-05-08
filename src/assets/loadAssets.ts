@@ -69,6 +69,8 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "fungal_husk_attack", "assets/images/enemies/fungal_husk_attack.png"),
         loadImageAndTexture(gl, "fungal_spirit", "assets/images/enemies/fungal_spirit.png"),
 
+        loadImageAndTexture(gl, "pop_quiz_teacher", "assets/images/enemies/pop_quiz_teacher.png"),
+
         loadImageAndTexture(gl, "portal_small", "assets/images/portal_small.png"),
         loadImageAndTexture(gl, "portal_medium", "assets/images/portal_medium.png"),
         loadImageAndTexture(gl, "essence_orb_small", "assets/images/essence_orb_small.png"),
@@ -105,6 +107,7 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "dove", "assets/images/projectiles/dove.png"),
         loadImageAndTexture(gl, "rubber_chicken", "assets/images/projectiles/rubber_chicken.png"),
         loadImageAndTexture(gl, "water_drop", "assets/images/projectiles/water_drop.png"),
+        loadImageAndTexture(gl, "pop_quiz", "assets/images/projectiles/quiz.png"),
 
 
         // Item icons

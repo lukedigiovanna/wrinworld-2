@@ -682,6 +682,31 @@ const corruptedDeerAI: EnemyAIConfig = {
     movementSpeed: 80,
 }
 
+const popQuizTeacherAI: EnemyAIConfig = {
+    stateFunctions: {
+        idle: basicIdle(300),
+        follow(gameObject, dt, data) {
+            data.targetPosition = data.playerHitboxCenter;
+            if (data.distanceToPlayer < 120) {
+                return "attack_windup";
+            }
+            return "follow";
+        },
+        attack_windup(gameObject, dt, data) {
+            data.targetPosition = undefined;
+            if (data.timeInState > 0.5) {
+                return "attack";
+            }
+            return "attack_windup";
+        },
+        attack(gameObject, dt, data) {
+            fireProjectile(projectilesCodex[ProjectileIndex.POP_QUIZ], gameObject, data.playerHitboxCenter); 
+            return "follow";
+        }
+    },
+    movementSpeed: 50
+}
+
 const dummyAI: EnemyAIConfig = {
     stateFunctions: {
 
@@ -717,4 +742,4 @@ const EnemyAI: (config: EnemyAIConfig) => ComponentFactory = (config) => {
 
 export { EnemyAI, slimeAIConfig, redSlimeAIConfig, minionAIConfig, wretchedSkeletonAIConfig, 
          revenantEyeAIConfig, wraithAIConfig, groundWormAI, evilBunnyAI, fungalHuskAI, 
-         fungalSpiritAI, corruptedDeerAI, dummyAI };
+         fungalSpiritAI, corruptedDeerAI, popQuizTeacherAI, dummyAI };

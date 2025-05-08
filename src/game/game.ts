@@ -1,5 +1,5 @@
 import { getTexture } from "../assets/imageLoader";
-import { GameObject, PlayerFactory } from "../gameObjects";
+import { EnemyFactory, EnemyIndex, GameObject, PlayerFactory } from "../gameObjects";
 import { Vector, MathUtils, PerlinNoise, Color, Ease, Point } from "../utils";
 import input from "../input";
 import { Particle, ParticleLayer } from "../components";
@@ -16,7 +16,7 @@ import * as ShaderCode from "../rendering/shaderCode";
 import { Chunk, ChunkConstants } from "./Chunk";
 import { Grid, GridPosition } from "../utils/Grid";
 import { LazyGrid } from "../utils/LazyGrid";
-import { Optional } from "utils/types";
+import { Optional } from "../utils/types";
 
 const RENDER_DISTANCE = 3;
 const PIXELATION_PERIOD = 3;
@@ -145,6 +145,8 @@ class Game {
                 this.addToAppropriateChunk(this.player);
                 this._totalObjects++;
             }
+
+            this.addGameObject(EnemyFactory(this.level.playerSpawnPosition.plus(new Vector(0, 120)), EnemyIndex.POP_QUIZ_TEACHER));
 
             this.level.generate(this);
             this._camera.bounds = this.level.cameraBounds;

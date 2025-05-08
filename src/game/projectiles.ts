@@ -26,6 +26,7 @@ enum ProjectileIndex {
     DOVE,
     RUBBER_CHICKEN,
     WATER_DROP,
+    POP_QUIZ,
 }
 
 interface Projectile {
@@ -557,6 +558,21 @@ const projectilesCodex: Record<ProjectileIndex, Projectile> = {
     onDestroy(gameObject) {
         gameObject.game.addParticleExplosion(gameObject.position, Color.hex("#87ecff"), 12, 24);
     },
+},
+[ProjectileIndex.POP_QUIZ]: {
+    homingSkill: 0.1,
+    maxHits: 1,
+    ricochetFactor: 0,
+    spriteID: "pop_quiz",
+    damage: 10,
+    damageReductionPerHit: 0,
+    knockback: 50,
+    lifespan: 4,
+    speed: 200,
+    angularVelocity: 3,
+    rotateToDirectionOfTarget: false,
+    drag: 0.3,
+    destroyOnPhysicalCollision: true,
 }
 }
 
