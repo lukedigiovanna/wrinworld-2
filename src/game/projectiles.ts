@@ -560,11 +560,12 @@ const projectilesCodex: Record<ProjectileIndex, Projectile> = {
     },
 },
 [ProjectileIndex.POP_QUIZ]: {
+    hitboxSize: new Vector(0.25, 0.25),
     homingSkill: 0.1,
     maxHits: 1,
     ricochetFactor: 0,
     spriteID: "pop_quiz",
-    damage: 10,
+    damage: 1,
     damageReductionPerHit: 0,
     knockback: 50,
     lifespan: 4,

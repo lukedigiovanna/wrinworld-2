@@ -295,6 +295,7 @@ export * from "./FlowerPowerPetal";
 export * from "./ItemDrop";
 export * from "./MeleeAttack";
 export * from "./Player";
+export * from "./PopText";
 export * from "./Portal";
 export * from "./Projectile";
 export * from "./Prop";

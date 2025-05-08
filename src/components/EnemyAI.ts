@@ -1,6 +1,6 @@
 import { MeleeAttackIndex, meleeAttacksCodex } from "../game/meleeAttacks";
 import { Component, ComponentFactory, ParticleLayer } from "./index";
-import { EnemyFactory, EnemyIndex, GameObject } from "../gameObjects";
+import { EnemyFactory, EnemyIndex, GameObject, PopText } from "../gameObjects";
 import { Color, Ease, MathUtils, Vector } from "../utils";
 import { fireMelee, fireProjectile } from "../game/weapons";
 import { projectilesCodex, ProjectileIndex } from "../game/projectiles";
@@ -686,21 +686,35 @@ const popQuizTeacherAI: EnemyAIConfig = {
     stateFunctions: {
         idle: basicIdle(300),
         follow(gameObject, dt, data) {
+            if (!data.hasLineOfSightToPlayer) {
+                return "idle";
+            }
             data.targetPosition = data.playerHitboxCenter;
-            if (data.distanceToPlayer < 120) {
+            if (data.distanceToPlayer < 70) {
                 return "attack_windup";
             }
             return "follow";
         },
         attack_windup(gameObject, dt, data) {
             data.targetPosition = undefined;
-            if (data.timeInState > 0.5) {
+            data.attacking = true;
+            if (data.distanceToPlayer > 140) {
+                data.attacking = false;
+                return "follow";
+            }
+            if (data.timeInState >= 1.5) {
+                gameObject.game.addGameObject(PopText(gameObject.position, "pop quiz time", Color.hex("#00afc9")))
                 return "attack";
             }
             return "attack_windup";
         },
         attack(gameObject, dt, data) {
-            fireProjectile(projectilesCodex[ProjectileIndex.POP_QUIZ], gameObject, data.playerHitboxCenter); 
+            data.attacking = false;
+            for (let i = 0; i < 5; i++) {
+                gameObject.game.setTimeout(() => {
+                    fireProjectile(projectilesCodex[ProjectileIndex.POP_QUIZ], gameObject, data.playerHitboxCenter); 
+                }, i * 0.1);
+            }
             return "follow";
         }
     },

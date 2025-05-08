@@ -70,6 +70,7 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "fungal_spirit", "assets/images/enemies/fungal_spirit.png"),
 
         loadImageAndTexture(gl, "pop_quiz_teacher", "assets/images/enemies/pop_quiz_teacher.png"),
+        loadImageAndTexture(gl, "pop_quiz_teacher_attack", "assets/images/enemies/pop_quiz_teacher_attack.png"),
 
         loadImageAndTexture(gl, "portal_small", "assets/images/portal_small.png"),
         loadImageAndTexture(gl, "portal_medium", "assets/images/portal_medium.png"),

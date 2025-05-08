@@ -1,5 +1,5 @@
 import { getSound } from "../assets/soundLoader";
-import { GameObject } from "../gameObjects/index";
+import { GameObject, PopText } from "../gameObjects/index";
 import { ComponentFactory, Physics } from "./index";
 import { Color, MathUtils } from "../utils";
 import { textRenderer } from "../rendering/renderers";
@@ -58,23 +58,8 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
                 this.timeLastShowedHealthBar = gameObject.game.time;
             }
             
-            const damageMarker = new GameObject();
-            damageMarker.renderer = textRenderer("pixel_font", `${Math.floor(amount)}`);
-            damageMarker.position.set(gameObject.position);
-            damageMarker.zIndex = 1000;
-            damageMarker.lifespan = 0.8;
-            const physics = damageMarker.addComponent(Physics);
-            physics.data.gravity = 100;
-            physics.data.velocity.setComponents(MathUtils.random(-15, 15), 40);
-            damageMarker.addComponent((gameObject) => {
-                return {
-                    id: "fade",
-                    update(dt) {
-                        gameObject.color = new Color(1, 0.1, 0.1, 1 - Math.pow(gameObject.age / gameObject.lifespan!, 6));
-                    },
-                }
-            });
-            gameObject.game.addGameObject(damageMarker);
+            
+            gameObject.game.addGameObject(PopText(gameObject.position, `${Math.floor(amount)}`, new Color(1, 0.1, 0.1, 1)));
         }
     }
     return {

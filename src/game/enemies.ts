@@ -157,6 +157,7 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
 },
 [EnemyIndex.POP_QUIZ_TEACHER]: {
     spriteID: "pop_quiz_teacher",
+    attackSpriteID: "pop_quiz_teacher_attack",
     hp: 25,
     waterSpeedModifier: 0.4,
     drops: [],

@@ -30,6 +30,7 @@ const alphabet = "abcdefghijklmnopqrstuvwxyz1234567890";
 function textRenderer(fontID: string, text: string): Renderer {
     return {
         render(camera, gameObject) {
+            let width = 5 * this.data.text.length;
             let x = gameObject.position.x;
             for (const c of this.data.text) {
                 if (c === ' ') {
@@ -38,7 +39,7 @@ function textRenderer(fontID: string, text: string): Renderer {
                 if (alphabet.indexOf(c) >= 0) {
                     const texture = getTexture(`${fontID}_${c}`);
                     camera.color = gameObject.color;
-                    camera.drawTexture(texture, x, gameObject.position.y, texture.width, texture.height);
+                    camera.drawTexture(texture, x - width / 2, gameObject.position.y, texture.width, texture.height);
                     x += texture.width + 1;
                 }
             }
