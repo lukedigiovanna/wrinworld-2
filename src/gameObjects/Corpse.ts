@@ -1,7 +1,7 @@
 import { GameObject, GameObjectFactory } from "./";
-import { Physics } from "../components";
+import { Fade, Physics } from "../components";
 import { getTexture } from "../assets/imageLoader";
-import { Color, MathUtils } from "../utils";
+import {MathUtils } from "../utils";
 import { spriteRenderer } from "../rendering/renderers";
 
 const CorpseFactory: GameObjectFactory = (gameObject: GameObject, spriteID: string) => {
@@ -19,17 +19,7 @@ const CorpseFactory: GameObjectFactory = (gameObject: GameObject, spriteID: stri
     }
     corpse.lifespan = MathUtils.random(8, 20);
 
-    corpse.addComponent((gameObject) => {
-        return {
-            id: "fade",
-            update(dt) {
-                const remaining = gameObject.lifespan! - gameObject.age;
-                if (remaining <= 1) {
-                    gameObject.color = new Color(1, 1, 1, remaining);
-                }
-            },
-        }
-    })
+    corpse.addComponent(Fade);
 
     return corpse;
 }

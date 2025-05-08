@@ -1034,6 +1034,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
+    ...weaponItem(WeaponIndex.PENCIL)
 },
 [ItemIndex.MECHANICAL_PENCIL]: {
     itemIndex: ItemIndex.MECHANICAL_PENCIL,

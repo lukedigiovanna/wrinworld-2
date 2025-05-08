@@ -22,6 +22,7 @@ type ComponentFactory = (gameObject: GameObject) => Component;
 export { Component, ComponentFactory, ComponentID};
 export * from "./AnimationManager";
 export * from "./EssenceManager";
+export * from "./Fade";
 export * from "./Health";
 export * from "./Hitbox";
 export * from "./InventoryManager";

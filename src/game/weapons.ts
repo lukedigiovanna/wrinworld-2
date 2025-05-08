@@ -1,5 +1,5 @@
 import { MathUtils, Vector } from "../utils";
-import { ProjectileFactory, GameObject, MeleeAttackFactory } from "../gameObjects";
+import { ProjectileFactory, GameObject, MeleeAttackFactory, PencilScribbleFactory } from "../gameObjects";
 import { Projectile, projectilesCodex, ProjectileIndex } from "./projectiles";
 import { MeleeAttack, meleeAttacksCodex, MeleeAttackIndex } from "./meleeAttacks";
 import { Item, ItemIndex } from "./items";
@@ -50,7 +50,8 @@ enum WeaponIndex {
     REINFORCED_SLINGSHOT,
     MACHINE_GUN_SLINGSHOT,
     WATER_GUN,
-    PRESSURE_WASHER
+    PRESSURE_WASHER,
+    PENCIL,
 }
 
 const fireProjectile = (projectile: Projectile, gameObject: GameObject, target: Vector) => {
@@ -326,6 +327,18 @@ const weaponsCodex: Record<WeaponIndex, Weapon> = {
                 fireProjectile(this.attack() as Projectile, gameObject, target);
             }, i)
         }
+    }
+},
+[WeaponIndex.PENCIL]: {
+    cooldown: 0.1,
+    attack: (props) => ({
+        ...meleeAttacksCodex[MeleeAttackIndex.BASIC],
+        range: 24,
+        damage: 1,
+    }),
+    fire(gameObject, target) {
+        gameObject.game.addGameObject(PencilScribbleFactory(gameObject, target));
+        fireMelee(this.attack() as MeleeAttack, gameObject, target);
     }
 }
 }

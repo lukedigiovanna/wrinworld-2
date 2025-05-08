@@ -27,6 +27,7 @@ class GameObject {
     public tag: string = "object"; // default tag is just 'object'
 
     private _birthTime: number = 0;
+    private _birthMark: number;
     
     private components: Component[] = [];
     
@@ -45,6 +46,7 @@ class GameObject {
     public team: Team = Team.UNTEAMED;
 
     constructor() {
+        this._birthMark = Math.random();
         this.position = Vector.zero();
         this.scale = new Vector(1, 1);
         this.rotationPointOffset = Vector.zero();
@@ -282,6 +284,11 @@ stack trace:`)
         const tile = this.game.getTileDataAtWorldPosition(this.hitboxCenter);
         return tile.arealEffects?.has(effect);
     }
+
+    // Gets a random number uniquely associated with this object
+    public get birthMark() {
+        return this._birthMark;
+    }
 }
 
 type GameObjectFactory = (...args: any[]) => GameObject;
@@ -294,6 +301,7 @@ export * from "./EssenceOrbAttack";
 export * from "./FlowerPowerPetal";
 export * from "./ItemDrop";
 export * from "./MeleeAttack";
+export * from "./PencilScribble";
 export * from "./Player";
 export * from "./PopText";
 export * from "./Portal";
