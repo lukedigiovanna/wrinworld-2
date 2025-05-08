@@ -146,8 +146,6 @@ class Game {
                 this._totalObjects++;
             }
 
-            this.addGameObject(EnemyFactory(this.level.playerSpawnPosition.plus(new Vector(0, 120)), EnemyIndex.POP_QUIZ_TEACHER));
-
             this.level.generate(this);
             this._camera.bounds = this.level.cameraBounds;
             this.dirtyLevel = false;

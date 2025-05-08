@@ -290,6 +290,25 @@ function weaponItem(index: WeaponIndex): Partial<Item> {
     }
 }
 
+function attemptHeal(player: GameObject, amount: number) {
+    const health = player.getComponent("health");
+    const amountHealed = health.data.heal(amount);
+    if (amountHealed > 0) {
+        addNotification({
+            text: `+${Math.round(amountHealed * 10) / 10} HP`,
+            color: "#06cf28"
+        });
+        return true;
+    }
+    else {
+        addNotification({
+            text: `HP already full!`,
+            color: "#ddd"
+        });
+        return false;
+    }
+}
+
 // const itemsCodex = new Codex<ItemIndex, Item>();
 const itemsCodex: Record<ItemIndex, Item> = {
 [ItemIndex.BROAD_SWORD]: {
@@ -426,22 +445,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     requireFullCharge: true,
     useOnFullCharge: true,
     useItem(player) {
-        const health = player.getComponent("health");
-        const amountHealed = health.data.heal(10);
-        if (amountHealed > 0) {
-            addNotification({
-                text: `+${Math.round(amountHealed * 10) / 10} HP`,
-                color: "#06cf28"
-            });
-            return true;
-        }
-        else {
-            addNotification({
-                text: `HP already full!`,
-                color: "#ddd"
-            });
-            return false;
-        }
+        return attemptHeal(player, 10);
     },
     getStats() {
         return [
@@ -1002,6 +1006,24 @@ const itemsCodex: Record<ItemIndex, Item> = {
     essenceCost: 0,
     maxStack: 1,
     cooldown: 60,
+    charge: 1,
+    requireFullCharge: true,
+    useOnFullCharge: true,
+    useItem(player, target) {
+        if (attemptHeal(player, 15)) {
+            player.getComponent("status-effect-manager").data.applyEffect(StatusEffectIndex.SPEED, 1, 5);
+            return true;
+        }
+        return false;
+    },
+    getStats() {
+        return [
+            {
+                stat: ItemStat.HEAL,
+                value: 15
+            }
+        ]
+    }
 },
 [ItemIndex.PENCIL]: {
     itemIndex: ItemIndex.PENCIL,

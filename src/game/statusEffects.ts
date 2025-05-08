@@ -6,6 +6,7 @@ enum StatusEffectIndex {
     STUN,
     ROOT_SNARE,
     INVINCIBILITY,
+    SPEED,
 }
 
 interface StatusEffect {
@@ -110,6 +111,22 @@ const statusEffectsCodex: Record<StatusEffectIndex, StatusEffect> = {
             gameObject.getComponent("health").data.invincibleCount--;
         }
     },
+},
+[StatusEffectIndex.SPEED]: {
+    displayName: "Speed",
+    iconSpriteID: "speed_effect_icon",
+    particleID: "square",
+    rate: 1,
+    start(gameObject, level) {
+        if (gameObject.hasComponent("movement-data")) {
+            gameObject.getComponent("movement-data").data.miscellaneousModifier += level * 0.5;
+        }
+    },
+    end(gameObject, level) {
+        if (gameObject.hasComponent("movement-data")) {
+            gameObject.getComponent("movement-data").data.miscellaneousModifier -= level * 0.5;
+        }
+    }
 }
 }
 
