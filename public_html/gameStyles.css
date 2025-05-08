@@ -178,6 +178,23 @@
     width: 48px;
 }
 
+#portal-info {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-family: "Matrix-Mono";
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    color: #eae;
+    text-shadow: 0px 0px 2px white;
+}
+
+#portal-info img {
+    width: 48px;
+    margin-left: 12px;
+}
+
 #notifications-container {
     display: flex;
     flex-direction: column;

@@ -1,5 +1,5 @@
 import { getTexture } from "../assets/imageLoader";
-import { EnemyFactory, EnemyIndex, GameObject, PlayerFactory } from "../gameObjects";
+import { GameObject, PlayerFactory } from "../gameObjects";
 import { Vector, MathUtils, PerlinNoise, Color, Ease, Point } from "../utils";
 import input from "../input";
 import { Particle, ParticleLayer } from "../components";
@@ -39,6 +39,8 @@ class Game {
     private objectDeleteQueue: GameObject[] = [];
     private _totalObjects = 0;
     private activeObjects: GameObject[] = [];
+    // Special array to store references to all portals
+    private _portals: GameObject[] = [];
 
     private particles: Particle[] = [];
     
@@ -112,6 +114,10 @@ class Game {
         return this.activeObjects.length;
     }
 
+    public get portals() {
+        return this._portals;
+    }
+
     private checkTimeout(): boolean {
         const current = this.timeoutQueue.peek();
         if (!current) {
@@ -136,6 +142,7 @@ class Game {
             // Unload everything if there was already a loaded level
             this.chunks = new LazyGrid();
             this.activeObjects = [];
+            this._portals = [];
             this.particles = [];
             this._totalObjects = 0;
 
@@ -165,6 +172,9 @@ class Game {
             // determine chunk index based on position
             obj.start();
             this.addToAppropriateChunk(obj);
+            if (obj.tag === "portal") {
+                this._portals.push(obj);
+            }
             this._totalObjects++;
         }
 
@@ -184,6 +194,9 @@ class Game {
             const objInd = chunk.objects.indexOf(obj);
             if (objInd < 0) {
                 throw Error("object to remove was not found in its respective chunk");
+            }
+            if (obj.tag === "portal") {
+                this._portals.splice(this._portals.indexOf(obj), 1);
             }
             chunk.objects.splice(objInd, 1);
             this._totalObjects--;
@@ -224,6 +237,8 @@ class Game {
             $("#death-screen").css("visibility", "visible");
             $("#score").text(statTracker.score);
         }
+
+        $("#portals-remaining").text(this._portals.length);
 
         if (this.gameOverTime !== undefined) {
             dt *= 0.5 * (1 - Ease.linear(0.25 * (this.time - this.gameOverTime)));
