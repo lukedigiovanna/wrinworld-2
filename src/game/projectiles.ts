@@ -27,6 +27,7 @@ enum ProjectileIndex {
     RUBBER_CHICKEN,
     WATER_DROP,
     POP_QUIZ,
+    SODA_GRENADE,
 }
 
 interface Projectile {
@@ -73,7 +74,7 @@ interface Projectile {
     // Any additional logic for this projectile
     update?: (gameObject: GameObject, data: any, dt: number) => void;
     // Any logic that should happen when this object dies (including after lifespan)
-    onDestroy?: (gameObject: GameObject) => void;
+    onDestroy?: (gameObject: GameObject, data: any) => void;
     // Any additional logic that happens to a thing this projectile hits
     onHit?: (gameObject: GameObject, data: any, hit: GameObject) => void;
 }
@@ -574,6 +575,34 @@ const projectilesCodex: Record<ProjectileIndex, Projectile> = {
     rotateToDirectionOfTarget: false,
     drag: 0.3,
     destroyOnPhysicalCollision: true,
+},
+[ProjectileIndex.SODA_GRENADE]: {
+    hitboxSize: new Vector(0.5, 0.5),
+    homingSkill: 0,
+    maxHits: 1,
+    ricochetFactor: 0,
+    spriteID: "soda_grenade",
+    damage: 0,
+    damageReductionPerHit: 0,
+    knockback: 0,
+    lifespan: 5,
+    speed: 200,
+    angularVelocity: 6,
+    rotateToDirectionOfTarget: false,
+    drag: 0.5,
+    destroyOnPhysicalCollision: true,
+    onDestroy(gameObject, data) {
+        const nearby = gameObject.game.getGameObjectsByFilter(
+                                    (other) => other.team !== Team.UNTEAMED && 
+                                               other.team !== data.owner.team && 
+                                               other.position.distanceTo(gameObject.position) < 64
+                                    );
+        for (const target of nearby) {
+            const distance = target.position.distanceTo(gameObject.position);
+            target.getComponentOptional("health")?.data.damage((1 - distance / 64) * 24);
+        }
+        gameObject.game.addParticleExplosion(gameObject.position, Color.ORANGE, 50, 70);
+    },
 }
 }
 

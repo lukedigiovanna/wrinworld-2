@@ -80,7 +80,7 @@ const ProjectileFactory: GameObjectFactory = (properties: Projectile, owner: Gam
             },
             destroy() {
                 if (properties.onDestroy) {
-                    properties.onDestroy(gameObject);
+                    properties.onDestroy(gameObject, data);
                 }
             },
             data

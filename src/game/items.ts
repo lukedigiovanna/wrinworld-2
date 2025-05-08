@@ -1117,7 +1117,11 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-    cooldown: 30,
+    cooldown: 1,
+    useItem(player, target) {
+        fireProjectile(projectilesCodex[ProjectileIndex.SODA_GRENADE], player, target);
+        return true;
+    }
 },
 [ItemIndex.SPRAY_PAINT]: {
     itemIndex: ItemIndex.SPRAY_PAINT,
