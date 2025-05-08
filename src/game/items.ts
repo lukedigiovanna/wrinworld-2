@@ -1095,7 +1095,16 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-    cooldown: 30,
+    cooldown: 1,
+    charge: 1,
+    useOnFullCharge: true,
+    requireFullCharge: true,
+    useItem(player, target) {
+        const possibleEffects = [StatusEffectIndex.REGENERATION, StatusEffectIndex.INVINCIBILITY, StatusEffectIndex.RESISTANCE, StatusEffectIndex.SPEED, StatusEffectIndex.POISON];
+        const effect = MathUtils.randomChoice(possibleEffects);
+        player.getComponent("status-effect-manager").data.applyEffect(effect, 1, MathUtils.random(3, 6));
+        return true;    
+    }
 },
 [ItemIndex.SCISSORS]: {
     itemIndex: ItemIndex.SCISSORS,
@@ -1117,7 +1126,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
-    cooldown: 1,
+    cooldown: 30,
     useItem(player, target) {
         fireProjectile(projectilesCodex[ProjectileIndex.SODA_GRENADE], player, target);
         return true;

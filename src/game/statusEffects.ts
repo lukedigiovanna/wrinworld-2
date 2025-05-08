@@ -8,6 +8,7 @@ enum StatusEffectIndex {
     INVINCIBILITY,
     SPEED,
     RESISTANCE,
+    REGENERATION,
 }
 
 interface StatusEffect {
@@ -143,6 +144,15 @@ const statusEffectsCodex: Record<StatusEffectIndex, StatusEffect> = {
         if (gameObject.hasComponent("health")) {
             gameObject.getComponent("health").data.resistance -= level * 0.1;
         }
+    }
+},
+[StatusEffectIndex.REGENERATION]: {
+    displayName: "Regeneration",
+    iconSpriteID: "regeneration_effect_icon",
+    particleID: "heart",
+    rate: 4,
+    apply(gameObject, level) {
+        gameObject.getComponentOptional("health")?.data.heal(level * 0.5);
     }
 }
 }
