@@ -32,6 +32,8 @@ interface Enemy {
     drops: ItemDropChance[];
     essenceAmount: NumberRange;
     ai: ComponentFactory;
+    hitboxSize?: Vector;
+    hitboxOffset?: Vector;
 }
 
 const enemiesCodex: Record<EnemyIndex, Enemy> = {
@@ -39,6 +41,8 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
     spriteID: "slime",
     waterSpriteID: "slime_water",
     deadSpriteID: "slime_dead",
+    hitboxSize: new Vector(1, 0.6),
+    hitboxOffset: new Vector(0, -0.2),
     particleEmitter: ParticleEmitter({
         spriteID: () => "slime_particle",
         rotation: () => MathUtils.random(0, 2 * Math.PI),

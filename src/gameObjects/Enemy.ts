@@ -29,6 +29,12 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
     
     const hitbox = enemy.addComponent(Hitbox);
     hitbox.data.boxSize = new Vector(enemy.scale.x * 0.75, enemy.scale.y);
+    if (enemyData.hitboxOffset) {
+        hitbox.data.boxOffset.set(Vector.multiply(hitbox.data.boxSize, enemyData.hitboxOffset));
+    }
+    if (enemyData.hitboxSize) {
+        hitbox.data.boxSize.set(Vector.multiply(hitbox.data.boxSize, enemyData.hitboxSize));
+    }
     
     enemy.addComponent(Physics);
     enemy.addComponent(ItemDropper(enemyData.drops));
