@@ -5,6 +5,7 @@
     top: 0;
     z-index: 0;
     image-rendering: pixelated;
+    cursor: none;
 }
 
 .ui {
@@ -16,6 +17,7 @@
     width: 100vw;
     height: 100vh;
     pointer-events: none;
+    cursor: none;
 }
 
 .ui > div {
@@ -326,6 +328,7 @@
 
 #inventory-screen {
     display: none;
+    cursor: auto;
 }
 
 #inventory {
@@ -412,6 +415,7 @@
     opacity: 0%;
     visibility: hidden;
     transition: opacity 0.25s ease-in-out, visibility 0.0s linear;
+    cursor: auto;
 }
 
 #pause-screen .content {

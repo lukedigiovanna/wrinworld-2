@@ -3,7 +3,7 @@
 // NOTE: items are exclusively used by the player
 
 import { Color, MathUtils, Vector } from "../utils";
-import { FlowerPowerPetalFactory, GameObject, Team } from "../gameObjects";
+import { FlowerPowerPetalFactory, GameObject, Team, VolcanoFactory } from "../gameObjects";
 import { fireProjectile, WeaponIndex, weaponsCodex } from "./weapons";
 import { addNotification } from "../notifications";
 import { ProjectileIndex, projectilesCodex } from "./projectiles";
@@ -1028,7 +1028,7 @@ const itemsCodex: Record<ItemIndex, Item> = {
 [ItemIndex.PENCIL]: {
     itemIndex: ItemIndex.PENCIL,
     displayName: "Pencil",
-    description: "Hmm, that's a sharp tip!",
+    description: "Scribble, scribble, scribble...",
     iconSpriteID: "pencil",
     category: "Weapon",
     consumable: false,
@@ -1158,11 +1158,24 @@ const itemsCodex: Record<ItemIndex, Item> = {
     itemIndex: ItemIndex.VOLCANO,
     displayName: "Volcano",
     description: "It won first at the science fair!",
-    iconSpriteID: "volcano",
+    iconSpriteID: "volcano_item",
     category: "Utility",
     consumable: false,
     essenceCost: 0,
     maxStack: 1,
+    useItem(player, target) {
+        if (player.position.distanceTo(target) < 64) {
+            player.game.addGameObject(VolcanoFactory(target));
+            return true;
+        }
+        else {
+            addNotification({
+                text: "Too far away!",
+                color: "red",
+            });
+            return false;
+        }
+    }
 }
 }
 

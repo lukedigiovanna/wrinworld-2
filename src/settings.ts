@@ -6,6 +6,7 @@ type Settings = {
     showRotationPoint: boolean;
     showChunks: boolean;
     showCameraPosition: boolean;
+    showMousePosition: boolean;
     muted: boolean;
     sleepTime: number,
 }
@@ -18,6 +19,7 @@ const settings: Settings = {
     showRotationPoint: false,
     showChunks: false,
     showCameraPosition: false,
+    showMousePosition: true,
     muted: true,
     sleepTime: 0,
 }

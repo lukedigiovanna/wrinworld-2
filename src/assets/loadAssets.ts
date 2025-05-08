@@ -95,6 +95,8 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "basketball", "assets/images/props/basketball.png"),
         loadImageAndTexture(gl, "lunch_table", "assets/images/props/lunch_table.png"),
         
+        loadImageAndTexture(gl, "volcano", "assets/images/volcano.png"),
+        
         // Projectiles
         loadImageAndTexture(gl, "arrow", "assets/images/projectiles/arrow.png"),
         loadImageAndTexture(gl, "poison_arrow", "assets/images/projectiles/poison_arrow.png"),
@@ -177,7 +179,7 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "soda_grenade", "assets/images/items/soda_grenade.png"),
         loadImageAndTexture(gl, "spray_paint", "assets/images/items/spray_paint.png"),
         loadImageAndTexture(gl, "textbook", "assets/images/items/textbook.png"),
-        loadImageAndTexture(gl, "volcano", "assets/images/items/volcano.png"),
+        loadImageAndTexture(gl, "volcano_item", "assets/images/items/volcano.png"),
         
         // Particle sprites
         loadImageAndTexture(gl, "portal_particle", "assets/images/particles/portal_particle.png"),
@@ -265,6 +267,7 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "undefined", "assets/images/undefined.png"),
         loadImageAndTexture(gl, "right_arrow", "assets/images/right_arrow.png"),
         loadImageAndTexture(gl, "antenna", "assets/images/antenna.png"),
+        loadImageAndTexture(gl, "cursor", "assets/images/cursor.png"),
 
         // -- SOUNDS --
         loadSound("item_pickup", "assets/sounds/item_pickup.wav", 5),

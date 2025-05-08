@@ -307,3 +307,4 @@ export * from "./PopText";
 export * from "./Portal";
 export * from "./Projectile";
 export * from "./Prop";
+export * from "./Volcano";

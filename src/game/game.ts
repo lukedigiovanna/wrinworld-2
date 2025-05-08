@@ -388,6 +388,11 @@ class Game {
             this._camera.color = Color.ORANGE;
             this._camera.fillRect(this._camera.position.x, this._camera.position.y, 8, 8);
         }
+        if (settings.showMousePosition) {    
+            this._camera.color = Color.WHITE;
+            const mousePos = this._camera.screenToWorldPosition(input.mousePosition);
+            this._camera.drawTexture(getTexture("cursor"), mousePos.x, mousePos.y, 9, 9);
+        }
 
         this._camera.renderToScreen();
     }
