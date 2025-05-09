@@ -161,58 +161,108 @@ class ForestLevel implements Level {
         [ { itemIndex: ItemIndex.GHOST_ARROWS }],
     ];
 
-    readonly cameraBounds: Rectangle = new Rectangle(-10024, 10024, 0, 36400);
+    readonly cameraBounds: Rectangle = new Rectangle(-10024, 10024, 64, 36400);
     readonly playerSpawnPosition = new Vector(0, 160);
 
     generate(game: Game) {
-        const gridSize = 256;
+        const gridSize = 200;
         const worldTileGrid = new Grid<Tile>(gridSize, gridSize, { index: TileIndex.GRASS, rotation: 0 }); 
         const worldPropGrid = new Grid<Nullable<PropIndex>>(gridSize, gridSize, null);
 
         const noise = new PerlinNoise(MathUtils.randomInt(1000, 10000));
         const getNoise = (x: number, y: number) => noise.get(x / 16.43 + 1000, y / 16.32 + 1000);
-        const endpointTrailLength = 32;
+        
+        const possiblePathPoints: Vector[] = [];
+        possiblePathPoints.push(new Vector(gridSize / 2, 0));
+        possiblePathPoints.push(new Vector(gridSize / 2, gridSize - 1));
+        const graph = new Map<number, number[]>();
+        graph.set(0, []);
+        graph.set(1, []);
+        const D = 6;
+        worldTileGrid.iterate((self, r, c) => {
+            const distanceToStart = Math.sqrt(r ** 2 + (c - gridSize / 2) ** 2);
+            let noiseValue = getNoise(c, r);
+            if (distanceToStart < 24) {
+                noiseValue = MathUtils.clamp(noiseValue, 0.44, 0.7);
+            }
+            const distanceToEnd = Math.sqrt((gridSize - r) ** 2 + (c - gridSize / 2) ** 2);
+            if (distanceToEnd < 24) {
+                noiseValue = MathUtils.clamp(noiseValue, 0.44, 0.7);
+            }
+            if (noiseValue < 0.4) {
+                self.set(r, c, { index: TileIndex.WATER, rotation: 0 });
+            }
+            else if (noiseValue < 0.45) {
+                self.set(r, c, { index: TileIndex.SAND, rotation: 0 });
+            }
+            else if (noiseValue > 0.7) {
+                self.set(r, c, { index: TileIndex.ROCKS, rotation: 0 });
+            }
+            else {
+                // is grass
+                if (r % D == 0 && c % D == 0) {
+                    const nextPoint = new Vector(c, r);
+                    const nextPointIndex = possiblePathPoints.length;
+                    graph.set(nextPointIndex, []);
+                    for (let i = 0; i < possiblePathPoints.length; i++) {
+                        const point = possiblePathPoints[i];
+                        const distance = point.distanceTo(nextPoint);
+                        if (distance < 2 * D - 1) {
+                            graph.get(i)?.push(nextPointIndex);
+                            graph.get(nextPointIndex)?.push(i);
+                        }
+                    }
+                    possiblePathPoints.push(nextPoint);
+                    self.set(r, c, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
+                }
+                if (Math.random() < 0.05) {
+                    worldPropGrid.set(r, c, PropIndex.EVERGREEN_TREE);
+                }
+            }
+        });
+
+        console.log(possiblePathPoints);
+        console.log(graph);
+
         const pathPoints = [];
-        pathPoints.push(new Vector(0, 0));
-        pathPoints.push(new Vector(0, endpointTrailLength));
-        for (let i = 0; i < 4; i++) {
-            const current: Vector = pathPoints[pathPoints.length - 1];
-            const xOffset = MathUtils.randomInt(-32, 32);
-            const next: Vector = current.plus(new Vector(xOffset, endpointTrailLength));
-            pathPoints.push(next);
+        const pathPointsIndices = [];
+        let current = 0;
+        let goal = 1;
+        const visited = new Set<number>();
+        while (true) {
+            pathPoints.push(possiblePathPoints[current]);
+            if (possiblePathPoints[current].y >= gridSize - D) {
+                break;
+            }
+            pathPointsIndices.push(current);
+            visited.add(current);
+            const neighbors = graph.get(current)!;
+            const validNeighbors = neighbors.filter(n => !visited.has(n) && possiblePathPoints[n].y >= possiblePathPoints[current].y);
+            if (validNeighbors.length == 0) {
+                pathPoints.pop();
+                pathPointsIndices.pop();
+                current = pathPointsIndices[pathPointsIndices.length - 1];
+            }
+            else {
+                current = MathUtils.randomChoice(validNeighbors); 
+            }
         }
-        pathPoints.push(pathPoints[pathPoints.length - 1].plus(new Vector(0, 32)));
+
         console.log(pathPoints);
 
-        const curve = new CatmullRomParametricCurve(pathPoints);
-        const iterations = 10000;
-        const step = 1 / iterations;
-        for (let t = 0; t <= 1; t += step) {
-            const position = curve.getPosition(t);
-            const normal = curve.getNormal(t);
-            position.x = Math.round(position.x);
-            position.y = Math.round(position.y);
-            for (let R = -20; R <= 20; R++) {
-                const po = new Point(Math.floor(position.x + normal.x * R), Math.floor(position.y + normal.y * R));
-                const tile = Math.abs(R) <= 2 ? TileIndex.PATH : TileIndex.GRASS;
-                // game.setTileAtTilePosition(po, tile);
+        const path = new CatmullRomParametricCurve(pathPoints);
+        for (let t = 0; t <= 1; t += 0.001) {
+            const point = path.getPosition(t);
+            for (let xo = -1; xo <= 1; xo += 1) {
+                for (let yo = -1; yo <= 1; yo += 1) {
+                    worldTileGrid.set(Math.floor(point.y + yo), Math.floor(point.x + xo), { index: TileIndex.PATH, rotation: 0 });
+                    worldPropGrid.set(Math.floor(point.y + yo), Math.floor(point.x + xo), null);
+                }
             }
-            // const R = 1;
-            // for (let xo = -R; xo <= R; xo++) {
-            //     for (let yo = -R; yo <= R; yo++) {
-            //         const po = new Point(position.x + xo, position.y + yo);
-            //         const currTile = game.getTileAtTilePosition(po).index;
-            //         if (currTile === TileIndex.PATH || currTile === TileIndex.PLANKS) {
-            //             continue;
-            //         }
-            //         let tile = TileIndex.PATH;
-            //         // if (currTile === TileIndex.WATER || currTile === TileIndex.SAND) {
-            //         //     tile = TileIndex.PLANKS;
-            //         // }
-            //         game.setTileAtTilePosition(po, tile);
-            //     }
-            // }
         }
+
+        // Generate a path from (0, 0) to (0, gridSize) that avoids obstalces. 
+        // That is, we can only use tiles that have a noise value between 0.45 and 0.7.
 
         worldTileGrid.iterate((self, r, c) => {
             let x = c - self.width / 2;

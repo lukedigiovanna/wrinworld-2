@@ -96,8 +96,8 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                 // else {
                 //     gameObject.game.camera.setActivePostProcessingShader(PostProcessingShaderIndex.NO_EFFECT);
                 // }
-                console.log(gameObject.game.getTileAtWorldPosition(gameObject.position));
-                gameObject.game.setTileAtWorldPosition(gameObject.position, TileIndex.GRAY_BRICKS);
+                // console.log(gameObject.game.getTileAtWorldPosition(gameObject.position));
+                // gameObject.game.setTileAtWorldPosition(gameObject.position, TileIndex.GRAY_BRICKS);
             }
         }
     });
