@@ -567,7 +567,7 @@ class Game {
         }
         const chunk = this.chunks.get(chunkPosition.x, chunkPosition.y);
         if (!chunk) throw Error("something went wrong");
-        chunk.tiles.set(tilePosition.row, tilePosition.col, {
+        chunk.setTile(tilePosition.row, tilePosition.col, {
             index: tileIndex,
             rotation: rotation
         });
@@ -608,7 +608,7 @@ class Game {
         }
         const chunk = this.chunks.get(chunkPosition.x, chunkPosition.y);
         if (!chunk) throw Error("something went wrong");
-        chunk.tiles.set(tilePosition.row, tilePosition.col, {
+        chunk.setTile(tilePosition.row, tilePosition.col, {
             index: tileIndex,
             rotation: rotation
         });

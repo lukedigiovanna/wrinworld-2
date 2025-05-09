@@ -14,6 +14,7 @@ import { LevelIndex } from "../levels";
 import { PostProcessingShaderIndex } from "../rendering/postProcessingShaders";
 import controls from "../controls";
 import { addNotification } from "../notifications";
+import { TileIndex } from "../game/tiles";
 
 const PlayerFactory: GameObjectFactory = (position: Vector) => {
     const player = new GameObject();
@@ -95,6 +96,8 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                 // else {
                 //     gameObject.game.camera.setActivePostProcessingShader(PostProcessingShaderIndex.NO_EFFECT);
                 // }
+                console.log(gameObject.game.getTileAtWorldPosition(gameObject.position));
+                gameObject.game.setTileAtWorldPosition(gameObject.position, TileIndex.GRAY_BRICKS);
             }
         }
     });

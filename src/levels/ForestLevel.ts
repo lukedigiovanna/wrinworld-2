@@ -2,11 +2,13 @@ import { Level } from "./";
 import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Permutation, Rectangle, Point, PerlinNoise } from "../utils";
 import { Game } from "../game/game";
 import { ChunkConstants } from "../game/Chunk";
-import { TileIndex } from "../game/tiles";
+import { Tile, TileIndex } from "../game/tiles";
 import { EnemyIndex, PortalFactory, PortalProperties, PropFactory } from "../gameObjects";
 import { ItemIndex } from "../game/items";
 import { PropIndex, propsCodex } from "../game/props";
 import { getTexture } from "../assets/imageLoader";
+import { Grid } from "../utils/Grid";
+import { Nullable } from "utils/types";
 
 const portalTypes: PortalProperties[] = [
     { // Slime portal
@@ -163,17 +165,20 @@ class ForestLevel implements Level {
     readonly playerSpawnPosition = new Vector(0, 160);
 
     generate(game: Game) {
+        const gridSize = 256;
+        const worldTileGrid = new Grid<Tile>(gridSize, gridSize, { index: TileIndex.GRASS, rotation: 0 }); 
+        const worldPropGrid = new Grid<Nullable<PropIndex>>(gridSize, gridSize, null);
+
         const noise = new PerlinNoise(MathUtils.randomInt(1000, 10000));
         const getNoise = (x: number, y: number) => noise.get(x / 16.43 + 1000, y / 16.32 + 1000);
         const endpointTrailLength = 32;
         const pathPoints = [];
         pathPoints.push(new Vector(0, 0));
         pathPoints.push(new Vector(0, endpointTrailLength));
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < 4; i++) {
             const current: Vector = pathPoints[pathPoints.length - 1];
-            const angle = MathUtils.random(0, Math.PI);
-            const deltaVector = new Vector(Math.cos(angle) * 16, Math.sin(angle) * 16);
-            const next: Vector = current.plus(deltaVector);
+            const xOffset = MathUtils.randomInt(-32, 32);
+            const next: Vector = current.plus(new Vector(xOffset, endpointTrailLength));
             pathPoints.push(next);
         }
         pathPoints.push(pathPoints[pathPoints.length - 1].plus(new Vector(0, 32)));
@@ -190,7 +195,7 @@ class ForestLevel implements Level {
             for (let R = -20; R <= 20; R++) {
                 const po = new Point(Math.floor(position.x + normal.x * R), Math.floor(position.y + normal.y * R));
                 const tile = Math.abs(R) <= 2 ? TileIndex.PATH : TileIndex.GRASS;
-                game.setTileAtTilePosition(po, tile);
+                // game.setTileAtTilePosition(po, tile);
             }
             // const R = 1;
             // for (let xo = -R; xo <= R; xo++) {
@@ -209,6 +214,19 @@ class ForestLevel implements Level {
             // }
         }
 
+        worldTileGrid.iterate((self, r, c) => {
+            let x = c - self.width / 2;
+            let y = r;
+            const tile = self.get(r, c)!;
+            game.setTileAtTilePosition(new Point(x, y), tile.index, tile.rotation);
+            
+            const prop = worldPropGrid.get(r, c);
+            if (prop !== null) {
+                const texture = getTexture(propsCodex[prop as PropIndex].spriteID);
+                const position = new Vector((x + 0.5) * ChunkConstants.PIXELS_PER_TILE, y * ChunkConstants.PIXELS_PER_TILE + texture.height / 2);
+                game.addGameObject(PropFactory(prop, position));
+            }
+        });
 
         // this desperately needs an overhaul!
         // const width = 128;

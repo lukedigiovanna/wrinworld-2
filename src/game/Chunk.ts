@@ -72,6 +72,7 @@ class Chunk {
         if (!this.dirty) {
             return;
         }
+        console.log("fuck you");
         this.tileFramebuffer.bind();
         chunkShader.use();
         this.gl.viewport(0, 0, this.tileFramebuffer.width, this.tileFramebuffer.height);
@@ -143,6 +144,14 @@ class Chunk {
             }
         });
         this.dirty = false;
+    }
+
+    public setTile(r: number, c: number, tile: Tile) {
+        const currentTile = this.tiles.get(r, c)!;
+        if (currentTile.index === tile.index && currentTile.rotation === tile.rotation) 
+            return;
+        this.tiles.set(r, c, tile);
+        this.dirty = true;
     }
 }
 
