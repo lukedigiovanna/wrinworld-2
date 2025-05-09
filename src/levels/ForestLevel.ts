@@ -1,5 +1,5 @@
 import { Level } from "./";
-import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Permutation, Rectangle, Point } from "../utils";
+import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Permutation, Rectangle, Point, PerlinNoise } from "../utils";
 import { Game } from "../game/game";
 import { ChunkConstants } from "../game/Chunk";
 import { TileIndex } from "../game/tiles";
@@ -159,186 +159,233 @@ class ForestLevel implements Level {
         [ { itemIndex: ItemIndex.GHOST_ARROWS }],
     ];
 
-    readonly cameraBounds: Rectangle = new Rectangle(-1024, 1024, 100, 3640);
+    readonly cameraBounds: Rectangle = new Rectangle(-10024, 10024, 0, 36400);
     readonly playerSpawnPosition = new Vector(0, 160);
 
     generate(game: Game) {
-        // this desperately needs an overhaul!
-        const width = 128;
-        const height = 192;
-        const marginTrail = 24;
-        const marginSidesRocks = 32;
-        const left = -width / 2, right = width / 2 - 1;
-        const bottom = 0, top = height + marginTrail * 2;
-        const start = new Vector(0, bottom);
-        const end = new Vector(0, top);
-        const N = 30;
-        const numPortals = 15;
-        const minDistance = 8 * ChunkConstants.PIXELS_PER_TILE;
-
-        // 1. Set Grass Background
-        for (let x = left; x <= right; x++) {
-            for (let y = bottom; y < top; y++) {
-                game.setTileAtTilePosition(new Point(x, y), TileIndex.GRASS);
-            }
-        }
-        
-        // 2. Add ponds
-        for (let x = left; x <= right; x++) {
-            for (let y = marginTrail; y <= height + marginTrail; y++) {
-                const noise = game.noise.get(x / 16.32 + 1000, y / 16.543 + 1000);
-                if (noise > 0.6) {
-                    game.setTileAtTilePosition(new Point(x, y), TileIndex.WATER);
-                }
-                else if (noise > 0.55) {
-                    game.setTileAtTilePosition(new Point(x, y), TileIndex.SAND);
-                }
-            }
-        }
-
-        // 3. Fill a path from the bottom to top of the world
+        const noise = new PerlinNoise(MathUtils.randomInt(1000, 10000));
+        const getNoise = (x: number, y: number) => noise.get(x / 16.43 + 1000, y / 16.32 + 1000);
+        const endpointTrailLength = 32;
         const pathPoints = [];
-        pathPoints.push(start);
-        pathPoints.push(Vector.add(start, new Vector(0, marginTrail)));
-        let lastX = 0;
-        const R = 30;
-        for (let i = 0; i < N; i++) {
-            const ps = i / N;
-            const pt = (i + 1) / N;
-            const x = MathUtils.clamp(lastX + MathUtils.randomInt(-R, R), left + 6, right - 6);
-            const y = marginTrail + MathUtils.randomInt(ps * height, pt * height);
-            pathPoints.push(new Vector(x, y));
-            lastX = x;
+        pathPoints.push(new Vector(0, 0));
+        pathPoints.push(new Vector(0, endpointTrailLength));
+        for (let i = 0; i < 15; i++) {
+            const current: Vector = pathPoints[pathPoints.length - 1];
+            const angle = MathUtils.random(0, Math.PI);
+            const deltaVector = new Vector(Math.cos(angle) * 16, Math.sin(angle) * 16);
+            const next: Vector = current.plus(deltaVector);
+            pathPoints.push(next);
         }
-        pathPoints.push(Vector.subtract(end, new Vector(0, marginTrail)));
-        pathPoints.push(end);
+        pathPoints.push(pathPoints[pathPoints.length - 1].plus(new Vector(0, 32)));
+        console.log(pathPoints);
 
         const curve = new CatmullRomParametricCurve(pathPoints);
-        for (let t = bottom; t < height; t+=0.1) {
-            const p = t / height;
-            const position = curve.getPosition(p);
-            const R = 1;
-            for (let xo = -R; xo <= R; xo++) {
-                for (let yo = -R; yo <= R; yo++) {
-                    const po = Vector.add(position, new Vector(xo, yo));
-                    const currTile = game.getTileAtWorldPosition(po);
-                    if (currTile === TileIndex.PATH || currTile === TileIndex.PLANKS) {
-                        continue;
-                    }
-                    let tile = TileIndex.PATH;
-                    if (currTile === TileIndex.WATER || currTile === TileIndex.SAND) {
-                        tile = TileIndex.PLANKS;
-                    }
-                    game.setTileAtTilePosition(new Point(Math.floor(po.x), Math.floor(po.y)), tile);
-                }
+        const iterations = 10000;
+        const step = 1 / iterations;
+        for (let t = 0; t <= 1; t += step) {
+            const position = curve.getPosition(t);
+            const normal = curve.getNormal(t);
+            position.x = Math.round(position.x);
+            position.y = Math.round(position.y);
+            for (let R = -20; R <= 20; R++) {
+                const po = new Point(Math.floor(position.x + normal.x * R), Math.floor(position.y + normal.y * R));
+                const tile = Math.abs(R) <= 2 ? TileIndex.PATH : TileIndex.GRASS;
+                game.setTileAtTilePosition(po, tile);
             }
+            // const R = 1;
+            // for (let xo = -R; xo <= R; xo++) {
+            //     for (let yo = -R; yo <= R; yo++) {
+            //         const po = new Point(position.x + xo, position.y + yo);
+            //         const currTile = game.getTileAtTilePosition(po).index;
+            //         if (currTile === TileIndex.PATH || currTile === TileIndex.PLANKS) {
+            //             continue;
+            //         }
+            //         let tile = TileIndex.PATH;
+            //         // if (currTile === TileIndex.WATER || currTile === TileIndex.SAND) {
+            //         //     tile = TileIndex.PLANKS;
+            //         // }
+            //         game.setTileAtTilePosition(po, tile);
+            //     }
+            // }
         }
 
-        // 4. Put rock wall in trail margined areas.
-        for (let x = left; x <= right; x++) {
-            const offset = game.noise.get(x / 8 + 1000, 1000.342) * 4;
-            for (let y = 0; y < marginTrail - 4 + offset; y++) {
-                const xoff = game.noise.get(1000.632, y / 8 + 1000) * 4;
-                if (Math.abs(x) + xoff <= 7) {
-                    continue;
-                }
-                game.setTileAtTilePosition(new Point(x, y), TileIndex.ROCKS);
-                game.setTileAtTilePosition(new Point(x, top - y), TileIndex.ROCKS);
-            }
-        }
 
-        // 5. Put rock wall in side margins
-        for (let y = bottom; y <= top; y++) {
-            const offset = game.noise.get(0.342, y / 4) * 12 - 12;
-            for (let x = Math.floor(offset); x <= marginSidesRocks; x++) {
-                game.setTileAtTilePosition(new Point(left - 1 - x, y), TileIndex.ROCKS);
-                game.setTileAtTilePosition(new Point(right + 1 + x, y), TileIndex.ROCKS);
-            }
-        }
+        // this desperately needs an overhaul!
+        // const width = 128;
+        // const height = 192;
+        // const marginTrail = 24;
+        // const marginSidesRocks = 32;
+        // const left = -width / 2, right = width / 2 - 1;
+        // const bottom = 0, top = height + marginTrail * 2;
+        // const start = new Vector(0, bottom);
+        // const end = new Vector(0, top);
+        // const N = 30;
+        // const numPortals = 15;
+        // const minDistance = 8 * ChunkConstants.PIXELS_PER_TILE;
 
-        // 6. Place portals
-        const portalPositions = [];
-        const dropsPermutation = new Permutation(this.portalDrops);
-        for (let i = 0; i < numPortals; i++) {
-            let position;
-            let invalid;
-            do {
-                position = new Vector(
-                    (MathUtils.randomInt(left, right) + 0.5) * ChunkConstants.PIXELS_PER_TILE,
-                    (MathUtils.randomInt(bottom + marginTrail, top - marginTrail) + 0.5) * ChunkConstants.PIXELS_PER_TILE
-                );
-                invalid = game.isTileWithPropertyInArea(position, 2, "canSpawnPortal", false);
-                if (!invalid) {
-                    for (const other of portalPositions) {
-                        if (position.distanceTo(other) <= minDistance) {
-                            invalid = true;
-                            break;
-                        }
-                    }
-                }
-            } while (invalid);
-            const progression = (position.y / ChunkConstants.PIXELS_PER_TILE - marginTrail) / height;
-            const validChoices = portalTypes.filter(type => (type.difficulty ? type.difficulty : 0) <= progression);
-            if (validChoices.length === 0) {
-                throw Error("Cannot generate portal for position: " + position + " progressio " + progression + " because no portal has low enough difficulty");
-            }
-            const properties = MathUtils.randomChoice(validChoices);
-            const dropPool = dropsPermutation.next;
-            game.addGameObject(PortalFactory(properties, dropPool, position));
-            portalPositions.push(position);
-            const R = 5;
-            for (let xo = -R; xo <= R; xo++) {
-                for (let yo = -R; yo <= R; yo++) {
-                    const dist = Math.sqrt(xo * xo + yo * yo);
-                    const chance = 1 - dist / 4;
-                    if (Math.random() < chance) {
-                        const po = Vector.add(new Vector(xo * ChunkConstants.PIXELS_PER_TILE, yo * ChunkConstants.PIXELS_PER_TILE), position);
-                        const tile = game.getTileAtWorldPosition(po);
-                        if (tile === TileIndex.GRASS) {
-                            game.setTileAtWorldPosition(po, TileIndex.CURSED_GRASS);
-                        }
-                        else if (tile === TileIndex.PATH) {
-                            game.setTileAtWorldPosition(po, TileIndex.CURSED_PATH);
-                        }
-                        else if (tile === TileIndex.SAND) {
-                            game.setTileAtWorldPosition(po, TileIndex.CURSED_SAND);
-                        }
-                        else if (tile === TileIndex.PLANKS) {
-                            game.setTileAtWorldPosition(po, TileIndex.CURSED_PLANKS);
-                        }
-                    }
-                }
-            }
-        }
+        // // 1. Set Grass Background
+        // for (let x = left; x <= right; x++) {
+        //     for (let y = bottom; y < top; y++) {
+        //         game.setTileAtTilePosition(new Point(x, y), TileIndex.GRASS);
+        //     }
+        // }
+        
+        // // 2. Add ponds
+        // for (let x = left; x <= right; x++) {
+        //     for (let y = marginTrail; y <= height + marginTrail; y++) {
+        //         const noise = game.noise.get(x / 16.32 + 1000, y / 16.543 + 1000);
+        //         if (noise > 0.6) {
+        //             game.setTileAtTilePosition(new Point(x, y), TileIndex.WATER);
+        //         }
+        //         else if (noise > 0.55) {
+        //             game.setTileAtTilePosition(new Point(x, y), TileIndex.SAND);
+        //         }
+        //     }
+        // }
 
-        // 7. Place props
-        for (let x = left; x <= right; x++) {
-            for (let y = bottom; y <= top; y++) {
-                const c = MathUtils.randomWeightedChoice(
-                    [PropIndex.TREE, PropIndex.EVERGREEN_TREE, PropIndex.STONE_1, PropIndex.WHITE_STONE_1, PropIndex.RED_WILDFLOWER, PropIndex.YELLOW_WILDFLOWER, PropIndex.BUSH, PropIndex.TALL_GRASS, PropIndex.UNLIT_CAMPFIRE, PropIndex.TREE_STUMP, PropIndex.MOSSY_FALLEN_TREE, null],
-                    [4,             2,                        1,                 1,                       2,                        1,                           1,              26,                    0.1,                      0.25,                  0.25, 70]
-                )
-                if (c !== null) {
-                    const texture = getTexture(propsCodex[c as PropIndex].spriteID);
-                    const position = new Vector((x + 0.5) * ChunkConstants.PIXELS_PER_TILE, y * ChunkConstants.PIXELS_PER_TILE + texture.height / 2);
-                    let tooCloseToPortal = false;
-                    for (let j = 0; j < portalPositions.length; j++) {
-                        if (Vector.subtract(portalPositions[j], position).magnitude < 64) {
-                            tooCloseToPortal = true;
-                            break;
-                        }
-                    }
-                    if (tooCloseToPortal) {
-                        continue;
-                    }
-                    const tile = game.getTileDataAtWorldPosition(new Vector((x + 0.5) * ChunkConstants.PIXELS_PER_TILE, (y + 0.5) * ChunkConstants.PIXELS_PER_TILE)); 
-                    if (!tile.canGrowPlants) {
-                        continue;
-                    }
-                    game.addGameObject(PropFactory(c, position));
-                }
-            }
-        }
+        // // 3. Fill a path from the bottom to top of the world
+        // const pathPoints = [];
+        // pathPoints.push(start);
+        // pathPoints.push(Vector.add(start, new Vector(0, marginTrail)));
+        // let lastX = 0;
+        // const R = 30;
+        // for (let i = 0; i < N; i++) {
+        //     const ps = i / N;
+        //     const pt = (i + 1) / N;
+        //     const x = MathUtils.clamp(lastX + MathUtils.randomInt(-R, R), left + 6, right - 6);
+        //     const y = marginTrail + MathUtils.randomInt(ps * height, pt * height);
+        //     pathPoints.push(new Vector(x, y));
+        //     lastX = x;
+        // }
+        // pathPoints.push(Vector.subtract(end, new Vector(0, marginTrail)));
+        // pathPoints.push(end);
+
+        // const curve = new CatmullRomParametricCurve(pathPoints);
+        // for (let t = bottom; t < height; t+=0.1) {
+        //     const p = t / height;
+        //     const position = curve.getPosition(p);
+        //     const R = 1;
+        //     for (let xo = -R; xo <= R; xo++) {
+        //         for (let yo = -R; yo <= R; yo++) {
+        //             const po = Vector.add(position, new Vector(xo, yo));
+        //             const currTile = game.getTileAtWorldPosition(po);
+        //             if (currTile === TileIndex.PATH || currTile === TileIndex.PLANKS) {
+        //                 continue;
+        //             }
+        //             let tile = TileIndex.PATH;
+        //             if (currTile === TileIndex.WATER || currTile === TileIndex.SAND) {
+        //                 tile = TileIndex.PLANKS;
+        //             }
+        //             game.setTileAtTilePosition(new Point(Math.floor(po.x), Math.floor(po.y)), tile);
+        //         }
+        //     }
+        // }
+
+        // // 4. Put rock wall in trail margined areas.
+        // for (let x = left; x <= right; x++) {
+        //     const offset = game.noise.get(x / 8 + 1000, 1000.342) * 4;
+        //     for (let y = 0; y < marginTrail - 4 + offset; y++) {
+        //         const xoff = game.noise.get(1000.632, y / 8 + 1000) * 4;
+        //         if (Math.abs(x) + xoff <= 7) {
+        //             continue;
+        //         }
+        //         game.setTileAtTilePosition(new Point(x, y), TileIndex.ROCKS);
+        //         game.setTileAtTilePosition(new Point(x, top - y), TileIndex.ROCKS);
+        //     }
+        // }
+
+        // // 5. Put rock wall in side margins
+        // for (let y = bottom; y <= top; y++) {
+        //     const offset = game.noise.get(0.342, y / 4) * 12 - 12;
+        //     for (let x = Math.floor(offset); x <= marginSidesRocks; x++) {
+        //         game.setTileAtTilePosition(new Point(left - 1 - x, y), TileIndex.ROCKS);
+        //         game.setTileAtTilePosition(new Point(right + 1 + x, y), TileIndex.ROCKS);
+        //     }
+        // }
+
+        // // 6. Place portals
+        // const portalPositions = [];
+        // const dropsPermutation = new Permutation(this.portalDrops);
+        // for (let i = 0; i < numPortals; i++) {
+        //     let position;
+        //     let invalid;
+        //     do {
+        //         position = new Vector(
+        //             (MathUtils.randomInt(left, right) + 0.5) * ChunkConstants.PIXELS_PER_TILE,
+        //             (MathUtils.randomInt(bottom + marginTrail, top - marginTrail) + 0.5) * ChunkConstants.PIXELS_PER_TILE
+        //         );
+        //         invalid = game.isTileWithPropertyInArea(position, 2, "canSpawnPortal", false);
+        //         if (!invalid) {
+        //             for (const other of portalPositions) {
+        //                 if (position.distanceTo(other) <= minDistance) {
+        //                     invalid = true;
+        //                     break;
+        //                 }
+        //             }
+        //         }
+        //     } while (invalid);
+        //     const progression = (position.y / ChunkConstants.PIXELS_PER_TILE - marginTrail) / height;
+        //     const validChoices = portalTypes.filter(type => (type.difficulty ? type.difficulty : 0) <= progression);
+        //     if (validChoices.length === 0) {
+        //         throw Error("Cannot generate portal for position: " + position + " progressio " + progression + " because no portal has low enough difficulty");
+        //     }
+        //     const properties = MathUtils.randomChoice(validChoices);
+        //     const dropPool = dropsPermutation.next;
+        //     game.addGameObject(PortalFactory(properties, dropPool, position));
+        //     portalPositions.push(position);
+        //     const R = 5;
+        //     for (let xo = -R; xo <= R; xo++) {
+        //         for (let yo = -R; yo <= R; yo++) {
+        //             const dist = Math.sqrt(xo * xo + yo * yo);
+        //             const chance = 1 - dist / 4;
+        //             if (Math.random() < chance) {
+        //                 const po = Vector.add(new Vector(xo * ChunkConstants.PIXELS_PER_TILE, yo * ChunkConstants.PIXELS_PER_TILE), position);
+        //                 const tile = game.getTileAtWorldPosition(po);
+        //                 if (tile === TileIndex.GRASS) {
+        //                     game.setTileAtWorldPosition(po, TileIndex.CURSED_GRASS);
+        //                 }
+        //                 else if (tile === TileIndex.PATH) {
+        //                     game.setTileAtWorldPosition(po, TileIndex.CURSED_PATH);
+        //                 }
+        //                 else if (tile === TileIndex.SAND) {
+        //                     game.setTileAtWorldPosition(po, TileIndex.CURSED_SAND);
+        //                 }
+        //                 else if (tile === TileIndex.PLANKS) {
+        //                     game.setTileAtWorldPosition(po, TileIndex.CURSED_PLANKS);
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+
+        // // 7. Place props
+        // for (let x = left; x <= right; x++) {
+        //     for (let y = bottom; y <= top; y++) {
+        //         const c = MathUtils.randomWeightedChoice(
+        //             [PropIndex.TREE, PropIndex.EVERGREEN_TREE, PropIndex.STONE_1, PropIndex.WHITE_STONE_1, PropIndex.RED_WILDFLOWER, PropIndex.YELLOW_WILDFLOWER, PropIndex.BUSH, PropIndex.TALL_GRASS, PropIndex.UNLIT_CAMPFIRE, PropIndex.TREE_STUMP, PropIndex.MOSSY_FALLEN_TREE, null],
+        //             [4,             2,                        1,                 1,                       2,                        1,                           1,              26,                    0.1,                      0.25,                  0.25, 70]
+        //         )
+        //         if (c !== null) {
+        //             const texture = getTexture(propsCodex[c as PropIndex].spriteID);
+        //             const position = new Vector((x + 0.5) * ChunkConstants.PIXELS_PER_TILE, y * ChunkConstants.PIXELS_PER_TILE + texture.height / 2);
+        //             let tooCloseToPortal = false;
+        //             for (let j = 0; j < portalPositions.length; j++) {
+        //                 if (Vector.subtract(portalPositions[j], position).magnitude < 64) {
+        //                     tooCloseToPortal = true;
+        //                     break;
+        //                 }
+        //             }
+        //             if (tooCloseToPortal) {
+        //                 continue;
+        //             }
+        //             const tile = game.getTileDataAtWorldPosition(new Vector((x + 0.5) * ChunkConstants.PIXELS_PER_TILE, (y + 0.5) * ChunkConstants.PIXELS_PER_TILE)); 
+        //             if (!tile.canGrowPlants) {
+        //                 continue;
+        //             }
+        //             game.addGameObject(PropFactory(c, position));
+        //         }
+        //     }
+        // }
     }
 };
 

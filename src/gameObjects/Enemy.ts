@@ -1,8 +1,8 @@
 import { GameObject, GameObjectFactory, EssenceOrbFactory, Team, CorpseFactory } from "./";
 import { spriteRenderer } from "../rendering/renderers";
-import { Vector, MathUtils } from "../utils";
+import { Vector } from "../utils";
 import { Health, Hitbox, Physics, PhysicalCollider, ItemDropper, 
-    HealthBarDisplayMode, ParticleEmitter, ParticleLayer, StatusEffectManager, 
+    HealthBarDisplayMode, StatusEffectManager, 
     MovementData} from "../components";
 import { TileIndex } from "../game/tiles";
 import { enemiesCodex, EnemyIndex } from "../game/enemies";

@@ -96,7 +96,7 @@ class Game {
     private generateChunk(chunkX: number, chunkY: number): void {
         const tiles = new Grid<Tile>(
             ChunkConstants.CHUNK_SIZE, ChunkConstants.CHUNK_SIZE, 
-            { index: TileIndex.CURSED_SAND, rotation: 0 }
+            { index: TileIndex.AIR, rotation: 0 }
         );
         const chunk = new Chunk(this.camera.gl, tiles, new Point(chunkX, chunkY));
         this.chunks.set(chunkX, chunkY, chunk);

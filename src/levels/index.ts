@@ -1,6 +1,6 @@
 import { Rectangle, Vector } from "../utils";
 import { Game } from "../game/game";
-import { PortalDrop, PortalProperties } from "../gameObjects";
+import { PortalDrop } from "../gameObjects";
 import { ForestLevel } from "./ForestLevel";
 import { SchoolLevel } from "./SchoolLevel";
 
@@ -10,7 +10,8 @@ interface Level {
     name: string;
     portalDrops: PortalDropPool[];
     playerSpawnPosition: Vector;
-    cameraBounds: Rectangle; // Assume when the player goes outside the bounds, the boss starts
+    cameraBounds: Rectangle;
+
     generate: (game: Game) => void;    
 }
 
