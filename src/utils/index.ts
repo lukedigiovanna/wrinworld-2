@@ -670,6 +670,10 @@ class Point {
     public equals(other: Point) {
         return this.x === other.x && this.y === other.y;
     }
+
+    public static from(vector: Vector) {
+        return new Point(Math.floor(vector.x), Math.floor(vector.y));
+    }
 }
 
 export { Vector, MathUtils, PerlinNoise, LinearParametricCurve, 

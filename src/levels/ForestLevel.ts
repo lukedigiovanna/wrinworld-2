@@ -1,5 +1,5 @@
 import { Level } from "./";
-import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Permutation, Rectangle, Point, PerlinNoise } from "../utils";
+import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Permutation, Rectangle, Point, PerlinNoise, LinearParametricCurve } from "../utils";
 import { Game } from "../game/game";
 import { ChunkConstants } from "../game/Chunk";
 import { Tile, TileIndex } from "../game/tiles";
@@ -168,27 +168,21 @@ class ForestLevel implements Level {
         const gridSize = 200;
         const worldTileGrid = new Grid<Tile>(gridSize, gridSize, { index: TileIndex.GRASS, rotation: 0 }); 
         const worldPropGrid = new Grid<Nullable<PropIndex>>(gridSize, gridSize, null);
-
+        console.log(`Generating forest with size ${gridSize} x ${gridSize}`);
         const noise = new PerlinNoise(MathUtils.randomInt(1000, 10000));
         const getNoise = (x: number, y: number) => noise.get(x / 16.43 + 1000, y / 16.32 + 1000);
-        
-        const possiblePathPoints: Vector[] = [];
-        possiblePathPoints.push(new Vector(gridSize / 2, 0));
-        possiblePathPoints.push(new Vector(gridSize / 2, gridSize - 1));
-        const graph = new Map<number, number[]>();
-        graph.set(0, []);
-        graph.set(1, []);
-        const D = 6;
+
         worldTileGrid.iterate((self, r, c) => {
-            const distanceToStart = Math.sqrt(r ** 2 + (c - gridSize / 2) ** 2);
             let noiseValue = getNoise(c, r);
+            const distanceToStart = Math.sqrt(r ** 2 + (c - gridSize / 2) ** 2);
             if (distanceToStart < 24) {
-                noiseValue = MathUtils.clamp(noiseValue, 0.44, 0.7);
+                noiseValue = MathUtils.clamp(noiseValue, 0.45, 0.7);
             }
             const distanceToEnd = Math.sqrt((gridSize - r) ** 2 + (c - gridSize / 2) ** 2);
             if (distanceToEnd < 24) {
-                noiseValue = MathUtils.clamp(noiseValue, 0.44, 0.7);
+                noiseValue = MathUtils.clamp(noiseValue, 0.45, 0.7);
             }
+
             if (noiseValue < 0.4) {
                 self.set(r, c, { index: TileIndex.WATER, rotation: 0 });
             }
@@ -200,66 +194,110 @@ class ForestLevel implements Level {
             }
             else {
                 // is grass
-                if (r % D == 0 && c % D == 0) {
-                    const nextPoint = new Vector(c, r);
-                    const nextPointIndex = possiblePathPoints.length;
-                    graph.set(nextPointIndex, []);
-                    for (let i = 0; i < possiblePathPoints.length; i++) {
-                        const point = possiblePathPoints[i];
-                        const distance = point.distanceTo(nextPoint);
-                        if (distance < 2 * D - 1) {
-                            graph.get(i)?.push(nextPointIndex);
-                            graph.get(nextPointIndex)?.push(i);
-                        }
-                    }
-                    possiblePathPoints.push(nextPoint);
-                    self.set(r, c, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
-                }
                 if (Math.random() < 0.05) {
-                    worldPropGrid.set(r, c, PropIndex.EVERGREEN_TREE);
+                    // worldPropGrid.set(r, c, PropIndex.EVERGREEN_TREE);
                 }
             }
         });
 
-        console.log(possiblePathPoints);
-        console.log(graph);
-
-        const pathPoints = [];
-        const pathPointsIndices = [];
-        let current = 0;
-        let goal = 1;
-        const visited = new Set<number>();
-        while (true) {
-            pathPoints.push(possiblePathPoints[current]);
-            if (possiblePathPoints[current].y >= gridSize - D) {
+        let points = [];
+        let current = new Vector(gridSize / 2, 0);
+        points.push(current);
+        let attempts = 0;
+        for (let i = 0; i < 5000; i++) {
+            if (!current) {
+                console.error("Somehow current became undefined");
                 break;
             }
-            pathPointsIndices.push(current);
-            visited.add(current);
-            const neighbors = graph.get(current)!;
-            const validNeighbors = neighbors.filter(n => !visited.has(n) && possiblePathPoints[n].y >= possiblePathPoints[current].y);
-            if (validNeighbors.length == 0) {
-                pathPoints.pop();
-                pathPointsIndices.pop();
-                current = pathPointsIndices[pathPointsIndices.length - 1];
+            const deltaAngle = MathUtils.random(-0.5, Math.PI + 0.5);
+            const deltaDistance = 5;
+            const delta = new Vector(Math.cos(deltaAngle) * deltaDistance, Math.sin(deltaAngle) * deltaDistance);
+            const candidate = current.plus(delta);
+            const candidatePoint = Point.from(candidate);
+            if (!worldTileGrid.validCoord(candidatePoint.y, candidatePoint.x) || 
+                worldTileGrid.get(candidatePoint.y, candidatePoint.x).index !== TileIndex.GRASS) {
+                console.log("Candidate failed");
+                attempts++;
+                if (attempts >= 6) {
+                    console.log("6 failed attempts, drawing the curve and going back 5.")
+                    const back = MathUtils.clamp(points.length - 2, 0, 8);
+                    current = points[points.length - back];
+                    const slice = points.splice(points.length - back + 1);
+                    if (slice.length >= 2) {
+                        const path = new LinearParametricCurve(slice);
+                        for (let t = 0; t <= 1; t += 0.01) {
+                            const point = path.getPosition(t);
+                            for (let xo = 0; xo <= 1; xo += 1) {
+                                for (let yo = 0; yo <= 1; yo += 1) {
+                                    worldTileGrid.set(Math.floor(point.y + yo), Math.floor(point.x + xo), { index: TileIndex.CURSED_PATH, rotation: 0 });
+                                    worldPropGrid.set(Math.floor(point.y + yo), Math.floor(point.x + xo), null);
+                                }
+                            }
+                        }
+                    }
+                } 
+                worldTileGrid.set(candidatePoint.y, candidatePoint.x, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
+
+                continue;
             }
-            else {
-                current = MathUtils.randomChoice(validNeighbors); 
+            current = candidate;
+            if (current.y >= gridSize - 10) {
+                console.log(i);
+                break;
             }
+            points.push(current);
+            attempts = 0;
         }
 
-        console.log(pathPoints);
+        console.log(points);
 
-        const path = new CatmullRomParametricCurve(pathPoints);
+        const path = new LinearParametricCurve(points);
         for (let t = 0; t <= 1; t += 0.001) {
             const point = path.getPosition(t);
-            for (let xo = -1; xo <= 1; xo += 1) {
-                for (let yo = -1; yo <= 1; yo += 1) {
+            for (let xo = 0; xo <= 1; xo += 1) {
+                for (let yo = 0; yo <= 1; yo += 1) {
                     worldTileGrid.set(Math.floor(point.y + yo), Math.floor(point.x + xo), { index: TileIndex.PATH, rotation: 0 });
                     worldPropGrid.set(Math.floor(point.y + yo), Math.floor(point.x + xo), null);
                 }
             }
         }
+
+        // console.log(possiblePathPoints);
+        // console.log(graph);
+
+        // const pathPoints = [];  
+        // const pathPointsIndices = [];
+        // let current = 0;
+        // const visited = new Set<number>();
+        // while (true) {
+        //     console.log("Visiting", current);
+        //     pathPoints.push(possiblePathPoints[current]);
+        //     if (possiblePathPoints[current].y >= gridSize - D) {
+        //         break;
+        //     }
+        //     pathPointsIndices.push(current);
+        //     visited.add(current);
+        //     const neighbors = graph.get(current)!;
+        //     const validNeighbors = neighbors.filter(n => !visited.has(n));
+        //     if (validNeighbors.length == 0) {
+        //         console.log("No valid neighbors... backtracking");
+        //         console.log(pathPointsIndices);
+        //         pathPoints.pop();
+        //         pathPointsIndices.pop();
+        //         if (pathPointsIndices.length === 0) {
+        //             alert("Failed to generate path.")
+        //             break;
+        //         }
+        //         current = pathPointsIndices[pathPointsIndices.length - 1];
+        //     }
+        //     else {
+        //         current = MathUtils.randomChoice(validNeighbors); 
+        //     }
+        // }
+
+        // console.log(pathPoints);
+
+        
 
         // Generate a path from (0, 0) to (0, gridSize) that avoids obstalces. 
         // That is, we can only use tiles that have a noise value between 0.45 and 0.7.

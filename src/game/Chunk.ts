@@ -72,7 +72,6 @@ class Chunk {
         if (!this.dirty) {
             return;
         }
-        console.log("fuck you");
         this.tileFramebuffer.bind();
         chunkShader.use();
         this.gl.viewport(0, 0, this.tileFramebuffer.width, this.tileFramebuffer.height);
