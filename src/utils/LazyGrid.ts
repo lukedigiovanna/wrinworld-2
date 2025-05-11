@@ -1,14 +1,8 @@
-
-function zMap(x: number) {
-    return x >= 0 ? x * 2 : -2 * x - 1;
-}
+import { cantorPairIndex } from "./";
 
 function hash(x: number, y: number) {
-    // perform cantor-pair mapping
-    x = zMap(x);
-    y = zMap(y);
-    return (x + y) * (x + y + 1) / 2 + y;
-} 
+    return cantorPairIndex(x, y);
+}
 
 // Infinite grid that only stores values for positions that have been set.
 class LazyGrid<T> {

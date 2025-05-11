@@ -1,5 +1,5 @@
 import { Level } from "./";
-import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Permutation, Rectangle, Point, PerlinNoise, LinearParametricCurve } from "../utils";
+import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Permutation, Rectangle, Point, PerlinNoise, LinearParametricCurve, cantorPairIndex } from "../utils";
 import { Game } from "../game/game";
 import { ChunkConstants } from "../game/Chunk";
 import { Tile, TileIndex } from "../game/tiles";
@@ -8,7 +8,9 @@ import { ItemIndex } from "../game/items";
 import { PropIndex, propsCodex } from "../game/props";
 import { getTexture } from "../assets/imageLoader";
 import { Grid } from "../utils/Grid";
-import { Nullable } from "utils/types";
+import { Nullable, Pair } from "../utils/types";
+import { DefaultMap } from "../utils/DefaultMap";
+import { Graph } from "../utils/Graph";
 
 const portalTypes: PortalProperties[] = [
     { // Slime portal
@@ -123,6 +125,11 @@ const portalTypes: PortalProperties[] = [
     },
 ];
 
+interface VertexData {
+    point: Point,
+    neighbors: Set<number>
+}
+
 class ForestLevel implements Level {
     readonly name = "Corrupted Forest";
     readonly portalDrops = [
@@ -200,67 +207,160 @@ class ForestLevel implements Level {
             }
         });
 
-        let points = [];
-        let current = new Vector(gridSize / 2, 0);
-        points.push(current);
-        let attempts = 0;
-        for (let i = 0; i < 5000; i++) {
-            if (!current) {
-                console.error("Somehow current became undefined");
-                break;
-            }
-            const deltaAngle = MathUtils.random(-0.5, Math.PI + 0.5);
-            const deltaDistance = 5;
-            const delta = new Vector(Math.cos(deltaAngle) * deltaDistance, Math.sin(deltaAngle) * deltaDistance);
-            const candidate = current.plus(delta);
-            const candidatePoint = Point.from(candidate);
-            if (!worldTileGrid.validCoord(candidatePoint.y, candidatePoint.x) || 
-                worldTileGrid.get(candidatePoint.y, candidatePoint.x).index !== TileIndex.GRASS) {
-                console.log("Candidate failed");
-                attempts++;
-                if (attempts >= 6) {
-                    console.log("6 failed attempts, drawing the curve and going back 5.")
-                    const back = MathUtils.clamp(points.length - 2, 0, 8);
-                    current = points[points.length - back];
-                    const slice = points.splice(points.length - back + 1);
-                    if (slice.length >= 2) {
-                        const path = new LinearParametricCurve(slice);
-                        for (let t = 0; t <= 1; t += 0.01) {
-                            const point = path.getPosition(t);
-                            for (let xo = 0; xo <= 1; xo += 1) {
-                                for (let yo = 0; yo <= 1; yo += 1) {
-                                    worldTileGrid.set(Math.floor(point.y + yo), Math.floor(point.x + xo), { index: TileIndex.CURSED_PATH, rotation: 0 });
-                                    worldPropGrid.set(Math.floor(point.y + yo), Math.floor(point.x + xo), null);
-                                }
-                            }
-                        }
+        const graph = new Graph<number, Point>();
+        const resolution = 4;
+        for (let r = 0; r < gridSize; r += resolution) {
+            for (let c = 0; c < gridSize; c += resolution) {
+                if (worldTileGrid.get(r, c).index !== TileIndex.GRASS) {
+                    continue;
+                }
+                const index = cantorPairIndex(r, c);
+                graph.addVertex(index, new Point(c, r));
+                for (const [dr, dc] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+                    const nr = r + dr * resolution;
+                    const nc = c + dc * resolution;
+                    const neighborIndex = cantorPairIndex(nr, nc);
+                    if (worldTileGrid.validCoord(nr, nc) && 
+                        worldTileGrid.get(nr, nc).index === TileIndex.GRASS && 
+                        graph.hasVertex(neighborIndex)) {
+                        graph.addEdge(index, neighborIndex);
                     }
-                } 
-                worldTileGrid.set(candidatePoint.y, candidatePoint.x, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
-
-                continue;
-            }
-            current = candidate;
-            if (current.y >= gridSize - 10) {
-                console.log(i);
-                break;
-            }
-            points.push(current);
-            attempts = 0;
-        }
-
-        console.log(points);
-
-        const path = new LinearParametricCurve(points);
-        for (let t = 0; t <= 1; t += 0.001) {
-            const point = path.getPosition(t);
-            for (let xo = 0; xo <= 1; xo += 1) {
-                for (let yo = 0; yo <= 1; yo += 1) {
-                    worldTileGrid.set(Math.floor(point.y + yo), Math.floor(point.x + xo), { index: TileIndex.PATH, rotation: 0 });
-                    worldPropGrid.set(Math.floor(point.y + yo), Math.floor(point.x + xo), null);
                 }
             }
         }
+
+        console.log(graph);
+
+        // Perform a maze generation via a uniform spanning tree (UST)
+        // Wilson's Algorithm:
+        //  1. Choose a random vertex not in the Tree
+        //  2. Perform a random walking starting on this vertex until we hit a
+        //     vertex in the tree
+        //  3. Add the loop erasure of the path to the tree.
+        //  4. Repeat until all nodes have been hit.
+
+        const remainingVertices = new Set<number>(graph.getVertexKeys());
+        const tree = new Set<number>();
+        const randomNode = () => {
+            return MathUtils.randomChoice(Array.from(remainingVertices));
+        }
+        const initialNode = randomNode();
+        remainingVertices.delete(initialNode);
+        tree.add(initialNode);
+        for (let i = 0; remainingVertices.size > 0 && i < 1000; i++) {
+            console.log(remainingVertices.size);
+            const start = randomNode();
+            // Random walk until we reach a vertices in the tree
+            const walk = [];
+            walk.push(start);
+            for (let j = 0; j < 50000; j++) {
+                const last = walk[walk.length - 1];
+                const neighbors = graph.getVertexNeighbors(last);
+                if (neighbors.length === 0) {
+                    remainingVertices.delete(last);
+                    break;
+                }
+                const randomNeighbor = MathUtils.randomChoice(neighbors);
+                walk.push(randomNeighbor);
+                if (tree.has(randomNeighbor)) {
+                    break;
+                }
+            }
+            // Remove all cycles in the walk
+            const cycleFreeWalk = [];
+            const scene = new Map<number, number>();
+            for (const vertex of walk) {
+                if (scene.has(vertex)) { // Cycle! Remove all nodes since the last time we saw this vertex.
+                    const removedVertices = cycleFreeWalk.splice(scene.get(vertex)! + 1);
+                    for (const removedVertex of removedVertices) {
+                        scene.delete(removedVertex);
+                    }
+                }
+                else {
+                    scene.set(vertex, cycleFreeWalk.length);
+                    cycleFreeWalk.push(vertex);
+                }
+            }
+            for (let i = 0; i < cycleFreeWalk.length - 1; i++) {
+                tree.add(cycleFreeWalk[i]);
+                remainingVertices.delete(cycleFreeWalk[i]);
+                const thisPoint = graph.getVertexData(cycleFreeWalk[i]);
+                const nextPoint = graph.getVertexData(cycleFreeWalk[i + 1]);
+                let currentPoint = thisPoint.copy();
+                const dx = Math.sign(nextPoint.x - thisPoint.x);
+                const dy = Math.sign(nextPoint.y - thisPoint.y);
+                while (!currentPoint.equals(nextPoint)) {   
+                    worldTileGrid.set(currentPoint.y, currentPoint.x, { index: TileIndex.PATH, rotation: 0 });
+                    currentPoint = new Point(currentPoint.x + dx, currentPoint.y + dy);
+                }
+            }
+        }
+
+        // for (const [_, p] of points) {
+        //     worldTileGrid.set(p.y, p.x, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
+        // }
+
+        // let points = [];
+        // let current = new Vector(gridSize / 2, 0);
+        // points.push(current);
+        // let attempts = 0;
+        // for (let i = 0; i < 5000; i++) {
+        //     if (!current) {
+        //         console.error("Somehow current became undefined");
+        //         break;
+        //     }
+        //     const deltaAngle = MathUtils.random(-0.5, Math.PI + 0.5);
+        //     const deltaDistance = 5;
+        //     const delta = new Vector(Math.cos(deltaAngle) * deltaDistance, Math.sin(deltaAngle) * deltaDistance);
+        //     const candidate = current.plus(delta);
+        //     const candidatePoint = Point.from(candidate);
+        //     if (!worldTileGrid.validCoord(candidatePoint.y, candidatePoint.x) || 
+        //         worldTileGrid.get(candidatePoint.y, candidatePoint.x).index !== TileIndex.GRASS) {
+        //         console.log("Candidate failed");
+        //         attempts++;
+        //         if (attempts >= 6) {
+        //             console.log("6 failed attempts, drawing the curve and going back 5.")
+        //             const back = MathUtils.clamp(points.length - 2, 0, 8);
+        //             current = points[points.length - back];
+        //             const slice = points.splice(points.length - back + 1);
+        //             if (slice.length >= 2) {
+        //                 const path = new LinearParametricCurve(slice);
+        //                 for (let t = 0; t <= 1; t += 0.01) {
+        //                     const point = path.getPosition(t);
+        //                     for (let xo = 0; xo <= 1; xo += 1) {
+        //                         for (let yo = 0; yo <= 1; yo += 1) {
+        //                             worldTileGrid.set(Math.floor(point.y + yo), Math.floor(point.x + xo), { index: TileIndex.CURSED_PATH, rotation: 0 });
+        //                             worldPropGrid.set(Math.floor(point.y + yo), Math.floor(point.x + xo), null);
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //         } 
+        //         worldTileGrid.set(candidatePoint.y, candidatePoint.x, { index: TileIndex.GRAY_BRICKS, rotation: 0 });
+
+        //         continue;
+        //     }
+        //     current = candidate;
+        //     if (current.y >= gridSize - 10) {
+        //         console.log(i);
+        //         break;
+        //     }
+        //     points.push(current);
+        //     attempts = 0;
+        // }
+
+        // console.log(points);
+
+        // const path = new LinearParametricCurve(points);
+        // for (let t = 0; t <= 1; t += 0.001) {
+        //     const point = path.getPosition(t);
+        //     for (let xo = 0; xo <= 1; xo += 1) {
+        //         for (let yo = 0; yo <= 1; yo += 1) {
+        //             worldTileGrid.set(Math.floor(point.y + yo), Math.floor(point.x + xo), { index: TileIndex.PATH, rotation: 0 });
+        //             worldPropGrid.set(Math.floor(point.y + yo), Math.floor(point.x + xo), null);
+        //         }
+        //     }
+        // }
 
         // console.log(possiblePathPoints);
         // console.log(graph);

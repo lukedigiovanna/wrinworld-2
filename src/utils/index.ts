@@ -671,11 +671,28 @@ class Point {
         return this.x === other.x && this.y === other.y;
     }
 
+    public copy() {
+        return new Point(this.x, this.y);
+    }
+
     public static from(vector: Vector) {
         return new Point(Math.floor(vector.x), Math.floor(vector.y));
     }
 }
 
+// Gives a bijective map Z -> Z_{>=0} (i.e. maps the number line of integers 1-1 to
+// positive numbers)
+function zMap(x: number) {
+    return x >= 0 ? x * 2 : -2 * x - 1;
+}
+
+function cantorPairIndex(x: number, y: number) {
+    // perform cantor-pair mapping
+    x = zMap(x);
+    y = zMap(y);
+    return (x + y) * (x + y + 1) / 2 + y;
+}
+
 export { Vector, MathUtils, PerlinNoise, LinearParametricCurve, 
          CatmullRomParametricCurve, Ease, NumberRange, Rectangle, Permutation, 
-         sleep, Color, Point };
+         sleep, Color, Point, cantorPairIndex };
