@@ -36,7 +36,7 @@ class MathUtils {
         return options[this.randomInt(0, options.length - 1)];
     }
 
-    public static randomWeightedChoice(options: any[], weights: number[]) {
+    public static randomWeightedChoice<T = any>(options: T[], weights: number[]): T {
         if (options.length !== weights.length) {
             throw Error("Options and chances must be the same size");
         }

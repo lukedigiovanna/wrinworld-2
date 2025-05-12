@@ -8,7 +8,7 @@ import { ItemIndex } from "../game/items";
 import { PropIndex, propsCodex } from "../game/props";
 import { getTexture } from "../assets/imageLoader";
 import { Grid, Graph, RandomSinCurve } from "../utils";
-import { Nullable } from "../utils/types";
+import { Nullable, Pair } from "../utils/types";
 
 const portalTypes: PortalProperties[] = [
     { // Slime portal
@@ -170,7 +170,21 @@ class ForestLevel implements Level {
         (this.margin * 0.25) * ChunkConstants.PIXELS_PER_TILE, 
         (this.gridSize - this.margin * 0.1) * ChunkConstants.PIXELS_PER_TILE
     );
-    readonly playerSpawnPosition = new Vector(0, (this.margin / 2 + 4) * ChunkConstants.PIXELS_PER_TILE);
+    readonly playerSpawnPosition = new Vector(
+        -48, 
+        (this.margin * 0.4) * ChunkConstants.PIXELS_PER_TILE
+    );
+
+    readonly propFrequencies: Pair<number, Nullable<PropIndex>>[] = [
+        // [0.5, PropIndex.MOSSY_FALLEN_TREE],
+        [2, PropIndex.EVERGREEN_TREE],
+        [1, PropIndex.TREE],
+        [10, PropIndex.TALL_GRASS],
+        [2, PropIndex.YELLOW_WILDFLOWER],
+        [1, PropIndex.RED_WILDFLOWER],
+        [1, PropIndex.TREE_STUMP],
+        [40, null],
+    ];
 
     generate(game: Game) {
         const worldTileGrid = new Grid<Tile>(this.gridSize, this.gridSize, { index: TileIndex.GRASS, rotation: 0 }); 
@@ -180,6 +194,9 @@ class ForestLevel implements Level {
         console.log(`Generating forest with size ${this.gridSize} x ${this.gridSize}`);
         const noise = new PerlinNoise(MathUtils.randomInt(1000, 10000));
         const getNoise = (x: number, y: number) => noise.get(x / 16.43 + 1000, y / 16.32 + 1000);
+
+        const props = this.propFrequencies.map(([_, p]) => p);
+        const propChances = this.propFrequencies.map(([f, _]) => f);
 
         worldTileGrid.iterate((self, r, c) => {
             let noiseValue = getNoise(c, r);
@@ -203,9 +220,8 @@ class ForestLevel implements Level {
             }
             else {
                 // is grass
-                if (Math.random() < 0.05) {
-                    worldPropGrid.set(r, c, PropIndex.EVERGREEN_TREE);
-                }
+                const prop = MathUtils.randomWeightedChoice<Nullable<PropIndex>>(props, propChances);
+                worldPropGrid.set(r, c, prop);
             }
         });
 
