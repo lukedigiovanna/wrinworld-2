@@ -7,10 +7,8 @@ import { EnemyIndex, PortalFactory, PortalProperties, PropFactory } from "../gam
 import { ItemIndex } from "../game/items";
 import { PropIndex, propsCodex } from "../game/props";
 import { getTexture } from "../assets/imageLoader";
-import { Grid } from "../utils/Grid";
+import { Grid, Graph, RandomSinCurve } from "../utils";
 import { Nullable, Pair } from "../utils/types";
-import { DefaultMap } from "../utils/DefaultMap";
-import { Graph } from "../utils/Graph";
 
 const portalTypes: PortalProperties[] = [
     { // Slime portal
@@ -301,6 +299,8 @@ class ForestLevel implements Level {
             }
         }
 
+        const sin = new RandomSinCurve(200, 20, 5);
+        sin.prettyPrint();
         try {
             const middle = round(this.gridSize / 2);
             const mainPath = tree.dfsSearch(
@@ -308,7 +308,7 @@ class ForestLevel implements Level {
                 cantorPairIndex(round(this.gridSize - this.margin), middle) // end
             );
             if (!mainPath) {
-            throw Error("something bad...");
+                throw Error("something bad...");
             }
             const paths = [mainPath];
             for (let i = 0; i < 5; i++) {
@@ -336,6 +336,7 @@ class ForestLevel implements Level {
                             worldPropGrid.set(po.y + yo, po.x + xo, null);
                         }
                     }
+                    
                 }
             }
         }

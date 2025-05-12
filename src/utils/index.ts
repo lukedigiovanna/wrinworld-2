@@ -30,5 +30,6 @@ export * from "./PerlinNoise";
 export * from "./Permutation";
 export * from "./Point";
 export * from "./PriorityQueue";
+export * from "./RandomSinCurve";
 export * from "./Rectangle";
 export * from "./Vector";
