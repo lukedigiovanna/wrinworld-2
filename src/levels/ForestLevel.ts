@@ -1,8 +1,8 @@
 import { Level } from "./";
-import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Rectangle, Point, PerlinNoise, cantorPairIndex } from "../utils";
+import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Rectangle, Point, PerlinNoise, cantorPairIndex, Permutation } from "../utils";
 import { Game } from "../game/game";
-import { ChunkConstants } from "../game/Chunk";
-import { Tile, TileIndex } from "../game/tiles";
+import { Chunk, ChunkConstants } from "../game/Chunk";
+import { Tile, tileCodex, TileIndex } from "../game/tiles";
 import { EnemyIndex, PortalFactory, PortalProperties, PropFactory } from "../gameObjects";
 import { ItemIndex } from "../game/items";
 import { PropIndex, propsCodex } from "../game/props";
@@ -12,7 +12,7 @@ import { Nullable, Pair } from "../utils/types";
 
 const portalTypes: PortalProperties[] = [
     { // Slime portal
-        size: "medium",
+        size: "small",
         health: 25,
         difficulty: 0,
         packs: [
@@ -25,7 +25,7 @@ const portalTypes: PortalProperties[] = [
         ]
     },
     { // Red slime portal
-        size: "medium",
+        size: "small",
         health: 35,
         difficulty: 0.1,
         packs: [
@@ -38,7 +38,7 @@ const portalTypes: PortalProperties[] = [
         ]
     },
     { // Ground worm portal
-        size: "medium",
+        size: "small",
         health: 35,
         difficulty: 0.1,
         packs: [
@@ -70,7 +70,7 @@ const portalTypes: PortalProperties[] = [
         ]
     }, 
     { // Revenant eye portal
-        size: "medium",
+        size: "small",
         difficulty: 0.4,
         health: 60,
         packs: [
@@ -96,7 +96,7 @@ const portalTypes: PortalProperties[] = [
         ]
     },
     { // Bunny portal
-        size: "medium",
+        size: "small",
         difficulty: 0.3,
         health: 35,
         packs: [
@@ -163,6 +163,7 @@ class ForestLevel implements Level {
 
     readonly gridSize = 248;
     readonly margin = 48;
+    readonly numberOfPortals = 10;
 
     readonly cameraBounds: Rectangle = new Rectangle(
         (-this.gridSize / 2) * ChunkConstants.PIXELS_PER_TILE, 
@@ -359,6 +360,62 @@ class ForestLevel implements Level {
         catch (error) {
             console.error(error)
         }
+
+        const portalPositions = [];
+        const dropsPermutation = new Permutation(this.portalDrops);
+        for (let i = 0; i < this.numberOfPortals; i++) {
+            const candidateRow = MathUtils.randomInt(this.margin, this.gridSize - this.margin - 1);
+            const candidateCol = MathUtils.randomInt(this.margin, this.gridSize - this.margin - 1);
+            if (wallMaskGrid.get(candidateRow, candidateCol)) {
+                i--; continue;
+            }
+            const R = 4;
+            let invalid = false;
+            for (let xo = -R; xo <= R; xo++) {
+                for (let yo = -R; yo <= R; yo++) {
+                    if (wallMaskGrid.get(candidateRow + yo, candidateCol + xo) || !tileCodex[worldTileGrid.get(candidateRow + yo, candidateCol + xo).index].canSpawnPortal) {
+                        invalid = true;
+                        break;
+                    }
+                }
+                if (invalid) {
+                    break;
+                }
+            }
+            if (invalid) {
+                i--; continue;
+            }
+            let closestDistance = 999;
+            for (const position of portalPositions) {
+                const distance = Math.sqrt((position.x - candidateCol) ** 2 + (position.y - candidateRow) ** 2);
+                closestDistance = Math.min(closestDistance, distance);
+            }
+            if (closestDistance < 10) {
+                i--; continue;
+            }
+            const drops = dropsPermutation.next;
+            const properties = MathUtils.randomChoice(portalTypes);
+            game.addGameObject(PortalFactory(
+                properties, 
+                drops, 
+                new Vector(
+                    (candidateCol - this.gridSize / 2) * ChunkConstants.PIXELS_PER_TILE, 
+                    candidateRow * ChunkConstants.PIXELS_PER_TILE)
+                )
+            );
+            for (let xo = -R; xo <= R; xo++) { 
+                for (let yo = -R; yo <= R; yo++) {
+                    const d = Math.sqrt(xo ** 2 + yo ** 2);
+                    if (d === 0 || Math.random() < 1 / d) {
+                        worldPropGrid.set(candidateRow + yo, candidateCol + xo, PropIndex.CURSED_OVERLAY);
+                    }
+                    else if (d <= R) {
+                        worldPropGrid.set(candidateRow + yo, candidateCol + xo, null);
+                    }
+                }
+            }
+            portalPositions.push(new Point(candidateCol, candidateRow));
+        }
         
         worldTileGrid.iterate((self, r, c) => {
             let x = c - self.width / 2;
@@ -375,63 +432,8 @@ class ForestLevel implements Level {
                     const position = new Vector((x + 0.5) * ChunkConstants.PIXELS_PER_TILE, y * ChunkConstants.PIXELS_PER_TILE + texture.height / 2);
                     game.addGameObject(PropFactory(prop, position));
                 }
-            }
-            
+            } 
         });
-        // // 6. Place portals
-        // const portalPositions = [];
-        // const dropsPermutation = new Permutation(this.portalDrops);
-        // for (let i = 0; i < numPortals; i++) {
-        //     let position;
-        //     let invalid;
-        //     do {
-        //         position = new Vector(
-        //             (MathUtils.randomInt(left, right) + 0.5) * ChunkConstants.PIXELS_PER_TILE,
-        //             (MathUtils.randomInt(bottom + marginTrail, top - marginTrail) + 0.5) * ChunkConstants.PIXELS_PER_TILE
-        //         );
-        //         invalid = game.isTileWithPropertyInArea(position, 2, "canSpawnPortal", false);
-        //         if (!invalid) {
-        //             for (const other of portalPositions) {
-        //                 if (position.distanceTo(other) <= minDistance) {
-        //                     invalid = true;
-        //                     break;
-        //                 }
-        //             }
-        //         }
-        //     } while (invalid);
-        //     const progression = (position.y / ChunkConstants.PIXELS_PER_TILE - marginTrail) / height;
-        //     const validChoices = portalTypes.filter(type => (type.difficulty ? type.difficulty : 0) <= progression);
-        //     if (validChoices.length === 0) {
-        //         throw Error("Cannot generate portal for position: " + position + " progressio " + progression + " because no portal has low enough difficulty");
-        //     }
-        //     const properties = MathUtils.randomChoice(validChoices);
-        //     const dropPool = dropsPermutation.next;
-        //     game.addGameObject(PortalFactory(properties, dropPool, position));
-        //     portalPositions.push(position);
-        //     const R = 5;
-        //     for (let xo = -R; xo <= R; xo++) {
-        //         for (let yo = -R; yo <= R; yo++) {
-        //             const dist = Math.sqrt(xo * xo + yo * yo);
-        //             const chance = 1 - dist / 4;
-        //             if (Math.random() < chance) {
-        //                 const po = Vector.add(new Vector(xo * ChunkConstants.PIXELS_PER_TILE, yo * ChunkConstants.PIXELS_PER_TILE), position);
-        //                 const tile = game.getTileAtWorldPosition(po);
-        //                 if (tile === TileIndex.GRASS) {
-        //                     game.setTileAtWorldPosition(po, TileIndex.CURSED_GRASS);
-        //                 }
-        //                 else if (tile === TileIndex.PATH) {
-        //                     game.setTileAtWorldPosition(po, TileIndex.CURSED_PATH);
-        //                 }
-        //                 else if (tile === TileIndex.SAND) {
-        //                     game.setTileAtWorldPosition(po, TileIndex.CURSED_SAND);
-        //                 }
-        //                 else if (tile === TileIndex.PLANKS) {
-        //                     game.setTileAtWorldPosition(po, TileIndex.CURSED_PLANKS);
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
     }
 };
 

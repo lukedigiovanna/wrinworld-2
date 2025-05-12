@@ -75,7 +75,6 @@ class Graph<S, T = undefined> {
                         curr = parents.get(curr)!;
                     }
                     path.push(curr);
-                    console.log(curr);
                     return path;
                 }
                 if (!visited.has(neighbor)) {

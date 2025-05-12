@@ -17,12 +17,14 @@ enum PropIndex {
     SCHOOL_DESK,
     BASKETBALL,
     LUNCH_TABLE,
+    CURSED_OVERLAY,
 }
 
 interface PropProperties {
     spriteID: string;
     hasCollision: boolean;
     castsShadow: boolean;
+    zIndex?: number;
 }
 
 const propsCodex: Record<PropIndex, PropProperties> = {
@@ -110,6 +112,12 @@ const propsCodex: Record<PropIndex, PropProperties> = {
     spriteID: "lunch_table",
     hasCollision: true,
     castsShadow: false,
+},
+[PropIndex.CURSED_OVERLAY]: {
+    spriteID: "cursed_overlay",
+    hasCollision: false,
+    castsShadow: false,
+    zIndex: -100,
 },
 }
 

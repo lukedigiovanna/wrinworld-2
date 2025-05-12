@@ -13,6 +13,9 @@ const PropFactory: GameObjectFactory = (propertiesIndex: PropIndex, position: Ve
     prop.scale.setComponents(texture.width, texture.height);
     prop.renderer = spriteRenderer(properties.spriteID);
     prop.position.set(position);
+    if (properties.zIndex) {
+        prop.zIndex = properties.zIndex;
+    }
     if (properties.hasCollision) {
         const collider = prop.addComponent(PhysicalCollider);
         collider.data.boxSize = new Vector(prop.scale.x / 4, 8);
