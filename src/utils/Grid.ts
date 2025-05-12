@@ -45,8 +45,54 @@ class Grid<T> {
         this.set(r0, col, value);
     }
 
+    public fillRect(row: number, col: number, width: number, height: number, value: T) {
+        let startRow = Math.max(row, 0);
+        let startCol = Math.max(col, 0);
+        let endRow = Math.min(row + height, this.height - 1);
+        let endCol = Math.min(col + width, this.width - 1);
+        for (let r = startRow; r <= endRow; r++) {
+            for (let c = startCol; c <= endCol; c++) {
+                this.set(r, c, value);
+            }
+        }
+    }
+
+    private drawCircleHelper(rc: number, cc: number, r: number, c: number, value: T) {
+        this.set(rc + r, cc + c, value);
+        this.set(rc + r, cc - c, value);
+        this.set(rc + c, cc + r, value);
+        this.set(rc + c, cc - r, value);
+        this.set(rc - r, cc + c, value);
+        this.set(rc - r, cc - c, value);
+        this.set(rc - c, cc + r, value);
+        this.set(rc - c, cc - r, value);
+    }
+
+    // Uses Bresenham's algorithm
+    public fillCircle(row: number, col: number, radius: number, value: T) {
+        let c = 0, r = radius;
+        let d = 3 - 2 * radius;
+        for (let dc = 0; dc <= c; dc++) {
+            this.drawCircleHelper(row, col, r, dc, value);
+        }
+        while (r >= c){
+            if (d > 0) {
+                r--; 
+                d = d + 4 * (c - r) + 10;
+            }
+            else
+                d = d + 4 * c + 6;
+            c++;
+            for (let dc = 0; dc <= c; dc++) {
+                this.drawCircleHelper(row, col, r, dc, value);
+            }
+        }
+    }
+
     public set(row: number, col: number, value: T) {
-        this.cells[row * this.width + col] = value;
+        if (this.validCoord(row, col)) {
+            this.cells[row * this.width + col] = value;
+        }
     }
 
     public get(row: number, col: number): T {
@@ -64,7 +110,8 @@ class Grid<T> {
     }
 
     public validCoord(row: number, col: number): boolean {
-        return row >= 0 && row < this.height && col >= 0 && col < this.width;
+        return Number.isInteger(row) && Number.isInteger(col) && row >= 0 && 
+                row < this.height && col >= 0 && col < this.width;
     }
 
     // Applies the given function over the grid.

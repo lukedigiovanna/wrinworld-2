@@ -1,5 +1,5 @@
 import { Level } from "./";
-import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Permutation, Rectangle, Point, PerlinNoise, LinearParametricCurve, cantorPairIndex } from "../utils";
+import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Rectangle, Point, PerlinNoise, cantorPairIndex } from "../utils";
 import { Game } from "../game/game";
 import { ChunkConstants } from "../game/Chunk";
 import { Tile, TileIndex } from "../game/tiles";
@@ -8,7 +8,7 @@ import { ItemIndex } from "../game/items";
 import { PropIndex, propsCodex } from "../game/props";
 import { getTexture } from "../assets/imageLoader";
 import { Grid, Graph, RandomSinCurve } from "../utils";
-import { Nullable, Pair } from "../utils/types";
+import { Nullable } from "../utils/types";
 
 const portalTypes: PortalProperties[] = [
     { // Slime portal
@@ -123,11 +123,6 @@ const portalTypes: PortalProperties[] = [
     },
 ];
 
-interface VertexData {
-    point: Point,
-    neighbors: Set<number>
-}
-
 class ForestLevel implements Level {
     readonly name = "Corrupted Forest";
     readonly portalDrops = [
@@ -166,20 +161,22 @@ class ForestLevel implements Level {
         [ { itemIndex: ItemIndex.GHOST_ARROWS }],
     ];
 
-    readonly gridSize = 224;
-    readonly margin = 24;
+    readonly gridSize = 248;
+    readonly margin = 48;
 
     readonly cameraBounds: Rectangle = new Rectangle(
         (-this.gridSize / 2) * ChunkConstants.PIXELS_PER_TILE, 
         (this.gridSize / 2) * ChunkConstants.PIXELS_PER_TILE, 
-        (this.margin / 2) * ChunkConstants.PIXELS_PER_TILE, 
-        (this.gridSize - this.margin / 2) * ChunkConstants.PIXELS_PER_TILE
+        (this.margin * 0.25) * ChunkConstants.PIXELS_PER_TILE, 
+        (this.gridSize - this.margin * 0.1) * ChunkConstants.PIXELS_PER_TILE
     );
     readonly playerSpawnPosition = new Vector(0, (this.margin / 2 + 4) * ChunkConstants.PIXELS_PER_TILE);
 
     generate(game: Game) {
         const worldTileGrid = new Grid<Tile>(this.gridSize, this.gridSize, { index: TileIndex.GRASS, rotation: 0 }); 
         const worldPropGrid = new Grid<Nullable<PropIndex>>(this.gridSize, this.gridSize, null);
+        // True where there should be a wall
+        const wallMaskGrid = new Grid<boolean>(this.gridSize, this.gridSize, true);
         console.log(`Generating forest with size ${this.gridSize} x ${this.gridSize}`);
         const noise = new PerlinNoise(MathUtils.randomInt(1000, 10000));
         const getNoise = (x: number, y: number) => noise.get(x / 16.43 + 1000, y / 16.32 + 1000);
@@ -299,8 +296,7 @@ class ForestLevel implements Level {
             }
         }
 
-        const sin = new RandomSinCurve(200, 20, 5);
-        sin.prettyPrint();
+        const sin = new RandomSinCurve(150, 10, 5);
         try {
             const middle = round(this.gridSize / 2);
             const mainPath = tree.dfsSearch(
@@ -336,30 +332,35 @@ class ForestLevel implements Level {
                             worldPropGrid.set(po.y + yo, po.x + xo, null);
                         }
                     }
-                    
+                    let radius = Math.round(Math.abs(sin.get(po.y)) + 3);
+                    if (po.y < this.margin || this.gridSize - po.y < this.margin) {
+                        radius = 3;
+                    }
+                    wallMaskGrid.fillCircle(po.y, po.x, radius, false);
                 }
             }
         }
         catch (error) {
             console.error(error)
         }
-
-        for (const vertex of graph.getVertexKeys().map(key => graph.getVertexData(key))) {
-            worldTileGrid.set(vertex.y, vertex.x, { index: TileIndex.RAINBOW_TARGET, rotation: 0 });
-        }
         
         worldTileGrid.iterate((self, r, c) => {
             let x = c - self.width / 2;
             let y = r;
-            const tile = self.get(r, c)!;
-            game.setTileAtTilePosition(new Point(x, y), tile.index, tile.rotation);
-            
-            const prop = worldPropGrid.get(r, c);
-            if (prop !== null) {
-                const texture = getTexture(propsCodex[prop as PropIndex].spriteID);
-                const position = new Vector((x + 0.5) * ChunkConstants.PIXELS_PER_TILE, y * ChunkConstants.PIXELS_PER_TILE + texture.height / 2);
-                game.addGameObject(PropFactory(prop, position));
+            if (wallMaskGrid.get(r, c)) {
+                game.setTileAtTilePosition(new Point(x, y), TileIndex.ROCKS, 0);
             }
+            else {
+                const tile = self.get(r, c)!;
+                game.setTileAtTilePosition(new Point(x, y), tile.index, tile.rotation);
+                const prop = worldPropGrid.get(r, c);
+                if (prop !== null) {
+                    const texture = getTexture(propsCodex[prop as PropIndex].spriteID);
+                    const position = new Vector((x + 0.5) * ChunkConstants.PIXELS_PER_TILE, y * ChunkConstants.PIXELS_PER_TILE + texture.height / 2);
+                    game.addGameObject(PropFactory(prop, position));
+                }
+            }
+            
         });
         // // 6. Place portals
         // const portalPositions = [];

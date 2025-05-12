@@ -84,7 +84,7 @@ const tileCodex: Record<TileIndex, TileData> = {
     canGrowPlants: false,
     canSpawnPortal: false,
     wall: true,
-    leaks: [TileIndex.GRASS, TileIndex.PATH, TileIndex.SAND],
+    leaks: [TileIndex.GRASS, TileIndex.PATH, TileIndex.SAND, TileIndex.WATER],
 },
 [TileIndex.PATH]: {
     spriteID: "path",
