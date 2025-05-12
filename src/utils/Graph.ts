@@ -53,7 +53,7 @@ class Graph<S, T = undefined> {
         return Array.from(this.vertices.entries()).map((v) => v[0]);
     }
 
-    public dfs(startVertexKey: S, endVertexKey: S) {
+    public dfsSearch(startVertexKey: S, endVertexKey: S) {
         if (!this.hasVertex(startVertexKey)) {
             throw Error("Cannot perform dfs on vertex not in graph: " + startVertexKey);
         }
@@ -86,6 +86,10 @@ class Graph<S, T = undefined> {
             }
         }
         return undefined;
+    }
+
+    public bfsIterate(startVertexKey: number, func: (key: S, neighbors: S[], data?: T) => void) {
+        // unimplemented (not currently used)
     }
 }
 

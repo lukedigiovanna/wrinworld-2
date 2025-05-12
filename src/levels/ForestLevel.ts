@@ -168,25 +168,32 @@ class ForestLevel implements Level {
         [ { itemIndex: ItemIndex.GHOST_ARROWS }],
     ];
 
-    readonly cameraBounds: Rectangle = new Rectangle(-10024, 10024, 64, 36400);
-    readonly playerSpawnPosition = new Vector(0, 160);
+    readonly gridSize = 224;
+    readonly margin = 24;
+
+    readonly cameraBounds: Rectangle = new Rectangle(
+        (-this.gridSize / 2) * ChunkConstants.PIXELS_PER_TILE, 
+        (this.gridSize / 2) * ChunkConstants.PIXELS_PER_TILE, 
+        (this.margin / 2) * ChunkConstants.PIXELS_PER_TILE, 
+        (this.gridSize - this.margin / 2) * ChunkConstants.PIXELS_PER_TILE
+    );
+    readonly playerSpawnPosition = new Vector(0, (this.margin / 2 + 4) * ChunkConstants.PIXELS_PER_TILE);
 
     generate(game: Game) {
-        const gridSize = 200;
-        const worldTileGrid = new Grid<Tile>(gridSize, gridSize, { index: TileIndex.GRASS, rotation: 0 }); 
-        const worldPropGrid = new Grid<Nullable<PropIndex>>(gridSize, gridSize, null);
-        console.log(`Generating forest with size ${gridSize} x ${gridSize}`);
+        const worldTileGrid = new Grid<Tile>(this.gridSize, this.gridSize, { index: TileIndex.GRASS, rotation: 0 }); 
+        const worldPropGrid = new Grid<Nullable<PropIndex>>(this.gridSize, this.gridSize, null);
+        console.log(`Generating forest with size ${this.gridSize} x ${this.gridSize}`);
         const noise = new PerlinNoise(MathUtils.randomInt(1000, 10000));
         const getNoise = (x: number, y: number) => noise.get(x / 16.43 + 1000, y / 16.32 + 1000);
 
         worldTileGrid.iterate((self, r, c) => {
             let noiseValue = getNoise(c, r);
-            const distanceToStart = Math.sqrt(r ** 2 + (c - gridSize / 2) ** 2);
-            if (distanceToStart < 24) {
+            const distanceToStart = Math.sqrt(r ** 2 + (c - this.gridSize / 2) ** 2);
+            if (distanceToStart < 24 + this.margin) {
                 noiseValue = MathUtils.clamp(noiseValue, 0.45, 0.7);
             }
-            const distanceToEnd = Math.sqrt((gridSize - r) ** 2 + (c - gridSize / 2) ** 2);
-            if (distanceToEnd < 24) {
+            const distanceToEnd = Math.sqrt((this.gridSize - r) ** 2 + (c - this.gridSize / 2) ** 2);
+            if (distanceToEnd < 24 + this.margin) {
                 noiseValue = MathUtils.clamp(noiseValue, 0.45, 0.7);
             }
 
@@ -209,8 +216,9 @@ class ForestLevel implements Level {
 
         const graph = new Graph<number, Vector>();
         const resolution = 8;
-        for (let r = 0; r < gridSize; r += resolution) {
-            for (let c = 0; c < gridSize; c += resolution) {
+        const round = (x: number) => Math.floor(x / resolution) * resolution;
+        for (let r = round(this.margin); r <= this.gridSize - round(this.margin); r += resolution) {
+            for (let c = round(this.margin); c <= this.gridSize - round(this.margin); c += resolution) {
                 if (worldTileGrid.get(r, c).index !== TileIndex.GRASS) {
                     continue;
                 }
@@ -228,8 +236,6 @@ class ForestLevel implements Level {
                 }
             }
         }
-
-        console.log(graph);
 
         // Perform a maze generation via a uniform spanning tree (UST)
         // Wilson's Algorithm:
@@ -296,25 +302,52 @@ class ForestLevel implements Level {
             }
         }
 
-        const middle = Math.floor(gridSize / 2 / resolution) * resolution;
-        const startVertex = cantorPairIndex(0, middle);
-        const endVertex = cantorPairIndex(gridSize - resolution, middle);
-        const path = tree.dfs(startVertex, endVertex);
-        if (!path) {
-            throw Error("No path connecting bottom to top???");
-        }
-        const pathPoints = path.map((vertex) => graph.getVertexData(vertex));
-        const curve = new CatmullRomParametricCurve(pathPoints);
-        for (let t = 0; t <= 1; t += 0.001) {
-            const po = Point.from(curve.getPosition(t));
-            for (let xo = 0; xo <= 1; xo++) {
-                for (let yo = 0; yo <= 1; yo++) {
-                    worldTileGrid.set(po.y + yo, po.x + xo, { index: TileIndex.PATH, rotation: 0 });
-                    worldPropGrid.set(po.y + yo, po.x + xo, null);
+        try {
+            const middle = round(this.gridSize / 2);
+            const mainPath = tree.dfsSearch(
+                cantorPairIndex(round(this.margin), middle), // start
+                cantorPairIndex(round(this.gridSize - this.margin), middle) // end
+            );
+            if (!mainPath) {
+            throw Error("something bad...");
+            }
+            const paths = [mainPath];
+            for (let i = 0; i < 5; i++) {
+                const pathPoint = MathUtils.randomChoice(mainPath);
+                const randomPoint = MathUtils.randomChoice(tree.getVertexKeys());
+                paths.push(tree.dfsSearch(pathPoint, randomPoint)!);
+            }
+            for (const path of paths) {
+                if (!path) {
+                    throw Error("something bad!");
+                }
+                const pathPoints = path.map((vertex) => graph.getVertexData(vertex));
+                if (path === mainPath) {
+                    for (let i = 0; i < this.margin; i += resolution) {
+                        pathPoints.push(new Vector(middle, i));
+                        pathPoints.unshift(new Vector(middle, this.gridSize - 1 - i));
+                    }
+                }
+                const curve = new CatmullRomParametricCurve(pathPoints);
+                for (let t = 0; t <= 1; t += 0.001) {
+                    const po = Point.from(curve.getPosition(t));
+                    for (let xo = 0; xo <= 1; xo++) {
+                        for (let yo = 0; yo <= 1; yo++) {
+                            worldTileGrid.set(po.y + yo, po.x + xo, { index: TileIndex.PATH, rotation: 0 });
+                            worldPropGrid.set(po.y + yo, po.x + xo, null);
+                        }
+                    }
                 }
             }
         }
+        catch (error) {
+            console.error(error)
+        }
 
+        for (const vertex of graph.getVertexKeys().map(key => graph.getVertexData(key))) {
+            worldTileGrid.set(vertex.y, vertex.x, { index: TileIndex.RAINBOW_TARGET, rotation: 0 });
+        }
+        
         worldTileGrid.iterate((self, r, c) => {
             let x = c - self.width / 2;
             let y = r;
