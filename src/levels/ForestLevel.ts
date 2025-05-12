@@ -298,7 +298,6 @@ class ForestLevel implements Level {
                 tree.addVertex(thisNode);
                 tree.addEdge(thisNode, nextNode);
                 remainingVertices.delete(thisNode);
-                
             }
         }
 
