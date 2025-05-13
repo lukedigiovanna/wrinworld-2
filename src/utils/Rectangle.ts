@@ -29,10 +29,10 @@ class Rectangle {
         const width2 = Math.abs(scale.x) / 2;
         const height2 = Math.abs(scale.y) / 2;
         return new Rectangle(
-            position.x + width2,
             position.x - width2,
-            position.y + height2,
+            position.x + width2,
             position.y - height2,
+            position.y + height2,
         );
     }
 }
