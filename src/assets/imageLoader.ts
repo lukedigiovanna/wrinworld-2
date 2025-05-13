@@ -91,12 +91,12 @@ function loadTexturesFromSpritesheet(gl: WebGLRenderingContext, id: string, cell
     let i = 0;
     for (let y = 0; y < h; y += cellHeight) {
         for (let x = 0; x < w; x += cellWidth) {
-            const clipRect: Rectangle = {
-                left: x / w,
-                right: (x + cellWidth) / w,
-                bottom: y / h,
-                top: (y + cellHeight) / h,
-            }
+            const clipRect: Rectangle = new Rectangle(
+                x / w,
+                (x + cellWidth) / w,
+                y / h,
+                (y + cellHeight) / h,
+            );
             let cellID;
             if (customIDs && i < customIDs.length) {
                 cellID = `${id}_${customIDs[i]}`;   

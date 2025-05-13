@@ -162,18 +162,24 @@ class ForestLevel implements Level {
     ];
 
     readonly gridSize = 248;
-    readonly margin = 48;
+    readonly padding = 48;
     readonly numberOfPortals = 10;
 
     readonly cameraBounds: Rectangle = new Rectangle(
         (-this.gridSize / 2) * ChunkConstants.PIXELS_PER_TILE, 
         (this.gridSize / 2) * ChunkConstants.PIXELS_PER_TILE, 
-        (this.margin * 0.25) * ChunkConstants.PIXELS_PER_TILE, 
-        (this.gridSize - this.margin * 0.1) * ChunkConstants.PIXELS_PER_TILE
+        (this.padding * 0.25) * ChunkConstants.PIXELS_PER_TILE, 
+        (this.gridSize - this.padding * 0.1) * ChunkConstants.PIXELS_PER_TILE
     );
     readonly playerSpawnPosition = new Vector(
         -48, 
-        (this.margin * 0.4) * ChunkConstants.PIXELS_PER_TILE
+        (this.padding * 0.4) * ChunkConstants.PIXELS_PER_TILE
+    );
+    readonly endzone: Rectangle = new Rectangle(
+        -10 * ChunkConstants.PIXELS_PER_TILE,
+        4 * ChunkConstants.PIXELS_PER_TILE,
+        (this.gridSize - this.padding * 0.1 - 4) * ChunkConstants.PIXELS_PER_TILE,
+        (this.gridSize - this.padding * 0.1 + 4) * ChunkConstants.PIXELS_PER_TILE,
     );
 
     readonly propFrequencies: Pair<number, Nullable<PropIndex>>[] = [
@@ -202,11 +208,11 @@ class ForestLevel implements Level {
         worldTileGrid.iterate((self, r, c) => {
             let noiseValue = getNoise(c, r);
             const distanceToStart = Math.sqrt(r ** 2 + (c - this.gridSize / 2) ** 2);
-            if (distanceToStart < 24 + this.margin) {
+            if (distanceToStart < 24 + this.padding) {
                 noiseValue = MathUtils.clamp(noiseValue, 0.45, 0.7);
             }
             const distanceToEnd = Math.sqrt((this.gridSize - r) ** 2 + (c - this.gridSize / 2) ** 2);
-            if (distanceToEnd < 24 + this.margin) {
+            if (distanceToEnd < 24 + this.padding) {
                 noiseValue = MathUtils.clamp(noiseValue, 0.45, 0.7);
             }
 
@@ -229,8 +235,8 @@ class ForestLevel implements Level {
         const graph = new Graph<number, Vector>();
         const resolution = 8;
         const round = (x: number) => Math.floor(x / resolution) * resolution;
-        for (let r = round(this.margin); r <= this.gridSize - round(this.margin); r += resolution) {
-            for (let c = round(this.margin); c <= this.gridSize - round(this.margin); c += resolution) {
+        for (let r = round(this.padding); r <= this.gridSize - round(this.padding); r += resolution) {
+            for (let c = round(this.padding); c <= this.gridSize - round(this.padding); c += resolution) {
                 if (worldTileGrid.get(r, c).index !== TileIndex.GRASS) {
                     continue;
                 }
@@ -317,8 +323,8 @@ class ForestLevel implements Level {
         try {
             const middle = round(this.gridSize / 2);
             const mainPath = tree.dfsSearch(
-                cantorPairIndex(round(this.margin), middle), // start
-                cantorPairIndex(round(this.gridSize - this.margin), middle) // end
+                cantorPairIndex(round(this.padding), middle), // start
+                cantorPairIndex(round(this.gridSize - this.padding), middle) // end
             );
             if (!mainPath) {
                 throw Error("something bad...");
@@ -335,7 +341,7 @@ class ForestLevel implements Level {
                 }
                 const pathPoints = path.map((vertex) => graph.getVertexData(vertex));
                 if (path === mainPath) {
-                    for (let i = 0; i < this.margin; i += resolution) {
+                    for (let i = 0; i < this.padding; i += resolution) {
                         pathPoints.push(new Vector(middle, i));
                         pathPoints.unshift(new Vector(middle, this.gridSize - 1 - i));
                     }
@@ -350,7 +356,7 @@ class ForestLevel implements Level {
                         }
                     }
                     let radius = Math.round(Math.abs(sin.get(po.y)) + 3);
-                    if (po.y < this.margin || this.gridSize - po.y < this.margin) {
+                    if (po.y < this.padding || this.gridSize - po.y < this.padding) {
                         radius = 3;
                     }
                     wallMaskGrid.fillCircle(po.y, po.x, radius, false);
@@ -364,8 +370,8 @@ class ForestLevel implements Level {
         const portalPositions = [];
         const dropsPermutation = new Permutation(this.portalDrops);
         for (let i = 0; i < this.numberOfPortals; i++) {
-            const candidateRow = MathUtils.randomInt(this.margin, this.gridSize - this.margin - 1);
-            const candidateCol = MathUtils.randomInt(this.margin, this.gridSize - this.margin - 1);
+            const candidateRow = MathUtils.randomInt(this.padding, this.gridSize - this.padding - 1);
+            const candidateCol = MathUtils.randomInt(this.padding, this.gridSize - this.padding - 1);
             if (wallMaskGrid.get(candidateRow, candidateCol)) {
                 i--; continue;
             }

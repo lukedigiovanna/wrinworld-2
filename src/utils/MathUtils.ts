@@ -78,7 +78,7 @@ class MathUtils {
         direction = Vector.normalized(direction);
         // Operate on a parameterized function: p(t) = origin + direction * t
         const p = (t: number) => Vector.add(origin, Vector.scaled(direction, t));
-        const check = (side: keyof Rectangle) => {
+        const check = (side: "left" | "right" | "bottom" | "top") => {
             let axis;
             let altAxis;
             if (side === "left" || side === "right") {
@@ -110,7 +110,7 @@ class MathUtils {
         }
         let min = Infinity;
         ["left", "right", "bottom", "top"].forEach(side => {
-            const c = check(side as keyof Rectangle);
+            const c = check(side as "left" | "right" | "bottom" | "top");
             if (c !== null && c < min) {
                 min = c;
             }

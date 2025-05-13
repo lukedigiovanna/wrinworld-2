@@ -2,7 +2,7 @@ import { getTexture } from "../assets/imageLoader";
 import { GameObject, PlayerFactory } from "../gameObjects";
 import { Vector, MathUtils, PerlinNoise, Color, Ease, Point } from "../utils";
 import input from "../input";
-import { Particle, ParticleLayer } from "../components";
+import { Hitbox, Particle, ParticleLayer } from "../components";
 import { Tile, tileCodex, TileData, TileIndex, TileRotation } from "./tiles";
 import { Level, levels, LevelIndex } from "../levels";
 import settings from "../settings";
@@ -17,6 +17,8 @@ import { Chunk, ChunkConstants } from "./Chunk";
 import { Grid, GridPosition } from "../utils/Grid";
 import { LazyGrid } from "../utils/LazyGrid";
 import { Optional } from "../utils/types";
+import { addNotification } from "../notifications";
+import { spriteRenderer } from "../rendering/renderers";
 
 const RENDER_DISTANCE = 3;
 const PIXELATION_PERIOD = 3;
@@ -138,7 +140,7 @@ class Game {
             return;
         }
 
-        if (this.dirtyLevel && (!this.pixelateLevelStart || this.time - this.levelStartTime > PIXELATION_PERIOD / 2) && this.level) {
+        if (this.dirtyLevel && this.level && (!this.pixelateLevelStart || this.time - this.levelStartTime > PIXELATION_PERIOD / 2)) {
             // Unload everything if there was already a loaded level
             this.chunks = new LazyGrid();
             this.activeObjects = [];
@@ -155,11 +157,38 @@ class Game {
 
             this.level.generate(this);
             this._camera.bounds = this.level.cameraBounds;
+            const endzone = new GameObject();
+            endzone.position.set(this.level.endzone.center);
+            endzone.scale.setComponents(this.level.endzone.width, this.level.endzone.height);
+            endzone.tag = "endzone";
+            endzone.addComponent(Hitbox);
+            endzone.addComponent((gameObject) => {
+                return {
+                    id: "endzone",
+                    update(dt) {
+                        console.log(gameObject.position);
+                    },
+                    onHitboxCollisionEnter(collision) {
+                        if (collision.tag === "player") {
+                            if (gameObject.game.portals.length > 0) {
+                                collision.getComponent("physics").data.impulse.add(
+                                    collision.position.minus(gameObject.position).normalized().scaled(500)
+                                );
+                                addNotification({
+                                    text: "You still have more portals to close!",
+                                    color: "magenta"
+                                });
+                            }
+                            else {
+
+                            }
+                        }
+                    },
+                }
+            });
+            this.addGameObject(endzone);
+
             this.dirtyLevel = false;
-        }
-        
-        if (this.level && this.player.hitboxCenter.y >= this.level.cameraBounds.top) {  
-            this.switchLevel(LevelIndex.SCHOOL);
         }
 
         while (this.checkTimeout());
@@ -179,10 +208,7 @@ class Game {
         }
 
         while (this.objectDeleteQueue.length > 0) {
-            const obj = this.objectDeleteQueue.pop();
-            if (!obj) {
-                throw Error("Cannot remove undefined object from game");
-            }
+            const obj = this.objectDeleteQueue.pop()!;
             const chunkPos = obj.storedInChunkPosition;
             if (!chunkPos) {
                 throw Error("Object was never added to a chunk");

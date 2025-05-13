@@ -11,6 +11,7 @@ interface Level {
     portalDrops: PortalDropPool[];
     playerSpawnPosition: Vector;
     cameraBounds: Rectangle;
+    endzone: Rectangle;
 
     generate: (game: Game) => void;    
 }

@@ -423,6 +423,7 @@ class SchoolLevel implements Level {
     ];
 
     public cameraBounds = new Rectangle(0, 0, 0, 0);
+    readonly endzone = new Rectangle(0, 0, 0, 0);
     readonly playerSpawnPosition = new Vector(0, 600);
 
     generate(game: Game) {
