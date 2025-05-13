@@ -1,5 +1,5 @@
 import { getTexture } from "../assets/imageLoader";
-import { GameObject, PlayerFactory } from "../gameObjects";
+import { EndZoneFactory, GameObject, PlayerFactory } from "../gameObjects";
 import { Vector, MathUtils, PerlinNoise, Color, Ease, Point } from "../utils";
 import input from "../input";
 import { Hitbox, Particle, ParticleLayer } from "../components";
@@ -21,7 +21,7 @@ import { addNotification } from "../notifications";
 
 const RENDER_DISTANCE = 3;
 const TRANSITION_TO_LEVEL_TIME = 3;
-const TRANSITION_TO_BOSS_TIME = 3;
+const TRANSITION_TO_BOSS_TIME = 7;
 
 interface TimeoutRequest {
     func: () => void;
@@ -65,8 +65,7 @@ class Game {
 
     private level?: Level;
     private dirtyLevel = false;
-    private levelStartTime: number = -999;
-    private pixelateLevelStart = false;
+    private dirtyBoss = false;
     
     private stateStartTime: number;
     private _state: GameState;
@@ -108,6 +107,7 @@ class Game {
 
     public startBossBattle() {
         this.state = GameState.TRANSITION_TO_BOSS;
+        this.dirtyBoss = true;
         // choose a boss from the level
     }
 
@@ -124,6 +124,25 @@ class Game {
         return this._state;
     }
 
+    // Resets the entire world while maintaining the player.
+    private clear(playerPosition: Vector) {
+        // Unload everything if there was already a loaded level
+        this.chunks = new LazyGrid();
+        this.activeObjects = [];
+        this._portals = [];
+        this.particles = [];
+        this._totalObjects = 0;
+
+        this.player.position.set(playerPosition);
+
+        if (this.player.started) {
+            this.addToAppropriateChunk(this.player);
+            this._totalObjects++;
+        }
+
+        this._camera.position.set(playerPosition);
+    }
+
     // Performs any boilerplate updates to the game such as removing dead objects
     // adding new objects, updating active chunks, and generating new chunks.
     public preUpdate() {
@@ -135,52 +154,24 @@ class Game {
             this.state === GameState.TRANSITION_TO_LEVEL && 
             this.stateTime >= TRANSITION_TO_LEVEL_TIME / 2    
         ) {
-            // Unload everything if there was already a loaded level
-            this.chunks = new LazyGrid();
-            this.activeObjects = [];
-            this._portals = [];
-            this.particles = [];
-            this._totalObjects = 0;
-
-            this.player.position.set(this.level.playerSpawnPosition);
-
-            if (this.player.started) {
-                this.addToAppropriateChunk(this.player);
-                this._totalObjects++;
-            }
-
+            this.clear(this.level.playerSpawnPosition);
             this.level.generate(this);
             this._camera.bounds = this.level.cameraBounds;
-            const endzone = new GameObject();
-            endzone.position.set(this.level.endzone.center);
-            endzone.scale.setComponents(this.level.endzone.width, this.level.endzone.height);
-            endzone.tag = "endzone";
-            endzone.addComponent(Hitbox);
-            endzone.addComponent((gameObject) => {
-                return {
-                    id: "endzone",
-                    onHitboxCollisionEnter(collision) {
-                        if (collision.tag === "player") {
-                            if (false && gameObject.game.portals.length > 0) {
-                                collision.getComponent("physics").data.impulse.add(
-                                    collision.position.minus(gameObject.position).normalized().scaled(500)
-                                );
-                                addNotification({
-                                    text: "You still have more portals to close!",
-                                    color: "magenta"
-                                });
-                            }
-                            else {
-                                // start boss battle
-                                gameObject.game.startBossBattle();
-                            }
-                        }
-                    },
-                }
-            });
-            this.addGameObject(endzone);
-
+            this.addGameObject(EndZoneFactory(this.level.endzone));
             this.dirtyLevel = false;
+        }
+
+        if (this.dirtyBoss && this.state === GameState.TRANSITION_TO_BOSS &&
+            this.stateTime >= TRANSITION_TO_BOSS_TIME / 2
+        ) {
+            this.clear(new Vector(0, 0));
+            for (let x = -10; x <= 10; x++) {
+                for (let y = -10; y <= 10; y++) {
+                    this.setTileAtTilePosition(new Point(x, y), TileIndex.RAINBOW_TARGET);
+                }
+            }
+            this._camera.bounds = undefined;
+            this.dirtyBoss = false;
         }
 
         while (this.checkTimeout());
@@ -319,7 +310,10 @@ class Game {
                         .setUniformVector("screenSize", new Vector(this._camera.canvas.width, this._camera.canvas.height));
         }
         else if (this.state === GameState.TRANSITION_TO_BOSS) {
-            const t = this.stateTime / TRANSITION_TO_BOSS_TIME;
+            let t = this.stateTime / TRANSITION_TO_BOSS_TIME;
+            if (t < 0.4) t = t / 0.4;
+            else if (t < 0.6) t = 1.0;
+            else t = (1 - t) / 0.4;
             this._camera.enableShader(PostProcessingShaderIndex.END_LEVEL);
             this._camera.getPostProcessingShader(PostProcessingShaderIndex.END_LEVEL)
                         .setUniformFloat("t", Ease.inOutBounce(t));

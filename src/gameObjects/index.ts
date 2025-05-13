@@ -295,6 +295,7 @@ type GameObjectFactory = (...args: any[]) => GameObject;
 
 export { GameObject, GameObjectFactory, Team };
 export * from "./Corpse";
+export * from "./EndZone";
 export * from "./Enemy";
 export * from "./EssenceOrb";
 export * from "./EssenceOrbAttack";
