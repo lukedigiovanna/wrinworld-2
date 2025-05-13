@@ -96,7 +96,6 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
                 // else {
                 //     gameObject.game.camera.setActivePostProcessingShader(PostProcessingShaderIndex.NO_EFFECT);
                 // }
-                console.log("player", gameObject.position);
             }
         }
     });

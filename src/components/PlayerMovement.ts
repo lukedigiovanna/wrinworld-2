@@ -47,9 +47,6 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
             movement.scale(speed);
             data.physics.data.velocity.set(movement);
 
-            
-
-            
             if (movement.isZero()) {
                 data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_IDLE;
                 const mousePos = gameObject.game.camera.screenToWorldPosition(input.mousePosition);
@@ -93,6 +90,12 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
             }
             else {
                 data.trailParticleEmitter.data.enabled = false;
+            }
+
+            const bounds = gameObject.game.camera.bounds;
+            if (bounds) {
+                gameObject.position.x = MathUtils.clamp(gameObject.position.x, bounds.left, bounds.right);
+                gameObject.position.y = MathUtils.clamp(gameObject.position.y, bounds.bottom, bounds.top);
             }
         },
         data

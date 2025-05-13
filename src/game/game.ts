@@ -165,9 +165,6 @@ class Game {
             endzone.addComponent((gameObject) => {
                 return {
                     id: "endzone",
-                    update(dt) {
-                        console.log(gameObject.position);
-                    },
                     onHitboxCollisionEnter(collision) {
                         if (collision.tag === "player") {
                             if (gameObject.game.portals.length > 0) {
