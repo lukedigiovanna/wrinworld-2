@@ -18,10 +18,10 @@ import { Grid, GridPosition } from "../utils/Grid";
 import { LazyGrid } from "../utils/LazyGrid";
 import { Optional } from "../utils/types";
 import { addNotification } from "../notifications";
-import { spriteRenderer } from "../rendering/renderers";
 
 const RENDER_DISTANCE = 3;
-const PIXELATION_PERIOD = 3;
+const TRANSITION_TO_LEVEL_TIME = 3;
+const TRANSITION_TO_BOSS_TIME = 3;
 
 interface TimeoutRequest {
     func: () => void;
@@ -33,6 +33,14 @@ interface ChunkTilePair {
     chunkPosition: Point;
     // Position of tile in the chunk
     tilePosition: GridPosition;
+}
+
+enum GameState {
+    REGULAR_GAME,
+    BOSS_BATTLE,
+    // Transition states:
+    TRANSITION_TO_BOSS,
+    TRANSITION_TO_LEVEL,
 }
 
 class Game {
@@ -53,14 +61,15 @@ class Game {
     private _gameTime: number = 0;
     private gameOverTime: number | undefined = undefined;
 
-    public noise = new PerlinNoise(MathUtils.randomInt(1000, 100000));
-
     private paused: boolean = false;
 
     private level?: Level;
     private dirtyLevel = false;
     private levelStartTime: number = -999;
     private pixelateLevelStart = false;
+    
+    private stateStartTime: number;
+    private _state: GameState;
 
     private chunkShader: ShaderProgram;
 
@@ -71,6 +80,9 @@ class Game {
         this._player = PlayerFactory(new Vector(0, 16 * ChunkConstants.PIXELS_PER_TILE));
         this.addGameObject(this._player);
         this._camera.target = this._player;
+
+        this._state = GameState.REGULAR_GAME;
+        this.stateStartTime = 0;
 
         this.switchLevel(LevelIndex.FOREST, false);
 
@@ -90,47 +102,26 @@ class Game {
             return;
         }
         this.dirtyLevel = true;
-        this.levelStartTime = this.time;
-        this.pixelateLevelStart = pixelateLevelStart;
+        this.state = GameState.TRANSITION_TO_LEVEL;
         this.level = levels[levelIndex];
     }
 
-    private generateChunk(chunkX: number, chunkY: number): void {
-        const tiles = new Grid<Tile>(
-            ChunkConstants.CHUNK_SIZE, ChunkConstants.CHUNK_SIZE, 
-            { index: TileIndex.AIR, rotation: 0 }
-        );
-        const chunk = new Chunk(this.camera.gl, tiles, new Point(chunkX, chunkY));
-        this.chunks.set(chunkX, chunkY, chunk);
+    public startBossBattle() {
+        this.state = GameState.TRANSITION_TO_BOSS;
+        // choose a boss from the level
     }
 
-    public get time() {
-        return this._gameTime;
+    public get stateTime() {
+        return this.time - this.stateStartTime;
     }
 
-    public get totalObjects() {
-        return this._totalObjects;
+    public set state(state: GameState) {
+        this.stateStartTime = this.time;
+        this._state = state;
     }
 
-    public get totalActiveObjects() {
-        return this.activeObjects.length;
-    }
-
-    public get portals() {
-        return this._portals;
-    }
-
-    private checkTimeout(): boolean {
-        const current = this.timeoutQueue.peek();
-        if (!current) {
-            return false;
-        }
-        if (this.time - current.timestamp >= current.delay) {
-            current.func();
-            this.timeoutQueue.dequeue();
-            return true;
-        }
-        return false;
+    public get state() {
+        return this._state;
     }
 
     // Performs any boilerplate updates to the game such as removing dead objects
@@ -140,7 +131,10 @@ class Game {
             return;
         }
 
-        if (this.dirtyLevel && this.level && (!this.pixelateLevelStart || this.time - this.levelStartTime > PIXELATION_PERIOD / 2)) {
+        if (this.dirtyLevel && this.level && 
+            this.state === GameState.TRANSITION_TO_LEVEL && 
+            this.stateTime >= TRANSITION_TO_LEVEL_TIME / 2    
+        ) {
             // Unload everything if there was already a loaded level
             this.chunks = new LazyGrid();
             this.activeObjects = [];
@@ -167,7 +161,7 @@ class Game {
                     id: "endzone",
                     onHitboxCollisionEnter(collision) {
                         if (collision.tag === "player") {
-                            if (gameObject.game.portals.length > 0) {
+                            if (false && gameObject.game.portals.length > 0) {
                                 collision.getComponent("physics").data.impulse.add(
                                     collision.position.minus(gameObject.position).normalized().scaled(500)
                                 );
@@ -177,7 +171,8 @@ class Game {
                                 });
                             }
                             else {
-
+                                // start boss battle
+                                gameObject.game.startBossBattle();
                             }
                         }
                     },
@@ -261,17 +256,30 @@ class Game {
             $("#score").text(statTracker.score);
         }
 
-        $("#portals-remaining").text(this._portals.length);
-
         if (this.gameOverTime !== undefined) {
             dt *= 0.5 * (1 - Ease.linear(0.25 * (this.time - this.gameOverTime)));
         }
 
+        this._gameTime += dt;
+
+        if (this.state === GameState.TRANSITION_TO_BOSS) {
+            if (this.stateTime > TRANSITION_TO_BOSS_TIME) {
+                this.state = GameState.BOSS_BATTLE;
+            }
+            return;
+        }
+        else if (this.state === GameState.TRANSITION_TO_LEVEL) {
+            if (this.stateTime >= TRANSITION_TO_LEVEL_TIME) {
+                this.state = GameState.REGULAR_GAME;
+            }
+            return;
+        }
+
+        $("#portals-remaining").text(this._portals.length);
+
         if (input.isKeyPressed("Escape")) {
             this.pause();
         }
-
-        this._gameTime += dt;
 
         this.activeObjects.forEach((object: GameObject) => {
             object.update(dt);
@@ -299,17 +307,22 @@ class Game {
             return;
         }
         
-        const pixelationTime = (this.time - this.levelStartTime) / PIXELATION_PERIOD;
-        if (this.pixelateLevelStart && 0 <= pixelationTime && pixelationTime <= 1) {
+        this._camera.disableShader(PostProcessingShaderIndex.PIXELATE);
+        this._camera.disableShader(PostProcessingShaderIndex.END_LEVEL);
+        if (this.state === GameState.TRANSITION_TO_LEVEL) {
+            const pixelationTime = this.stateTime / TRANSITION_TO_LEVEL_TIME;
             this._camera.enableShader(PostProcessingShaderIndex.PIXELATE);
             let factor = pixelationTime < 0.5 ? Ease.inOutSine(pixelationTime / 0.5) : Ease.inOutSine(1.0 - (pixelationTime - 0.5) / 0.5);
             this._camera.getPostProcessingShader(PostProcessingShaderIndex.PIXELATE)
                         .setUniformFloat("intensity", factor * 0.35);
             this._camera.getPostProcessingShader(PostProcessingShaderIndex.PIXELATE)
                         .setUniformVector("screenSize", new Vector(this._camera.canvas.width, this._camera.canvas.height));
-                    }
-        else {
-            this._camera.disableShader(PostProcessingShaderIndex.PIXELATE);
+        }
+        else if (this.state === GameState.TRANSITION_TO_BOSS) {
+            const t = this.stateTime / TRANSITION_TO_BOSS_TIME;
+            this._camera.enableShader(PostProcessingShaderIndex.END_LEVEL);
+            this._camera.getPostProcessingShader(PostProcessingShaderIndex.END_LEVEL)
+                        .setUniformFloat("t", Ease.inOutBounce(t));
         }
 
         const playerChunkPosition = ChunkConstants.getChunkPositionFromWorldPosition(this.player.position);
@@ -445,6 +458,15 @@ class Game {
             throw Error("cannot remove game object which is not in this game");
         }
         this.objectDeleteQueue.push(obj);
+    }
+
+    private generateChunk(chunkX: number, chunkY: number): void {
+        const tiles = new Grid<Tile>(
+            ChunkConstants.CHUNK_SIZE, ChunkConstants.CHUNK_SIZE, 
+            { index: TileIndex.AIR, rotation: 0 }
+        );
+        const chunk = new Chunk(this.camera.gl, tiles, new Point(chunkX, chunkY));
+        this.chunks.set(chunkX, chunkY, chunk);
     }
 
     private addToAppropriateChunk(obj: GameObject) {
@@ -703,6 +725,22 @@ class Game {
         $("#pause-screen").css("visibility",  "hidden");
     }
 
+    public get time() {
+        return this._gameTime;
+    }
+
+    public get totalObjects() {
+        return this._totalObjects;
+    }
+
+    public get totalActiveObjects() {
+        return this.activeObjects.length;
+    }
+
+    public get portals() {
+        return this._portals;
+    }
+
     // Schedule a function to run after a certain game time delay.
     public setTimeout(func: () => void, delay: number) {
         this.timeoutQueue.enqueue({
@@ -710,6 +748,19 @@ class Game {
             delay,
             timestamp: this.time,
         })
+    }
+
+    private checkTimeout(): boolean {
+        const current = this.timeoutQueue.peek();
+        if (!current) {
+            return false;
+        }
+        if (this.time - current.timestamp >= current.delay) {
+            current.func();
+            this.timeoutQueue.dequeue();
+            return true;
+        }
+        return false;
     }
 }
 

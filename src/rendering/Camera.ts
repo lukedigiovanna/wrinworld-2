@@ -36,6 +36,7 @@ class Camera {
         [PostProcessingShaderIndex.INVERT, false],
         [PostProcessingShaderIndex.PIXELATE, false],
         [PostProcessingShaderIndex.VIGNETTE, true],
+        [PostProcessingShaderIndex.END_LEVEL, true],
     ];
 
     public color: Color = Color.WHITE;

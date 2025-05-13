@@ -281,7 +281,27 @@ void main() {
 }
 `
 
+const endLevelPostProcessingFragmentShader = `
+precision mediump float;
+
+uniform sampler2D texture;
+varying vec2 texCoord;
+
+uniform float t;
+
+void main() {
+    vec4 texColor = texture2D(texture, texCoord);
+    float cutoff = 1.0 - 1.35 * t + 0.35 * (sin(texCoord.x * 15.0) * 0.5 + 0.5);
+    if (texCoord.y > cutoff) {
+        gl_FragColor = vec4(0, 0, 0, 1);
+    }
+    else {
+        gl_FragColor = texColor;
+    }
+}
+`
+
 export { vertexShaderCode, fragmentShaderCode, chunkVertexShaderCode, chunkFragmentShaderCode,
     postProcessingVertexShaderCode, invertColorsPostProcessingFragmentShader,
     noEffectPostProcessingFragmentShader, pixelatePostProcessingFragmentShader,
-    vignettePostProcessingFragmentShader };
+    vignettePostProcessingFragmentShader, endLevelPostProcessingFragmentShader };

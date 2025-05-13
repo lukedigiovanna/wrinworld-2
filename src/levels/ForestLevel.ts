@@ -178,8 +178,10 @@ class ForestLevel implements Level {
     readonly endzone: Rectangle = new Rectangle(
         -10 * ChunkConstants.PIXELS_PER_TILE,
         4 * ChunkConstants.PIXELS_PER_TILE,
-        (this.gridSize - this.padding * 0.1 - 4) * ChunkConstants.PIXELS_PER_TILE,
-        (this.gridSize - this.padding * 0.1 + 4) * ChunkConstants.PIXELS_PER_TILE,
+        (this.padding - 4) * ChunkConstants.PIXELS_PER_TILE,
+        (this.padding + 4) * ChunkConstants.PIXELS_PER_TILE
+        // (this.gridSize - this.padding * 0.1 - 4) * ChunkConstants.PIXELS_PER_TILE,
+        // (this.gridSize - this.padding * 0.1 + 4) * ChunkConstants.PIXELS_PER_TILE,
     );
 
     readonly propFrequencies: Pair<number, Nullable<PropIndex>>[] = [
@@ -190,6 +192,7 @@ class ForestLevel implements Level {
         [2, PropIndex.YELLOW_WILDFLOWER],
         [1, PropIndex.RED_WILDFLOWER],
         [1, PropIndex.TREE_STUMP],
+        [0.25, PropIndex.STONE_1],
         [40, null],
     ];
 

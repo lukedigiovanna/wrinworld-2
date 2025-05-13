@@ -5,13 +5,15 @@ enum PostProcessingShaderIndex {
     INVERT,
     PIXELATE,
     VIGNETTE,
+    END_LEVEL,
 }
 
 const postProcessingFragmentShaderCodes: Record<PostProcessingShaderIndex, string> = {
 [PostProcessingShaderIndex.NO_EFFECT]: ShaderCode.noEffectPostProcessingFragmentShader,
 [PostProcessingShaderIndex.INVERT]: ShaderCode.invertColorsPostProcessingFragmentShader,
 [PostProcessingShaderIndex.PIXELATE]: ShaderCode.pixelatePostProcessingFragmentShader,
-[PostProcessingShaderIndex.VIGNETTE]: ShaderCode.vignettePostProcessingFragmentShader
+[PostProcessingShaderIndex.VIGNETTE]: ShaderCode.vignettePostProcessingFragmentShader,
+[PostProcessingShaderIndex.END_LEVEL]: ShaderCode.endLevelPostProcessingFragmentShader,
 }
 
 export { PostProcessingShaderIndex, postProcessingFragmentShaderCodes };
