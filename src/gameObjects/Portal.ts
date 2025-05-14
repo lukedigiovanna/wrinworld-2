@@ -22,7 +22,6 @@ interface PortalProperties {
     packs: PortalSpawnPack[];
     size: PortalSize;
     health: number;
-    difficulty?: number; // 0/undefined means portal can spawn anywhere, higher number means portal can only spawn further in the level
 }
 
 interface PortalDrop {

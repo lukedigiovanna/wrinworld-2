@@ -10,123 +10,167 @@ import { getTexture } from "../assets/imageLoader";
 import { Grid, Graph, RandomSinCurve } from "../utils";
 import { Nullable, Pair } from "../utils/types";
 
-const portalTypes: PortalProperties[] = [
-    { // Slime portal
-        size: "small",
-        health: 25,
-        difficulty: 0,
-        packs: [
-            {
-                packSizeRange: new NumberRange(2, 4),
-                cooldownRange: new NumberRange(8, 16),
-                maxEnemies: 5,
-                enemyIndex: EnemyIndex.SLIME
-            }
-        ]
-    },
-    { // Red slime portal
-        size: "small",
-        health: 35,
-        difficulty: 0.15,
-        packs: [
-            {
-                packSizeRange: new NumberRange(2, 4),
-                cooldownRange: new NumberRange(7, 12),
-                maxEnemies: 5,
-                enemyIndex: EnemyIndex.RED_SLIME
-            }
-        ]
-    },
-    { // Ground worm portal
-        size: "small",
-        health: 30,
-        difficulty: 0.15,
-        packs: [
-            {
-                packSizeRange: new NumberRange(1, 2),
-                cooldownRange: new NumberRange(8, 16),
-                maxEnemies: 6,
-                enemyIndex: EnemyIndex.GROUND_WORM
-            }
-        ]
-    },
-    { // Minion portal
-        size: "medium",
-        difficulty: 0.5,
-        health: 40,
-        packs: [
-            {
-                cooldownRange: new NumberRange(4, 10),
-                packSizeRange: new NumberRange(1, 4),
-                maxEnemies: 10,
-                enemyIndex: EnemyIndex.MINION
-            },
-            {
-                cooldownRange: new NumberRange(12, 24),
-                packSizeRange: new NumberRange(1, 1),
-                maxEnemies: 1,
-                enemyIndex: EnemyIndex.WRETCHED_SKELETON
-            }
-        ]
-    }, 
-    { // Revenant eye portal
-        size: "small",
-        difficulty: 0.6,
-        health: 50,
-        packs: [
-            {
-                cooldownRange: new NumberRange(12, 20),
-                packSizeRange: new NumberRange(1, 2),
-                maxEnemies: 3,
-                enemyIndex: EnemyIndex.REVENANT_EYE
-            }
-        ]
-    },
-    { // Bunny portal
-        size: "small",
-        difficulty: 0.5,
-        health: 35,
-        packs: [
-            {
-                cooldownRange: new NumberRange(8, 16),
-                packSizeRange: new NumberRange(1, 3),
-                maxEnemies: 6,
-                enemyIndex: EnemyIndex.EVIL_BUNNY
-            }
-        ]
-    },
-    { // Husk portal
-        size: "medium",
-        difficulty: 0.8,
-        health: 60,
-        packs: [
-            {
-                cooldownRange: new NumberRange(12, 24),
-                packSizeRange: new NumberRange(1, 2),
-                maxEnemies: 4,
-                enemyIndex: EnemyIndex.FUNGAL_HUSK
-            }
-        ]
-    },
-    { // Corrupt Deer
-        size: "medium",
-        difficulty: 0.8,
-        health: 60,
-        packs: [
-            {
-                cooldownRange: new NumberRange(12, 24),
-                packSizeRange: new NumberRange(1, 2),
-                maxEnemies: 2,
-                enemyIndex: EnemyIndex.CORRUPTED_DEER
-            },
-            {
-                cooldownRange: new NumberRange(8, 14),
-                packSizeRange: new NumberRange(1, 3),
-                maxEnemies: 4,
-                enemyIndex: EnemyIndex.FUNGAL_SPIRIT
-            },
-        ]
-    },
+interface PortalSpawnProperties {
+    difficulty: number;
+    maxOccurrences: number;
+}
+const portalTypes: Pair<PortalSpawnProperties, PortalProperties>[] = [
+    [ // Slime portal
+        {
+            difficulty: 0,
+            maxOccurrences: 2,
+        },
+        {
+            size: "small",
+            health: 25,
+            packs: [
+                {
+                    packSizeRange: new NumberRange(2, 4),
+                    cooldownRange: new NumberRange(8, 16),
+                    maxEnemies: 5,
+                    enemyIndex: EnemyIndex.SLIME
+                }
+            ]
+        }
+    ],
+    [ // Red slime portal
+        {
+            difficulty: 0.15,
+            maxOccurrences: 1,
+        },
+        {
+            size: "small",
+            health: 35,
+            packs: [
+                {
+                    packSizeRange: new NumberRange(2, 4),
+                    cooldownRange: new NumberRange(7, 12),
+                    maxEnemies: 5,
+                    enemyIndex: EnemyIndex.RED_SLIME
+                }
+            ]
+        },
+    ],
+    [ // Ground worm portal
+        {
+            difficulty: 0.15,
+            maxOccurrences: 1,
+        },
+        {
+            size: "small",
+            health: 30,
+            packs: [
+                {
+                    packSizeRange: new NumberRange(1, 2),
+                    cooldownRange: new NumberRange(8, 16),
+                    maxEnemies: 6,
+                    enemyIndex: EnemyIndex.GROUND_WORM
+                }
+            ]
+        },
+    ],
+    [ // Minion + Skeleton portal
+        {
+            difficulty: 0.5,
+            maxOccurrences: 2,
+        },
+        {
+            size: "medium",
+            health: 40,
+            packs: [
+                {
+                    cooldownRange: new NumberRange(4, 10),
+                    packSizeRange: new NumberRange(1, 4),
+                    maxEnemies: 10,
+                    enemyIndex: EnemyIndex.MINION
+                },
+                {
+                    cooldownRange: new NumberRange(12, 24),
+                    packSizeRange: new NumberRange(1, 1),
+                    maxEnemies: 1,
+                    enemyIndex: EnemyIndex.WRETCHED_SKELETON
+                }
+            ]
+        }, 
+    ],
+    [ // Revenant eye portal
+        {
+            difficulty: 0.6,
+            maxOccurrences: 1,
+        },
+        {
+            size: "small",
+            health: 50,
+            packs: [
+                {
+                    cooldownRange: new NumberRange(12, 20),
+                    packSizeRange: new NumberRange(1, 2),
+                    maxEnemies: 3,
+                    enemyIndex: EnemyIndex.REVENANT_EYE
+                }
+            ]
+        },
+    ],
+    [
+        {
+            difficulty: 0.5,
+            maxOccurrences: 2,
+        },
+        { // Bunny portal
+            size: "small",
+            health: 35,
+            packs: [
+                {
+                    cooldownRange: new NumberRange(8, 16),
+                    packSizeRange: new NumberRange(1, 3),
+                    maxEnemies: 6,
+                    enemyIndex: EnemyIndex.EVIL_BUNNY
+                }
+            ]
+        },
+    ],
+    [ // Husk portal
+        {
+            difficulty: 0.8,
+            maxOccurrences: 1,
+        },
+        {
+            size: "medium",
+            health: 60,
+            packs: [
+                {
+                    cooldownRange: new NumberRange(12, 24),
+                    packSizeRange: new NumberRange(1, 2),
+                    maxEnemies: 4,
+                    enemyIndex: EnemyIndex.FUNGAL_HUSK
+                }
+            ]
+        },
+    ],
+    [
+        {
+            difficulty: 0.8,
+            maxOccurrences: 1,
+        },
+        { // Corrupt Deer
+            size: "medium",
+            health: 60,
+            packs: [
+                {
+                    cooldownRange: new NumberRange(12, 24),
+                    packSizeRange: new NumberRange(1, 2),
+                    maxEnemies: 2,
+                    enemyIndex: EnemyIndex.CORRUPTED_DEER
+                },
+                {
+                    cooldownRange: new NumberRange(8, 14),
+                    packSizeRange: new NumberRange(1, 3),
+                    maxEnemies: 4,
+                    enemyIndex: EnemyIndex.FUNGAL_SPIRIT
+                },
+            ]
+        },
+    ]
     // { // Wraith portal
     //     size: "medium",
     //     difficulty: 0.6,
@@ -198,8 +242,6 @@ class ForestLevel implements Level {
     readonly endzone: Rectangle = new Rectangle(
         -10 * ChunkConstants.PIXELS_PER_TILE,
         4 * ChunkConstants.PIXELS_PER_TILE,
-        // (this.padding - 4) * ChunkConstants.PIXELS_PER_TILE,
-        // (this.padding + 4) * ChunkConstants.PIXELS_PER_TILE
         (this.gridSize - this.padding * 0.1 - 4) * ChunkConstants.PIXELS_PER_TILE,
         (this.gridSize - this.padding * 0.1 + 4) * ChunkConstants.PIXELS_PER_TILE,
     );
@@ -392,13 +434,14 @@ class ForestLevel implements Level {
             console.error(error)
         }
 
-        const portalPositions = [];
+        const portalPositions: Point[] = [];
+        const usedPortals: PortalProperties[] = [];
         const dropsPermutation = new Permutation(this.portalDrops);
-        for (let i = 0; i < this.numberOfPortals; i++) {
+        for (let i = 0; i < this.numberOfPortals;) {
             const candidateRow = MathUtils.randomInt(this.padding, this.gridSize - this.padding - 1);
             const candidateCol = MathUtils.randomInt(this.padding, this.gridSize - this.padding - 1);
             if (wallMaskGrid.get(candidateRow, candidateCol)) {
-                i--; continue;
+                continue;
             }
             const R = 4;
             let invalid = false;
@@ -414,7 +457,7 @@ class ForestLevel implements Level {
                 }
             }
             if (invalid) {
-                i--; continue;
+                continue;
             }
             let closestDistance = 999;
             for (const position of portalPositions) {
@@ -422,13 +465,21 @@ class ForestLevel implements Level {
                 closestDistance = Math.min(closestDistance, distance);
             }
             if (closestDistance < 10) {
-                i--; continue;
+                continue;
             }
-            const drops = dropsPermutation.next;
             const difficultyRank = (candidateRow - this.padding) / (this.gridSize - this.padding * 2);
-            const portalTypeChoices = portalTypes.filter((portal) => (portal.difficulty ?? 0) < difficultyRank);
-            const properties = MathUtils.randomChoice(portalTypeChoices);
-            console.log(difficultyRank, properties.packs);
+            const portalTypeChoices = portalTypes.filter(([spawnProps, portalProps]) => {
+                if (spawnProps.difficulty > difficultyRank) {
+                    return false;
+                }
+                const occurrences = usedPortals.filter(p => p === portalProps).length;
+                return occurrences < spawnProps.maxOccurrences;
+            });
+            if (portalTypeChoices.length === 0) {
+                continue;
+            }
+            const properties: PortalProperties = MathUtils.randomChoice(portalTypeChoices)[1];
+            const drops = dropsPermutation.next;
             game.addGameObject(PortalFactory(
                     properties, 
                     drops, 
@@ -450,6 +501,8 @@ class ForestLevel implements Level {
                 }
             }
             portalPositions.push(new Point(candidateCol, candidateRow));
+            usedPortals.push(properties);
+            i++;
         }
         
         worldTileGrid.iterate((self, r, c) => {

@@ -356,7 +356,7 @@ const projectilesCodex: Record<ProjectileIndex, Projectile> = {
     destroyOnPhysicalCollision: false,
     onDestroy(gameObject) {
         const owner = gameObject.getComponent("projectile").data.owner;
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 30; i++) {
             const target = Vector.add(gameObject.position, MathUtils.randomVector(1));
             const projectile = {...projectilesCodex[ProjectileIndex.CRYSTAL_SHARD]};
             projectile.speed += MathUtils.random(-40, 40);
@@ -372,7 +372,7 @@ const projectilesCodex: Record<ProjectileIndex, Projectile> = {
     maxHits: 3,
     ricochetFactor: 0.1,
     spriteID: "crystal_shard",
-    damage: 8,
+    damage: 4,
     damageReductionPerHit: 0.2,
     knockback: 0.4,
     lifespan: 3,
