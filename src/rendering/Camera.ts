@@ -267,11 +267,14 @@ class Camera {
     }
 
     public drawTexture(texture: Texture, x: number, y: number, w: number, h: number, angle: number=0, rotationPointOffset=Vector.zero(), shear: number=0){ 
+        const place = 1 / this.scale;
+        const adjW = MathUtils.round(w, place);
+        const adjH = MathUtils.round(h, place);
         const transformation = Matrix4.transformation(
-            MathUtils.round(x, 1 / this.scale) - Math.floor(w / 2), 
-            MathUtils.round(y, 1 / this.scale) - Math.floor(h / 2), 
-            w, h, 
-            angle, w / 2 + rotationPointOffset.x, h / 2 + rotationPointOffset.y, shear
+            MathUtils.round(x, place) - MathUtils.round(adjW / 2, place), 
+            MathUtils.round(y, place) - MathUtils.round(adjH / 2, place), 
+            adjW, adjH,
+            angle, adjW / 2 + rotationPointOffset.x, adjH / 2 + rotationPointOffset.y, shear
         );
         this.drawTextureRaw(texture.texture, texture.clipRect, transformation);
     }

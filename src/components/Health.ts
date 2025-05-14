@@ -1,8 +1,7 @@
 import { getSound } from "../assets/soundLoader";
 import { GameObject, PopText } from "../gameObjects/index";
-import { ComponentFactory, Physics } from "./index";
-import { Color, MathUtils } from "../utils";
-import { textRenderer } from "../rendering/renderers";
+import { ComponentFactory } from "./index";
+import { Color } from "../utils";
 
 enum HealthBarDisplayMode {
     NONE,
@@ -103,13 +102,13 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
                 gameObject.position.x, 
                 gameObject.position.y + gameObject.scale.y / 2 + topMargin, 
                 barWidth, barHeight);
-            const p = data.hp / data.maximumHP;
+            const p = Math.max(0, data.hp / data.maximumHP);
+            const realWidth = (barWidth - borderWidth * 2) * p;
             camera.color = Color.lerp(
                 new Color(1, 0, 0, 1), 
                 new Color(data.barColor.r, data.barColor.g, data.barColor.b, opacity), 
                 p
             );
-            const realWidth = barWidth * p - borderWidth * 2;
             camera.fillRect(
                 gameObject.position.x - barWidth / 2 + borderWidth + realWidth / 2, 
                 gameObject.position.y + gameObject.scale.y / 2 + topMargin, 
