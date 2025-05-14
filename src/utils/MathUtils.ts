@@ -118,6 +118,10 @@ class MathUtils {
 
         return min;
     }
+
+    public static round(x: number, place: number) {
+        return Math.round(x / place) * place;
+    }
 }
 
 export { MathUtils };

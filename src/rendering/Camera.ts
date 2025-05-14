@@ -155,8 +155,8 @@ class Camera {
             const shake = MathUtils.randomVector(MathUtils.random(0, I));
             position.add(shake);
         }
-        position.x = Math.round(position.x);
-        position.y = Math.round(position.y);
+        position.x = MathUtils.round(position.x, 1 / this.scale);
+        position.y = MathUtils.round(position.y, 1 / this.scale);
         const height = this.renderHeight;
         const width = this.renderWidth;
         // const heightOverage = this.canvas.height - height * scale;
@@ -171,14 +171,16 @@ class Camera {
         this.sceneShader.setUniformFloat("ambientLightIntensity", this.ambientLightIntensity);
     }
 
+    public get scale() {
+        return Math.floor(this.canvas.height / this.height); // pixels per world unit
+    }
+
     public get renderWidth() {
-        const scale = Math.floor(this.canvas.height / this.height); // pixels per world unit
-        return Math.floor(this.canvas.width / scale);
+        return Math.floor(this.canvas.width / this.scale);
     }
 
     public get renderHeight() {
-        const scale = Math.floor(this.canvas.height / this.height); // pixels per world unit
-        return Math.floor(this.canvas.height / scale);
+        return Math.floor(this.canvas.height / this.scale);
     }
 
     // Renders the framebuffer to the screen using the active postprocessing shader
@@ -266,7 +268,8 @@ class Camera {
 
     public drawTexture(texture: Texture, x: number, y: number, w: number, h: number, angle: number=0, rotationPointOffset=Vector.zero(), shear: number=0){ 
         const transformation = Matrix4.transformation(
-            Math.round(x) - Math.floor(w / 2), Math.round(y) - Math.floor(h / 2), 
+            MathUtils.round(x, 1 / this.scale) - Math.floor(w / 2), 
+            MathUtils.round(y, 1 / this.scale) - Math.floor(h / 2), 
             w, h, 
             angle, w / 2 + rotationPointOffset.x, h / 2 + rotationPointOffset.y, shear
         );
