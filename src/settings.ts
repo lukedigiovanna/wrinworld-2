@@ -19,7 +19,7 @@ const settings: Settings = {
     showRotationPoint: false,
     showChunks: false,
     showCameraPosition: false,
-    showMousePosition: true,
+    showMousePosition: false,
     muted: true,
     sleepTime: 0,
 }

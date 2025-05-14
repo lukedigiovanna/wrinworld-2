@@ -1,9 +1,9 @@
 import { Game } from "./game/game";
 import settings from "./settings";
 import { ShaderProgram } from "./rendering/ShaderProgram";
-import { fragmentShaderCode, vertexShaderCode } from "./rendering/shaderCode";
 import { loadAssets } from "./assets/loadAssets";
 import { sleep } from "./utils";
+import { addHoverCursor, Cursor } from "./cursor";
 
 enum PageIndex {
     GAME,
@@ -97,6 +97,7 @@ class GamePage implements Page {
             this.game?.unpause();
         });
         $("button#quit-game").on("click", () => {
+            this.terminate = true;
             loadPage(PageIndex.MAIN);
         });
 
@@ -154,7 +155,9 @@ async function loadPage(pageIndex: PageIndex) {
     const html = await response.text();
     $("#root").html(html);
     await page.load();
-    currentPage = pageIndex;
+    $(".menu-button").each((_, element) => {
+        addHoverCursor($(element), Cursor.POINTER);
+    });
 }
 
 export { PageIndex, loadPage };

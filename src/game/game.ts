@@ -436,7 +436,7 @@ class Game {
         if (settings.showMousePosition) {    
             this._camera.color = Color.WHITE;
             const mousePos = this._camera.screenToWorldPosition(input.mousePosition);
-            this._camera.drawTexture(getTexture("cursor"), mousePos.x, mousePos.y, 9, 9);
+            this._camera.fillRect(mousePos.x, mousePos.y, 8, 8);
         }
 
         this._camera.renderToScreen();

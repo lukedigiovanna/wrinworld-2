@@ -41,11 +41,11 @@ img {
 }
 
 .menu-button {
+    cursor: none;
     font-family: "Matrix-Mono";
     font-weight: bold;
     background: none;
     border: none;
-    cursor: pointer;
     margin-block: 18px;
     color: #ddd;
     font-size: 24px;
@@ -59,4 +59,19 @@ img {
 
 .menu-button:active {
     color: rgb(147, 117, 236);
+}
+
+body {
+    cursor: none;
+}
+
+#cursor {
+    position: fixed;
+    pointer-events: none;
+    width: 39px;
+    height: 39px;
+    background-image: url("assets/images/ui/default_cursor.png");
+    background-size: 100% 100%;
+    z-index: 9999;
+    image-rendering: pixelated;
 }

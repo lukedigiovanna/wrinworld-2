@@ -8,6 +8,7 @@ import { MathUtils, Vector } from "../utils";
 import { addNotification } from "../notifications";
 import controls, { Controls } from "../controls";
 import { getUpgradeCombination } from "./upgrades";
+import { addHoverCursor, Cursor } from "../cursor";
 
 interface InventorySlot {
     item: Item;
@@ -611,7 +612,7 @@ class Inventory {
         });
         
         // Appearance
-        inventorySlot.css("cursor", "pointer");
+        addHoverCursor(inventorySlot, Cursor.POINTER);
 
         type.slotDivs.push(inventorySlot);
 
