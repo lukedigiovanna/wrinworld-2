@@ -57,35 +57,63 @@ class Grid<T> {
         }
     }
 
-    private drawCircleHelper(rc: number, cc: number, r: number, c: number, value: T) {
+    private drawCircleSpan(y: number, x1: number, x2: number, value: T) {
+        for (let x = x1; x <= x2; x++) {
+            this.set(y, x, value);
+        }
+    }
+
+    // Uses Bresenham's algorithm to fill a circle
+    public fillCircle(row: number, col: number, radius: number, value: T) {
+        let x = 0;
+        let y = radius;
+        let d = 3 - 2 * radius;
+
+        while (x <= y) {
+            // Draw horizontal spans between symmetric points
+            this.drawCircleSpan(row + y, col - x, col + x, value);
+            this.drawCircleSpan(row - y, col - x, col + x, value);
+            this.drawCircleSpan(row + x, col - y, col + y, value);
+            this.drawCircleSpan(row - x, col - y, col + y, value);
+
+            if (d < 0) {
+                d = d + 4 * x + 6;
+            } else {
+                d = d + 4 * (x - y) + 10;
+                y--;
+            }
+            x++;
+        }
+    }
+
+    private drawCircleOutlinePoints(rc: number, cc: number, r: number, c: number, value: T) {
         this.set(rc + r, cc + c, value);
         this.set(rc + r, cc - c, value);
-        this.set(rc + c, cc + r, value);
-        this.set(rc + c, cc - r, value);
         this.set(rc - r, cc + c, value);
         this.set(rc - r, cc - c, value);
+        this.set(rc + c, cc + r, value);
+        this.set(rc + c, cc - r, value);
         this.set(rc - c, cc + r, value);
         this.set(rc - c, cc - r, value);
     }
 
-    // Uses Bresenham's algorithm
-    public fillCircle(row: number, col: number, radius: number, value: T) {
-        let c = 0, r = radius;
+    // Uses Bresenham's algorithm to stroke (outline) a circle
+    public drawCircle(row: number, col: number, radius: number, value: T) {
+        let x = 0;
+        let y = radius;
         let d = 3 - 2 * radius;
-        for (let dc = 0; dc <= c; dc++) {
-            this.drawCircleHelper(row, col, r, dc, value);
-        }
-        while (r >= c){
-            if (d > 0) {
-                r--; 
-                d = d + 4 * (c - r) + 10;
+
+        while (x <= y) {
+            this.drawCircleOutlinePoints(row, col, x, y, value);
+            this.drawCircleOutlinePoints(row, col, y, x, value);
+
+            if (d < 0) {
+                d = d + 4 * x + 6;
+            } else {
+                d = d + 4 * (x - y) + 10;
+                y--;
             }
-            else
-                d = d + 4 * c + 6;
-            c++;
-            for (let dc = 0; dc <= c; dc++) {
-                this.drawCircleHelper(row, col, r, dc, value);
-            }
+            x++;
         }
     }
 
