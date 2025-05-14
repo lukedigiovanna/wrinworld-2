@@ -179,10 +179,10 @@ class ForestLevel implements Level {
     readonly endzone: Rectangle = new Rectangle(
         -10 * ChunkConstants.PIXELS_PER_TILE,
         4 * ChunkConstants.PIXELS_PER_TILE,
-        (this.padding - 4) * ChunkConstants.PIXELS_PER_TILE,
-        (this.padding + 4) * ChunkConstants.PIXELS_PER_TILE
-        // (this.gridSize - this.padding * 0.1 - 4) * ChunkConstants.PIXELS_PER_TILE,
-        // (this.gridSize - this.padding * 0.1 + 4) * ChunkConstants.PIXELS_PER_TILE,
+        // (this.padding - 4) * ChunkConstants.PIXELS_PER_TILE,
+        // (this.padding + 4) * ChunkConstants.PIXELS_PER_TILE
+        (this.gridSize - this.padding * 0.1 - 4) * ChunkConstants.PIXELS_PER_TILE,
+        (this.gridSize - this.padding * 0.1 + 4) * ChunkConstants.PIXELS_PER_TILE,
     );
 
     readonly nextLevels: LevelIndex[] = [LevelIndex.FOREST_BOSS];
