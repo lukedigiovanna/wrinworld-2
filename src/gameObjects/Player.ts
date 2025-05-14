@@ -31,7 +31,7 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
 
     player.addComponent(Physics);
     const movementData = player.addComponent(MovementData);
-    movementData.data.baseSpeed = 120;
+    movementData.data.baseSpeed = 84;
     player.addComponent(PlayerMovement);
     
     const hitbox = player.addComponent(Hitbox);

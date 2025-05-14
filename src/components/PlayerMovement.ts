@@ -42,10 +42,14 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
             else {
                 this.data.movementData.data.sprinting = false;
             }
-            // this.data.movementData.data.charging = data.weaponManager.data.charging;
             const speed = this.data.movementData.data.getSpeed();
             movement.scale(speed);
-            data.physics.data.velocity.set(movement);
+            // interpolate the velocity to match the movement speed
+            const k = 40;
+            const factor = (1 - Math.exp(-k * dt)) / (1 - Math.exp(-k))
+            const velocity = data.physics.data.velocity as Vector;
+            const newVelocity = velocity.plus(movement.minus(velocity).scaled(factor));
+            data.physics.data.velocity.set(newVelocity);
 
             if (movement.isZero()) {
                 data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_IDLE;
