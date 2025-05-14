@@ -393,7 +393,7 @@ class Game {
             this._camera.drawTexture(
                 getTexture(gameObject.renderer!.data.spriteID), 
                 pos.x, pos.y - gameObject.scale.y / 2 + h / 2, 
-                gameObject.scale.x, h, gameObject.rotation, gameObject.rotationPointOffset, 1);
+                gameObject.scale.x, h, 0, Vector.zero(), 1);
         }
 
         this._camera.setShadows([]);

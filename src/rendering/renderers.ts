@@ -15,7 +15,6 @@ function spriteRenderer(id: string): Renderer {
                 const pos = Vector.add(gameObject.position, this.data.offset);
                 camera.color = gameObject.color;
                 camera.drawTexture(getTexture(this.data.spriteID), pos.x, pos.y, gameObject.scale.x, gameObject.scale.y, gameObject.rotation, gameObject.rotationPointOffset);
-                
             }
         },
         data: {
