@@ -1,9 +1,9 @@
 import { GameObject, GameObjectFactory, EssenceOrbFactory, Team, CorpseFactory } from "./";
 import { spriteRenderer } from "../rendering/renderers";
 import { Vector } from "../utils";
-import { Health, Hitbox, Physics, PhysicalCollider, ItemDropper, 
-    HealthBarDisplayMode, StatusEffectManager, 
-    MovementData} from "../components";
+import { Health, Hitbox, Physics, PhysicalCollider, 
+    HealthBarDisplayMode, StatusEffectManager, MovementData,
+    PowerupDropper} from "../components";
 import { TileIndex } from "../game/tiles";
 import { enemiesCodex, EnemyIndex } from "../game/enemies";
 import { getTexture } from "../assets/imageLoader";
@@ -37,7 +37,7 @@ const EnemyFactory: GameObjectFactory = (position: Vector, enemyIndex: EnemyInde
     }
     
     enemy.addComponent(Physics);
-    enemy.addComponent(ItemDropper(enemyData.drops));
+    enemy.addComponent(PowerupDropper(enemyData.powerupDrops));
     enemy.addComponent(StatusEffectManager);
     
     const movementData = enemy.addComponent(MovementData);

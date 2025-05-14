@@ -120,6 +120,8 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTexture(gl, "water_drop", "assets/images/projectiles/water_drop.png"),
         loadImageAndTexture(gl, "pop_quiz", "assets/images/projectiles/quiz.png"),
 
+        // Powerups
+        loadImageAndTexture(gl, "blueberries", "assets/images/powerups/blueberries.png"),
 
         // Item icons
         loadImageAndTexture(gl, "broad_sword_icon", "assets/images/items/broad_sword_icon.png"),

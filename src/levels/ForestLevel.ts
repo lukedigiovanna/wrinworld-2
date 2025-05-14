@@ -431,7 +431,10 @@ class ForestLevel implements Level {
             }
         }
         catch (error) {
-            console.error(error)
+            console.error(error);
+            console.warn("Failed to generate forest level for some reason... trying again");
+            this.generate(game);
+            return;
         }
 
         const portalPositions: Point[] = [];

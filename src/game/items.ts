@@ -228,11 +228,6 @@ interface Item {
     retainLastItem?: boolean;
 }
 
-interface ItemDropChance {
-    chance: number; // 0 to 1
-    itemIndex: ItemIndex;
-}
-
 function generateStatsForWeapon(weaponIndex: WeaponIndex): ItemStatValue[] {
     const weapon = weaponsCodex[weaponIndex];
     const attack = weapon.attack();
@@ -1181,4 +1176,4 @@ const itemsCodex: Record<ItemIndex, Item> = {
 }
 
 export { itemsCodex, ItemIndex, ItemStat, itemStats };
-export type { Item, ItemDropChance, ItemStatData, ItemStatValue, ItemCategory };
+export type { Item, ItemStatData, ItemStatValue, ItemCategory };
