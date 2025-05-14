@@ -12,6 +12,8 @@ interface MeleeAttack {
     damage: number;
     // How much damage this attack does to additional targets
     sweepDamage: number;
+    // Whether the attack should move in a jab motion
+    jab: boolean;
     // The maximum number of distinct opponents this attack can hit
     maxHits: number;
     // How much knockback force to apply
@@ -35,6 +37,7 @@ const meleeAttacksCodex: Record<MeleeAttackIndex, MeleeAttack> = {
 [MeleeAttackIndex.BROAD_SWORD]: {
     damage: 5,
     sweepDamage: 2,
+    jab: false,
     maxHits: 3,
     knockback: 32,
     size: 8,
@@ -46,6 +49,7 @@ const meleeAttacksCodex: Record<MeleeAttackIndex, MeleeAttack> = {
 },
 [MeleeAttackIndex.DAGGER]: {
     damage: 4,
+    jab: true,
     sweepDamage: 0,
     maxHits: 1,
     knockback: 24,
@@ -56,6 +60,7 @@ const meleeAttacksCodex: Record<MeleeAttackIndex, MeleeAttack> = {
 },
 [MeleeAttackIndex.BATTLE_HAMMER]: {
     damage: 20,
+    jab: true,
     sweepDamage: 10,
     maxHits: 6,
     knockback: 12,
@@ -66,6 +71,7 @@ const meleeAttacksCodex: Record<MeleeAttackIndex, MeleeAttack> = {
 },
 [MeleeAttackIndex.BASIC]: {
     damage: 1,
+    jab: true,
     sweepDamage: 0,
     maxHits: 1,
     knockback: 16,
