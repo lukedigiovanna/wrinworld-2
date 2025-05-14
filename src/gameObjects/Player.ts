@@ -21,11 +21,12 @@ const PlayerFactory: GameObjectFactory = (position: Vector) => {
     player.team = Team.PLAYER;
     player.tag = "player";
     player.position.set(position.copy());
-    player.renderer = spriteRenderer("character");
+    const texture = getTexture("character_0");
+    player.renderer = spriteRenderer("character_0");
     const animationManager = player.addComponent(AnimationManager);
-    animationManager.data.animation = SpriteAnimationIndex.CHARACTER_IDLE;
+    animationManager.data.animation = SpriteAnimationIndex.CHARACTER_IDLE_DOWN;
 
-    player.scale.setComponents(24, 42);
+    player.scale.setComponents(texture.width, texture.height);
     player.castsShadow = true;
     player.shadowSize = 2;
 

@@ -42,6 +42,8 @@ async function loadAssets(gl: WebGLRenderingContext) {
         loadImageAndTextureSpritesheet(gl, "character_run", "assets/images/character_run.png", 24, 42),
         loadImageAndTextureSpritesheet(gl, "character_idle_water", "assets/images/character_idle_water.png", 24, 42),
 
+        loadImageAndTextureSpritesheet(gl, "character", "assets/images/blue_character.png", 22, 37),
+
         loadImageAndTexture(gl, "minion", "assets/images/enemies/minion.png"),
         loadImageAndTexture(gl, "minion_water", "assets/images/enemies/minion_water.png"),
         loadImageAndTexture(gl, "minion_dead", "assets/images/enemies/minion_dead.png"),

@@ -52,22 +52,36 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
             data.physics.data.velocity.set(newVelocity);
 
             if (movement.isZero()) {
-                data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_IDLE;
+                // data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_IDLE;
                 const mousePos = gameObject.game.camera.screenToWorldPosition(input.mousePosition);
-                if (mousePos.x > gameObject.position.x) {
-                    gameObject.scale.x = Math.abs(gameObject.scale.x);
+                const angle = mousePos.minus(gameObject.position).angle;
+                console.log(angle);
+                if (-Math.PI / 4 <= angle && angle < Math.PI / 4) {
+                    data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_IDLE_RIGHT;
+                }
+                else if (Math.PI / 4 <= angle && angle < 3 * Math.PI / 4) {
+                    data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_IDLE_UP;
+                }
+                else if (3 * Math.PI / 4 <= angle || angle < -3 * Math.PI / 4) {
+                    data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_IDLE_LEFT;
                 }
                 else {
-                    gameObject.scale.x = -Math.abs(gameObject.scale.x);
+                    data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_IDLE_DOWN;
                 }
             }
             else {
-                data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_RUN;
-                if (data.physics.data.velocity.x >= 0) { 
-                    gameObject.scale.x = Math.abs(gameObject.scale.x);
+                const angle = data.physics.data.velocity.angle;
+                if (-Math.PI / 4 <= angle && angle < Math.PI / 4) {
+                    data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_RUN_RIGHT;
+                }
+                else if (Math.PI / 4 <= angle && angle < 3 * Math.PI / 4) {
+                    data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_RUN_UP;
+                }
+                else if (3 * Math.PI / 4 <= angle || angle < -3 * Math.PI / 4) {
+                    data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_RUN_LEFT;
                 }
                 else {
-                    gameObject.scale.x = -Math.abs(gameObject.scale.x);
+                    data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_RUN_DOWN;
                 }
             }
 
