@@ -27,20 +27,20 @@ const portalTypes: PortalProperties[] = [
     { // Red slime portal
         size: "small",
         health: 35,
-        difficulty: 0.1,
+        difficulty: 0.15,
         packs: [
             {
-                packSizeRange: new NumberRange(4, 8),
-                cooldownRange: new NumberRange(6, 14),
-                maxEnemies: 10,
+                packSizeRange: new NumberRange(2, 4),
+                cooldownRange: new NumberRange(7, 12),
+                maxEnemies: 5,
                 enemyIndex: EnemyIndex.RED_SLIME
             }
         ]
     },
     { // Ground worm portal
         size: "small",
-        health: 35,
-        difficulty: 0.1,
+        health: 30,
+        difficulty: 0.15,
         packs: [
             {
                 packSizeRange: new NumberRange(1, 2),
@@ -52,7 +52,7 @@ const portalTypes: PortalProperties[] = [
     },
     { // Minion portal
         size: "medium",
-        difficulty: 0.2,
+        difficulty: 0.5,
         health: 40,
         packs: [
             {
@@ -71,8 +71,8 @@ const portalTypes: PortalProperties[] = [
     }, 
     { // Revenant eye portal
         size: "small",
-        difficulty: 0.4,
-        health: 60,
+        difficulty: 0.6,
+        health: 50,
         packs: [
             {
                 cooldownRange: new NumberRange(12, 20),
@@ -82,22 +82,9 @@ const portalTypes: PortalProperties[] = [
             }
         ]
     },
-    { // Wraith portal
-        size: "medium",
-        difficulty: 0.6,
-        health: 75,
-        packs: [
-            {
-                cooldownRange: new NumberRange(12, 20),
-                packSizeRange: new NumberRange(1, 1),
-                maxEnemies: 2,
-                enemyIndex: EnemyIndex.WRAITH
-            }
-        ]
-    },
     { // Bunny portal
         size: "small",
-        difficulty: 0.3,
+        difficulty: 0.5,
         health: 35,
         packs: [
             {
@@ -110,8 +97,8 @@ const portalTypes: PortalProperties[] = [
     },
     { // Husk portal
         size: "medium",
-        difficulty: 0.6,
-        health: 80,
+        difficulty: 0.8,
+        health: 60,
         packs: [
             {
                 cooldownRange: new NumberRange(12, 24),
@@ -121,6 +108,38 @@ const portalTypes: PortalProperties[] = [
             }
         ]
     },
+    { // Corrupt Deer
+        size: "medium",
+        difficulty: 0.8,
+        health: 60,
+        packs: [
+            {
+                cooldownRange: new NumberRange(12, 24),
+                packSizeRange: new NumberRange(1, 2),
+                maxEnemies: 2,
+                enemyIndex: EnemyIndex.CORRUPTED_DEER
+            },
+            {
+                cooldownRange: new NumberRange(8, 14),
+                packSizeRange: new NumberRange(1, 3),
+                maxEnemies: 4,
+                enemyIndex: EnemyIndex.FUNGAL_SPIRIT
+            },
+        ]
+    },
+    // { // Wraith portal
+    //     size: "medium",
+    //     difficulty: 0.6,
+    //     health: 75,
+    //     packs: [
+    //         {
+    //             cooldownRange: new NumberRange(12, 20),
+    //             packSizeRange: new NumberRange(1, 1),
+    //             maxEnemies: 2,
+    //             enemyIndex: EnemyIndex.WRAITH
+    //         }
+    //     ]
+    // },
 ];
 
 class ForestLevel implements Level {
@@ -406,13 +425,17 @@ class ForestLevel implements Level {
                 i--; continue;
             }
             const drops = dropsPermutation.next;
-            const properties = MathUtils.randomChoice(portalTypes);
+            const difficultyRank = (candidateRow - this.padding) / (this.gridSize - this.padding * 2);
+            const portalTypeChoices = portalTypes.filter((portal) => (portal.difficulty ?? 0) < difficultyRank);
+            const properties = MathUtils.randomChoice(portalTypeChoices);
+            console.log(difficultyRank, properties.packs);
             game.addGameObject(PortalFactory(
-                properties, 
-                drops, 
-                new Vector(
-                    (candidateCol - this.gridSize / 2) * ChunkConstants.PIXELS_PER_TILE, 
-                    candidateRow * ChunkConstants.PIXELS_PER_TILE)
+                    properties, 
+                    drops, 
+                    new Vector(
+                        (candidateCol - this.gridSize / 2) * ChunkConstants.PIXELS_PER_TILE, 
+                        candidateRow * ChunkConstants.PIXELS_PER_TILE
+                    )
                 )
             );
             for (let xo = -R; xo <= R; xo++) { 

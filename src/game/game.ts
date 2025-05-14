@@ -79,7 +79,7 @@ class Game {
         this._state = GameState.GAME;
         this.stateStartTime = 0;
 
-        this.switchLevel(LevelIndex.FOREST_BOSS, true);
+        this.switchLevel(LevelIndex.FOREST, true);
 
         this.timeoutQueue = new PriorityQueue<TimeoutRequest>(
             // The request with less time remaining should come before
