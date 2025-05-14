@@ -55,7 +55,6 @@ const PlayerMovement: ComponentFactory = (gameObject: GameObject) => {
                 // data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_IDLE;
                 const mousePos = gameObject.game.camera.screenToWorldPosition(input.mousePosition);
                 const angle = mousePos.minus(gameObject.position).angle;
-                console.log(angle);
                 if (-Math.PI / 4 <= angle && angle < Math.PI / 4) {
                     data.animationManager.data.animation = SpriteAnimationIndex.CHARACTER_IDLE_RIGHT;
                 }
