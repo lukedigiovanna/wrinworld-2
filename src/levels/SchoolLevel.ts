@@ -1,4 +1,4 @@
-import { Level, PortalDropPool } from "./";
+import { Level, LevelIndex, PortalDropPool } from "./";
 import { EnemyIndex, PortalFactory, PortalProperties, PropFactory } from "../gameObjects";
 import { Game } from "../game/game";
 import { ChunkConstants } from "../game/Chunk";
@@ -418,6 +418,7 @@ function placeSchoolWalls(tileGrid: Grid<Tile>) {
 
 class SchoolLevel implements Level {
     readonly name = "School";
+    readonly type = "regular";
     readonly portalDrops: PortalDropPool[] = [
         [ { itemIndex: ItemIndex.WATER_BOTTLE, count: new NumberRange(12, 30) } ] 
     ];
@@ -425,6 +426,7 @@ class SchoolLevel implements Level {
     public cameraBounds = new Rectangle(0, 0, 0, 0);
     readonly endzone = new Rectangle(0, 0, 0, 0);
     readonly playerSpawnPosition = new Vector(0, 600);
+    readonly nextLevels: LevelIndex[] = [];
 
     generate(game: Game) {
         const hallwayMap = generateHallwayMap();

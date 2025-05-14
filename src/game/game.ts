@@ -1,8 +1,8 @@
 import { getTexture } from "../assets/imageLoader";
 import { EndZoneFactory, GameObject, PlayerFactory } from "../gameObjects";
-import { Vector, MathUtils, PerlinNoise, Color, Ease, Point } from "../utils";
+import { Vector, MathUtils, Color, Ease, Point } from "../utils";
 import input from "../input";
-import { Hitbox, Particle, ParticleLayer } from "../components";
+import { Particle, ParticleLayer } from "../components";
 import { Tile, tileCodex, TileData, TileIndex, TileRotation } from "./tiles";
 import { Level, levels, LevelIndex } from "../levels";
 import settings from "../settings";
@@ -17,10 +17,9 @@ import { Chunk, ChunkConstants } from "./Chunk";
 import { Grid, GridPosition } from "../utils/Grid";
 import { LazyGrid } from "../utils/LazyGrid";
 import { Optional } from "../utils/types";
-import { addNotification } from "../notifications";
 
 const RENDER_DISTANCE = 3;
-const TRANSITION_TO_LEVEL_TIME = 3;
+const TRANSITION_TO_REGULAR_TIME = 3;
 const TRANSITION_TO_BOSS_TIME = 7;
 
 interface TimeoutRequest {
@@ -36,11 +35,9 @@ interface ChunkTilePair {
 }
 
 enum GameState {
-    REGULAR_GAME,
-    BOSS_BATTLE,
-    // Transition states:
+    GAME,
+    TRANSITION_TO_REGULAR,
     TRANSITION_TO_BOSS,
-    TRANSITION_TO_LEVEL,
 }
 
 class Game {
@@ -65,10 +62,9 @@ class Game {
 
     private level?: Level;
     private dirtyLevel = false;
-    private dirtyBoss = false;
     
-    private stateStartTime: number;
     private _state: GameState;
+    private stateStartTime: number;
 
     private chunkShader: ShaderProgram;
 
@@ -80,10 +76,10 @@ class Game {
         this.addGameObject(this._player);
         this._camera.target = this._player;
 
-        this._state = GameState.REGULAR_GAME;
+        this._state = GameState.GAME;
         this.stateStartTime = 0;
 
-        this.switchLevel(LevelIndex.FOREST, false);
+        this.switchLevel(LevelIndex.FOREST, true);
 
         this.timeoutQueue = new PriorityQueue<TimeoutRequest>(
             // The request with less time remaining should come before
@@ -96,19 +92,33 @@ class Game {
         this.chunkShader = new ShaderProgram(gl, ShaderCode.chunkVertexShaderCode, ShaderCode.chunkFragmentShaderCode);
     }
 
-    public switchLevel(levelIndex: LevelIndex, pixelateLevelStart=true) {
+    public switchLevel(levelIndex: LevelIndex, skipOutro=false) {
         if (this.dirtyLevel) {
             return;
         }
         this.dirtyLevel = true;
-        this.state = GameState.TRANSITION_TO_LEVEL;
         this.level = levels[levelIndex];
+        this.state = this.level.type === "regular" ? GameState.TRANSITION_TO_REGULAR 
+                                                   : GameState.TRANSITION_TO_BOSS;
+        if (skipOutro) {
+            if (this.state === GameState.TRANSITION_TO_REGULAR) {
+                this.stateStartTime -= TRANSITION_TO_REGULAR_TIME / 2;
+            }
+            else if (this.state === GameState.TRANSITION_TO_BOSS) {
+                this.stateStartTime -= TRANSITION_TO_BOSS_TIME / 2;
+            }
+        }
     }
 
-    public startBossBattle() {
-        this.state = GameState.TRANSITION_TO_BOSS;
-        this.dirtyBoss = true;
-        // choose a boss from the level
+    public switchNextLevel() {
+        if (!this.level) {
+            throw Error();
+        }
+        if (this.level.nextLevels.length === 0) {
+            alert("Congrats, you won!");
+            return;
+        }
+        this.switchLevel(MathUtils.randomChoice(this.level.nextLevels));
     }
 
     public get stateTime() {
@@ -150,28 +160,18 @@ class Game {
             return;
         }
 
-        if (this.dirtyLevel && this.level && 
-            this.state === GameState.TRANSITION_TO_LEVEL && 
-            this.stateTime >= TRANSITION_TO_LEVEL_TIME / 2    
-        ) {
-            this.clear(this.level.playerSpawnPosition);
-            this.level.generate(this);
-            this._camera.bounds = this.level.cameraBounds;
-            this.addGameObject(EndZoneFactory(this.level.endzone));
-            this.dirtyLevel = false;
-        }
-
-        if (this.dirtyBoss && this.state === GameState.TRANSITION_TO_BOSS &&
-            this.stateTime >= TRANSITION_TO_BOSS_TIME / 2
-        ) {
-            this.clear(new Vector(0, 0));
-            for (let x = -10; x <= 10; x++) {
-                for (let y = -10; y <= 10; y++) {
-                    this.setTileAtTilePosition(new Point(x, y), TileIndex.RAINBOW_TARGET);
-                }
+        if (this.dirtyLevel && this.level) {
+            if (this.state === GameState.TRANSITION_TO_REGULAR && 
+                this.stateTime >= TRANSITION_TO_REGULAR_TIME / 2 ||
+                this.state === GameState.TRANSITION_TO_BOSS &&
+                this.stateTime >= TRANSITION_TO_BOSS_TIME / 2
+            ) {
+                this.clear(this.level.playerSpawnPosition);
+                this.level.generate(this);
+                this._camera.bounds = this.level.cameraBounds;
+                this.addGameObject(EndZoneFactory(this.level.endzone));
+                this.dirtyLevel = false;
             }
-            this._camera.bounds = undefined;
-            this.dirtyBoss = false;
         }
 
         while (this.checkTimeout());
@@ -255,13 +255,13 @@ class Game {
 
         if (this.state === GameState.TRANSITION_TO_BOSS) {
             if (this.stateTime > TRANSITION_TO_BOSS_TIME) {
-                this.state = GameState.BOSS_BATTLE;
+                this.state = GameState.GAME;
             }
             return;
         }
-        else if (this.state === GameState.TRANSITION_TO_LEVEL) {
-            if (this.stateTime >= TRANSITION_TO_LEVEL_TIME) {
-                this.state = GameState.REGULAR_GAME;
+        else if (this.state === GameState.TRANSITION_TO_REGULAR) {
+            if (this.stateTime >= TRANSITION_TO_REGULAR_TIME) {
+                this.state = GameState.GAME;
             }
             return;
         }
@@ -300,8 +300,8 @@ class Game {
         
         this._camera.disableShader(PostProcessingShaderIndex.PIXELATE);
         this._camera.disableShader(PostProcessingShaderIndex.END_LEVEL);
-        if (this.state === GameState.TRANSITION_TO_LEVEL) {
-            const pixelationTime = this.stateTime / TRANSITION_TO_LEVEL_TIME;
+        if (this.state === GameState.TRANSITION_TO_REGULAR) {
+            const pixelationTime = this.stateTime / TRANSITION_TO_REGULAR_TIME;
             this._camera.enableShader(PostProcessingShaderIndex.PIXELATE);
             let factor = pixelationTime < 0.5 ? Ease.inOutSine(pixelationTime / 0.5) : Ease.inOutSine(1.0 - (pixelationTime - 0.5) / 0.5);
             this._camera.getPostProcessingShader(PostProcessingShaderIndex.PIXELATE)

@@ -25,7 +25,7 @@ const EndZoneFactory: GameObjectFactory = (hitbox: Rectangle) => {
                     }
                     else {
                         // start boss battle
-                        gameObject.game.startBossBattle();
+                        gameObject.game.switchNextLevel();
                     }
                 }
             },

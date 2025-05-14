@@ -1,4 +1,4 @@
-import { Level } from "./";
+import { Level, LevelIndex } from "./";
 import { Vector, MathUtils, CatmullRomParametricCurve, NumberRange, Rectangle, Point, PerlinNoise, cantorPairIndex, Permutation } from "../utils";
 import { Game } from "../game/game";
 import { Chunk, ChunkConstants } from "../game/Chunk";
@@ -125,6 +125,7 @@ const portalTypes: PortalProperties[] = [
 
 class ForestLevel implements Level {
     readonly name = "Corrupted Forest";
+    readonly type = "regular";
     readonly portalDrops = [
         [
             { itemIndex: ItemIndex.ARROW, count: new NumberRange(20, 36) },
@@ -183,6 +184,8 @@ class ForestLevel implements Level {
         // (this.gridSize - this.padding * 0.1 - 4) * ChunkConstants.PIXELS_PER_TILE,
         // (this.gridSize - this.padding * 0.1 + 4) * ChunkConstants.PIXELS_PER_TILE,
     );
+
+    readonly nextLevels: LevelIndex[] = [LevelIndex.FOREST_BOSS];
 
     readonly propFrequencies: Pair<number, Nullable<PropIndex>>[] = [
         // [0.5, PropIndex.MOSSY_FALLEN_TREE],
@@ -443,6 +446,10 @@ class ForestLevel implements Level {
                 }
             } 
         });
+    }
+
+    generateBoss(game: Game) {
+
     }
 };
 
