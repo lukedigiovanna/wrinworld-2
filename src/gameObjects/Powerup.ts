@@ -30,10 +30,10 @@ const HeartOutline: ComponentFactory = (gameObject) => {
         id: "heart",
         update(dt) {
             const t = gameObject.age * 3;
-            const curvePosition = heartCurve.function(t);
+            const curvePosition = heartCurve.function(t, 0.75);
             gameObject.game.addPartialParticle({
                 position: gameObject.position.plus(curvePosition),
-                color: Color.hex("#db58c5").vary(0.1),
+                color: Color.hex("#d11547").vary(0.15),
                 angularVelocity: MathUtils.random(-3, 3),
                 velocity: MathUtils.randomVector(MathUtils.random(0.75, 1.5)),
                 scale: MathUtils.random(1, 2),
@@ -43,12 +43,12 @@ const HeartOutline: ComponentFactory = (gameObject) => {
         },
         destroy() {
             for (let t = 0; t < Math.PI * 2; t += Math.PI * 2 / 60) {
-                const curvePosition = heartCurve.function(t);
+                const curvePosition = heartCurve.function(t, 0.75);
                 const outPosition = heartCurve.function(t, 2);
                 const normal = outPosition.minus(curvePosition).normalized().scaled(8);
                 gameObject.game.addPartialParticle({
                     position: gameObject.position.plus(curvePosition),
-                    color: Color.hex("#db58c5").vary(0.1),
+                    color: Color.hex("#d11547").vary(0.15),
                     angularVelocity: MathUtils.random(-3, 3),
                     velocity: normal.plus(MathUtils.randomVector(MathUtils.random(0, 2))),
                     scale: MathUtils.random(1, 2),
@@ -68,6 +68,7 @@ const PowerupFactory: GameObjectFactory = (powerup: Powerup, position: Vector) =
     powerupObject.scale.setComponents(texture.width, texture.height);
     powerupObject.renderer = spriteRenderer(powerupData.spriteID);
     powerupObject.castsShadow = true;
+    powerupObject.lifespan = 60;
 
     if (powerupData.outline === "heart") {
         powerupObject.addComponent(HeartOutline);
@@ -86,9 +87,11 @@ const PowerupFactory: GameObjectFactory = (powerup: Powerup, position: Vector) =
         return {
             id: "powerup",
             update(dt) {
-                const distance = gameObject.position.distanceTo(gameObject.game.player.hitboxCenter);
-                if (distance < 8 && powerupData.apply(gameObject.game.player)) {
-                    gameObject.destroy();
+                if (gameObject.age > 1) {
+                    const distance = gameObject.position.distanceTo(gameObject.game.player.hitboxCenter);
+                    if (distance < 16 && powerupData.apply(gameObject.game.player)) {
+                        gameObject.destroy();
+                    }
                 }
             },
         }

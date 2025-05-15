@@ -53,7 +53,7 @@ const enemiesCodex: Record<EnemyIndex, Enemy> = {
     hp: 10,
     powerupDrops: [
         {
-            chance: 1,
+            chance: 0.05,
             powerup: Powerup.BLUEBERRIES,
         }
     ],
