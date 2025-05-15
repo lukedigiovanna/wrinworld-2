@@ -32,13 +32,19 @@ const Health: ComponentFactory = (gameObject: GameObject) => {
             this.hp = Math.min(this.hp, this.maximumHP);
         },
         // Returns the amount actually healed
-        heal(amount: number) {
+        heal(amount: number, showPop=false) {
             if (this.hp + amount > this.maximumHP) {
                 amount = this.maximumHP - this.hp;
+            }
+            if (amount === 0) {
+                return;
             }
             this.hp += amount;
             if (this.healthBarDisplayMode !== HealthBarDisplayMode.NONE) {
                 this.timeLastShowedHealthBar = gameObject.game.time;
+            }
+            if (showPop) {
+                gameObject.game.addGameObject(PopText(gameObject.position, `${Math.floor(amount)}`, new Color(0.1, 1, 0.1, 1)));
             }
             return amount;
         },

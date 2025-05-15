@@ -22,7 +22,7 @@ const powerups: Record<Powerup, PowerupData> = {
     spriteID: "blueberries",
     outline: "heart",
     apply(player) {
-        return player.getComponent("health").data.heal(10) > 0;
+        return player.getComponent("health").data.heal(10, true) > 0;
     }
 },
 }
